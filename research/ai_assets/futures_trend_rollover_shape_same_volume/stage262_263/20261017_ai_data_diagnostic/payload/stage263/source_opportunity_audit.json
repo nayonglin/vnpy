@@ -1,0 +1,182 @@
+{
+  "source_opportunity_by_year": [
+    {
+      "year": 2015,
+      "source_candidate_rows": 1,
+      "source_trade_rows": 0,
+      "nonzero_product_pnl_days": 0,
+      "source_product_days": 1705,
+      "source_product_net_pnl_sum": 0.0,
+      "market_calendar_product_days": 4392,
+      "market_coverage_product_days": 2608,
+      "main_AM120_ready_product_days": 5,
+      "AM120_ready_rate_of_covered": 0.0019171779141104294,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2016,
+      "source_candidate_rows": 0,
+      "source_trade_rows": 0,
+      "nonzero_product_pnl_days": 0,
+      "source_product_days": 2684,
+      "source_product_net_pnl_sum": 0.0,
+      "market_calendar_product_days": 4392,
+      "market_coverage_product_days": 2683,
+      "main_AM120_ready_product_days": 8,
+      "AM120_ready_rate_of_covered": 0.002981736861721953,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2017,
+      "source_candidate_rows": 0,
+      "source_trade_rows": 0,
+      "nonzero_product_pnl_days": 0,
+      "source_product_days": 2689,
+      "source_product_net_pnl_sum": 0.0,
+      "market_calendar_product_days": 4392,
+      "market_coverage_product_days": 2689,
+      "main_AM120_ready_product_days": 11,
+      "AM120_ready_rate_of_covered": 0.004090740052063964,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2018,
+      "source_candidate_rows": 1,
+      "source_trade_rows": 0,
+      "nonzero_product_pnl_days": 0,
+      "source_product_days": 2940,
+      "source_product_net_pnl_sum": 0.0,
+      "market_calendar_product_days": 4374,
+      "market_coverage_product_days": 2940,
+      "main_AM120_ready_product_days": 17,
+      "AM120_ready_rate_of_covered": 0.005782312925170068,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2019,
+      "source_candidate_rows": 11,
+      "source_trade_rows": 11,
+      "nonzero_product_pnl_days": 59,
+      "source_product_days": 3190,
+      "source_product_net_pnl_sum": 600.0,
+      "market_calendar_product_days": 4392,
+      "market_coverage_product_days": 3190,
+      "main_AM120_ready_product_days": 195,
+      "AM120_ready_rate_of_covered": 0.061128526645768025,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2020,
+      "source_candidate_rows": 136,
+      "source_trade_rows": 146,
+      "nonzero_product_pnl_days": 553,
+      "source_product_days": 3402,
+      "source_product_net_pnl_sum": 244265.00000000012,
+      "market_calendar_product_days": 4374,
+      "market_coverage_product_days": 3402,
+      "main_AM120_ready_product_days": 3280,
+      "AM120_ready_rate_of_covered": 0.9641387419165197,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2021,
+      "source_candidate_rows": 131,
+      "source_trade_rows": 160,
+      "nonzero_product_pnl_days": 548,
+      "source_product_days": 3641,
+      "source_product_net_pnl_sum": 708585.0,
+      "market_calendar_product_days": 4374,
+      "market_coverage_product_days": 3641,
+      "main_AM120_ready_product_days": 3503,
+      "AM120_ready_rate_of_covered": 0.962098324636089,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2022,
+      "source_candidate_rows": 152,
+      "source_trade_rows": 200,
+      "nonzero_product_pnl_days": 665,
+      "source_product_days": 3637,
+      "source_product_net_pnl_sum": 395700.00000000023,
+      "market_calendar_product_days": 4356,
+      "market_coverage_product_days": 3637,
+      "main_AM120_ready_product_days": 3602,
+      "AM120_ready_rate_of_covered": 0.9903766840802859,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2023,
+      "source_candidate_rows": 169,
+      "source_trade_rows": 190,
+      "nonzero_product_pnl_days": 643,
+      "source_product_days": 4052,
+      "source_product_net_pnl_sum": 255424.99999999994,
+      "market_calendar_product_days": 4356,
+      "market_coverage_product_days": 4052,
+      "main_AM120_ready_product_days": 3751,
+      "AM120_ready_rate_of_covered": 0.925715695952616,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2024,
+      "source_candidate_rows": 182,
+      "source_trade_rows": 208,
+      "nonzero_product_pnl_days": 673,
+      "source_product_days": 4356,
+      "source_product_net_pnl_sum": 225795.00000000003,
+      "market_calendar_product_days": 4356,
+      "market_coverage_product_days": 4356,
+      "main_AM120_ready_product_days": 4203,
+      "AM120_ready_rate_of_covered": 0.9648760330578512,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2025,
+      "source_candidate_rows": 174,
+      "source_trade_rows": 182,
+      "nonzero_product_pnl_days": 670,
+      "source_product_days": 4374,
+      "source_product_net_pnl_sum": 891730.0,
+      "market_calendar_product_days": 4374,
+      "market_coverage_product_days": 4374,
+      "main_AM120_ready_product_days": 4364,
+      "AM120_ready_rate_of_covered": 0.9977137631458619,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    },
+    {
+      "year": 2026,
+      "source_candidate_rows": 108,
+      "source_trade_rows": 124,
+      "nonzero_product_pnl_days": 380,
+      "source_product_days": 3276,
+      "source_product_net_pnl_sum": -246525.0,
+      "market_calendar_product_days": 3276,
+      "market_coverage_product_days": 3276,
+      "main_AM120_ready_product_days": 2442,
+      "AM120_ready_rate_of_covered": 0.7454212454212454,
+      "note": "AM120 rate reconstructed from actual DB bar sequences with same CZCE epoch guard; not entry probability."
+    }
+  ],
+  "effective_source_AM_size": 120,
+  "diagnostic_correction": "Initial descriptive AM140 readiness assumed a stale default. Actual source preserved master AM120 throughout; this audit uses actual default120. No source replay or signal parameters changed.",
+  "accepted_complete_replays": 1,
+  "rejected_incomplete_replays": 1,
+  "audit_code": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage263_audit_source_opportunity.py",
+    "bytes": 5526,
+    "sha256": "099c12718623e97099e5fc259d83139080f455e69cd763891264ae4b3a87ec6c"
+  },
+  "diagnostics": {
+    "source_opportunity_by_year.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_opportunity_by_year.csv",
+      "bytes": 2267,
+      "sha256": "25cc0a25251141b3f6969208e9d9520bc92b745cb84884f040ad8fcb8a6e6cc5"
+    },
+    "main_history_readiness.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/main_history_readiness.csv",
+      "bytes": 3504649,
+      "sha256": "704a5b3667a838c9e721845a4fb80469f7e8f3bc410e5451d584cb82cbdf2fc0"
+    }
+  },
+  "interpretation": "Zero candidate/PnL rows do not establish informative labels; AM120 readiness is a data limitation, never repaired by lowering the window."
+}

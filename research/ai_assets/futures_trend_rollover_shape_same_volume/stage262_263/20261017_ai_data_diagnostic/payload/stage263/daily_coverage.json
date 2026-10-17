@@ -1,0 +1,1236 @@
+{
+  "audit_id": "stage262_daily_coverage_v2",
+  "generated_at": "2026-10-17T17:01:05+08:00",
+  "research_line": "futures_trend_rollover_shape_same_volume",
+  "head": "8cfae3ce7f63b0d203e508688cee2b27f908fba9",
+  "branch": "codex/ai-training-data-expansion",
+  "runtime": {
+    "python": "3.11.5",
+    "sqlite": "3.43.1"
+  },
+  "period": {
+    "start": "2015-01-01",
+    "end": "2026-10-08",
+    "reference_mapping_calendar_days": 2856
+  },
+  "method": {
+    "expected": "Nonempty real main_contract_vt, matching product/exchange, one product-date expectation.",
+    "bar_match_key": [
+      "mapping.date == substr(dbbardata.datetime,1,10)",
+      "contract.symbol",
+      "exchange",
+      "interval=d"
+    ],
+    "ohlc_valid": "finite and positive; low <= min(open,close) <= max(open,close) <= high",
+    "flat_and_zero_volume": "diagnostics only; not automatically invalid or absent",
+    "database_mode": "mode=ro + PRAGMA query_only=ON + read transaction; input hashes stable before/after",
+    "calendar_limit": "Mapping dates are the expected calendar; no independent exchange holiday/listing certification."
+  },
+  "input_identities": [
+    {
+      "path": "research/lines/futures_trend_rollover_shape_same_volume/tools/stage262_audit_early_bars.py",
+      "size_bytes": 19535,
+      "mtime_ns": 1792227652175373166,
+      "sha256": "b0bceed039850dc91d44e42c2554306f3a8f2ead2207f4bf9de6baf34b84fb3a"
+    },
+    {
+      "path": "examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "size_bytes": 18392086,
+      "mtime_ns": 1792040144966871374,
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325"
+    },
+    {
+      "path": ".vntrader/database.db",
+      "size_bytes": 112726016,
+      "mtime_ns": 1792049549085915333,
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54"
+    },
+    {
+      "path": ".py311/lib/python3.11/site-packages/vnpy_sqlite/sqlite_database.py",
+      "size_bytes": 16564,
+      "mtime_ns": 1791962228117302291,
+      "sha256": "156b1f93dacf92d332f98816edc0a30d223ae030833d57576284bb4870fcb2de"
+    },
+    {
+      "path": "vnpy/trader/object.py",
+      "size_bytes": 10512,
+      "mtime_ns": 1791959695065944249,
+      "sha256": "bd360fc224ce22a3f7521bef67ea61125d43c410fa880b9667030ee254546a69"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_universe.py",
+      "size_bytes": 4781,
+      "mtime_ns": 1791959693570127291,
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    {
+      "path": "examples/portfolio_backtesting/main_contract_mapping.py",
+      "size_bytes": 6948,
+      "mtime_ns": 1791959693554629374,
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503"
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_backtest.py",
+      "size_bytes": 18496,
+      "mtime_ns": 1791959693579351708,
+      "sha256": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd"
+    },
+    {
+      "path": "examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+      "size_bytes": 7427,
+      "mtime_ns": 1791959690283613458,
+      "sha256": "79fd8099ea7981b5c9757e390d2d320e3457bd3d482ef59b49ddc5164e5ac9a7"
+    }
+  ],
+  "selected_contract_bars_sha256": "8e6a6f5e82128cb81ccf8f5d8dcf0070c62be05c7b2f0b75cab04495c7ff9a28",
+  "daily_table_schema": [
+    {
+      "type": "index",
+      "name": "dbbardata_symbol_exchange_interval_datetime",
+      "sql": "CREATE UNIQUE INDEX \"dbbardata_symbol_exchange_interval_datetime\" ON \"dbbardata\" (\"symbol\", \"exchange\", \"interval\", \"datetime\")"
+    },
+    {
+      "type": "table",
+      "name": "dbbardata",
+      "sql": "CREATE TABLE \"dbbardata\" (\"id\" INTEGER NOT NULL PRIMARY KEY, \"symbol\" VARCHAR(255) NOT NULL, \"exchange\" VARCHAR(255) NOT NULL, \"datetime\" DATETIME NOT NULL, \"interval\" VARCHAR(255) NOT NULL, \"volume\" REAL NOT NULL, \"turnover\" REAL NOT NULL, \"open_interest\" REAL NOT NULL, \"open_price\" REAL NOT NULL, \"high_price\" REAL NOT NULL, \"low_price\" REAL NOT NULL, \"close_price\" REAL NOT NULL)"
+    }
+  ],
+  "totals": {
+    "expected_mapping_days": 40925,
+    "matched_daily_days": 40848,
+    "valid_unique_ohlc_days": 40848,
+    "missing_daily_days": 77,
+    "duplicate_daily_dates": 0,
+    "invalid_ohlc_rows": 0,
+    "duplicate_mapping_rows": 0,
+    "invalid_mapping_count": 0
+  },
+  "products_with_full_period_mapping": [
+    "CF.CZCE",
+    "FG.CZCE",
+    "MA.CZCE",
+    "OI.CZCE",
+    "SM.CZCE",
+    "au.SHFE",
+    "cu.SHFE",
+    "hc.SHFE",
+    "jm.DCE",
+    "rb.SHFE",
+    "ru.SHFE"
+  ],
+  "products_complete_for_mapped_dates": [
+    "AP.CZCE",
+    "CF.CZCE",
+    "FG.CZCE",
+    "MA.CZCE",
+    "OI.CZCE",
+    "SA.CZCE",
+    "SH.CZCE",
+    "au.SHFE",
+    "cu.SHFE",
+    "hc.SHFE",
+    "jm.DCE",
+    "lc.GFEX",
+    "lh.DCE",
+    "rb.SHFE",
+    "ru.SHFE",
+    "si.GFEX",
+    "sp.SHFE"
+  ],
+  "products_without_mapping": [],
+  "cross_decade_contract_aliases": [
+    {
+      "contract": "CF505.CZCE",
+      "first_database_datetime": "2015-01-05 00:00:00",
+      "last_database_datetime": "2025-05-19 00:00:00",
+      "all_dates_rows": 291
+    },
+    {
+      "contract": "CF509.CZCE",
+      "first_database_datetime": "2015-03-20 00:00:00",
+      "last_database_datetime": "2025-09-12 00:00:00",
+      "all_dates_rows": 312
+    },
+    {
+      "contract": "CF601.CZCE",
+      "first_database_datetime": "2015-07-02 00:00:00",
+      "last_database_datetime": "2026-01-16 00:00:00",
+      "all_dates_rows": 328
+    },
+    {
+      "contract": "CF605.CZCE",
+      "first_database_datetime": "2015-10-26 00:00:00",
+      "last_database_datetime": "2026-05-19 00:00:00",
+      "all_dates_rows": 312
+    },
+    {
+      "contract": "CF609.CZCE",
+      "first_database_datetime": "2016-02-02 00:00:00",
+      "last_database_datetime": "2026-09-14 00:00:00",
+      "all_dates_rows": 339
+    },
+    {
+      "contract": "CF701.CZCE",
+      "first_database_datetime": "2016-06-29 00:00:00",
+      "last_database_datetime": "2026-10-14 00:00:00",
+      "all_dates_rows": 210
+    },
+    {
+      "contract": "FG506.CZCE",
+      "first_database_datetime": "2015-01-05 00:00:00",
+      "last_database_datetime": "2025-06-16 00:00:00",
+      "all_dates_rows": 302
+    },
+    {
+      "contract": "FG509.CZCE",
+      "first_database_datetime": "2015-04-08 00:00:00",
+      "last_database_datetime": "2025-09-12 00:00:00",
+      "all_dates_rows": 327
+    },
+    {
+      "contract": "FG601.CZCE",
+      "first_database_datetime": "2015-08-10 00:00:00",
+      "last_database_datetime": "2026-01-16 00:00:00",
+      "all_dates_rows": 327
+    },
+    {
+      "contract": "FG605.CZCE",
+      "first_database_datetime": "2015-12-02 00:00:00",
+      "last_database_datetime": "2026-05-19 00:00:00",
+      "all_dates_rows": 326
+    },
+    {
+      "contract": "FG609.CZCE",
+      "first_database_datetime": "2016-04-07 00:00:00",
+      "last_database_datetime": "2026-09-14 00:00:00",
+      "all_dates_rows": 331
+    },
+    {
+      "contract": "FG701.CZCE",
+      "first_database_datetime": "2016-08-15 00:00:00",
+      "last_database_datetime": "2026-10-14 00:00:00",
+      "all_dates_rows": 181
+    },
+    {
+      "contract": "MA506.CZCE",
+      "first_database_datetime": "2015-01-05 00:00:00",
+      "last_database_datetime": "2025-06-16 00:00:00",
+      "all_dates_rows": 309
+    },
+    {
+      "contract": "MA509.CZCE",
+      "first_database_datetime": "2015-04-17 00:00:00",
+      "last_database_datetime": "2025-09-12 00:00:00",
+      "all_dates_rows": 315
+    },
+    {
+      "contract": "MA601.CZCE",
+      "first_database_datetime": "2015-08-03 00:00:00",
+      "last_database_datetime": "2026-01-16 00:00:00",
+      "all_dates_rows": 329
+    },
+    {
+      "contract": "MA605.CZCE",
+      "first_database_datetime": "2015-11-30 00:00:00",
+      "last_database_datetime": "2026-05-19 00:00:00",
+      "all_dates_rows": 328
+    },
+    {
+      "contract": "MA609.CZCE",
+      "first_database_datetime": "2016-04-07 00:00:00",
+      "last_database_datetime": "2026-09-14 00:00:00",
+      "all_dates_rows": 328
+    },
+    {
+      "contract": "OI505.CZCE",
+      "first_database_datetime": "2015-01-05 00:00:00",
+      "last_database_datetime": "2025-05-19 00:00:00",
+      "all_dates_rows": 284
+    },
+    {
+      "contract": "OI509.CZCE",
+      "first_database_datetime": "2015-03-11 00:00:00",
+      "last_database_datetime": "2025-09-12 00:00:00",
+      "all_dates_rows": 306
+    },
+    {
+      "contract": "OI601.CZCE",
+      "first_database_datetime": "2015-06-12 00:00:00",
+      "last_database_datetime": "2026-01-16 00:00:00",
+      "all_dates_rows": 350
+    },
+    {
+      "contract": "OI605.CZCE",
+      "first_database_datetime": "2015-11-10 00:00:00",
+      "last_database_datetime": "2026-05-19 00:00:00",
+      "all_dates_rows": 324
+    },
+    {
+      "contract": "OI609.CZCE",
+      "first_database_datetime": "2016-03-11 00:00:00",
+      "last_database_datetime": "2026-09-14 00:00:00",
+      "all_dates_rows": 326
+    },
+    {
+      "contract": "OI701.CZCE",
+      "first_database_datetime": "2016-07-13 00:00:00",
+      "last_database_datetime": "2026-10-14 00:00:00",
+      "all_dates_rows": 197
+    },
+    {
+      "contract": "SM501.CZCE",
+      "first_database_datetime": "2015-01-05 00:00:00",
+      "last_database_datetime": "2025-01-15 00:00:00",
+      "all_dates_rows": 247
+    },
+    {
+      "contract": "SM505.CZCE",
+      "first_database_datetime": "2015-01-14 00:00:00",
+      "last_database_datetime": "2025-05-19 00:00:00",
+      "all_dates_rows": 304
+    },
+    {
+      "contract": "SM509.CZCE",
+      "first_database_datetime": "2015-06-12 00:00:00",
+      "last_database_datetime": "2025-09-12 00:00:00",
+      "all_dates_rows": 252
+    },
+    {
+      "contract": "SM601.CZCE",
+      "first_database_datetime": "2015-05-06 00:00:00",
+      "last_database_datetime": "2026-01-16 00:00:00",
+      "all_dates_rows": 332
+    },
+    {
+      "contract": "SM604.CZCE",
+      "first_database_datetime": "2015-07-01 00:00:00",
+      "last_database_datetime": "2026-04-15 00:00:00",
+      "all_dates_rows": 245
+    },
+    {
+      "contract": "SM605.CZCE",
+      "first_database_datetime": "2015-12-31 00:00:00",
+      "last_database_datetime": "2026-05-19 00:00:00",
+      "all_dates_rows": 323
+    },
+    {
+      "contract": "SM607.CZCE",
+      "first_database_datetime": "2015-07-29 00:00:00",
+      "last_database_datetime": "2026-07-14 00:00:00",
+      "all_dates_rows": 249
+    },
+    {
+      "contract": "SM609.CZCE",
+      "first_database_datetime": "2016-05-04 00:00:00",
+      "last_database_datetime": "2026-09-14 00:00:00",
+      "all_dates_rows": 198
+    },
+    {
+      "contract": "SM701.CZCE",
+      "first_database_datetime": "2016-09-02 00:00:00",
+      "last_database_datetime": "2026-10-14 00:00:00",
+      "all_dates_rows": 148
+    }
+  ],
+  "source_engine_boundary": {
+    "inspection_only_engine_executed": false,
+    "source_entry": "examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+    "stage183_passes_analysis_start": true,
+    "stage183_passes_preload_start": false,
+    "run_backtest_preload_expression": "preload_start or max(PRELOAD_START_DT, analysis_start - timedelta(days=365))",
+    "preload_expression_line": 393,
+    "configured_preload_start": "2019-06-01",
+    "requested_analysis_start": "2015-01-01",
+    "effective_preload_with_unchanged_stage183": "2019-06-01",
+    "current_entry_proves_2015_replay": false,
+    "judgment": "2015主力日线是必要数据基础；现有Stage183入口未传preload_start，默认下限2019-06-01，直接改analysis-start不能产生2015起点的统一源回放证据。"
+  },
+  "training_labels_generated": false,
+  "backtests_run": 0,
+  "models_trained": 0,
+  "judgment": "Coverage is evaluated per product/date/real contract. Missing mapped-day bars remain ineligible; empty pre-coverage mappings remain ineligible. Bar availability does not establish source-engine labels or 120-day feature/60-day target maturity.",
+  "daily_coverage_rows": 51408,
+  "daily_coverage_valid_rows": 40848,
+  "products": [
+    {
+      "product": "AP.CZCE",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 727,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2129,
+      "matched_daily_days": 2129,
+      "valid_unique_ohlc_days": 2129,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2017-12-25",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2017-12-25",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "CF.CZCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 1,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "FG.CZCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "MA.CZCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 1,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "OI.CZCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "SA.CZCE",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 1201,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 1655,
+      "matched_daily_days": 1655,
+      "valid_unique_ohlc_days": 1655,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2019-12-06",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2019-12-06",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "SH.CZCE",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 2119,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 737,
+      "matched_daily_days": 737,
+      "valid_unique_ohlc_days": 737,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2023-09-15",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2023-09-15",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "SM.CZCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2779,
+      "valid_unique_ohlc_days": 2779,
+      "missing_daily_days": 77,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 0.9730392156862745,
+      "coverage_status": "incomplete_or_invalid",
+      "flat_ohlc_rows_diagnostic_only": 27,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {
+        "2015": 76,
+        "2016": 1
+      },
+      "missing_by_contract": {
+        "SM501.CZCE": 2,
+        "SM505.CZCE": 11,
+        "SM509.CZCE": 21,
+        "SM601.CZCE": 32,
+        "SM607.CZCE": 10,
+        "SM609.CZCE": 1
+      },
+      "missing": [
+        {
+          "date": "2015-01-09",
+          "contract": "SM501.CZCE"
+        },
+        {
+          "date": "2015-01-13",
+          "contract": "SM501.CZCE"
+        },
+        {
+          "date": "2015-01-22",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-01-26",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-02-13",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-02-25",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-02-26",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-02-27",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-03-04",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-03-16",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-04-01",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-05-04",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-05-05",
+          "contract": "SM505.CZCE"
+        },
+        {
+          "date": "2015-05-07",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-08",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-11",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-14",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-15",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-18",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-20",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-21",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-22",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-25",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-26",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-27",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-05-28",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-01",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-03",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-05",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-08",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-09",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-10",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-11",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-06-15",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-16",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-17",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-18",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-19",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-23",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-26",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-06-29",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-08",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-09",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-10",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-15",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-16",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-17",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-20",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-21",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-22",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-23",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-24",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-27",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-28",
+          "contract": "SM509.CZCE"
+        },
+        {
+          "date": "2015-07-31",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-04",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-05",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-11",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-13",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-14",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-17",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-18",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-20",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-21",
+          "contract": "SM607.CZCE"
+        },
+        {
+          "date": "2015-08-28",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-08",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-10",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-11",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-14",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-15",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-18",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-21",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-22",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-23",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-24",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2015-09-29",
+          "contract": "SM601.CZCE"
+        },
+        {
+          "date": "2016-06-01",
+          "contract": "SM609.CZCE"
+        }
+      ],
+      "duplicates": [],
+      "invalid_ohlc": [],
+      "missing_dates_with_other_contract_bars": [
+        {
+          "date": "2015-07-15",
+          "contract": "SM509.CZCE",
+          "other_contract_bars": [
+            {
+              "contract": "SM601.CZCE",
+              "volume": 2.0
+            }
+          ]
+        },
+        {
+          "date": "2015-08-14",
+          "contract": "SM607.CZCE",
+          "other_contract_bars": [
+            {
+              "contract": "SM601.CZCE",
+              "volume": 2.0
+            }
+          ]
+        },
+        {
+          "date": "2015-08-17",
+          "contract": "SM607.CZCE",
+          "other_contract_bars": [
+            {
+              "contract": "SM601.CZCE",
+              "volume": 10.0
+            }
+          ]
+        },
+        {
+          "date": "2015-08-21",
+          "contract": "SM607.CZCE",
+          "other_contract_bars": [
+            {
+              "contract": "SM601.CZCE",
+              "volume": 10.0
+            }
+          ]
+        }
+      ],
+      "missing_dates_without_any_product_bar": 73
+    },
+    {
+      "product": "au.SHFE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "cu.SHFE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "hc.SHFE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "jm.DCE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "lc.GFEX",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 2079,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 777,
+      "matched_daily_days": 777,
+      "valid_unique_ohlc_days": 777,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2023-07-21",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2023-07-21",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 1,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "lh.DCE",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 1466,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 1390,
+      "matched_daily_days": 1390,
+      "valid_unique_ohlc_days": 1390,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2021-01-08",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2021-01-08",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "rb.SHFE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "ru.SHFE",
+      "all_mapping_rows": 2856,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 2856,
+      "matched_daily_days": 2856,
+      "valid_unique_ohlc_days": 2856,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2015-01-05",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2015-01-05",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 2,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "si.GFEX",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 1940,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 916,
+      "matched_daily_days": 916,
+      "valid_unique_ohlc_days": 916,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2022-12-22",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2022-12-22",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    },
+    {
+      "product": "sp.SHFE",
+      "all_mapping_rows": 2856,
+      "empty_main_contract_rows": 951,
+      "invalid_mapping_count": 0,
+      "invalid_mappings": [],
+      "duplicate_mapping_rows": 0,
+      "conflicting_mapping_dates": [],
+      "expected_mapping_days": 1905,
+      "matched_daily_days": 1905,
+      "valid_unique_ohlc_days": 1905,
+      "missing_daily_days": 0,
+      "duplicate_daily_dates": 0,
+      "invalid_ohlc_rows": 0,
+      "first_expected_date": "2018-11-27",
+      "last_expected_date": "2026-10-08",
+      "first_matched_date": "2018-11-27",
+      "last_matched_date": "2026-10-08",
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete_for_mapped_dates",
+      "flat_ohlc_rows_diagnostic_only": 0,
+      "zero_volume_rows_diagnostic_only": 0,
+      "nonmidnight_matched_rows": 0,
+      "missing_by_year": {},
+      "missing_by_contract": {},
+      "missing": [],
+      "duplicates": [],
+      "invalid_ohlc": []
+    }
+  ],
+  "elapsed_seconds": 1.693057,
+  "daily_coverage_table": {
+    "path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/market_daily_coverage.csv",
+    "size_bytes": 3105273,
+    "mtime_ns": 1792227665584811999,
+    "sha256": "168c6105d89a516e34ab878fed87e8341af589a524dff0e133617524abd8c7b2"
+  }
+}

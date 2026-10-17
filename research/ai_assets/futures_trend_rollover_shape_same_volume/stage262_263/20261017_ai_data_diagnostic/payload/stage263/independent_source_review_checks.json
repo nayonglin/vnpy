@@ -1,0 +1,981 @@
+{
+  "source_status": "source_recomputed_conditionally_not_historical_PIT",
+  "hash_mismatches": [],
+  "log_complete": true,
+  "log_exceptions": [],
+  "accepted_dates": {
+    "source_daily_first": "2015-05-19",
+    "source_daily_last": "2026-10-08",
+    "positions_first": "2015-05-19",
+    "positions_last": "2026-10-08",
+    "trades_first": "2019-12-05",
+    "trades_last": "2026-09-02",
+    "candidates_first": "2015-11-12",
+    "candidates_last": "2026-09-01"
+  },
+  "counts": {
+    "daily": 2767,
+    "positions": 910717,
+    "trades": 1221,
+    "candidates": 1065,
+    "epoch_resets": 32
+  },
+  "duplicate_position_keys": 0,
+  "duplicate_trade_ids": 0,
+  "duplicate_daily_dates": 0,
+  "pnl_identity_max_error": 2.842170943040401e-14,
+  "total_identity_max_error": 9.094947017729282e-13,
+  "pos_change_identity_max_error": 0.0,
+  "position_day_carry_error": 0.0,
+  "daily_net_pnl_max_error": 2.9103830456733704e-11,
+  "daily_trade_count_max_error": 0.0,
+  "daily_turnover_max_error": 0.0,
+  "daily_commission_max_error": 0.0,
+  "daily_slippage_max_error": 0.0,
+  "daily_holding_pnl_max_error": 2.9103830456733704e-11,
+  "daily_trading_pnl_max_error": 1.4210854715202004e-14,
+  "daily_total_pnl_max_error": 2.9103830456733704e-11,
+  "balance_cumulative_max_error": 2.3283064365386963e-10,
+  "balance_day_change_max_error": 3.474269760772586e-10,
+  "drawdown_recompute_max_error": 2.3283064365386963e-10,
+  "ddpercent_recompute_max_error": 1.4210854715202004e-14,
+  "statistics_identity": {
+    "end_balance_error": 0.0,
+    "net_pnl_error": 0.0,
+    "return_error": 0.0,
+    "max_dd_error": 0.0,
+    "slippage_error": 0.0,
+    "trade_count_error": 0.0
+  },
+  "contract_count_matches_metadata": true,
+  "holding_pnl_recompute_max_error": 3.637978807091713e-12,
+  "trade_pos_change_max_error": 0.0,
+  "trade_count_max_error": 0.0,
+  "trade_turnover_max_error": 0.0,
+  "trade_commission_max_error": 0.0,
+  "trade_slippage_max_error": 0.0,
+  "trading_pnl_recompute_max_error": 1.4210854715202004e-14,
+  "loaded_real_bar_count": 122111,
+  "loaded_real_bar_count_error": 0,
+  "real_calendar_days": 2856,
+  "callback_days_error": 0,
+  "trades_without_real_same_day_bar": [],
+  "trade_price_minus_close_max_abs_not_an_error": 30.0,
+  "candidates_without_real_same_day_bar": [],
+  "epoch_reset_keys_match": true,
+  "reset_new_AM_count_all_zero": true,
+  "old_reset_max_AM_count": 107,
+  "reset_positions_flat": true,
+  "minimum_real_count_at_candidate": 120.0,
+  "strategy_AM_defaults": {
+    "ma_extra_long": 40,
+    "array_manager_size_floor": 120,
+    "donchian_entry_period": 20
+  },
+  "protocol_AM140_claim_mismatch": true,
+  "early_source": {
+    "daily_days": 1130,
+    "position_rows": 142398,
+    "trade_rows": 11,
+    "candidate_rows": 13,
+    "opened_candidate_rows": 7,
+    "first_trade": "2019-12-05",
+    "net_pnl": 600.0,
+    "nonzero_account_pnl_days": 19,
+    "nonzero_product_pnl_days": 59,
+    "candidate_counts_by_year": {
+      "2015": 1,
+      "2018": 1,
+      "2019": 11
+    },
+    "trade_counts_by_year": {
+      "2019": 11
+    },
+    "candidates": [
+      {
+        "date": "2015-11-12",
+        "product_vt_symbol": "au.SHFE",
+        "contract_vt_symbol": "au1512.SHFE",
+        "candidate_status": "skipped",
+        "skip_reason": "short_signal_rejected",
+        "is_opened": 0
+      },
+      {
+        "date": "2018-11-26",
+        "product_vt_symbol": "CF.CZCE",
+        "contract_vt_symbol": "CF901.CZCE",
+        "candidate_status": "skipped",
+        "skip_reason": "short_signal_rejected",
+        "is_opened": 0
+      },
+      {
+        "date": "2019-11-06",
+        "product_vt_symbol": "au.SHFE",
+        "contract_vt_symbol": "au1912.SHFE",
+        "candidate_status": "skipped",
+        "skip_reason": "short_signal_rejected",
+        "is_opened": 0
+      },
+      {
+        "date": "2019-12-05",
+        "product_vt_symbol": "CF.CZCE",
+        "contract_vt_symbol": "CF005.CZCE",
+        "candidate_status": "skipped",
+        "skip_reason": "short_signal_rejected",
+        "is_opened": 0
+      },
+      {
+        "date": "2019-12-05",
+        "product_vt_symbol": "ru.SHFE",
+        "contract_vt_symbol": "ru2005.SHFE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-09",
+        "product_vt_symbol": "cu.SHFE",
+        "contract_vt_symbol": "cu2002.SHFE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-16",
+        "product_vt_symbol": "FG.CZCE",
+        "contract_vt_symbol": "FG005.CZCE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-18",
+        "product_vt_symbol": "AP.CZCE",
+        "contract_vt_symbol": "AP005.CZCE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-19",
+        "product_vt_symbol": "OI.CZCE",
+        "contract_vt_symbol": "OI005.CZCE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-20",
+        "product_vt_symbol": "jm.DCE",
+        "contract_vt_symbol": "jm2005.DCE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-23",
+        "product_vt_symbol": "hc.SHFE",
+        "contract_vt_symbol": "hc2005.SHFE",
+        "candidate_status": "skipped",
+        "skip_reason": "sizing_zero_volume",
+        "is_opened": 0
+      },
+      {
+        "date": "2019-12-24",
+        "product_vt_symbol": "MA.CZCE",
+        "contract_vt_symbol": "MA005.CZCE",
+        "candidate_status": "opened",
+        "skip_reason": "",
+        "is_opened": 1
+      },
+      {
+        "date": "2019-12-31",
+        "product_vt_symbol": "CF.CZCE",
+        "contract_vt_symbol": "CF005.CZCE",
+        "candidate_status": "skipped",
+        "skip_reason": "sizing_zero_volume",
+        "is_opened": 0
+      }
+    ]
+  },
+  "yearly_source_activity": [
+    {
+      "year": "2015",
+      "daily_days": 155,
+      "net_pnl": 0.0,
+      "trade_rows": 0,
+      "candidate_rows": 1,
+      "opened_candidates": 0,
+      "nonzero_product_pnl_days": 0
+    },
+    {
+      "year": "2016",
+      "daily_days": 244,
+      "net_pnl": 0.0,
+      "trade_rows": 0,
+      "candidate_rows": 0,
+      "opened_candidates": 0,
+      "nonzero_product_pnl_days": 0
+    },
+    {
+      "year": "2017",
+      "daily_days": 244,
+      "net_pnl": 0.0,
+      "trade_rows": 0,
+      "candidate_rows": 0,
+      "opened_candidates": 0,
+      "nonzero_product_pnl_days": 0
+    },
+    {
+      "year": "2018",
+      "daily_days": 243,
+      "net_pnl": 0.0,
+      "trade_rows": 0,
+      "candidate_rows": 1,
+      "opened_candidates": 0,
+      "nonzero_product_pnl_days": 0
+    },
+    {
+      "year": "2019",
+      "daily_days": 244,
+      "net_pnl": 600.0,
+      "trade_rows": 11,
+      "candidate_rows": 11,
+      "opened_candidates": 7,
+      "nonzero_product_pnl_days": 59
+    },
+    {
+      "year": "2020",
+      "daily_days": 243,
+      "net_pnl": 244265.00000000012,
+      "trade_rows": 146,
+      "candidate_rows": 136,
+      "opened_candidates": 63,
+      "nonzero_product_pnl_days": 553
+    },
+    {
+      "year": "2021",
+      "daily_days": 243,
+      "net_pnl": 708585.0,
+      "trade_rows": 160,
+      "candidate_rows": 131,
+      "opened_candidates": 76,
+      "nonzero_product_pnl_days": 548
+    },
+    {
+      "year": "2022",
+      "daily_days": 242,
+      "net_pnl": 395700.0000000001,
+      "trade_rows": 200,
+      "candidate_rows": 152,
+      "opened_candidates": 95,
+      "nonzero_product_pnl_days": 665
+    },
+    {
+      "year": "2023",
+      "daily_days": 242,
+      "net_pnl": 255425.00000000006,
+      "trade_rows": 190,
+      "candidate_rows": 169,
+      "opened_candidates": 88,
+      "nonzero_product_pnl_days": 643
+    },
+    {
+      "year": "2024",
+      "daily_days": 242,
+      "net_pnl": 225795.00000000003,
+      "trade_rows": 208,
+      "candidate_rows": 182,
+      "opened_candidates": 98,
+      "nonzero_product_pnl_days": 673
+    },
+    {
+      "year": "2025",
+      "daily_days": 243,
+      "net_pnl": 891730.0,
+      "trade_rows": 182,
+      "candidate_rows": 174,
+      "opened_candidates": 86,
+      "nonzero_product_pnl_days": 670
+    },
+    {
+      "year": "2026",
+      "daily_days": 182,
+      "net_pnl": -246525.0,
+      "trade_rows": 124,
+      "candidate_rows": 108,
+      "opened_candidates": 57,
+      "nonzero_product_pnl_days": 380
+    }
+  ],
+  "early_AM120_ready_product_days": [
+    {
+      "product": "AP.CZCE",
+      "mapped_days": 492,
+      "ready_days": 11,
+      "max_count": 145
+    },
+    {
+      "product": "CF.CZCE",
+      "mapped_days": 1219,
+      "ready_days": 30,
+      "max_count": 145
+    },
+    {
+      "product": "FG.CZCE",
+      "mapped_days": 1219,
+      "ready_days": 17,
+      "max_count": 145
+    },
+    {
+      "product": "MA.CZCE",
+      "mapped_days": 1219,
+      "ready_days": 13,
+      "max_count": 145
+    },
+    {
+      "product": "OI.CZCE",
+      "mapped_days": 1219,
+      "ready_days": 16,
+      "max_count": 145
+    },
+    {
+      "product": "SA.CZCE",
+      "mapped_days": 18,
+      "ready_days": 0,
+      "max_count": 18
+    },
+    {
+      "product": "SM.CZCE",
+      "mapped_days": 1142,
+      "ready_days": 11,
+      "max_count": 145
+    },
+    {
+      "product": "au.SHFE",
+      "mapped_days": 1219,
+      "ready_days": 47,
+      "max_count": 145
+    },
+    {
+      "product": "cu.SHFE",
+      "mapped_days": 1219,
+      "ready_days": 17,
+      "max_count": 145
+    },
+    {
+      "product": "hc.SHFE",
+      "mapped_days": 1219,
+      "ready_days": 13,
+      "max_count": 145
+    },
+    {
+      "product": "jm.DCE",
+      "mapped_days": 1219,
+      "ready_days": 9,
+      "max_count": 145
+    },
+    {
+      "product": "rb.SHFE",
+      "mapped_days": 1219,
+      "ready_days": 19,
+      "max_count": 145
+    },
+    {
+      "product": "ru.SHFE",
+      "mapped_days": 1219,
+      "ready_days": 22,
+      "max_count": 145
+    },
+    {
+      "product": "sp.SHFE",
+      "mapped_days": 268,
+      "ready_days": 11,
+      "max_count": 145
+    }
+  ],
+  "protocol_AM_correction_present": true,
+  "readiness_totals_independently_match": true,
+  "metadata_input_identity": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_contract_metadata.csv",
+    "bytes": 11173,
+    "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a"
+  },
+  "metadata_in_accepted_inputs": false,
+  "statistics": {
+    "start_date": "2015-05-19",
+    "end_date": "2026-10-08",
+    "total_days": 2767,
+    "profit_days": 717,
+    "loss_days": 733,
+    "capital": 200000,
+    "end_balance": 2675575.0,
+    "max_drawdown": -626619.9999999995,
+    "max_ddpercent": -33.02295432798656,
+    "max_drawdown_duration": 290,
+    "total_net_pnl": 2475575.0000000005,
+    "daily_net_pnl": 894.6783520057826,
+    "total_commission": 0.0,
+    "daily_commission": 0.0,
+    "total_slippage": 377190.0,
+    "daily_slippage": 136.31731116732925,
+    "total_turnover": 1143074845.0,
+    "daily_turnover": 413109.81026382366,
+    "total_trade_count": 1221,
+    "daily_trade_count": 0.4412721358872425,
+    "total_return": 1237.7875,
+    "annual_return": 107.36140224069389,
+    "daily_return": 0.09373336548442189,
+    "return_std": 1.9946815144590384,
+    "sharpe_ratio": 0.7279914329653633,
+    "return_drawdown_ratio": 3.9506798378602697,
+    "win_ratio": 40.32520325203252,
+    "win_count": 248,
+    "round_trip_count": 615
+  },
+  "artifact_identities": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_summary.json",
+      "bytes": 55485,
+      "sha256": "9c0735fcae2eacc63574d1f9669940c61be3bb466358ff80144a18b2023ad2c1"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_daily.csv",
+      "bytes": 304725,
+      "sha256": "0ccf491a87f90b4e61626465dcac37b60b253fbc38c48f00c42fe1a19e0e51ab"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_position_changes.csv",
+      "bytes": 72318656,
+      "sha256": "0d06dab628817cd237dc3ba70568d8a06528835dd2294389976483b30f8a8d1f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_trades.csv",
+      "bytes": 183790,
+      "sha256": "2a139615dac3e9093b9396556a767c7f0b93cb5db4785f21ad36ef1dc19fff52"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_entry_candidate_snapshots.csv",
+      "bytes": 1350915,
+      "sha256": "9e24764404e0415a265c3124935d2e4a2a6bc4b9b40736eeab371820723249b2"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/contract_epoch_resets.csv",
+      "bytes": 1303,
+      "sha256": "107f53cf48a7c9a39cf9ecb44a7028791f9f5bf714e050149c17c2ab2fa683e8"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/engine.log",
+      "bytes": 70548,
+      "sha256": "34ebfc89155f47a2d22d8dcc313ace48bf04bee665c57acaf7acdeed0b6e9afe"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_protocol.md",
+      "bytes": 2442,
+      "sha256": "760fd93b1f5f23bec980707b489bf21ae323c6229615fbdd54b8b8ad9d8d7727"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/runtime_preflight.json",
+      "bytes": 590,
+      "sha256": "7e55d3d64b3815aeea4dd3d37f3b8e29b0e2628e4f682ed2374631b983f5cfcb"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_opportunity_audit.json",
+      "bytes": 7808,
+      "sha256": "56c5d67afedffb1c486cb1fb9d0184e04154edf2c9b243254be02743400f80a8"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/main_history_readiness.csv",
+      "bytes": 3504649,
+      "sha256": "704a5b3667a838c9e721845a4fb80469f7e8f3bc410e5451d584cb82cbdf2fc0"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_protocol_am_correction.md",
+      "bytes": 786,
+      "sha256": "d0ba4ce791b8c0d60e575359cf910f9c7f6b617c5a202bda07e6ffff3610226b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/failed_attempt_01_sklearn_runtime/failure.json",
+      "bytes": 353,
+      "sha256": "0b6c28e1be01e9ec0abf09247c5ee34e300f4358dfd14e0a40156b7f83923927"
+    }
+  ],
+  "review_method": "Read artifacts, compare accepted input/output hashes, recompute ledgers from trades and contract sizes; inspect DB dates/epochs, do not rerun source or train models.",
+  "actual_pairwise_epoch_cutoff_cases": [
+    {
+      "contract": "CF601.CZCE",
+      "candidate": "2025-08-19",
+      "epoch_start": "2025-01-16",
+      "raw_rows": 253,
+      "kept_rows": 143,
+      "removed_old_epoch_rows": 10,
+      "removed_future_rows": 100
+    },
+    {
+      "contract": "OI601.CZCE",
+      "candidate": "2025-08-12",
+      "epoch_start": "2025-01-16",
+      "raw_rows": 251,
+      "kept_rows": 138,
+      "removed_old_epoch_rows": 8,
+      "removed_future_rows": 105
+    }
+  ],
+  "additional_economic_guard_cases": {
+    "account_balances_unchanged_on_flat_reset": true,
+    "nonzero_product_layers_rejected": true,
+    "pending_entry_diagnostics_rejected": true
+  },
+  "fifo_recompute": {
+    "matched_fragments": 615,
+    "gross_winning_fragments": 248,
+    "gross_match_win_ratio_pct": 40.32520325203252,
+    "gross_realized_pnl": 2852765.0,
+    "unmatched_closing_volumes": [],
+    "remaining_open_volumes": 0,
+    "gross_less_costs_minus_total_net_pnl": -4.656612873077393e-10
+  },
+  "log_return_max_error": 3.185385982762412e-16,
+  "sharpe_recompute_annual_days240": 0.7279914329653634,
+  "early_month_target_information": {
+    "note": "Independent 120 past inclusive + 60 future market-coverage check and future product net-PnL dispersion, descriptive only; does not recreate full108 features/official training labels.",
+    "qualified_months": 50,
+    "zero_target_dispersion_months": 46,
+    "nonzero_dispersion_months": [
+      {
+        "date": "2019-09-30",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 7,
+        "target_min": -6480.0,
+        "target_max": 5390.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-10-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -7200.0,
+        "target_max": 6440.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-11-29",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -13180.0,
+        "target_max": 6440.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-12-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -29980.0,
+        "target_max": 7200.0,
+        "target_has_cross_section_dispersion": true
+      }
+    ],
+    "all_rows": [
+      {
+        "date": "2015-11-30",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2015-12-31",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-01-29",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-02-29",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-03-31",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-04-29",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-05-31",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-06-30",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-07-29",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-08-31",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-09-30",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-10-31",
+        "coverage_qualified_products": 10,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-11-30",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2016-12-30",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-01-26",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-02-28",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-03-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-04-28",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-05-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-06-30",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-07-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-08-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-09-29",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-10-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-11-30",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2017-12-29",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-01-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-02-28",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-03-30",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-04-27",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-05-31",
+        "coverage_qualified_products": 11,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-06-29",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-07-31",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-08-31",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-09-28",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-10-31",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-11-30",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2018-12-28",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-01-31",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-02-28",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-03-29",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-04-30",
+        "coverage_qualified_products": 12,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-05-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-06-28",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-07-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-08-30",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 0,
+        "target_min": 0.0,
+        "target_max": 0.0,
+        "target_has_cross_section_dispersion": false
+      },
+      {
+        "date": "2019-09-30",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 7,
+        "target_min": -6480.0,
+        "target_max": 5390.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-10-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -7200.0,
+        "target_max": 6440.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-11-29",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -13180.0,
+        "target_max": 6440.0,
+        "target_has_cross_section_dispersion": true
+      },
+      {
+        "date": "2019-12-31",
+        "coverage_qualified_products": 13,
+        "nonzero_target_products": 10,
+        "target_min": -29980.0,
+        "target_max": 7200.0,
+        "target_has_cross_section_dispersion": true
+      }
+    ]
+  }
+}

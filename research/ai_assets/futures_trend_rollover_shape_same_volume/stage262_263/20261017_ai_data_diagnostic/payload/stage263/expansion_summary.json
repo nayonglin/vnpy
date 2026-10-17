@@ -1,0 +1,351 @@
+{
+  "kind": "OFFLINE_SINGLE_SOURCE_TRAINING_HISTORY_EXPANSION",
+  "generated_at": "2026-10-17T17:08:01.303768+08:00",
+  "inputs": {
+    "source_position_changes.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_position_changes.csv",
+      "bytes": 72318656,
+      "sha256": "0d06dab628817cd237dc3ba70568d8a06528835dd2294389976483b30f8a8d1f"
+    },
+    "source_entry_candidate_snapshots.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_entry_candidate_snapshots.csv",
+      "bytes": 1350915,
+      "sha256": "9e24764404e0415a265c3124935d2e4a2a6bc4b9b40736eeab371820723249b2"
+    },
+    "source_summary.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_summary.json",
+      "bytes": 55485,
+      "sha256": "9c0735fcae2eacc63574d1f9669940c61be3bb466358ff80144a18b2023ad2c1"
+    },
+    "market_daily_coverage.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/market_daily_coverage.csv",
+      "bytes": 3105273,
+      "sha256": "168c6105d89a516e34ab878fed87e8341af589a524dff0e133617524abd8c7b2"
+    },
+    "daily_coverage.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/daily_coverage.json",
+      "bytes": 37474,
+      "sha256": "dfe33e7292f750f544e9b52ce6b33de2bb2b4389f719dd2a6aaab6dcf33cdbba"
+    }
+  },
+  "scripts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage263_run_expansion_diagnostic.py",
+      "bytes": 10926,
+      "sha256": "a3f763ed72574f1caa3ff5f64f9269751086efffad884b685361bdd059b3a2d2"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage262_ai_sample_contract.py",
+      "bytes": 5811,
+      "sha256": "6617da56dded1d16eb7215affb966b7498063fc706b38562e91df7f574c2ba7c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "bytes": 35366,
+      "sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/protocol_at_model_fit.md",
+      "bytes": 3911,
+      "sha256": "27532fbd592b4e5c15e9e0792dd6f4b014e19b772533ee83a2df41364ef8592c",
+      "original_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/stages/20261017_1702_stage263_ai_expansion_protocol.md",
+      "current_path_sha256": "ddb18c89f60719e7686d85767e82926a4d15724565c4b1d35687419f117db56c"
+    }
+  ],
+  "feature_count": 108,
+  "feature_columns": [
+    "abs_pos_change_sum_120d",
+    "abs_pos_change_sum_20d",
+    "abs_pos_change_sum_60d",
+    "active_contract_count_sum_120d",
+    "active_contract_count_sum_20d",
+    "active_contract_count_sum_60d",
+    "avg_active_positions_before_mean_120d",
+    "avg_active_positions_before_mean_20d",
+    "avg_active_positions_before_mean_60d",
+    "avg_corr_gate_weight_mean_120d",
+    "avg_corr_gate_weight_mean_20d",
+    "avg_corr_gate_weight_mean_60d",
+    "avg_loss_streak_mean_120d",
+    "avg_loss_streak_mean_20d",
+    "avg_loss_streak_mean_60d",
+    "avg_pairwise_score_mean_120d",
+    "avg_pairwise_score_mean_20d",
+    "avg_pairwise_score_mean_60d",
+    "avg_rsi_mean_120d",
+    "avg_rsi_mean_20d",
+    "avg_rsi_mean_60d",
+    "avg_same_direction_active_count_mean_120d",
+    "avg_same_direction_active_count_mean_20d",
+    "avg_same_direction_active_count_mean_60d",
+    "avg_same_direction_max_corr_mean_120d",
+    "avg_same_direction_max_corr_mean_20d",
+    "avg_same_direction_max_corr_mean_60d",
+    "avg_volume_tilt_multiplier_mean_120d",
+    "avg_volume_tilt_multiplier_mean_20d",
+    "avg_volume_tilt_multiplier_mean_60d",
+    "avg_volume_tilt_score_gap_mean_120d",
+    "avg_volume_tilt_score_gap_mean_20d",
+    "avg_volume_tilt_score_gap_mean_60d",
+    "avg_volume_tilt_top_gap_mean_120d",
+    "avg_volume_tilt_top_gap_mean_20d",
+    "avg_volume_tilt_top_gap_mean_60d",
+    "bearish_alignment_rate_mean_120d",
+    "bearish_alignment_rate_mean_20d",
+    "bearish_alignment_rate_mean_60d",
+    "best_pairwise_rank_mean_120d",
+    "best_pairwise_rank_mean_20d",
+    "best_pairwise_rank_mean_60d",
+    "breakout_rate_mean_120d",
+    "breakout_rate_mean_20d",
+    "breakout_rate_mean_60d",
+    "bullish_alignment_rate_mean_120d",
+    "bullish_alignment_rate_mean_20d",
+    "bullish_alignment_rate_mean_60d",
+    "candidate_count_sum_120d",
+    "candidate_count_sum_20d",
+    "candidate_count_sum_60d",
+    "candidate_day_mean_120d",
+    "candidate_day_mean_20d",
+    "candidate_day_mean_60d",
+    "corr_gate_enabled_count_sum_120d",
+    "corr_gate_enabled_count_sum_20d",
+    "corr_gate_enabled_count_sum_60d",
+    "net_pnl_drawdown_120d",
+    "net_pnl_drawdown_20d",
+    "net_pnl_drawdown_60d",
+    "net_pnl_max_day_120d",
+    "net_pnl_max_day_20d",
+    "net_pnl_max_day_60d",
+    "net_pnl_mean_120d",
+    "net_pnl_mean_20d",
+    "net_pnl_mean_60d",
+    "net_pnl_min_day_120d",
+    "net_pnl_min_day_20d",
+    "net_pnl_min_day_60d",
+    "net_pnl_sharpe_like_120d",
+    "net_pnl_sharpe_like_20d",
+    "net_pnl_sharpe_like_60d",
+    "net_pnl_std_120d",
+    "net_pnl_std_20d",
+    "net_pnl_std_60d",
+    "net_pnl_sum_120d",
+    "net_pnl_sum_20d",
+    "net_pnl_sum_60d",
+    "opened_count_sum_120d",
+    "opened_count_sum_20d",
+    "opened_count_sum_60d",
+    "opened_day_mean_120d",
+    "opened_day_mean_20d",
+    "opened_day_mean_60d",
+    "pnl_positive_day_mean_120d",
+    "pnl_positive_day_mean_20d",
+    "pnl_positive_day_mean_60d",
+    "selected_volume_sum_sum_120d",
+    "selected_volume_sum_sum_20d",
+    "selected_volume_sum_sum_60d",
+    "selected_volume_ungated_sum_sum_120d",
+    "selected_volume_ungated_sum_sum_20d",
+    "selected_volume_ungated_sum_sum_60d",
+    "slippage_sum_120d",
+    "slippage_sum_20d",
+    "slippage_sum_60d",
+    "trade_count_sum_120d",
+    "trade_count_sum_20d",
+    "trade_count_sum_60d",
+    "trade_day_mean_120d",
+    "trade_day_mean_20d",
+    "trade_day_mean_60d",
+    "turnover_sum_120d",
+    "turnover_sum_20d",
+    "turnover_sum_60d",
+    "volume_tilt_applied_count_sum_120d",
+    "volume_tilt_applied_count_sum_20d",
+    "volume_tilt_applied_count_sum_60d"
+  ],
+  "source_engine_summary": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/source_summary.json",
+  "source_runtime": {
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "numerical_runtime": {
+      "sklearn": {
+        "version": "1.8.0",
+        "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/sklearn/__init__.py"
+      },
+      "numpy": {
+        "version": "2.4.4",
+        "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/numpy/__init__.py"
+      },
+      "pandas": {
+        "version": "2.3.3",
+        "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/__init__.py"
+      },
+      "dummy_pairwise_probability": [
+        [
+          0.7392725444931096,
+          0.2607274555068904
+        ]
+      ]
+    },
+    "python_version": "3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)]",
+    "portfolio_package": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/__init__.py",
+    "sqlite_package": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_sqlite/__init__.py",
+    "packages": {
+      "pandas": "2.3.3",
+      "numpy": "2.4.4",
+      "scikit-learn": "1.8.0",
+      "joblib": "1.5.3"
+    },
+    "timezone": "Asia/Shanghai",
+    "ctps_connected": 0,
+    "order_api_calls": 0
+  },
+  "model_runtime": {
+    "python": "3.11.5",
+    "numpy": "2.2.3",
+    "pandas": "2.2.3",
+    "sklearn": "1.6.1"
+  },
+  "test_months": 54,
+  "first_test": "2022-01-28",
+  "last_test": "2026-06-30",
+  "actual_model_fits": 108,
+  "skipped_months": [],
+  "common_feature_label_weight_values_identical": true,
+  "eligible_rows": 1294,
+  "eligible_months": 82,
+  "undefined_rank_months_excluded": {
+    "removed_rows": 513,
+    "removed_months": 46,
+    "removed_dates": [
+      "2015-11-30",
+      "2015-12-31",
+      "2016-01-29",
+      "2016-02-29",
+      "2016-03-31",
+      "2016-04-29",
+      "2016-05-31",
+      "2016-06-30",
+      "2016-07-29",
+      "2016-08-31",
+      "2016-09-30",
+      "2016-10-31",
+      "2016-11-30",
+      "2016-12-30",
+      "2017-01-26",
+      "2017-02-28",
+      "2017-03-31",
+      "2017-04-28",
+      "2017-05-31",
+      "2017-06-30",
+      "2017-07-31",
+      "2017-08-31",
+      "2017-09-29",
+      "2017-10-31",
+      "2017-11-30",
+      "2017-12-29",
+      "2018-01-31",
+      "2018-02-28",
+      "2018-03-30",
+      "2018-04-27",
+      "2018-05-31",
+      "2018-06-29",
+      "2018-07-31",
+      "2018-08-31",
+      "2018-09-28",
+      "2018-10-31",
+      "2018-11-30",
+      "2018-12-28",
+      "2019-01-31",
+      "2019-02-28",
+      "2019-03-29",
+      "2019-04-30",
+      "2019-05-31",
+      "2019-06-28",
+      "2019-07-31",
+      "2019-08-30"
+    ]
+  },
+  "target_diagnostics": [
+    {
+      "pre2020": false,
+      "rows": 1242,
+      "months": 78,
+      "zero_future_rows": 231,
+      "positive_class_fraction": 0.5322061191626409
+    },
+    {
+      "pre2020": true,
+      "rows": 52,
+      "months": 4,
+      "zero_future_rows": 15,
+      "positive_class_fraction": 0.4807692307692308
+    }
+  ],
+  "extra_pre2020_rows": 52,
+  "extra_pre2020_months": 4,
+  "training_asof_2026_09_30": {
+    "E0_train_2020_plus": {
+      "rows": 1242,
+      "months": 78
+    },
+    "E1_train_2015_plus": {
+      "rows": 1294,
+      "months": 82
+    }
+  },
+  "aggregates": [
+    {
+      "arm": "E0_train_2020_plus",
+      "months": 54,
+      "mean_rank_ic": -0.04501653879700941,
+      "mean_top_rank_lift": -0.009922612563543938,
+      "mean_top_half_hit_rate": 0.5203703703703704,
+      "mean_auc": 0.4828283927435162,
+      "min_train_rows": 307,
+      "max_train_rows": 1188,
+      "min_train_months": 22,
+      "max_train_months": 75
+    },
+    {
+      "arm": "E1_train_2015_plus",
+      "months": 54,
+      "mean_rank_ic": -0.03207566794635806,
+      "mean_top_rank_lift": -0.003827841321713874,
+      "mean_top_half_hit_rate": 0.5240740740740741,
+      "mean_auc": 0.49193028265173333,
+      "min_train_rows": 359,
+      "max_train_rows": 1240,
+      "min_train_months": 26,
+      "max_train_months": 79
+    }
+  ],
+  "paired_rank_ic_difference": {
+    "mean_difference": 0.012940870850651353,
+    "ci95_low": -0.002058312743738627,
+    "ci95_high": 0.02883539760091843,
+    "months": 54,
+    "block_months": 6,
+    "repeats": 2000,
+    "seed": 42
+  },
+  "ic_delta": 0.012940870850651355,
+  "top_rank_lift_delta": 0.0060947712418300635,
+  "predeclared_model_evidence_gate_passed": false,
+  "decision": "stop_no_account_backtest_no_parameter_search",
+  "elapsed_seconds": 3.925,
+  "limits": [
+    "Conditional on fixed ex-post pairwise/strategy specifications; not historical PIT proof",
+    "Not a C9 account backtest or evidence of deployable profitability",
+    "2025-2026 repeatedly inspected; only retrospective diagnostics",
+    "Missing daily bars can alter simulated source account path; affected feature/label windows excluded",
+    "No 2014 preload; source begins cold in 2015; complete 120-day history required",
+    "Only future forward observation after freeze is genuinely unseen"
+  ],
+  "metadata_corrections": [
+    {
+      "artifact": "protocol",
+      "change": "only clock typo 17:09 -> 17:07; data gate frozen before first fit unchanged",
+      "at_fit_snapshot": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage263_ai_data_expansion/protocol_at_model_fit.md"
+    }
+  ]
+}

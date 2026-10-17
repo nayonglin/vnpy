@@ -1,0 +1,166 @@
+{
+  "review_id": "stage263_independent_source_review_v1",
+  "reviewed_at": "2026-10-17T17:13:44+08:00",
+  "reviewer_role": "independent_from_source_implementation_and_replay",
+  "decision": "accept_conditional_source_artifacts_reject_informative_2015_2018_expansion_claim",
+  "accepted_source_summary_sha256": "9c0735fcae2eacc63574d1f9669940c61be3bb466358ff80144a18b2023ad2c1",
+  "accepted_complete_replays": 1,
+  "rejected_incomplete_attempts": 1,
+  "reviewer_replays": 0,
+  "reviewer_models_trained": 0,
+  "implementation_findings": [],
+  "implementation_P0": 0,
+  "implementation_P1": 0,
+  "research_blockers": [
+    {
+      "priority": "P1",
+      "title": "新增早期月份绝大部分没有来源策略收益排序信息",
+      "evidence": "2015—2018无成交、无产品损益；2019只有11笔成交且最早2019-12-05。独立120/60 coverage诊断50个月中46个月未来PnL全截面为0，仅2019-09—12四个月有差异。",
+      "consequence": "可完成预声明条件诊断，但反对将名义增加五年称为跨周期有效训练扩样；market coverage与零账户行不能证明策略机会准备。即使模型IC变化，也不能由此声称五年独立市场状态改善泛化。",
+      "action": "保持AM120及既有规则；不要继续扫参或把空信息月当独立样本。以后若真正补早期，需完整逐合约前史/PIT来源，按新协议验收；本次不下载、不重跑源。"
+    }
+  ],
+  "resolved_descriptive_issue": {
+    "issue": "原协议误写AM140，当前源码真实默认AM120。",
+    "resolution": "独立核对类默认与候选最小120真实bar；source_protocol_am_correction.md明确纠正，源CSV未变，无改AM参数或重跑。"
+  },
+  "nonblocking_limits": [
+    {
+      "issue": "metadata CSV未列入accepted inputs，review已另行hash绑定。",
+      "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a",
+      "judgment": "现值可重建全部持仓/交易PnL与成本，未发现影响本次结论的错误；历史保证金PIT及生成时该CSV的前后同一性不由此认证，不为此重复源回放。"
+    },
+    {
+      "issue": "pairwise模型为后验冻结权重、零手续费为旧源既有口径。",
+      "judgment": "源及其收益只用于条件诊断，不是历史PIT或当前C9/15w实盘绩效。"
+    },
+    {
+      "issue": "910717 position行含引擎持有的陈旧合约平坦记账行。",
+      "judgment": "它们不是910717真实市场观测，必须与market coverage及source readiness区分。"
+    }
+  ],
+  "evidence_summary": {
+    "hash_mismatches": [],
+    "log_complete": true,
+    "log_exceptions": [],
+    "actual_daily_end": "2026-10-08",
+    "counts": {
+      "daily": 2767,
+      "positions": 910717,
+      "trades": 1221,
+      "candidates": 1065,
+      "epoch_resets": 32
+    },
+    "real_bars": 122111,
+    "callback_days": 2856,
+    "max_balance_identity_error": 3.474269760772586e-10,
+    "max_position_to_daily_pnl_error": 2.9103830456733704e-11,
+    "epoch_reset_keys_match": true,
+    "epoch_positions_flat": true,
+    "minimum_candidate_actual_bars": 120.0,
+    "epoch_tests_passed": 6,
+    "pairwise_real_cross_decade_cases": [
+      {
+        "contract": "CF601.CZCE",
+        "candidate": "2025-08-19",
+        "epoch_start": "2025-01-16",
+        "raw_rows": 253,
+        "kept_rows": 143,
+        "removed_old_epoch_rows": 10,
+        "removed_future_rows": 100
+      },
+      {
+        "contract": "OI601.CZCE",
+        "candidate": "2025-08-12",
+        "epoch_start": "2025-01-16",
+        "raw_rows": 251,
+        "kept_rows": 138,
+        "removed_old_epoch_rows": 8,
+        "removed_future_rows": 105
+      }
+    ],
+    "early_month_target_information": {
+      "note": "Independent 120 past inclusive + 60 future market-coverage check and future product net-PnL dispersion, descriptive only; does not recreate full108 features/official training labels.",
+      "qualified_months": 50,
+      "zero_target_dispersion_months": 46,
+      "nonzero_dispersion_months": [
+        {
+          "date": "2019-09-30",
+          "coverage_qualified_products": 13,
+          "nonzero_target_products": 7,
+          "target_min": -6480.0,
+          "target_max": 5390.0,
+          "target_has_cross_section_dispersion": true
+        },
+        {
+          "date": "2019-10-31",
+          "coverage_qualified_products": 13,
+          "nonzero_target_products": 10,
+          "target_min": -7200.0,
+          "target_max": 6440.0,
+          "target_has_cross_section_dispersion": true
+        },
+        {
+          "date": "2019-11-29",
+          "coverage_qualified_products": 13,
+          "nonzero_target_products": 10,
+          "target_min": -13180.0,
+          "target_max": 6440.0,
+          "target_has_cross_section_dispersion": true
+        },
+        {
+          "date": "2019-12-31",
+          "coverage_qualified_products": 13,
+          "nonzero_target_products": 10,
+          "target_min": -29980.0,
+          "target_max": 7200.0,
+          "target_has_cross_section_dispersion": true
+        }
+      ]
+    }
+  },
+  "confidence": {
+    "accounting_date_epoch_implementation": "高：逐项确定性复算与原始DB日期核验。",
+    "independent_vendor_price_correctness": "未认证：只有本机映射/数据库及CSV一致性。",
+    "effective_early_alpha_sample_expansion": "否定五年有效扩样主张；仅四个早期月份有未来PnL截面差异，且标签延伸到2020。",
+    "performance_or_unseen_generalization_improvement": "本review没有证明，2025—2026已知数据不是新未见OOS。"
+  },
+  "statistics_scope": "仅重算旧floor35/200000/risk0.045规范源，不是候选模型或当前生产绩效。",
+  "statistics": {
+    "start_date": "2015-05-19",
+    "end_date": "2026-10-08",
+    "total_days": 2767,
+    "profit_days": 717,
+    "loss_days": 733,
+    "capital": 200000,
+    "end_balance": 2675575.0,
+    "max_drawdown": -626619.9999999995,
+    "max_ddpercent": -33.02295432798656,
+    "max_drawdown_duration": 290,
+    "total_net_pnl": 2475575.0000000005,
+    "daily_net_pnl": 894.6783520057826,
+    "total_commission": 0.0,
+    "daily_commission": 0.0,
+    "total_slippage": 377190.0,
+    "daily_slippage": 136.31731116732925,
+    "total_turnover": 1143074845.0,
+    "daily_turnover": 413109.81026382366,
+    "total_trade_count": 1221,
+    "daily_trade_count": 0.4412721358872425,
+    "total_return": 1237.7875,
+    "annual_return": 107.36140224069389,
+    "daily_return": 0.09373336548442189,
+    "return_std": 1.9946815144590384,
+    "sharpe_ratio": 0.7279914329653633,
+    "return_drawdown_ratio": 3.9506798378602697,
+    "win_ratio": 40.32520325203252,
+    "win_count": 248,
+    "round_trip_count": 615
+  },
+  "gross_fifo_note": "win_ratio=248/615为FIFO毛盈利匹配片段比例，非扣成本后逐完整交易胜率。",
+  "checks_path": "independent_source_review_checks.json",
+  "reflection": {
+    "overfitting": "本次独立审计没有拟合或收益筛选；不能因稀疏结果缩短AM或改参数救样本。",
+    "continue_value": "源审计与一次预声明模型诊断有记录价值；当前2015—2018零信号数据作为alpha扩样路线没有足够继续价值。"
+  }
+}

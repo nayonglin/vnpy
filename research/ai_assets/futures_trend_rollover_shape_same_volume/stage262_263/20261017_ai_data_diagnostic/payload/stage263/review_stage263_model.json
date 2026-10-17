@@ -1,0 +1,291 @@
+{
+  "generated_at": "2026-10-17T17:11:23.174558+08:00",
+  "kind": "INDEPENDENT_STAGE263_MODEL_REVIEW_NO_RETRAIN",
+  "verdict": "ACCEPT_CONDITIONAL_EXPANSION_DIAGNOSTIC_AND_STOP_DECISION",
+  "p0": 0,
+  "p1": 0,
+  "confidence_in_computations": "high",
+  "confidence_in_effective_prediction": "insufficient",
+  "can_claim_extra_5_years_of_informative_labels": false,
+  "can_claim_adding_52_rows_improved_generalization": false,
+  "account_backtest_warranted": false,
+  "parameter_search_warranted": false,
+  "checks": {
+    "input_script_and_protocol_snapshot_sha_match": true,
+    "protocol_current_only_clock_typo_diff": true,
+    "window_metadata_independently_rebuilt": 2430,
+    "complete_future_labels_rebuilt": 2412,
+    "future_pnl_max_abs_error": 2.9103830456733704e-11,
+    "undefined_rank_exclusion_recomputed": {
+      "removed_rows": 513,
+      "removed_months": 46,
+      "removed_dates": [
+        "2015-11-30",
+        "2015-12-31",
+        "2016-01-29",
+        "2016-02-29",
+        "2016-03-31",
+        "2016-04-29",
+        "2016-05-31",
+        "2016-06-30",
+        "2016-07-29",
+        "2016-08-31",
+        "2016-09-30",
+        "2016-10-31",
+        "2016-11-30",
+        "2016-12-30",
+        "2017-01-26",
+        "2017-02-28",
+        "2017-03-31",
+        "2017-04-28",
+        "2017-05-31",
+        "2017-06-30",
+        "2017-07-31",
+        "2017-08-31",
+        "2017-09-29",
+        "2017-10-31",
+        "2017-11-30",
+        "2017-12-29",
+        "2018-01-31",
+        "2018-02-28",
+        "2018-03-30",
+        "2018-04-27",
+        "2018-05-31",
+        "2018-06-29",
+        "2018-07-31",
+        "2018-08-31",
+        "2018-09-28",
+        "2018-10-31",
+        "2018-11-30",
+        "2018-12-28",
+        "2019-01-31",
+        "2019-02-28",
+        "2019-03-29",
+        "2019-04-30",
+        "2019-05-31",
+        "2019-06-28",
+        "2019-07-31",
+        "2019-08-30"
+      ]
+    },
+    "eligible_rows": 1294,
+    "eligible_months": 82,
+    "common_108_features_and_future_pnl_unchanged": true,
+    "valid_rank_targets_and_weights_rebuilt": true,
+    "extra_early_samples": [
+      {
+        "eval_date": "2019-09-30",
+        "rows": 13,
+        "zero_future_rows": 6
+      },
+      {
+        "eval_date": "2019-10-31",
+        "rows": 13,
+        "zero_future_rows": 3
+      },
+      {
+        "eval_date": "2019-11-29",
+        "rows": 13,
+        "zero_future_rows": 3
+      },
+      {
+        "eval_date": "2019-12-31",
+        "rows": 13,
+        "zero_future_rows": 3
+      }
+    ],
+    "extra_early_rows": 52,
+    "extra_early_months": 4,
+    "all_monthly_metric_and_train_boundary_groups_recomputed": 108,
+    "training_asof_2026_09_30": {
+      "E0_train_2020_plus": {
+        "rows": 1242,
+        "months": 78
+      },
+      "E1_train_2015_plus": {
+        "rows": 1294,
+        "months": 82
+      }
+    },
+    "test_rows_per_arm": {
+      "E0_train_2020_plus": 905,
+      "E1_train_2015_plus": 905
+    },
+    "maximum_training_label_lateness_days": 0,
+    "early_training_rows_every_E1_month": [
+      52
+    ],
+    "early_training_months_every_E1_month": [
+      4
+    ],
+    "paired_interval_independently_recomputed": {
+      "mean_difference": 0.012940870850651353,
+      "ci95_low": -0.002058312743738627,
+      "ci95_high": 0.02883539760091843,
+      "months": 54,
+      "block_months": 6,
+      "repeats": 2000,
+      "seed": 42
+    },
+    "gate_independently_recomputed": false,
+    "aggregates_recomputed": [
+      {
+        "arm": "E0_train_2020_plus",
+        "months": 54,
+        "mean_rank_ic": -0.04501653879700941,
+        "mean_top_rank_lift": -0.009922612563543938,
+        "mean_top_half_hit_rate": 0.5203703703703704,
+        "mean_auc": 0.4828283927435162,
+        "null_top_half_hit_rate": 0.5308475550714112
+      },
+      {
+        "arm": "E1_train_2015_plus",
+        "months": 54,
+        "mean_rank_ic": -0.03207566794635806,
+        "mean_top_rank_lift": -0.003827841321713874,
+        "mean_top_half_hit_rate": 0.5240740740740741,
+        "mean_auc": 0.4919302826517332,
+        "null_top_half_hit_rate": 0.5308475550714112
+      }
+    ],
+    "annual_recomputed": [
+      {
+        "year": 2022,
+        "arm": "E0_train_2020_plus",
+        "months": 12,
+        "mean_rank_ic": -0.09031729807270245,
+        "mean_top_rank_lift": -0.021111111111111105,
+        "mean_auc": 0.4997795414462081
+      },
+      {
+        "year": 2022,
+        "arm": "E1_train_2015_plus",
+        "months": 12,
+        "mean_rank_ic": -0.0704022752486433,
+        "mean_top_rank_lift": -0.023333333333333362,
+        "mean_auc": 0.5222663139329806
+      },
+      {
+        "year": 2023,
+        "arm": "E0_train_2020_plus",
+        "months": 12,
+        "mean_rank_ic": 0.06433006700197759,
+        "mean_top_rank_lift": 0.018003472222222202,
+        "mean_auc": 0.529307208994709
+      },
+      {
+        "year": 2023,
+        "arm": "E1_train_2015_plus",
+        "months": 12,
+        "mean_rank_ic": 0.08652478930209674,
+        "mean_top_rank_lift": 0.019670138888888897,
+        "mean_auc": 0.5319320436507936
+      },
+      {
+        "year": 2024,
+        "arm": "E0_train_2020_plus",
+        "months": 12,
+        "mean_rank_ic": -0.01439419738840538,
+        "mean_top_rank_lift": 0.0024373638344226587,
+        "mean_auc": 0.4830021444604778
+      },
+      {
+        "year": 2024,
+        "arm": "E1_train_2015_plus",
+        "months": 12,
+        "mean_rank_ic": 0.003221671238372618,
+        "mean_top_rank_lift": 0.016761982570806102,
+        "mean_auc": 0.49482456843567957
+      },
+      {
+        "year": 2025,
+        "arm": "E0_train_2020_plus",
+        "months": 12,
+        "mean_rank_ic": -0.09101000310257208,
+        "mean_top_rank_lift": -0.03472222222222222,
+        "mean_auc": 0.4370149911816579
+      },
+      {
+        "year": 2025,
+        "arm": "E1_train_2015_plus",
+        "months": 12,
+        "mean_rank_ic": -0.09789014447669152,
+        "mean_top_rank_lift": -0.024999999999999998,
+        "mean_auc": 0.4359050157661269
+      },
+      {
+        "year": 2026,
+        "arm": "E0_train_2020_plus",
+        "months": 6,
+        "mean_rank_ic": -0.1423659860496801,
+        "mean_top_rank_lift": -0.018518518518518517,
+        "mean_auc": 0.44724776252554027
+      },
+      {
+        "year": 2026,
+        "arm": "E1_train_2015_plus",
+        "months": 6,
+        "mean_rank_ic": -0.13158909314749165,
+        "mean_top_rank_lift": -0.010648148148148137,
+        "mean_auc": 0.45751666029443805
+      }
+    ],
+    "absolute_ic_diagnostic_intervals": {
+      "E0_train_2020_plus": {
+        "mean_difference": -0.045016538797009405,
+        "ci95_low": -0.11175924278927403,
+        "ci95_high": 0.02612022014994811,
+        "months": 54,
+        "block_months": 6,
+        "repeats": 2000,
+        "seed": 42
+      },
+      "E1_train_2015_plus": {
+        "mean_difference": -0.03207566794635806,
+        "ci95_low": -0.09519641977138862,
+        "ci95_high": 0.03728531797164037,
+        "months": 54,
+        "block_months": 6,
+        "repeats": 2000,
+        "seed": 42
+      }
+    },
+    "source_model_runtime_shared_within_arms": {
+      "python": "3.11.5",
+      "numpy": "2.2.3",
+      "pandas": "2.2.3",
+      "sklearn": "1.6.1"
+    },
+    "all_annual_metrics_match": true,
+    "actual_model_fits_reported": 108,
+    "future_only_test_coverage_exclusion": 0,
+    "undefined_rank_boundary_unit_test_passed": true
+  },
+  "source_ledger_scope": "Source ledger, market bar correctness and CZCE epoch repair reviewed by separate agent; this review only validates sample/label boundary and fixed-model metrics conditional on those artifacts.",
+  "limits": [
+    "只新增2019-09至2019-12四个月/52行，不是2015—2019五年有效样本；这些月的60日标签相互重叠，新增独立状态更少",
+    "两臂共同数据同源，唯一训练行差异是52个早期样本；E0也享有同一2015开始源路径及前2020预热，不能与Stage262旧源直接归因比较",
+    "全部相同未来PnL月份没有排序目标，共同剔除46月513行的规则合理且未改测试月份；只知protocol snapshot与当前仅差时刻笔误，不单凭文件哈希证明历史执行顺序",
+    "配对IC改善区间跨零，两臂绝对IC、Top10 rank lift均负；2025/2026负向且2025 E1 IC更差",
+    "54个月且60源交易日标签重叠；905品种行不是905独立状态；已反复查看历史非干净holdout",
+    "固定pairwise和策略规格后验冻结，来源有效性依赖source reviewer的账本/epoch/行情结论；不能外推为当时真实PIT或C9实盘收益",
+    "只复算预测指标，不重新生成模型分数或重复108 fits；计算正确性不等同独立证明预测产生过程或交易盈利",
+    "当前实验只检验新增2019秋冬4个月，证据不足不能推导真正补齐五年有效同源历史也无价值。"
+  ],
+  "internet_review": [
+    {
+      "url": "https://scikit-learn.org/stable/modules/learning_curve.html",
+      "judgment": "增加数据是否有益取决于偏差/方差与信息量，不能把更早日历起点当成必然泛化提升"
+    },
+    {
+      "url": "https://github.com/microsoft/qlib/blob/main/qlib/workflow/task/gen.py",
+      "judgment": "目标跨度隔离支持按实际label_end核查；共同时间测试须保持不变"
+    }
+  ],
+  "ending_reflection": {
+    "overfitting_added": false,
+    "reason": "独立重建固定样本和既有预测，没有重训、调参或按结果改门",
+    "worth_continuing_current_route": false,
+    "reason_stop": "预声明证据门失败且仅4个月新增标签；不追加账户回测或起点/模型/窗口搜索"
+  }
+}
