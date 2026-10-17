@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-10-17T19:27:11.281529+08:00",
+  "all_unchanged": true,
+  "files": [
+    {
+      "path": ".vntrader/database.db",
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "unchanged": true
+    },
+    {
+      "path": "examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+      "unchanged": true
+    },
+    {
+      "path": "research/registry.md",
+      "sha256": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4",
+      "unchanged": true
+    }
+  ]
+}

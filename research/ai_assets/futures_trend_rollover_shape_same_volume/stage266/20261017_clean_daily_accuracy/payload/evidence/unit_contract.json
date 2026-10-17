@@ -1,0 +1,162 @@
+{
+  "schema_version": "stage266.units.v1",
+  "generated_at": "2026-10-17T19:10:53.677222+08:00",
+  "cleaner_rule_approved": true,
+  "approval_scope": "Only pinned RQ H5 and observed Stage265/old-TQ files, 2010-01-01..2026-10-16; no universal future-vendor guarantee",
+  "canonical_quantity_unit": "single_sided_contracts",
+  "preserve_native_fields": true,
+  "source_lock": {
+    "rq_h5_sha256": "d288f6e4c7468981e95fbb0c1c9e2e1e66bfb99f5ba607843728aec535c8bfee",
+    "rq_metadata_sha256": "1edb7b5cade6c6f42f548c2de72b9af4765f001f6f6e59575309d595f7157805",
+    "rq_last_observed_day": "2026-09-30"
+  },
+  "rqalpha": {
+    "real_contracts_only": true,
+    "include_dce_month_average_F": true,
+    "nominal_contract_month_from_symbol": true,
+    "rules": [
+      {
+        "exchanges": [
+          "SHFE",
+          "INE",
+          "DCE",
+          "CZCE"
+        ],
+        "start": "2010-01-01",
+        "end": "2019-12-31",
+        "native_side": "double",
+        "volume_factor": 0.5,
+        "close_oi_factor": 0.5
+      },
+      {
+        "exchanges": [
+          "SHFE",
+          "INE",
+          "DCE",
+          "CZCE"
+        ],
+        "start": "2020-01-01",
+        "end": "2026-09-30",
+        "native_side": "single",
+        "volume_factor": 1.0,
+        "close_oi_factor": 1.0
+      },
+      {
+        "exchanges": [
+          "CFFEX"
+        ],
+        "start": "2010-01-01",
+        "end": "2026-09-30",
+        "native_side": "single",
+        "volume_factor": 1.0,
+        "close_oi_factor": 1.0
+      },
+      {
+        "exchanges": [
+          "GFEX"
+        ],
+        "start": "2022-12-22",
+        "end": "2026-09-30",
+        "native_side": "single",
+        "volume_factor": 1.0,
+        "close_oi_factor": 1.0
+      }
+    ],
+    "pre2010_action": "unknown_outside_calibrated_scope_preserve_raw_do_not_apply_rule",
+    "open_interest_timing": "close_end_of_trading_day",
+    "open_oi": null,
+    "missing_open_oi_action": "keep_null_never_shift_previous_close_oi",
+    "pre2020_integer_even_guard_fields": [
+      "volume",
+      "open_interest"
+    ],
+    "guard_failure_action": "quarantine_do_not_round_or_infer"
+  },
+  "old_tq": {
+    "native_side": "single",
+    "volume_factor": 1.0,
+    "close_oi_factor": 1.0,
+    "open_oi_factor": 1.0,
+    "scope": "Only 4041 existing pinned CSV files enumerated with SHA in stage266_units_evidence.json; observed dates 2016..2026. No assumption about absent earlier files.",
+    "open_oi_timing": "start_of_day_bar",
+    "close_oi_timing": "end_of_day_bar",
+    "pre2020_calibration_overlap_rows": 4211
+  },
+  "recent_tq": {
+    "native_side": "single",
+    "volume_factor": 1.0,
+    "close_oi_factor": 1.0,
+    "open_oi_factor": 1.0,
+    "scope": "Frozen Stage265 tq_latest daily35 observed rows only, final dates <=2026-10-16",
+    "open_oi_timing": "start_of_day_bar",
+    "close_oi_timing": "end_of_day_bar",
+    "forming_2026_10_19_action": "exclude"
+  },
+  "official": {
+    "accepted_regime_factors": {
+      "official_two_sided_volume_and_close_oi": 0.5,
+      "official_single_sided_volume_and_close_oi": 1.0,
+      "cffex_official_single_sided_volume_and_close_oi": 1.0,
+      "official_2026_single_sided_volume_and_close_oi": 1.0
+    },
+    "factor_applies_to": [
+      "volume",
+      "close_oi"
+    ],
+    "unknown_regime_action": "exclude_from_clean_daily_preserve_reference",
+    "infer_from_year_alone": false,
+    "dce_annual_archive_priority_eligible": false,
+    "dce_annual_archive_policy": "Cross-check evidence only. Empirically mostly double through2022, but no reliable per-pack footnote; do not promote via year or modal ratio."
+  },
+  "zero_volume_action": "preserve_raw_exclude_from_real_traded_bar_history_even_if_positive_flat_ohlc",
+  "quarantine": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_quarantine.csv",
+    "sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66",
+    "format": "csv",
+    "key_fields": [
+      "contract_epoch_id",
+      "trade_date"
+    ],
+    "contract_epoch_id_format": "EXCHANGE.PRODUCT.YYYYMM; uppercase PRODUCT; month-average product suffix _F",
+    "row_count": 2294,
+    "scope": "all candidate sources, including official, old_tq, recent_tq and rqalpha",
+    "action": "exclude_entire_contract_day_all_sources",
+    "override_allowed": false,
+    "reason": "Quantity conflict has no proved ground truth. Do not rescue a row by priority or inferred ratio."
+  },
+  "prohibited_inferences": [
+    "Do not divide CFFEX by2",
+    "Do not divide already single TQ by2",
+    "Do not default prev_closeOI to true openOI",
+    "Do not infer any official archive unit from trade year alone",
+    "Do not label all source mismatches as unit-side switching",
+    "Do not extend pinned-file rule outside calibrated dates or hashes"
+  ],
+  "evidence_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_evidence.json",
+      "sha256": "2634fd2b0bdb09b1582e195f2fbd1face18634f03f8bae769294bafa335a9866"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_exceptions.json",
+      "sha256": "610c8ebe59e405f8ce656ecb146ab8cbd06f01c22a9136265e50966887f78156"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_dataset_parity.json",
+      "sha256": "db72092db9a048cdfbbf79f2b5a7f4f5499b768cda8545af3c8a8b2b39d9c935"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_quarantine.csv",
+      "sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66"
+    }
+  ],
+  "audit_tool": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage266_units_audit.py",
+    "sha256": "d6ed069db9d0c87e39ad0404d3008a920fc3deea8b2e2c7af677bf01cbf65ccb"
+  },
+  "backtests": 0,
+  "training_runs": 0,
+  "new_market_downloads": 0,
+  "new_tq_subscriptions": 0,
+  "main_database_written": false
+}

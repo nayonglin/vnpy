@@ -1,0 +1,262 @@
+{
+  "generated_at": "2026-10-17T19:27:06.059348+08:00",
+  "status": "PASS_BOUNDED_SOURCE_CONTRACT_ACCURACY_AND_READER",
+  "final_database": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "bytes": 378552320
+  },
+  "final_contract": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/contract.json",
+    "sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149"
+  },
+  "counts": {
+    "selected_rows": 1552456,
+    "selected_contracts": 9520,
+    "selected_products": 97,
+    "legacy108_row_usable": 784746,
+    "missing_open_oi_rows": 767710,
+    "first_date": "2010-01-04",
+    "last_date": "2026-10-16"
+  },
+  "source_family_counts": {
+    "official": 282317,
+    "old_tq": 772305,
+    "recent_tq": 12441,
+    "rqalpha": 485393
+  },
+  "by_exchange": [
+    {
+      "exchange": "CFFEX",
+      "rows": 67345,
+      "contracts": 692,
+      "legacy108_rows": 33619,
+      "first_date": "2010-04-16",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "CZCE",
+      "rows": 390570,
+      "contracts": 2408,
+      "legacy108_rows": 203813,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "DCE",
+      "rows": 471418,
+      "contracts": 2935,
+      "legacy108_rows": 241487,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "GFEX",
+      "rows": 24682,
+      "contracts": 138,
+      "legacy108_rows": 16189,
+      "first_date": "2022-12-22",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "INE",
+      "rows": 62785,
+      "contracts": 396,
+      "legacy108_rows": 45339,
+      "first_date": "2018-03-26",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "SHFE",
+      "rows": 535656,
+      "contracts": 2951,
+      "legacy108_rows": 244299,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    }
+  ],
+  "selected_source_checks": {
+    "full_selected_observations_compared_before_final_delta": 1552466,
+    "surviving_rows_inherit_identical_source_values": 1552456,
+    "all_source_files_SHA_and_bytes_match": true,
+    "source_files_checked": 4831,
+    "metadata_and_sources_unchanged_after_delta": {
+      "sources": true,
+      "contracts": true
+    }
+  },
+  "final_quarantine_key_checks": {
+    "quantity": {
+      "keys": 2294,
+      "leaks": 0,
+      "sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66"
+    },
+    "price": {
+      "keys": 304,
+      "leaks": 0,
+      "sha256": "5b64adda95450153d369ea5ac33a20e0f24454d2fedac2866839adc474f04f8e"
+    }
+  },
+  "CSV_checks": {
+    "full_before_delta": {
+      "fields_compared": 23286990,
+      "rows_compared": 1552466,
+      "files_compared": 9520
+    },
+    "final_delta_affected_files": 10,
+    "all_affected_fields_match": true,
+    "unaffected_inventory_receipts_unchanged": true
+  },
+  "open_interest_clock": {
+    "true_close_oi_source_checked": 784746,
+    "different_open_close_oi_proof_rows": 746600
+  },
+  "September_overlap": {
+    "TQ_September_observations": 10595,
+    "both_traded": 9243,
+    "OHLC_equal": 9230,
+    "volume_equal": 9243,
+    "close_oi_equal": 9243,
+    "open_oi_equal_close_oi": 415,
+    "not_both_positive_volume": 1352
+  },
+  "reader": {
+    "status": "PASS",
+    "tests_passed": 27,
+    "actual_120_day_probe": {
+      "contract_epoch_id": "INE.SC.202212",
+      "candidate_date": "2022-11-29",
+      "rows": 120,
+      "first": "2022-06-07",
+      "last": "2022-11-29"
+    },
+    "original_probe_database_sha256": "4191dc61218b8f4cc804f239f46f099769bd34beddff74929e284a51dc1bd598",
+    "probe_inherits_unchanged_contract_rows": true,
+    "eight_memory_faults_rejected": true,
+    "missing_open_oi_preserved": true
+  },
+  "feature_dependency_clarification": {
+    "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+    "source_sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4",
+    "independently_read_lines": [
+      120,
+      240,
+      274,
+      336
+    ],
+    "monthly108_direct_open_oi_dependency": false,
+    "physical_legacy108_row_usable_train_eligible_meaning": "Only seven-column legacy CSV completeness: OHLC, volume, opening OI, closing OI. Historical names do not define monthly108 necessity or sufficiency.",
+    "seven_column_complete_rows": 784746,
+    "reader_agent_reported_conservative_18_pool_CSV_window_rows": 18649,
+    "monthly108_readiness": "Not produced: common strategy PNL/signal rolling inputs and mature forward labels remain absent.",
+    "prior_reader_report_limit_clarification": "The old report's request to lock 120 concerns only choosing that conservative CSV diagnostic gate, not a necessary monthly108 feature dependency.",
+    "early_close_only_period_not_declared_untrainable": true
+  },
+  "protected_primary_data": [
+    {
+      "path": "/Users/mac/Desktop/fian/.vntrader/database.db",
+      "sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_main_contract_mapping_2010_2026_04.csv",
+      "sha256": "55e95a468f4ebd989e5db4da282d69a319ebc75ea08a068e1be8ff87ef1ff325",
+      "unchanged": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/independent_validation.json",
+      "bytes": 559144,
+      "sha256": "b34723eb0313d2c90cd4715cb6ff5e77e55a47db1f5e134969e6168c079501cc"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/csv_export_validation.json",
+      "bytes": 258,
+      "sha256": "f8dfd0a583aceb2c135d41c05bd72117195d21a8def61d68e08668de8ce8400a"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/excluded_conservation_validation.json",
+      "bytes": 904,
+      "sha256": "c2be365dd8984a1a656ca7b6ad8f3afd84ea35b617860206548a75ddc93f0396"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/september_TQ_RQ_overlap.json",
+      "bytes": 966,
+      "sha256": "c2859bfdcf79e441de778d9c73a9002d664abe5fb1f6a1630f754c2f0bb97437"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/september_TQ_RQ_price_differences.csv",
+      "bytes": 3124,
+      "sha256": "fd69ad0ea14155206a5971c726066c4c0b3415b66288148f261c35f9b947e3c9"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/independent_reader_review.json",
+      "bytes": 1675,
+      "sha256": "5815be9694817bb487d91ac27b3e92cd34635c1d32e401fa69b8006c9625e79b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/final_monotonic_delta_review.json",
+      "bytes": 13605,
+      "sha256": "9c9f2b715deaf78f7150f3f6ecd79d05c0a225dd386e550e16f1a8fc13d4c0e0"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/coverage_by_exchange_year_product.csv",
+      "bytes": 21357,
+      "sha256": "aa1e14c8fb3d5f824029b645ff089b7b0bd0c7c728443f492510fc87787afd7f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/coverage_by_exchange_year.csv",
+      "bytes": 4049,
+      "sha256": "6182dba8cc06bcad1476c3031dd5197d04b48146171f9926f4a58be6e270bb5f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/coverage_by_contract.csv",
+      "bytes": 558109,
+      "sha256": "ccc6236017500485f0b34ab7bf630b220ce2e2f583a4db75c8688b17b4422c51"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/validator_tests.log",
+      "bytes": 4273,
+      "sha256": "0dc4f237f80593c6ba34e26581ddb29935d37137221802052fee63f6fe16ffd2"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/reader_tests.log",
+      "bytes": 4848,
+      "sha256": "4627579ed0b2b3981599d80fef6d3847babe3e547e3bf4853b9789f459d63bff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/feature_dependency_clarification.json",
+      "bytes": 5460,
+      "sha256": "22c072e3f139fc5fbeef609e3db4cdc0d528ac4455e31fc1e2916b48c0fd411b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/czce_reader_mapping_availability_304_final.json",
+      "bytes": 29789,
+      "sha256": "9dabe9f518f234d70c5ae3f85adeb3ce20d1f9a7c382c5d416ca746315d31d0d"
+    }
+  ],
+  "severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "bounded_notes": [
+    "Accuracy is proven against frozen native source columns, dates, quantity contracts and locators; historical exchange truth/completeness is not claimed.",
+    "Excluded-source accounting has two CZCE.ZC710 identity rejects before its raw counter; they are explicitly counted in excluded records and never selected.",
+    "Source priority labels are checked; rejected-source accounting uses declared gate totals rather than independently rebuilding all rejected raw observations.",
+    "Only 36 selected rows lack vendor lifecycle metadata; symbol-only status stays explicit. Metadata is not official listing proof.",
+    "Opening OI remains missing for close-only sources; open_interest is the closing alias, never historical private open-oi alias.",
+    "Reader diagnostic window_rows can vary. Its 120-day seven-column gate is conservative CSV availability, not monthly108 necessity/sufficiency. Actual monthly readiness needs common strategy PNL/signal features, declared forward-label maturity, PIT and splits."
+  ],
+  "training_samples_generated": 0,
+  "training_qualified": false,
+  "financial_backtests": 0,
+  "model_fits": 0,
+  "main_database_writes": 0,
+  "new_downloads": 0,
+  "overfitting_after": false,
+  "continue_value_after": true,
+  "judgment_zh": "固定数据合同验收不按收益选源或调参；当前价值在有界可靠读取与后续预声明样本成熟度审计，不等于已训练或适宜实盘。",
+  "report_script_sha256": "43767b0b0562030af7486438be3609c4391a13cddba2049855d85031481ca815"
+}

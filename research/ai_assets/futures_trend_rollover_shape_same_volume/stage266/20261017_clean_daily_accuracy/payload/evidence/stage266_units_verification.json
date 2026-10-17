@@ -1,0 +1,21 @@
+{
+  "verified_at": "2026-10-17T19:13:21.043692+08:00",
+  "status": "PASS",
+  "checks": [
+    "frozen_contract_sha",
+    "all_contract_evidence_sha_bindings",
+    "audit_script_sha",
+    "fresh_pinned_H5_and_restricted_metadata_sha",
+    "2294_unique_quarantine_keys_match_JSON",
+    "559375_pre2020_commodity_rows_all_even",
+    "4211_old_TQ_pre2020_exact_double_comparisons",
+    "DCE70_pre2020_conflicts_no_exact_double_or_half"
+  ],
+  "report_sha256": "1f0dc86bbb25d4860812580ce26346b87ad211023ce45c3b18633d54c659e8a7",
+  "stage_sha256": "7961e0b4910f506b1b61a702483769ca7e9281606fec9200f8e2f2b5e675da1d",
+  "contract_sha256": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c",
+  "quarantine_sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66",
+  "main_database_written": false,
+  "backtests": 0,
+  "training_runs": 0
+}

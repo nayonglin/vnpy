@@ -1,0 +1,37 @@
+{
+  "status": "EVIDENCE_RECOMPUTED",
+  "counts": {
+    "TQ_September_observations": 10595,
+    "both_traded": 9243,
+    "OHLC_equal": 9230,
+    "volume_equal": 9243,
+    "close_oi_equal": 9243,
+    "open_oi_equal_close_oi": 415,
+    "not_both_positive_volume": 1352
+  },
+  "by_exchange": {
+    "CZCE": {
+      "both_traded": 3838,
+      "OHLC_equal": 3838,
+      "volume_equal": 3838,
+      "close_oi_equal": 3838,
+      "open_oi_equal_close_oi": 181
+    },
+    "DCE": {
+      "both_traded": 4540,
+      "OHLC_equal": 4528,
+      "volume_equal": 4540,
+      "close_oi_equal": 4540,
+      "open_oi_equal_close_oi": 172
+    },
+    "GFEX": {
+      "both_traded": 865,
+      "OHLC_equal": 864,
+      "volume_equal": 865,
+      "close_oi_equal": 865,
+      "open_oi_equal_close_oi": 62
+    }
+  },
+  "price_disagreements": 13,
+  "boundary": "Direct raw-source overlap evidence; discrepant OHLC has no truth winner. Open OI differs by clock and cannot replace close OI."
+}

@@ -1,0 +1,129 @@
+{
+  "dataset": "stage266_full_market_clean_daily_v1",
+  "scope": [
+    "2010-01-01",
+    "2026-10-16"
+  ],
+  "database": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "bytes": 378552320
+  },
+  "records": 1552456,
+  "contracts": 9520,
+  "historical_product_codes": 97,
+  "CSV_seven_fields_complete_rows": 784746,
+  "missing_true_opening_OI_rows": 767710,
+  "training_samples_generated": 0,
+  "model_fits": 0,
+  "quantity_unit": "single_sided_contracts",
+  "quality_verdict": "PASS_BOUNDED_SOURCE_CONTRACT_ACCURACY_AND_READER",
+  "independent_severity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "legacy_field_name_clarification": "legacy108_row_usable/train_eligible are conservative legacy CSV field completeness flags, not monthly108 training eligibility",
+  "monthly108_model_readiness": "not asserted; needs consistent strategy-source PNL/signals and mature forward labels",
+  "by_exchange": [
+    {
+      "exchange": "CFFEX",
+      "selected_rows": 67345,
+      "contracts": 692,
+      "legacy108_rows": 33619,
+      "first_date": "2010-04-16",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "CZCE",
+      "selected_rows": 390570,
+      "contracts": 2408,
+      "legacy108_rows": 203813,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "DCE",
+      "selected_rows": 471418,
+      "contracts": 2935,
+      "legacy108_rows": 241487,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "GFEX",
+      "selected_rows": 24682,
+      "contracts": 138,
+      "legacy108_rows": 16189,
+      "first_date": "2022-12-22",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "INE",
+      "selected_rows": 62785,
+      "contracts": 396,
+      "legacy108_rows": 45339,
+      "first_date": "2018-03-26",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "SHFE",
+      "selected_rows": 535656,
+      "contracts": 2951,
+      "legacy108_rows": 244299,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    }
+  ],
+  "receipts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/contract.json",
+      "bytes": 3548,
+      "sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/unit_contract.json",
+      "bytes": 6280,
+      "sha256": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/cleaning_summary.json",
+      "bytes": 628902,
+      "sha256": "8d66a7a550b7f07b0699def5690d359da4b131d29d1b6dc1b047aa64e80f3bcf"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/csv_inventory.json",
+      "bytes": 2014579,
+      "sha256": "226a7fba29754eb00c9aea394f8611caa6076b52a200ef56707307dba61d0782"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_units_quarantine.csv",
+      "bytes": 293955,
+      "sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/price_conflict_quarantine.csv",
+      "bytes": 28454,
+      "sha256": "5b64adda95450153d369ea5ac33a20e0f24454d2fedac2866839adc474f04f8e"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/protected_integrity.json",
+      "bytes": 661,
+      "sha256": "6ed714cdae3913a3d16b0d708726ca08114735a4ab3d40a27dd68afb2edd2ae5"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/feature_dependency_clarification.json",
+      "bytes": 5460,
+      "sha256": "22c072e3f139fc5fbeef609e3db4cdc0d528ac4455e31fc1e2916b48c0fd411b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/czce_reader_mapping_availability_304_final.json",
+      "bytes": 29789,
+      "sha256": "9dabe9f518f234d70c5ae3f85adeb3ce20d1f9a7c382c5d416ca746315d31d0d"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/independent_review_summary.json",
+      "sha256": "c8067bfad40db0f1817f5e81be9b7c0e4b024a09356d097ed0f5a7aa0b904576"
+    }
+  ]
+}

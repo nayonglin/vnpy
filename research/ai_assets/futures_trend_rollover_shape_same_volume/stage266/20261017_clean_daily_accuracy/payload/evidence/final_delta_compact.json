@@ -1,0 +1,168 @@
+{
+  "generated_at": "2026-10-17T19:24:32.960988+08:00",
+  "status": "PASS_MONOTONIC_DELETION_SUBSET",
+  "review_script_sha256": "29726f93700274a31b4ff23d667ea3c8547b0bb56fd3db7a248c97241b858b95",
+  "prior_full_independent_report_sha256": "b34723eb0313d2c90cd4715cb6ff5e77e55a47db1f5e134969e6168c079501cc",
+  "prior_full_database_sha256": "4191dc61218b8f4cc804f239f46f099769bd34beddff74929e284a51dc1bd598",
+  "final_database_sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+  "final_contract_sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149",
+  "delta_path": "research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/stage266_legacy_db_price_overlap_differences.csv",
+  "delta_sha256": "45a8002f25c0270f41d51fe4b718827f02554e347587705b26e4e2f9608f74f4",
+  "old_rows": 1552466,
+  "final_rows": 1552456,
+  "added_rows": 0,
+  "modified_existing_rows": 0,
+  "deleted_rows": 10,
+  "deleted_keys_exactly_declared": true,
+  "legacy108_rows": 784746,
+  "source_family_counts": {
+    "official": 282317,
+    "old_tq": 772305,
+    "recent_tq": 12441,
+    "rqalpha": 485393
+  },
+  "source_and_contract_tables_unchanged": {
+    "sources": true,
+    "contracts": true
+  },
+  "unaffected_CSV_inventory_receipts_unchanged": true,
+  "final_quarantine_key_checks": {
+    "quantity": {
+      "keys": 2294,
+      "leaks": 0,
+      "sha256": "6272c8a95ccaaa9ab44cc1150326a21c13e643b7a2a5a22cab7f5219953fdd66"
+    },
+    "price": {
+      "keys": 304,
+      "leaks": 0,
+      "sha256": "5b64adda95450153d369ea5ac33a20e0f24454d2fedac2866839adc474f04f8e"
+    }
+  },
+  "affected_CSV_all_field_checks": [
+    {
+      "contract_epoch_id": "CZCE.SR.202605",
+      "rows": 241,
+      "all_fields_match": true,
+      "sha256": "fc8f3794731651b03a0940629df7d3131373ffb5d58b9250dbfe188fa67f4ab2"
+    },
+    {
+      "contract_epoch_id": "CZCE.SR.202609",
+      "rows": 241,
+      "all_fields_match": true,
+      "sha256": "dbaab33d51e93ece76ee9dba0075bf6d8d39f5322b70b2fd1490c6170dded483"
+    },
+    {
+      "contract_epoch_id": "DCE.A.202605",
+      "rows": 235,
+      "all_fields_match": true,
+      "sha256": "a9b6a71e1bc418bb82636717938fc797340492497fd48c250edc7a2782234ab5"
+    },
+    {
+      "contract_epoch_id": "DCE.A.202607",
+      "rows": 238,
+      "all_fields_match": true,
+      "sha256": "4a4c62120a76f36f49bd7724f91a8e7a22890517c7ac146e4db19973a08f0bd2"
+    },
+    {
+      "contract_epoch_id": "DCE.J.202605",
+      "rows": 237,
+      "all_fields_match": true,
+      "sha256": "a97ab36a3112de1a97a04c1890c0faf30eccb1865b0a16b8b3e5649fe44d1d44"
+    },
+    {
+      "contract_epoch_id": "DCE.PG.202605",
+      "rows": 223,
+      "all_fields_match": true,
+      "sha256": "f90c8d2212994d96473b0518e03e405a82d894c0b7ef3fa1433968cb9d7f7432"
+    },
+    {
+      "contract_epoch_id": "DCE.PG.202607",
+      "rows": 228,
+      "all_fields_match": true,
+      "sha256": "61fb7849938b1361d735795a5c1834d7166678334da8d2724e9476a732a5aaeb"
+    },
+    {
+      "contract_epoch_id": "SHFE.AL.202605",
+      "rows": 241,
+      "all_fields_match": true,
+      "sha256": "bc4eb812128945f5db360fb663290e7a392e201c64845ee63f8f5aed9c252b4a"
+    },
+    {
+      "contract_epoch_id": "SHFE.AL.202606",
+      "rows": 241,
+      "all_fields_match": true,
+      "sha256": "2c4becf030db6556ee493c4ba0dc5598bb3af50a72cc92959ce094917816ce83"
+    },
+    {
+      "contract_epoch_id": "SHFE.ZN.202605",
+      "rows": 241,
+      "all_fields_match": true,
+      "sha256": "aacc3fc7bab4368008af676b73b3c6c448dd6b5d2e333e5766e48286dd569419"
+    }
+  ],
+  "final_coverage_receipts": {
+    "coverage_by_exchange_year.csv": "6182dba8cc06bcad1476c3031dd5197d04b48146171f9926f4a58be6e270bb5f",
+    "coverage_by_contract.csv": "ccc6236017500485f0b34ab7bf630b220ce2e2f583a4db75c8688b17b4422c51"
+  },
+  "by_exchange": [
+    {
+      "exchange": "CFFEX",
+      "rows": 67345,
+      "contracts": 692,
+      "legacy108_rows": 33619,
+      "first_date": "2010-04-16",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "CZCE",
+      "rows": 390570,
+      "contracts": 2408,
+      "legacy108_rows": 203813,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "DCE",
+      "rows": 471418,
+      "contracts": 2935,
+      "legacy108_rows": 241487,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "GFEX",
+      "rows": 24682,
+      "contracts": 138,
+      "legacy108_rows": 16189,
+      "first_date": "2022-12-22",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "INE",
+      "rows": 62785,
+      "contracts": 396,
+      "legacy108_rows": 45339,
+      "first_date": "2018-03-26",
+      "last_date": "2026-10-16"
+    },
+    {
+      "exchange": "SHFE",
+      "rows": 535656,
+      "contracts": 2951,
+      "legacy108_rows": 244299,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-16"
+    }
+  ],
+  "inherited_checks": {
+    "prior_selected_native_comparisons": 1552466,
+    "final_selected_native_accuracy_safe_subset": 1552456,
+    "legacy108_eligibility_inherited_unchanged": true,
+    "reader_120_day_probe_remains_valid": true
+  },
+  "findings": [],
+  "new_market_sources_read": 0,
+  "private_legacy_database_reread": false,
+  "main_database_writes": 0,
+  "boundary": "Every surviving selected row is byte-value identical to a previously exhaustively validated row. This proves a monotonic safe subset; it does not choose which legacy/RQ price was true."
+}

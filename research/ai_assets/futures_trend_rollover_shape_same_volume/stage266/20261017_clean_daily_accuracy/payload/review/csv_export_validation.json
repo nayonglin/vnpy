@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "inventory_sha256": "8995d8fa01f958652fb5a6e1e0a124c05f3046814c5fa3f81ada1bcc3967d5f3",
+  "counts": {
+    "fields_compared": 23286990,
+    "rows_compared": 1552466,
+    "files_compared": 9520
+  },
+  "findings": {},
+  "examples": {}
+}

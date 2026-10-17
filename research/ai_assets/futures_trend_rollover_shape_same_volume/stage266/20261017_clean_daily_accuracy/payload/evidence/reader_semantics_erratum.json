@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-17T19:26:00+08:00",
+  "status": "semantic_erratum_no_frozen_artifact_changes",
+  "reader_sha256_unchanged": "eaa0b51a4e76ab139c4b9b64af005304a19c895b20529f7366b8b88b6ad86c2c",
+  "monthly108_input_semantics": "strategy product PNL and candidate/signal rolling statistics; no direct opening-OI column input",
+  "pairwise_v2_feature_count_static": 19,
+  "pairwise_v2_selected_feature_open_oi": false,
+  "physical_name_interpretation": {
+    "legacy108_row_usable": "strict legacy CSV seven-numeric-field completeness only; not monthly108 eligibility",
+    "legacy108_usable": "same row diagnostic alias; not monthly108 eligibility",
+    "train_eligible": "frozen per-row legacy CSV interface flag; not monthly108 training qualification",
+    "qualify_legacy108_window": "strict legacy CSV seven-field history completeness diagnostic",
+    "require_legacy108_window": "requires that strict CSV window; not a necessary gate for monthly108",
+    "legacy108_window_qualified": "only the strict CSV window was checked; not monthly108 certification"
+  },
+  "corrected_claims": {
+    "2010_2019_zero": "zero means the audited existing18 mapped dates have zero strict seven-field CSV complete rows/windows; it neither proves monthly108 untrainability nor monthly108 trainability",
+    "18649": "count of strict seven-field 120-source-date windows for mapped contracts in this audited pool; not monthly product samples or training observations",
+    "upstream_dependency": "no direct opening-OI input does not certify upstream strategy or pairwise branches; their dependencies must be assessed separately",
+    "training_readiness": "full-period strategy PNL/candidate records, actual monthly feature construction, label maturity, coverage, PIT and temporal validation remain unverified here"
+  },
+  "unchanged": {
+    "market_data": true,
+    "frozen_reports": true,
+    "reader_source": true,
+    "tests": true,
+    "database": true
+  },
+  "actions": {
+    "SQL_queries": 0,
+    "test_runs": 0,
+    "financial_backtests": 0,
+    "model_fits": 0,
+    "downloads": 0
+  },
+  "evidence": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "lines": "106-145",
+      "fact": "monthly source loads strategy holding/trading/net PNL, positions, costs and trades"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "lines": "163-187,236-246",
+      "fact": "candidate logs are merged with product PNL daily"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "lines": "263-323",
+      "fact": "rolling features derive from PNL, trades and candidate/signal statistics over 20/60/120 dates"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "lines": "336-380",
+      "fact": "monthly samples select month-end and future PNL label; feature columns come from rolling statistics"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py",
+      "lines": "32-37",
+      "fact": "pairwise V2 selects V1 15 plus 4 = 19 features"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "lines": "109-114,147-165",
+      "fact": "separate old market extractor/CSV interface reads seven numeric columns including opening OI"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "sha256": "2ec683d0b291168b36c8e293dffb65b7b6f4c1b5b7577b80c594c3339c8feea4",
+  "excluded_observations": 1146274,
+  "source_raw_observations_partition_checked": 4016926,
+  "accepted_source_observations_before_priority_dedup": 2870654,
+  "identity_rejections_before_raw_counter": {
+    "recent_tq:CZCE.ZC710": {
+      "unresolved_contract_identity": 2
+    }
+  },
+  "excluded_reasons": {
+    "outside_target_dates": 254895,
+    "no_trade": 757938,
+    "cross_source_quantity_conflict": 4778,
+    "invalid_ohlc": 807,
+    "before_candidate_listing": 698,
+    "unknown_unit": 127156,
+    "unresolved_contract_identity": 2
+  },
+  "findings": {},
+  "examples": {},
+  "boundary": "Source observations overlap; accepted-source counts must not be added to unique selected rows. Accounting audit uses declared source gate totals, not independent enumeration of every rejected raw field."
+}
