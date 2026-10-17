@@ -323,3 +323,12 @@
 - 关闭0.5R、全池/随机池、Stage251—258历史脚本和轻量证据仅归档并推送到 `codex/stage251-disable-half-r-stop`；不改变正式参数。68项针对性unittest通过，本轮无新回测、无新模型训练。
 - 已从根目录私有文件恢复本机CTP/行情/邮件配置，未打印或提交秘密。当前m0008与修复源码不一致，本机缺新的生产资格/manifest/activation/daily receipt，旧机器plist路径尚未受控迁移，故没有安装或启动生产任务。
 - 后续从master直接切 `codex/ai-training-data-expansion` 研究；它是修复源码基线，不宣称已成为新生产release。详细边界见Stage259记录。
+
+
+## Stage261 AI训练研究恢复（2026-10-17）
+
+- 已直接切回master派生的codex/ai-training-data-expansion，沿修复代码基线e41a0a01d；部署分支和生产目录仍待前置恢复后真实资格，与研究隔离。
+- 找到两份原Stage183训练源CSV且SHA与m0008一致，纠正Stage258的文件缺失判断；复用Stage247历史复算，不重新训练同月池。
+- 独立日期审计确认78月×18=1404名义行，其中133早于产品本地源/有效映射覆盖；9个按时间/行数筛出的候选历史WF窗均有标签越过首次预测，live另有60源日成熟截止，不能混为一谈。
+- 本机2015—2019日线与映射提供扩样基础，但须逐日覆盖/上市资格与CZCE跨十年合约身份验收。下一步先统一样本、标签结束日与源引擎，再只改变训练历史；模型C=.20/108特征/60日/Top10+fu不先扫描。
+- 独立复核接受限定结论；无训练、回测、下载、正式参数或物料修改。详细见本线Stage261记录与outputs/stage261_ai_training_readiness/source_calendar_audit.json。
