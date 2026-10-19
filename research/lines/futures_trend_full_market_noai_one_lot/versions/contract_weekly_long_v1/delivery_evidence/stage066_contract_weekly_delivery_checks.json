@@ -1,0 +1,93 @@
+{
+  "stage": "Stage066",
+  "created_at": "2026-10-19T20:33:49.448881+08:00",
+  "source_run": "run_20261019_contract_weekly_long_v1",
+  "source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "source_code_commit": "a922720f2d9adb5693a9ac6b4ac5c1e66953f1a7",
+  "financial_replays_this_change": 1,
+  "market_downloads": 0,
+  "production_access": false,
+  "source_and_artifact_hashes_reverified": 140,
+  "unit_tests": 219,
+  "unit_test_log_sha256": "2af16536961b47ecc945f982986063c0e39d4dd17932a75f49965eaee940702c",
+  "independent_actual_audit": {
+    "path": "stages/20261019_2022_stage064_contract_weekly_actual_independent_review.json",
+    "sha256": "e524e23eec980ae31b48553fab3881a03e3777c566132cf14114b0a8fa4b0b90",
+    "status": "PASS_WITH_LIMITS"
+  },
+  "parent_artifact_validation": {
+    "path": "stages/stage065_contract_weekly_parent_artifact_acceptance.json",
+    "sha256": "3fd68dd13534fa8d65b616f724e335a1dc43ac62d0db31f7b6f10bfa901d7526"
+  },
+  "ui": {
+    "status": "PASS",
+    "transport": "localhost_http_temporary",
+    "recap_final": "recap_20261019_contract_weekly_long_v1_reviewed_v2",
+    "overview_final": "overview_20261019_contract_weekly_long_v2",
+    "file_protocol_policy_bypassed": false,
+    "trade_options": 1558,
+    "default_periods": [
+      "30日K",
+      "日K"
+    ],
+    "weekly_checkbox_adds_third_period": true,
+    "observed_ag202602_weekly_nondegenerate_candles": 52,
+    "next_previous_trade": [
+      "ag202602.SHFE",
+      "lh202301.DCE",
+      "ag202602.SHFE"
+    ],
+    "year_2024_loss_filter_count": 110,
+    "restored_full_count": 1558,
+    "inherited_reset_bug_reproduced": "first LH trade 0..315 retained on ag 1145..1658 before narrow display fix",
+    "final_two_and_three_period_zoom_reset": "PASS: ag current-range date labels 2024-08-30 through 2026-03-04 restored, visible nondegenerate candles; weekly width 4.38 zoom to 2.18 reset",
+    "final_recap_visual_inspection": "PASS: correct selected contract, weekly candles, 4 MAs and entry/exit markers visibly present; plot data independently verified separately",
+    "final_overview_two_tables_two_panels": true,
+    "final_overview_link_targets_reviewed_v2": true,
+    "overview_zoom_labels": [
+      "2018",
+      "2020",
+      "2022",
+      "2019",
+      "2021",
+      "2023"
+    ],
+    "overview_reset_labels": [
+      "2018",
+      "2020",
+      "2022",
+      "2016",
+      "2024",
+      "2026"
+    ],
+    "recap_application_console_errors": [],
+    "overview_application_console_errors": [],
+    "non_application_notes": [
+      "GET favicon.ico returned 404 only",
+      "large full accessibility state exceeded frame limit; bounded readonly DOM state and screenshots used",
+      "body PageDown locator focus attempt timed out; subsequent visible button PageDown succeeded"
+    ],
+    "temporary_tabs_closed": true,
+    "temporary_server_stopped": true,
+    "port_8765_no_listener_verified": true,
+    "user_original_tabs_untouched": true
+  },
+  "final_recap": {
+    "path": "outputs/recap_20261019_contract_weekly_long_v1_reviewed_v2",
+    "summary_sha256": "5c2b8000a950e5e05f5e55c9e30a4888cead22fc9fb1e46350261b76b103fb6b",
+    "html_sha256": "92e94f0d7fbb5fd442e6f65760d75f46bd035503e880c58907de609ef2c0bf9e"
+  },
+  "final_overview": {
+    "path": "outputs/overview_20261019_contract_weekly_long_v2",
+    "summary_sha256": "52a0a142ff1f7ef4711a8218cfca7ce1c14d30aada59902a28f8db3cdbc09674",
+    "html_sha256": "0d495b242eeef0dcd6761a86ae303b4eb969f7de599a663cbc2b83dd0e595d36"
+  },
+  "boundaries": [
+    "daily_proxy",
+    "no_C2_C9_intraday_stop_or_retry",
+    "supply_filter_disabled_by_user",
+    "not_PIT_fees_or_metadata",
+    "private_pending_reservations_not_fully_independently_reconstructed",
+    "research_not_production_or_sample_out"
+  ]
+}

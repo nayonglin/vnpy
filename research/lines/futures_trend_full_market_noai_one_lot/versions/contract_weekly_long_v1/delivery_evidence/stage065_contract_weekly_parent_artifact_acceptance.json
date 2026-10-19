@@ -1,0 +1,38 @@
+{
+  "status": "PASS_native_budget_daily_research_artifact",
+  "episodes": 1558,
+  "source_fills": 3126,
+  "gross_result_counts": {
+    "loss": 1015,
+    "profit": 531,
+    "flat": 12
+  },
+  "period_bar_counts": {
+    "day30": 66946,
+    "day10": 197223,
+    "monthly": 32061,
+    "weekly": 114717,
+    "daily": 535730,
+    "intraday": 0
+  },
+  "ma_points_independently_checked": 3272066,
+  "javascript_syntax_checked": true,
+  "javascript_scripts_checked": 2,
+  "actual_opens_budget_checked": 1568,
+  "actual_open_budget_violations": 0,
+  "original_signal_snapshot_binding_checked": true,
+  "native_signal_and_open_budget_independently_recalculated": true,
+  "all_entry_exit_dates_prices_signals_matched": true,
+  "frozen_metrics_unchanged": true,
+  "configured_product_capacity": 93,
+  "max_actual_products": 13,
+  "max_products_reconstructed_after_each_fill": 13,
+  "max_product_gross_lots": 1,
+  "last_fill_date": "2026-10-16",
+  "performance_certifiable": true,
+  "financial_replays": 0,
+  "source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "html_sha256": "0a0d9e8f3278642910f17841b5af0ede7bccf5843504fa683acc7280f397289c",
+  "summary_sha256": "1b00149b77f8311532c1b5b725f5cc2f03cd7e7995a4273f3c10c887e99ff497",
+  "validator_sha256": "27cb66d7209c93a0d878326fb3582436251496d6e31c6e9fdefc331cc0e9b0ec"
+}

@@ -1,0 +1,89 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "full_suite_tests": 206,
+  "full_suite_seconds": 25.561,
+  "final_runner_integration_tests": 3,
+  "extra_native_no_borrow_checks": [
+    {
+      "context": "flat_entry",
+      "result": "PASS",
+      "queried_contract": "rb202005.SHFE",
+      "history_weeks": 3,
+      "selected_volume": 0
+    },
+    {
+      "context": "reverse_entry",
+      "result": "PASS",
+      "queried_contract": "rb202005.SHFE",
+      "history_weeks": 3,
+      "selected_volume": 0
+    },
+    {
+      "context": "rollover_reopen",
+      "result": "PASS",
+      "queried_contract": "rb202005.SHFE",
+      "history_weeks": 3,
+      "selected_volume": 0
+    }
+  ],
+  "strategy_mro": [
+    "FeeStrategy",
+    "LifecycleStrategyMixin",
+    "FullMarketContractWeeklyLong",
+    "WeeklyLongEntryMixin",
+    "FullMarketNativeRiskBudgetOneLot",
+    "NativeRiskBudgetSizingMixin",
+    "FullMarketNoAIOneLot",
+    "QmtRollPortfolioStrategyStage847C9StopRetry",
+    "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+    "QmtRollPortfolioStrategyStage827C2",
+    "QmtRollPortfolioStrategyLongTighterInitialStop",
+    "QmtRollPortfolioStrategyExactAm",
+    "QmtRollPortfolioStrategy",
+    "StrategyTemplate",
+    "ABC",
+    "object"
+  ],
+  "engine_mro": [
+    "FullMarketDailyEngine",
+    "WeeklyLongExecutionMixin",
+    "OpeningRiskBudgetMixin",
+    "LifecycleEngineMixin",
+    "CleanExecution",
+    "ConfirmedDailyNextRealOpenEngine",
+    "SameDayCloseBacktestingEngine",
+    "BacktestingEngine",
+    "object"
+  ],
+  "code_hashes": {
+    "stage058_weekly_contract.py": "546f2097b80117be1a0b0c2c29f4a39c380c9313270a6e31056bf29029eee491",
+    "stage059_contract_weekly_candidate.py": "b0f340fe6c800b291225f42fadecf995d32f08ba8369f9471027c5dbecc387b8",
+    "stage060_run_contract_weekly_long.py": "3aabda24cf36506b3af2ae76cf5d5bc56515688eace06b670115422005b1b07e",
+    "test_stage058_weekly_contract.py": "127d47b6bbd4fbb29ed1267750793006678f747249821ee2a9f69d819df27a6b",
+    "test_stage059_contract_weekly_candidate.py": "99c8e529aaaa8e83c2889f427606c13eb3fd41ad3a3d34c0732c3b2a83035fa3",
+    "test_stage060_contract_weekly_integration.py": "f64cfb1821ed2bed856037dfb56e08efc6ae70558ecbb16bb9276da478d0b0ad"
+  },
+  "old_039_040_041_match_baseline": true,
+  "financial_replays": 0,
+  "stage": 61,
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "reviewer": "independent_weekly_preflight_agent",
+  "review_time": "2026-10-19T20:12:27.038092+08:00",
+  "baseline_commit": "87487e32d36a443942f612ac7eeef71ede9ea46a",
+  "baseline_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "previous_weekly_main_manifest_sha256": "7e6f2647de1d99253ba2cbade3e0852158d50d3cbfde19e8da4afdba6f16fed4",
+  "proposed_output": "outputs/run_20261019_contract_weekly_long_v1",
+  "blockers": [],
+  "implementation_changes": 0,
+  "production_reads": 0,
+  "git_mutations": 0,
+  "final_runner_integration_seconds": 0.045,
+  "review_conclusion": "PASS_WITH_LIMITS。058/059/060当前固定版本无P0/P1阻断，可按根任务预登记冻结后运行唯一exact-contract候选；不代表金融收益、跨周期稳健或正式资格。",
+  "limits": [
+    "只使用当前交易合约自身accepted-clean已完成周close；不足40周或窗口坏周failclosed，不借主力连续或其他合约。",
+    "导出weekly_contract_features是已查询合约的完整本地周历史subset，不是4328合约全量网格；scope/queried_contracts/rows与完整calendar会被manifest hash绑定。",
+    "空头和全部平仓未加新门，共用env_probe沿用父类；资金/持仓路径仍可间接改变空头实际结果。",
+    "日线近似停用C2/C9盘中规则和供需过滤、静态费用/PIT/生产身份限制继承。",
+    "样本已见旧主力周线结果，此次是用户语义修正，不是新样本外检验；不能收益选参。"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "created_at": "2026-10-19T20:26:45.483095+08:00",
+  "source_run": "run_20261019_contract_weekly_long_v1",
+  "source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "baseline_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "previous_main_manifest_sha256": "7e6f2647de1d99253ba2cbade3e0852158d50d3cbfde19e8da4afdba6f16fed4",
+  "parent_summary_sha256": "01307eddd3923788c854589874daeed46f217ade83a9d4e5d73a8eadba9e0a93",
+  "output_summary_sha256": "66e0ff2e7278a0aefe5472967246d120c1dd956c8b7d05fd30e667d1dc6848d5",
+  "hash_bindings_checked": 155,
+  "points_checked": 2862,
+  "series_checked": [
+    "equity",
+    "high_watermark",
+    "drawdown_amount",
+    "drawdown_pct"
+  ],
+  "figure_traces": 4,
+  "panels": 2,
+  "linked_x_axis": true,
+  "embedded_data_and_layout_exactly_match": true,
+  "comparison_tables_checked": 2,
+  "comparison_rows_checked": 24,
+  "all_comparison_source_values_and_deltas_exactly_match": true,
+  "max_absolute_csv_errors": {
+    "equity": 2.3283064365386963e-10,
+    "high_watermark": 1.1641532182693481e-10,
+    "drawdown_amount": 2.3283064365386963e-10,
+    "drawdown_pct": 2.3092638912203256e-14
+  },
+  "javascript_blocks_checked": 3,
+  "png_dimensions": [
+    2240,
+    1200
+  ],
+  "png_visual_inspection": "PASS: 120.51万元 end equity, 2024-08-30 max DD -17.65%, both panels legible",
+  "artifact_sha256": {
+    "index.html": "4c07f9711b2ccabccb5ea511de442d8a630498fa6910b02a26fc4b69f8b79c3d",
+    "equity_drawdown.png": "e1022a20c01c9b83b0f11aaf2e5b449accdb40cc51be7d58a8fcf6167ef5fb1d",
+    "equity_drawdown.csv": "022b3daf458e109100624228f63efdfb37ded967201e81449abf95ad4d222e77",
+    "figure.json": "9a928f048c17f9fca9c75b1f135f660a5e03bb1943b7d0a82ee479577024a67d"
+  },
+  "artifact_bytes": {
+    "index.html": 5132570,
+    "equity_drawdown.png": 282061,
+    "equity_drawdown.csv": 245480,
+    "figure.json": 281231
+  },
+  "browser_check": "pending_root",
+  "financial_rerun": false,
+  "market_download": false,
+  "production_access": false
+}

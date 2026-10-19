@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "created_at": "2026-10-19T20:31:44.621216+08:00",
+  "recap_parent_summary_sha256": "01307eddd3923788c854589874daeed46f217ade83a9d4e5d73a8eadba9e0a93",
+  "recap_v2_summary_sha256": "5c2b8000a950e5e05f5e55c9e30a4888cead22fc9fb1e46350261b76b103fb6b",
+  "overview_v2_summary_sha256": "52a0a142ff1f7ef4711a8218cfca7ce1c14d30aada59902a28f8db3cdbc09674",
+  "generator_sha256": "6dc2b20582ba593f9e337112e1e738f52ff5e8e845a5f93a721d06095d7af68b",
+  "hash_bindings_checked": 160,
+  "append_only_html_byte_identity": true,
+  "records_sha256": "47ed5feadc0d8205943238e780866bd1e3f6089168e118ce5c7939692df8dba0",
+  "records_checked": 1558,
+  "all_original_non_html_artifacts_byte_identical": true,
+  "all_original_source_metrics_and_weekly_provenance_unchanged": true,
+  "embedded_records_identical": true,
+  "script_sha256": "42f4ba41a48a97646262576e04181fdf1cdea87443251bd0005fedfbd3268520",
+  "node_fake_dom_tests": "PASS: two trade ranges, 2 to 3 periods, empty selection/non-chart/other button untouched, no private state",
+  "recap_v2_artifact_sha256": {
+    "residual_open_positions.json": "deb83dc40b46f3e19e8949c9c8be6d8ccedb879bf0f0a8f14a579ba96ab968b6",
+    "independent_review.md": "86325806504934f7dc26077ccc0631a3fdf4948b25317d301f74c84e6b96dbb9",
+    "current_trade_reset_manifest.json": "d657ec25971738df2c2441d15e46641b862565a2a35d5b3785a7c19f2c36306b",
+    "index.html": "92e94f0d7fbb5fd442e6f65760d75f46bd035503e880c58907de609ef2c0bf9e",
+    "weekly_contract_display_manifest.json": "b8cbef94db59b28cb29089836dfe36b260d1670a9884741c2380febbf8e67247",
+    "all_trade_episodes.csv": "86626ae851ab11b7f32f9e2832a24676e59dee3d76d0f5af28f8216f87d6641d",
+    "strategy_daily.csv": "215f9fb55e0ac2bf135368a2e40422ec2e50a6234ebfa2ab65e508932512060f",
+    "weekly_contract_chart_features.csv": "e10a399caa3540a5b4baf5fb29ad5f2b311e13a1e5cfee9060927a0a36c1df54",
+    "records.json": "47ed5feadc0d8205943238e780866bd1e3f6089168e118ce5c7939692df8dba0",
+    "independent_review.json": "e524e23eec980ae31b48553fab3881a03e3777c566132cf14114b0a8fa4b0b90",
+    "chart_manifest.csv": "cbcfba8d198e544db76d2ae05898cd8e3a3e55bf0f811483a7acc560646c90ca",
+    "closed_lots.csv": "b80df3d1d7aec43215936033668e18fc9a1cb534d0f0a0682b487f7ece728215",
+    "risk_enrichment_manifest.json": "d1a740b0fb8fe3df770ef04b17d6cb2c7c14b33fca90c14fd7a122361a292575"
+  },
+  "overview_v2_artifact_sha256": {
+    "index.html": "0d495b242eeef0dcd6761a86ae303b4eb969f7de599a663cbc2b83dd0e595d36",
+    "equity_drawdown.png": "e1022a20c01c9b83b0f11aaf2e5b449accdb40cc51be7d58a8fcf6167ef5fb1d",
+    "equity_drawdown.csv": "022b3daf458e109100624228f63efdfb37ded967201e81449abf95ad4d222e77",
+    "figure.json": "9a928f048c17f9fca9c75b1f135f660a5e03bb1943b7d0a82ee479577024a67d"
+  },
+  "overview_points_checked": 2862,
+  "overview_comparison_rows_checked": 24,
+  "overview_curve_csv_figure_png_identical_to_v1": true,
+  "overview_embedded_data_layout_exact": true,
+  "overview_bound_to_reviewed_v2": true,
+  "javascript_blocks_checked": {
+    "recap_v2": 3,
+    "overview_v2": 3
+  },
+  "browser_check": "pending_root",
+  "financial_rerun": false,
+  "market_download": false,
+  "production_access": false
+}
