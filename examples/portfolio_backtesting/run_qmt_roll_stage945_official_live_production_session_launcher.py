@@ -634,14 +634,16 @@ def _assert_canonical_paths(
             )
 
 
-def _resolve_target_date(environment: Mapping[str, str]) -> tuple[str, dict[str, Any]]:
+def _resolve_target_date(
+    environment: Mapping[str, str], *, data_ready_time: str = "16:30"
+) -> tuple[str, dict[str, Any]]:
     try:
         result = subprocess.run(
             [
                 str(PYTHON_PATH),
                 str(STAGE922_SCRIPT),
                 "--data-ready-time",
-                "16:30",
+                data_ready_time,
             ],
             cwd=REPO_ROOT,
             env=dict(environment),

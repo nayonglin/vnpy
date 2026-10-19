@@ -18,6 +18,73 @@ if str(PORTFOLIO_DIR) not in sys.path:
 import run_qmt_roll_stage929_official_live_15w_timed_cycle as stage929  # noqa: E402
 
 
+def test_stage929_early_ai_preflight_passes_explicit_ready_time(tmp_path: Path) -> None:
+    args = argparse.Namespace(ai_pool_preflight_mode="check", ai_pool_timeout_seconds=30,
+                              ai_pool_data_ready_time="15:10")
+    completed = stage929.subprocess.CompletedProcess([], 0, stdout=json.dumps({
+        "automation_status": "monthly_ai_pool_already_current", "order_api_called_count": 0,
+    }))
+    with patch.object(stage929.subprocess, "run", return_value=completed) as run:
+        stage929._run_stage935_preflight(args, tmp_path / "commands.log")
+    command = run.call_args.args[0]
+    assert command[command.index("--data-ready-time") + 1] == "15:10"
+
+
+@pytest.mark.parametrize("ready,age,limit", [(0,0,300),(1,900,300),(1,0,0),(1,None,300)])
+def test_postclose_old_or_missing_account_cannot_claim_no_action(ready, age, limit) -> None:
+    wrapper = {
+        "phase": "post-close", "target_date": "2026-10-19", "ai_pool_preflight": {},
+        "account_snapshot": {"balance": 123456, "nonzero_position_rows": 0},
+        "signal_details": [], "blocked_candidate_details": [],
+        "execution_consistency_audit": {"stage906_broker_snapshot_ready": ready,
+            "stage906_readonly_snapshot_age_seconds": age,
+            "stage906_max_snapshot_age_seconds": limit},
+    }
+    stage903 = {"pending_order_count": 0,"order_api_called_count": 0,"stage905_ready_count": 0}
+    with patch.object(stage929, "send_official_live_email_notification", return_value={}) as send:
+        stage929._send_report_email({"report_md":Path("report.md"),"summary_json":Path("summary.json")},
+                                   wrapper, stage903, policy="always")
+    body = send.call_args.kwargs["body"]
+    assert "账户对账未就绪" in body
+    assert "没有需要自动执行的开仓或平仓指令" not in body
+    assert "123456" not in body
+
+
+def test_postclose_fresh_validated_account_is_still_displayed() -> None:
+    wrapper = {"phase":"post-close", "target_date":"2026-10-19", "signal_details":[],
+        "blocked_candidate_details":[], "account_snapshot":{"balance":123456},
+        "execution_consistency_audit":{"stage906_broker_snapshot_ready":1,
+            "stage906_readonly_snapshot_age_seconds":30,"stage906_max_snapshot_age_seconds":300}}
+    with patch.object(stage929, "send_official_live_email_notification", return_value={}) as send:
+        stage929._send_report_email({"report_md":Path("report.md"),"summary_json":Path("summary.json")},
+                                   wrapper, {"order_api_called_count":0}, policy="always")
+    assert "账户对账未就绪" not in send.call_args.kwargs["body"]
+    assert "123456" in send.call_args.kwargs["body"]
+
+
+@pytest.mark.parametrize("age_fields", [{}, {"readonly_snapshot_age_seconds":None},
+                                      {"readonly_snapshot_age_seconds":"invalid"}])
+def test_postclose_raw_summary_missing_age_stays_unknown_through_email(age_fields) -> None:
+    raw = {"broker_snapshot_ready":1, "max_snapshot_age_seconds":300, **age_fields}
+    wrapper = {"phase":"post-close", "target_date":"2026-10-19", "signal_details":[],
+               "blocked_candidate_details":[], "account_snapshot":{"balance":123456}}
+    stage903 = {"target_date":"2026-10-19", "order_api_called_count":0}
+    with (
+        patch.object(stage929, "_read_json", side_effect=lambda path:
+                     raw if path == stage929._stage906_summary_path("2026-10-19") else {}),
+        patch.object(stage929, "_read_csv_maybe", return_value=pd.DataFrame()),
+        patch.object(stage929, "send_official_live_email_notification", return_value={}) as send,
+    ):
+        audit = stage929._build_execution_consistency_audit(wrapper, stage903)
+        wrapper["execution_consistency_audit"] = audit
+        stage929._send_report_email({"report_md":Path("report.md"),"summary_json":Path("summary.json")},
+                                   wrapper, stage903, policy="always")
+    assert audit["stage906_readonly_snapshot_age_seconds"] is None
+    json.dumps(audit, allow_nan=False)
+    assert "账户对账未就绪" in send.call_args.kwargs["body"]
+    assert "123456" not in send.call_args.kwargs["body"]
+
+
 def test_stage929_pool_threshold_uses_tenth_model_rank() -> None:
     pool = pd.DataFrame(
         {

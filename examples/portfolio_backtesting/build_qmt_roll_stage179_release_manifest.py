@@ -114,6 +114,8 @@ PRODUCTION_REQUIRED_TEST_SUITES = (
     "tests/test_stage260_local_production_paths.py",
     "tests/test_stage249_account_equity.py",
     "tests/test_stage249_intraday_execution.py",
+    "tests/test_stage271_daily_bar_readiness.py",
+    "tests/test_stage271_pairwise_assets.py",
     "tests/test_qmt_entry_context_diagnostics.py",
 )
 PRODUCTION_PERFORMANCE_TEST_SUITE = (
@@ -378,8 +380,11 @@ _TRUSTED_READONLY_INVOCATION_FIELDS = {
     "environment_sha256",
 }
 DEFAULT_CRITICAL_FILES = (
+    ".lfsconfig",
     "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
     "examples/portfolio_backtesting/qmt_roll_intraday_execution.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_daily_bar_readiness.py",
+    "examples/portfolio_backtesting/qmt_roll_official_live_pairwise_assets.py",
     "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
     "examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
     "examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
@@ -494,6 +499,8 @@ DEFAULT_CRITICAL_FILES = (
     "tests/test_stage260_local_production_paths.py",
     "tests/test_stage249_account_equity.py",
     "tests/test_stage249_intraday_execution.py",
+    "tests/test_stage271_daily_bar_readiness.py",
+    "tests/test_stage271_pairwise_assets.py",
     "tests/test_qmt_entry_context_diagnostics.py",
     "tests/test_stage907_readonly_refresh_gate.py",
     "tests/test_stage608_continuous_tick_stream.py",

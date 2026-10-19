@@ -37,6 +37,8 @@ from qmt_roll_official_live_phase_d_config import (
     PHASE_D_SHADOW_REFRESH_CONFIRM_TEXT,
     PHASE_D_SHADOW_REFRESH_ENV,
 )
+from qmt_roll_official_live_daily_bar_readiness import validate_target_daily_bars
+from main_contract_mapping import ALL_FUTURES_MAPPING_PATH
 from run_qmt_roll_stage945_official_live_production_session_launcher import (
     PRODUCTION_ACTIVATION_RECEIPT,
     PRODUCTION_AI_ELIGIBILITY_PATH,
@@ -147,7 +149,7 @@ SUPPORT_JOB_SPECS = {
             "--target-date-mode",
             "latest-completed",
             "--target-date-data-ready-time",
-            "16:30",
+            "15:10",
             "--mode",
             "run",
             "--confirm-shadow-refresh",
@@ -172,6 +174,8 @@ SUPPORT_JOB_SPECS = {
             "plan-only",
             "--ai-pool-preflight-mode",
             "check",
+            "--ai-pool-data-ready-time",
+            "15:10",
             "--email-policy",
             "always",
         ),
@@ -183,7 +187,7 @@ SUPPORT_JOB_SPECS = {
             "monthly-ai-pool"
         ),
         script_name="run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py",
-        arguments=("--mode", "run", "--email-policy", "updates"),
+        arguments=("--mode", "run", "--data-ready-time", "15:10", "--email-policy", "updates"),
     ),
     "health": SupportJobSpec(
         job="health",
@@ -217,9 +221,10 @@ def _canonical_support_owner(job: str) -> bool:
 
 def _resolve_support_target_date(
     environment: Mapping[str, str],
+    *, data_ready_time: str = "15:10",
 ) -> tuple[str, dict[str, Any]]:
     try:
-        return _resolve_target_date(environment)
+        return _resolve_target_date(environment, data_ready_time=data_ready_time)
     except (ProductionSessionLaunchError, subprocess.TimeoutExpired) as exc:
         raise ProductionSupportLaunchError(
             "production_support_target_date_resolver_failed",
@@ -418,17 +423,29 @@ def _run_market_data_worker(
             boundary="postclose-market-data",
         )
     resolved_target, resolver = _resolve_support_target_date(environment)
-    if not target_date <= resolved_target <= refresh_cutoff_date:
+    if resolved_target != refresh_cutoff_date:
         raise ProductionSupportLaunchError(
             "production_support_market_data_target_mismatch",
             boundary="postclose-market-data",
         )
+    try:
+        coverage = validate_target_daily_bars(
+            database_path=PRODUCTION_DATABASE_PATH,
+            mapping_path=ALL_FUTURES_MAPPING_PATH,
+            target_date=resolved_target,
+        )
+    except (OSError, ValueError) as exc:
+        raise ProductionSupportLaunchError(
+            "production_support_target_daily_bars_invalid",
+            boundary="postclose-market-data",
+        ) from exc
     return {
         "initial_target_date": target_date,
         "target_date": resolved_target,
         "refresh_cutoff_date": refresh_cutoff_date,
         "resolver": resolver,
         "command_exit_code": result.returncode,
+        "daily_bar_coverage": coverage,
     }
 
 
@@ -830,7 +847,7 @@ def _run_postclose_pipeline(
                 environment=environment,
             )
             refreshed_target = str(market.get("target_date", ""))
-            if not target_date <= refreshed_target <= schedule_date:
+            if refreshed_target != schedule_date:
                 raise ProductionSupportLaunchError(
                     "production_support_market_data_target_mismatch",
                     boundary="postclose-market-data",
@@ -1256,7 +1273,13 @@ def launch_support_job(args: argparse.Namespace) -> None:
         return
     _validate_support_credentials(spec)
     command = build_support_command(spec)
-    target_date, resolver = _resolve_support_target_date(environment)
+    if spec.job == "day-close-readonly":
+        # Account collection has no signal/database dependency. The concurrent
+        # postclose pipeline may change the DB hash or replace latest.json.
+        # Release/activation/qualification/credentials above still apply.
+        os.execve(str(PYTHON_PATH), command, environment)
+        return
+    target_date, resolver = _resolve_support_target_date(environment, data_ready_time="16:30")
     try:
         _validate_daily_data_readiness(
             manifest=manifest,

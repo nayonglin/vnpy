@@ -5,6 +5,9 @@ from pathlib import Path
 import json
 import subprocess
 import sys
+import hashlib
+import shlex
+from dataclasses import replace
 
 import pytest
 
@@ -30,6 +33,270 @@ from qmt_roll_official_baseline_identity import (
 )
 from qmt_roll_strategy_material_discovery import MaterialDeclaration, discover_materials
 from qmt_roll_strategy_material_manifest import MaterialRole
+
+
+def _real_lfs_fixture(tmp_path: Path, monkeypatch):
+    repo, request = _request(tmp_path)
+    remote = _bare_master_remote(tmp_path, repo)
+    _git(repo, "remote", "rename", "publish-origin", "origin")
+    tool = Path(sys.executable).parent / "git-lfs"
+    assert tool.is_file(), "Real git-lfs is required for LFS publication tests"
+    for name, command in {"clean":"clean -- %f", "smudge":"smudge -- %f", "process":"filter-process"}.items():
+        _git(repo,"config",f"filter.lfs.{name}",shlex.quote(str(tool))+" "+command)
+    _git(repo,"config","filter.lfs.required","true")
+    model = tmp_path / "model.joblib"
+    model.write_bytes(b"frozen-model-payload\x00" * 20)
+    return repo, request, remote, model
+
+
+def test_lfs_pointer_parser_rejects_extensions_and_wrong_oid():
+    parser = getattr(material_release, "_validate_lfs_pointer", None)
+    assert callable(parser), "LFS promotion requires strict committed-pointer validation"
+    digest = "a" * 64
+    good = f"version https://git-lfs.github.com/spec/v1\noid sha256:{digest}\nsize 123\n".encode()
+    parser(good, sha256=digest, size_bytes=123)
+    for bad in (good+b"ext-future value\n", good.replace(b"size 123",b"size 124"),
+                good.replace(b"a"*64,b"b"*64), good.replace(b"size 123",b"size 0123")):
+        with pytest.raises(MaterialReleaseError, match="lfs_pointer"):
+            parser(bad, sha256=digest, size_bytes=123)
+
+
+def test_lfs_roundtrip_requires_explicit_confirmation_before_upload(tmp_path, monkeypatch):
+    repo, request, _remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    proof = getattr(material_release, "prove_lfs_remote_roundtrip", None)
+    assert callable(proof), "prepare must prove remote upload/download instead of trusting lfs env"
+    with pytest.raises(MaterialReleaseError, match="lfs_remote_proof_confirmation_missing"):
+        proof(repo_root=repo, sources=(model,), source_commit=request.source_commit, confirmation="")
+
+
+def test_lfs_roundtrip_really_downloads_from_local_remote_empty_cache(tmp_path, monkeypatch):
+    repo, request, _remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    proof_fn = getattr(material_release, "prove_lfs_remote_roundtrip", None)
+    assert callable(proof_fn), "prepare lacks a real empty-cache LFS roundtrip"
+    proof = proof_fn(repo_root=repo, sources=(model,), source_commit=request.source_commit,
+                    confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+request.source_commit)
+    assert proof["status"] == "remote_roundtrip_verified"
+    assert proof["objects"][0]["sha256"] == hashlib.sha256(model.read_bytes()).hexdigest()
+    assert proof["empty_cache_download_verified"] is True
+    assert _git(repo,"ls-remote","--heads","origin","main") == ""
+
+
+def test_lfs_roundtrip_minimal_path_uses_real_interpreter_sibling_tool(tmp_path, monkeypatch):
+    repo, request, _remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    assert material_release._lfs_binary() == (Path(sys.executable).resolve().parent/"git-lfs").resolve()
+    proof = material_release.prove_lfs_remote_roundtrip(repo_root=repo,sources=(model,),
+        source_commit=request.source_commit,
+        confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+request.source_commit)
+    assert proof["empty_cache_download_verified"] is True
+
+
+def test_lfs_binary_missing_interpreter_sibling_and_path_fails_closed(tmp_path, monkeypatch):
+    monkeypatch.setattr(material_release.sys,"executable",str(tmp_path/"missing-venv/bin/python"))
+    monkeypatch.setattr(material_release.shutil,"which",lambda name: None)
+    with pytest.raises(MaterialReleaseError,match="git_lfs_binary_missing"):
+        material_release._lfs_binary()
+
+
+@pytest.mark.parametrize("mode", ["normal", "separate", "postpush_failure", "postpush_readback_failure", "attribute_override"])
+def test_promote_lfs_material_merges_exact_attributes_and_verifies_fresh_remote(tmp_path, monkeypatch, mode):
+    repo, request, remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    if mode == "separate":
+        endpoint = tmp_path/"separate-materials.git"
+        endpoint.mkdir()
+        _git(endpoint,"init","--bare")
+        monkeypatch.setattr(material_release,"AUTHORIZED_LFS_ENDPOINT",endpoint.as_uri())
+        config = repo/".lfsconfig"
+        config.write_text(f"[lfs]\n\turl = {endpoint.as_uri()}\n")
+        _git(repo,"add",".lfsconfig")
+        _git(repo,"commit","-m","bind independent LFS endpoint")
+        request = replace(request,source_commit=_git(repo,"rev-parse","HEAD"),
+            discovery=replace(request.discovery,declarations=request.discovery.declarations+(
+                MaterialDeclaration(source_path=config,logical_path=".lfsconfig",
+                    role=MaterialRole.OPERATIONAL_CONFIG),)))
+    discovery = discover_materials(repo_root=repo,entrypoints=(),declared_paths=(),
+        config_assets=request.discovery.declarations,
+        ai_artifacts=(MaterialDeclaration(source_path=model,logical_path="ai/model.joblib",
+            role=MaterialRole.MODEL_ARTIFACT,source_kind="promotion_source"),))
+    request = replace(request, discovery=discovery)
+    prepared = prepare_release(request,
+        lfs_remote_proof_confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+request.source_commit)
+    release_commit = commit_prepared_release(repo_root=repo,prepared=prepared,
+        confirmation="I_UNDERSTAND_THIS_COMMITS_OFFICIAL_STRATEGY_MATERIALS:"+prepared.release_id)
+    qualification = {"status":"passed","release_commit":release_commit,
+        "order_api_called_count":0,"cancel_order_api_called_count":0,"evidence_ids":["fixture"]}
+    activation = activate_release(repo_root=repo,release_id=prepared.release_id,
+        release_commit=release_commit,qualification=qualification,
+        confirmation="I_UNDERSTAND_THIS_ACTIVATES_OFFICIAL_STRATEGY_MATERIALS:"+prepared.release_id)
+    previous = _git(repo,"ls-remote","origin","refs/heads/master").split()[0]
+    if mode == "attribute_override":
+        info = Path(_git(repo,"rev-parse","--git-path","info/attributes"))
+        if not info.is_absolute():
+            info = repo/info
+        info.parent.mkdir(exist_ok=True)
+        info.write_text("*.joblib -filter\n")
+        with pytest.raises(MaterialReleaseError,match="lfs_effective_attributes_invalid"):
+            material_release._verify_lfs_git_tree(repo,activation,material_release._material_lfs_rows(repo))
+    if mode == "postpush_failure":
+        def reject_download(*args, **kwargs):
+            raise MaterialReleaseError("fixture_empty_cache_download_failed")
+        monkeypatch.setattr(material_release,"_verify_fresh_remote_lfs_clone",reject_download)
+    if mode == "postpush_readback_failure":
+        original_readback = material_release._remote_branch_head
+        def reject_changed_readback(repo_root, remote_name, branch):
+            current = original_readback(repo_root,remote_name,branch)
+            if current != previous:
+                raise MaterialReleaseError("fixture_published_readback_unavailable")
+            return current
+        monkeypatch.setattr(material_release,"_remote_branch_head",reject_changed_readback)
+    if mode in {"attribute_override", "postpush_failure", "postpush_readback_failure"}:
+        # New source checkouts already leave pointers unsmudged under the
+        # override, so the independent manifest guard rejects even earlier.
+        expected = "material_file_size_mismatch" if mode == "attribute_override" else "published_but_lfs_unverified"
+        with pytest.raises(MaterialReleaseError,match=expected):
+            promote_official_version_to_master(repo_root=repo,release_id=prepared.release_id,
+                release_commit=release_commit,activation_commit=activation,qualification=qualification,
+                governance_paths=(),confirmation="I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:"+prepared.release_id)
+        current = _git(repo,"ls-remote","origin","refs/heads/master").split()[0]
+        if mode == "attribute_override":
+            assert current == previous
+        else:
+            assert current != previous
+            evidence = json.loads(material_release._lfs_proof_path(repo,"promotion-"+prepared.release_id).read_text())
+            assert evidence["status"] == "published_lfs_verification_failed"
+            assert evidence["deployment_allowed"] is False
+            assert evidence["promoted_commit"] == current
+        return
+    result = promote_official_version_to_master(repo_root=repo,release_id=prepared.release_id,
+        release_commit=release_commit,activation_commit=activation,qualification=qualification,
+        governance_paths=(),confirmation="I_APPROVE_COMPLETE_OFFICIAL_PROMOTION_TO_MASTER:"+prepared.release_id)
+    assert result.status == "promoted"
+    assert ".gitattributes" in result.changed_paths
+    evidence = json.loads(material_release._lfs_proof_path(repo, "promotion-"+prepared.release_id).read_text())
+    assert evidence["status"] == "fresh_remote_clone_verified"
+    assert evidence["promoted_commit"] == result.promoted_commit
+    clone = _clone_master(remote,tmp_path/"lfs-independent-clone")
+    material_release._configure_lfs_filters(clone)
+    _git(clone,"config","lfs.storage",str(tmp_path/"independent-empty-lfs-cache"))
+    material_release._lfs_call(clone,"pull","origin","master")
+    payload = clone/prepared.release_dir.relative_to(repo)/"payload/ai/model.joblib"
+    assert payload.read_bytes() == model.read_bytes()
+    assert "filter=lfs" in (clone/".gitattributes").read_text()
+    if mode == "separate":
+        assert (clone/".lfsconfig").read_bytes() == (repo/".lfsconfig").read_bytes()
+        assert ".lfsconfig" in result.changed_paths
+
+
+def test_lfs_roundtrip_does_not_trust_successful_upload_without_download(tmp_path, monkeypatch):
+    repo, request, _remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    original = material_release._lfs_call
+    def omit_upload(repo, *args, **kwargs):
+        return b"" if args[0] == "push" else original(repo,*args,**kwargs)
+    monkeypatch.setattr(material_release,"_lfs_call",omit_upload)
+    with pytest.raises(MaterialReleaseError,match="lfs_command_failed:smudge"):
+        material_release.prove_lfs_remote_roundtrip(repo_root=repo,sources=(model,),
+            source_commit=request.source_commit,
+            confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+request.source_commit)
+    assert not material_release._lfs_proof_path(repo,request.source_commit).exists()
+
+
+@pytest.mark.parametrize("path", ["ai/a b.joblib","ai/a*.joblib","ai/a?.joblib","ai/[a].joblib",
+                                  "ai/a\\b.joblib","ai/a\nb.joblib"])
+def test_lfs_attributes_reject_nonliteral_path(path):
+    with pytest.raises(MaterialReleaseError,match="lfs_attribute_path_not_literal"):
+        material_release.lfs_attribute_lines((path,))
+
+
+def test_lfs_proof_rejects_different_push_destination(tmp_path, monkeypatch):
+    repo, request, _remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    _git(repo,"config","remote.origin.pushurl",str(tmp_path/"unapproved.git"))
+    with pytest.raises(MaterialReleaseError,match="lfs_remote_push_url_mismatch"):
+        material_release.prove_lfs_remote_roundtrip(repo_root=repo,sources=(model,),
+            source_commit=request.source_commit,
+            confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+request.source_commit)
+
+
+def test_lfs_roundtrip_uses_tracked_authorized_separate_endpoint(tmp_path, monkeypatch):
+    repo, request, git_remote, model = _real_lfs_fixture(tmp_path, monkeypatch)
+    endpoint = tmp_path / "materials.git"
+    endpoint.mkdir()
+    _git(endpoint, "init", "--bare")
+    url = endpoint.as_uri()
+    monkeypatch.setattr(material_release, "AUTHORIZED_LFS_ENDPOINT", url, raising=False)
+    (repo / ".lfsconfig").write_text(f"[lfs]\n\turl = {url}\n")
+    _git(repo, "add", ".lfsconfig")
+    _git(repo, "commit", "-m", "bind authorized material endpoint")
+    source_commit = _git(repo, "rev-parse", "HEAD")
+    proof = material_release.prove_lfs_remote_roundtrip(repo_root=repo, sources=(model,),
+        source_commit=source_commit,
+        confirmation="I_APPROVE_LFS_REMOTE_ROUNDTRIP:"+source_commit)
+    assert proof["empty_cache_download_verified"] is True
+    assert proof["lfsconfig_sha256"] == hashlib.sha256((repo/".lfsconfig").read_bytes()).hexdigest()
+    digest = hashlib.sha256(model.read_bytes()).hexdigest()
+    assert (endpoint/"lfs/objects"/digest[:2]/digest[2:4]/digest).is_file()
+    assert not (git_remote/"lfs/objects"/digest[:2]/digest[2:4]/digest).exists()
+
+
+@pytest.mark.parametrize("contents", [
+    "[lfs]\nurl = https://github.com/other-owner/other-repo.git/info/lfs\n",
+    "[lfs]\nurl = {authorized}\npushurl = https://example.com/upload\n",
+    "[lfs]\nurl = {authorized}\nurl = {authorized}\n",
+    "[include]\npath = /tmp/unreviewed-git-config\n",
+])
+def test_lfsconfig_rejects_unapproved_endpoint_or_extra_settings(tmp_path, monkeypatch, contents):
+    repo, _request_value, _remote, _model = _real_lfs_fixture(tmp_path, monkeypatch)
+    (repo/".lfsconfig").write_text(contents.format(authorized=material_release.AUTHORIZED_LFS_ENDPOINT))
+    with pytest.raises(MaterialReleaseError,match="lfsconfig_"):
+        material_release._lfs_remote_url(repo,"origin")
+
+
+@pytest.mark.parametrize(("key", "value"), [
+    ("lfs.customtransfer.unreviewed.path", "/tmp/unreviewed-adapter"),
+    ("lfs.standalonetransferagent", "lfs-standalone-file"),
+    ("lfs.remote.autodetect", "yes"),
+    ("lfs.remote.searchall", "1"),
+])
+def test_lfs_proof_rejects_transfer_or_route_overrides(tmp_path, monkeypatch, key, value):
+    repo, _request_value, _remote, _model = _real_lfs_fixture(tmp_path, monkeypatch)
+    _git(repo,"config",key,value)
+    with pytest.raises(MaterialReleaseError,match="lfs_transfer_route_override_not_supported"):
+        material_release._lfs_remote_url(repo,"origin")
+
+
+def test_lfsconfig_accepts_exact_authorized_download_and_push_pair(tmp_path, monkeypatch):
+    repo, _request_value, _remote, _model = _real_lfs_fixture(tmp_path, monkeypatch)
+    config = repo/".lfsconfig"
+    config.write_text("[lfs]\nurl = "+material_release.AUTHORIZED_LFS_ENDPOINT+
+        "\npushurl = ssh://git@github.com/nayonglin/vnpy-official-materials.git\n")
+    _git(repo,"add",".lfsconfig")
+    assert material_release._validated_lfsconfig(repo) == config.read_bytes()
+
+
+@pytest.mark.parametrize(("download_url", "accepted"), [
+    ("git@github.com:nayonglin/vnpy-official-materials.git", True),
+    ("https://github.com/nayonglin/vnpy-official-materials.git/info/lfs", False),
+])
+def test_lfsconfig_download_uses_verified_ssh_transport(tmp_path, monkeypatch, download_url, accepted):
+    repo, _request_value, _remote, _model = _real_lfs_fixture(tmp_path, monkeypatch)
+    config = repo/".lfsconfig"
+    config.write_text(f"[lfs]\nurl = {download_url}\n"+
+        "pushurl = ssh://git@github.com/nayonglin/vnpy-official-materials.git\n")
+    _git(repo,"add",".lfsconfig")
+    if accepted:
+        assert material_release._validated_lfsconfig(repo) == config.read_bytes()
+    else:
+        with pytest.raises(MaterialReleaseError,match="lfsconfig_endpoint_not_authorized"):
+            material_release._validated_lfsconfig(repo)
+
+
+def test_lfs_environment_selects_standard_ssh_authenticate_mode_without_ambient_overrides(monkeypatch):
+    monkeypatch.setenv("GIT_CONFIG_COUNT", "1")
+    monkeypatch.setenv("GIT_CONFIG_KEY_0", "lfs.url")
+    monkeypatch.setenv("GIT_CONFIG_VALUE_0", "https://unreviewed.example/upload")
+    environment = material_release._lfs_environment()
+    assert environment["GIT_CONFIG_COUNT"] == "1"
+    assert environment["GIT_CONFIG_KEY_0"] == "lfs.sshtransfer"
+    assert environment["GIT_CONFIG_VALUE_0"] == "never"
 
 
 def _git(repo: Path, *args: str) -> str:

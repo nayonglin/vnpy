@@ -154,8 +154,8 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             item["Hour"] * 60 + item["Minute"]
             for item in monthly_retry["StartCalendarInterval"]
         }
-        self.assertEqual({16 * 60 + 35}, precompute_minutes)
-        self.assertEqual({16 * 60 + 55}, report_minutes)
+        self.assertEqual({15 * 60 + 10}, precompute_minutes)
+        self.assertEqual({15 * 60 + 30}, report_minutes)
         self.assertEqual({18 * 60 + 20}, monthly_retry_minutes)
 
         health = payloads[

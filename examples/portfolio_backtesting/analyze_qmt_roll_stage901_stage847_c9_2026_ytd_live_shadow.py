@@ -51,6 +51,8 @@ from qmt_roll_official_live_config import (
     build_official_live_risk_snapshot,
 )
 from qmt_roll_official_live_phase_d_config import LIVE_EXECUTION_LEDGER_PATH
+from qmt_roll_official_live_lightweight_context import OFFICIAL_LIVE_MATERIAL_RELEASE
+from qmt_roll_official_live_pairwise_assets import resolve_official_pairwise_assets
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -79,6 +81,7 @@ REPORT_PATH = OFFICIAL_LIVE_REPORT_PATH
 LIVE_STOP_ALIGNMENT_PATH = OUTPUT_DIR / f"{OUTPUT_PREFIX}_live_stop_alignment_{MODEL_TAG}.csv"
 
 _FULL_MINUTE_BY_SYMBOL_CACHE: dict[str, pd.DataFrame] | None = None
+_LAST_PAIRWISE_AUDIT: dict[str, Any] = {}
 _FULL_MINUTE_BY_SYMBOL_CACHE_SYMBOLS: set[str] = set()
 _LAST_MINUTE_AUDIT: dict[str, Any] = {}
 
@@ -943,6 +946,8 @@ def _run_live_c9(
     analysis_start: pd.Timestamp,
     analysis_end: pd.Timestamp,
 ) -> tuple[pd.DataFrame, dict[str, pd.DataFrame], Any]:
+    global _LAST_PAIRWISE_AUDIT
+    _LAST_PAIRWISE_AUDIT = {}
     original_start = s847.START
     original_end = s847.END
     original_minute_by_symbol = s847.s827._GLOBAL_MINUTE_BY_SYMBOL
@@ -966,6 +971,12 @@ def _run_live_c9(
         live_profile = dict(profile)
         live_profile["profile"] = OFFICIAL_LIVE_PROFILE_NAME
         live_overrides = {**spec.overrides, **build_official_live_strategy_overrides()}
+        pairwise_overrides, pairwise_audit = resolve_official_pairwise_assets(
+            OFFICIAL_LIVE_MATERIAL_RELEASE,
+            expected_release_id=OFFICIAL_LIVE_MATERIAL_RELEASE.release_id,
+        )
+        live_overrides.update(pairwise_overrides)
+        _LAST_PAIRWISE_AUDIT = pairwise_audit
         live_profile["spec"] = replace(
             spec,
             capital=capital,
@@ -1251,6 +1262,7 @@ def main() -> None:
         "official_live_alias": OFFICIAL_LIVE_ALIAS,
         "ai_pool_audit": ai_pool_audit,
         "minute_audit": dict(_LAST_MINUTE_AUDIT),
+        "pairwise_asset_audit": dict(_LAST_PAIRWISE_AUDIT),
         "strategy_ai_product_pool_eligibility_path": str(spec.overrides.get("ai_product_pool_eligibility_path", "")),
         "live_stop_alignment": live_stop_alignment,
         "current_variant": current_row[0] if current_row else {},
