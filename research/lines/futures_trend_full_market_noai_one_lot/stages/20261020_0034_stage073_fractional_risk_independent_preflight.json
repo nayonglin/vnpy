@@ -1,0 +1,101 @@
+{
+  "review_time": "2026-10-20T00:34:23.180873+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "reviewer": "independent_failed_run_review_agent",
+  "review_scope": "preflight_only_no_financial_run",
+  "source_manifest_sha256": null,
+  "baseline_source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "baseline_commit": "e553d1703bc4efb9c612143a6c3f2ccc9885f6b3",
+  "expected_actual_run_id": "run_20261020_contract_weekly_risk05_v1",
+  "verdict": "PASS_WITH_LIMITS_PREFLIGHT",
+  "decision": "未发现P0/P1金融阻塞，可启动已授权的一次完整日线近似回放；不是实际结果认证",
+  "p0": 0,
+  "p1": 0,
+  "financial_replays_by_reviewer": 0,
+  "source_hashes": {
+    "stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "stage070_run_fractional_risk.py": "51756973c0df8d3a209c1f0529ea6083932f0f20f095b33487caebff941eaf7c",
+    "stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2",
+    "stage058_weekly_contract.py": "546f2097b80117be1a0b0c2c29f4a39c380c9313270a6e31056bf29029eee491",
+    "stage003_candidate.py": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca"
+  },
+  "baseline_manifest_files_verified": 26,
+  "tests": {
+    "new_financial_modules": 57,
+    "full_line_suite": 285,
+    "full_line_suite_seconds": 28.264,
+    "independent_oracle_checks": 490,
+    "independent_risk_cases": 288,
+    "independent_partial_ledgers": 200,
+    "actual_engine_volume_cases": 2,
+    "full_suite_pass": true
+  },
+  "prior_failures": [
+    {
+      "scope": "first_full_suite",
+      "result": "284项中4项失败，仅因并行Stage072模块尚缺；模块落盘后最终285全部GREEN"
+    },
+    {
+      "scope": "independent_oracle_harness",
+      "result": "/tmp旧同名stage002遮蔽导致导入错误；显式本线sys.path首位后490核验全部GREEN"
+    }
+  ],
+  "parameters": {
+    "risk_fraction": 0.005,
+    "signal_budget": "finite_positive_marked_equity * 0.005",
+    "opening_budget": "min(signal_budget, marked_opening_equity_after_prior_fill_costs * 0.005)",
+    "integer_rounding": "floor_no_one_lot_fallback",
+    "actual_fill": "all_or_none_exact_receipt_quantity",
+    "max_position_size": 2147483647,
+    "adds": false,
+    "weekly_scope": "all_long_opens_including_rollover; exact_contract_signal_close_and_preopen_completed_weeks; no_short_close_env_probe_gate"
+  },
+  "observed_parameter_changes": {
+    "max_position_size": [
+      1,
+      2147483647
+    ],
+    "stage068_risk_fraction": [
+      null,
+      0.005
+    ]
+  },
+  "findings": [
+    {
+      "severity": "P2_INHERITED_CONTAINED",
+      "topic": "旧target/state清理路径",
+      "detail": "先前基线存在无有效layer的旧target重挂；新068缺授权成交前拒绝、清target/未成交state。当前尚无新实际运行，不预判新运行数量或收益影响。"
+    },
+    {
+      "severity": "LIMIT",
+      "topic": "pending close原生计划会计",
+      "detail": "原生queue会先改变layers和计划realized/streak；074仅保证pending+remaining=actual、防补回和重复平仓，实际账户/成本以fill计。不得把计划realized视为已到账现金。"
+    },
+    {
+      "severity": "LIMIT",
+      "topic": "日线数量模型",
+      "detail": "每单冻结V>=qty仅成交量下界；非逐单合计参与率/排队/深度/冲击模型，quote-only量仓仍有争议，不能认证实盘容量。"
+    }
+  ],
+  "limitations": [
+    "只读源码与合成验证，不替代实际2862日账本/全部OPEN预算与信号/周证据/残仓审查。",
+    "固定0.5%是入场到冻结初始止损的计划风险，非退出gap最大损失保证，未把费用纳入该止损距离风险；前序成交实际费用扣权益。",
+    "保留静态费用/保证金/规格、因果研究主力、日线C2/C9及供需授权停用，非完整C9或生产资格。",
+    "私有pending逐项资金组成需实际输出可得范围内核查，不因单测自动认证。",
+    "完整285合成套件包含渲染契约测试，不代表未来实际HTML或浏览器UI验收。"
+  ],
+  "overfitting": {
+    "answer": false,
+    "reason": "用户预先固定0.5%与取消手帽，无收益扫描/品种日期例外；仍属同样本后验研究"
+  },
+  "continuation_value": {
+    "answer": true,
+    "reason": "用一次预注册完整回放验证一致风险量纲和多手执行，不预认收益改善/正式晋级"
+  },
+  "external_sources": [
+    "https://www.cmegroup.com/education/courses/trade-and-risk-management/proper-position-size",
+    "https://github.com/vnpy/vnpy/blob/master/docs/community/app/portfolio_strategy.md"
+  ]
+}

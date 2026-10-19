@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-10-20T00:32:59.539747+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "run_id": "run_20261020_contract_weekly_risk05_v1",
+  "baseline_commit": "e553d1703bc4efb9c612143a6c3f2ccc9885f6b3",
+  "baseline_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "risk_fraction": 0.005,
+  "source_hashes": {
+    "stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "stage070_run_fractional_risk.py": "51756973c0df8d3a209c1f0529ea6083932f0f20f095b33487caebff941eaf7c",
+    "stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2"
+  },
+  "financial_replays_at_registration": 0,
+  "production_access": false,
+  "market_downloads": 0
+}
