@@ -1,0 +1,145 @@
+{
+  "source_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "audit_script_sha256": "063407581911f4f7228beb15bb0b24b5909d3ce9c86a23a5b819705ac16bfa48",
+  "financial_replays": 0,
+  "entry_diagnostics_checked": 2027,
+  "entry_factual_plus_observed_preserved_checks": 17,
+  "minimum_global_margin_headroom": -5.820766091346741e-11,
+  "entry_equity_max_error": 0.0,
+  "funding_examples": [
+    {
+      "date": "2015-06-05",
+      "contract": "cs201509.DCE",
+      "actual_margin": 125603.8,
+      "preserved_margin": 253911.0,
+      "reported_reserved": 379514.8,
+      "headroom": 0.0
+    },
+    {
+      "date": "2015-06-05",
+      "contract": "zn201508.SHFE",
+      "actual_margin": 125603.8,
+      "preserved_margin": 253911.0,
+      "reported_reserved": 379514.8,
+      "headroom": 0.0
+    },
+    {
+      "date": "2015-07-09",
+      "contract": "OI201601.CZCE",
+      "actual_margin": 234231.40000000002,
+      "preserved_margin": 18979.999999999996,
+      "reported_reserved": 253211.4,
+      "headroom": -2.9103830456733704e-11
+    },
+    {
+      "date": "2015-12-10",
+      "contract": "CF201605.CZCE",
+      "actual_margin": 0,
+      "preserved_margin": 161325.0,
+      "reported_reserved": 161325.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2015-12-10",
+      "contract": "TA201605.CZCE",
+      "actual_margin": 0,
+      "preserved_margin": 161325.0,
+      "reported_reserved": 161325.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2015-12-10",
+      "contract": "jd201605.DCE",
+      "actual_margin": 0,
+      "preserved_margin": 161325.0,
+      "reported_reserved": 161325.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2016-08-30",
+      "contract": "TA201701.CZCE",
+      "actual_margin": 100296.0,
+      "preserved_margin": 287896.0,
+      "reported_reserved": 388192.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2017-02-16",
+      "contract": "SM201705.CZCE",
+      "actual_margin": 43095.0,
+      "preserved_margin": 236976.0,
+      "reported_reserved": 280071.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2017-02-16",
+      "contract": "p201705.DCE",
+      "actual_margin": 43095.0,
+      "preserved_margin": 236976.0,
+      "reported_reserved": 280071.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2017-02-17",
+      "contract": "OI201705.CZCE",
+      "actual_margin": 90355.0,
+      "preserved_margin": 236832.0,
+      "reported_reserved": 327187.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2017-09-22",
+      "contract": "SF201801.CZCE",
+      "actual_margin": 37320.0,
+      "preserved_margin": 236016.0,
+      "reported_reserved": 273336.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2017-09-25",
+      "contract": "jm201801.DCE",
+      "actual_margin": 176640.0,
+      "preserved_margin": 236448.0,
+      "reported_reserved": 413088.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2019-07-10",
+      "contract": "cu201909.SHFE",
+      "actual_margin": 74524.0,
+      "preserved_margin": 212060.0,
+      "reported_reserved": 286584.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2019-07-11",
+      "contract": "eg201909.DCE",
+      "actual_margin": 74228.0,
+      "preserved_margin": 212336.0,
+      "reported_reserved": 286564.0,
+      "headroom": 0.0
+    },
+    {
+      "date": "2021-03-23",
+      "contract": "jd202105.DCE",
+      "actual_margin": 101710.0,
+      "preserved_margin": 229320.0,
+      "reported_reserved": 331030.0,
+      "headroom": 0.0
+    }
+  ],
+  "cap_projection_below_factual_cases": [],
+  "factual_cluster_pnl_days": 2862,
+  "factual_cluster_pnl_min": -48720.0,
+  "factual_cluster_pnl_max": 421269.9999999999,
+  "effective_heatgate_all_diagnostics_off": true,
+  "open_rejection_reasons": {
+    "total_order_risk_exceeds_fractional_budget_at_open": 449,
+    "stop_already_crossed_at_open": 101
+  },
+  "limits": [
+    "Actual EOD PnL and margin reconstructed from fills. Private daily cluster-PnL cache and complete unfilled books are not exported, so their full intermediate values cannot be independently compared; observed preserved funds plus actual positions checked on all entry diagnostics; frozen code and independent scoped oracle cover remaining hooks."
+  ],
+  "errors": [],
+  "error_count": 0
+}

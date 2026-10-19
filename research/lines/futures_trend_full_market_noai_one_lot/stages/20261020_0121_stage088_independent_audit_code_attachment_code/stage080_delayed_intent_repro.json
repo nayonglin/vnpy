@@ -1,0 +1,12 @@
+{
+  "reproduced": true,
+  "sequence": "real_cross_delay_volume2_for_qty3_then_native_reconcile_actual0",
+  "actual_position": 0,
+  "target": -3,
+  "active_order_count": 1,
+  "layers_after_reconcile": 0,
+  "original_authorized_volume": 3,
+  "original_snapshot_id": "signal1",
+  "actual_fills": 0,
+  "receipt_survived_on_state": false
+}

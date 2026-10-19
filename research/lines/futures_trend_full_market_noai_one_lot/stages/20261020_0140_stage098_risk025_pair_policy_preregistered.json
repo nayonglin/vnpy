@@ -1,0 +1,26 @@
+{
+  "status": "POLICY_PREREGISTERED_BEFORE_RESULTS_IMPLEMENTATION_IN_PROGRESS",
+  "time": "2026-10-20T01:40:49.302190+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "risk_fraction": 0.0025,
+  "capital": 1000000,
+  "start": "2015-01-05",
+  "end": "2026-10-16",
+  "warmup": "2014 real history",
+  "arms": {
+    "W025": "exact traded contract completed weekly MA5>10>20>40 required only for long entries",
+    "NO_W025": "same risk/execution strategy with added weekly filter completely disabled"
+  },
+  "planned_runs": [
+    "run_20261020_risk025_contract_weekly_v1",
+    "run_20261020_risk025_no_weekly_v1"
+  ],
+  "only_between_arm_policy_difference": "long_weekly_filter",
+  "parent_execution_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "frozen_data_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "financial_runs_at_record": 0,
+  "production_access": false,
+  "market_downloads": 0,
+  "post_selection_risk": true,
+  "qualification": "research_only_no_promotion"
+}

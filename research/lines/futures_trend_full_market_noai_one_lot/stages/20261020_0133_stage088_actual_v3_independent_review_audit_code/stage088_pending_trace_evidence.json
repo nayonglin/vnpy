@@ -1,0 +1,317 @@
+{
+  "source_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "audit_script_sha256": "b00a821390d82a9124d12aae7ad7b45db082aac07f044ae4cab6401d57cba66b",
+  "events": 59,
+  "evidence_rows": 59,
+  "unique_receipts": 19,
+  "preserved_unique": 18,
+  "first_next_open_mapping_flip_fills": [
+    {
+      "trade": "BACKTESTING.180",
+      "contract": "TA201601.CZCE",
+      "signal": "2015-11-23",
+      "fill": "2015-11-24",
+      "current_mapping": "TA201605.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.564",
+      "contract": "au201806.SHFE",
+      "signal": "2018-05-02",
+      "fill": "2018-05-03",
+      "current_mapping": "au201812.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.580",
+      "contract": "zn201808.SHFE",
+      "signal": "2018-07-05",
+      "fill": "2018-07-06",
+      "current_mapping": "zn201809.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.589",
+      "contract": "cs201809.DCE",
+      "signal": "2018-08-06",
+      "fill": "2018-08-07",
+      "current_mapping": "cs201901.DCE"
+    },
+    {
+      "trade": "BACKTESTING.647",
+      "contract": "RM201901.CZCE",
+      "signal": "2018-11-26",
+      "fill": "2018-11-27",
+      "current_mapping": "RM201905.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.1016",
+      "contract": "hc202010.SHFE",
+      "signal": "2020-09-01",
+      "fill": "2020-09-02",
+      "current_mapping": "hc202101.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.1127",
+      "contract": "al202104.SHFE",
+      "signal": "2021-03-11",
+      "fill": "2021-03-12",
+      "current_mapping": "al202105.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.1296",
+      "contract": "eb202112.DCE",
+      "signal": "2021-11-15",
+      "fill": "2021-11-16",
+      "current_mapping": "eb202201.DCE"
+    },
+    {
+      "trade": "BACKTESTING.1504",
+      "contract": "l202209.DCE",
+      "signal": "2022-08-16",
+      "fill": "2022-08-17",
+      "current_mapping": "l202301.DCE"
+    },
+    {
+      "trade": "BACKTESTING.1511",
+      "contract": "SM202209.CZCE",
+      "signal": "2022-08-19",
+      "fill": "2022-08-22",
+      "current_mapping": "SM202301.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.1543",
+      "contract": "lu202212.INE",
+      "signal": "2022-09-26",
+      "fill": "2022-09-27",
+      "current_mapping": "lu202301.INE"
+    },
+    {
+      "trade": "BACKTESTING.1595",
+      "contract": "fu202301.SHFE",
+      "signal": "2022-12-05",
+      "fill": "2022-12-06",
+      "current_mapping": "fu202305.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.1599",
+      "contract": "TA202301.CZCE",
+      "signal": "2022-12-07",
+      "fill": "2022-12-08",
+      "current_mapping": "TA202305.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.1607",
+      "contract": "cs202301.DCE",
+      "signal": "2022-12-21",
+      "fill": "2022-12-22",
+      "current_mapping": "cs202303.DCE"
+    },
+    {
+      "trade": "BACKTESTING.1677",
+      "contract": "SM202307.CZCE",
+      "signal": "2023-05-16",
+      "fill": "2023-05-17",
+      "current_mapping": "SM202309.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.1703",
+      "contract": "au202308.SHFE",
+      "signal": "2023-06-28",
+      "fill": "2023-06-29",
+      "current_mapping": "au202310.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.1749",
+      "contract": "cs202311.DCE",
+      "signal": "2023-10-18",
+      "fill": "2023-10-19",
+      "current_mapping": "cs202401.DCE"
+    },
+    {
+      "trade": "BACKTESTING.2155",
+      "contract": "PX202505.CZCE",
+      "signal": "2025-04-08",
+      "fill": "2025-04-09",
+      "current_mapping": "PX202509.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.2438",
+      "contract": "pb202604.SHFE",
+      "signal": "2026-03-16",
+      "fill": "2026-03-17",
+      "current_mapping": "pb202605.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.2448",
+      "contract": "CJ202605.CZCE",
+      "signal": "2026-04-07",
+      "fill": "2026-04-08",
+      "current_mapping": "CJ202609.CZCE"
+    },
+    {
+      "trade": "BACKTESTING.2581",
+      "contract": "ss202609.SHFE",
+      "signal": "2026-08-06",
+      "fill": "2026-08-07",
+      "current_mapping": "ss202610.SHFE"
+    },
+    {
+      "trade": "BACKTESTING.2615",
+      "contract": "PK202611.CZCE",
+      "signal": "2026-10-13",
+      "fill": "2026-10-14",
+      "current_mapping": "PK202612.CZCE"
+    }
+  ],
+  "real_deferred_pre_fill_mapping_cancellations": [
+    {
+      "date": "2021-09-08",
+      "contract": "pg202110.DCE",
+      "receipt": "FeeStrategy:pg202110.DCE:long:956",
+      "original_date": "2021-09-06",
+      "qty": 3,
+      "bar_volume": "68122.0",
+      "mapping": "pg202111.DCE",
+      "reason": "deferred_open_pre_fill_mapping_changed_or_missing"
+    }
+  ],
+  "outcomes": {
+    "FeeStrategy:RS201509.CZCE:short:50": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2015-06-08",
+          "reason": "stop_already_crossed_at_open",
+          "order": "BACKTESTING.87"
+        }
+      ],
+      "forced_cancel": null
+    },
+    "FeeStrategy:fb201509.DCE:short:80": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2015-07-10",
+          "reason": "stop_already_crossed_at_open",
+          "order": "BACKTESTING.137"
+        }
+      ],
+      "forced_cancel": null
+    },
+    "FeeStrategy:b201601.DCE:short:116": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:bb201601.DCE:short:160": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:fb201601.DCE:short:163": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:RS201607.CZCE:short:167": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:RI201701.CZCE:short:229": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:RS201707.CZCE:short:281": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:RI201709.CZCE:short:334": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:b201805.DCE:short:368": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": {
+        "date": "2017-09-28",
+        "reason": "forced_margin_cancel_unfilled_open_intent"
+      }
+    },
+    "FeeStrategy:RI201909.CZCE:short:619": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2019-07-12",
+          "reason": "stop_already_crossed_at_open",
+          "order": "BACKTESTING.1055"
+        }
+      ],
+      "forced_cancel": null
+    },
+    "FeeStrategy:wr201910.SHFE:short:638": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:wr202005.SHFE:short:715": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2020-02-28",
+          "reason": "total_order_risk_exceeds_fractional_budget_at_open",
+          "order": "BACKTESTING.1221"
+        }
+      ],
+      "forced_cancel": null
+    },
+    "FeeStrategy:WH202101.CZCE:short:794": {
+      "filled_trade": "BACKTESTING.1024",
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:JR202105.CZCE:short:870": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:RS202107.CZCE:short:881": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2021-04-06",
+          "reason": "total_order_risk_exceeds_fractional_budget_at_open",
+          "order": "BACKTESTING.1499"
+        }
+      ],
+      "forced_cancel": null
+    },
+    "FeeStrategy:JR202109.CZCE:short:940": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": {
+        "date": "2021-08-11",
+        "reason": "forced_margin_cancel_unfilled_open_intent"
+      }
+    },
+    "FeeStrategy:pg202110.DCE:long:956": {
+      "filled_trade": null,
+      "rejections": [],
+      "forced_cancel": null
+    },
+    "FeeStrategy:WH202205.CZCE:short:1006": {
+      "filled_trade": null,
+      "rejections": [
+        {
+          "date": "2021-12-13",
+          "reason": "total_order_risk_exceeds_fractional_budget_at_open",
+          "order": "BACKTESTING.1721"
+        }
+      ],
+      "forced_cancel": null
+    }
+  },
+  "errors": [],
+  "error_count": 0
+}

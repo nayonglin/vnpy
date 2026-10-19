@@ -1,0 +1,35 @@
+在使用天勤量化之前，默认您已经知晓并同意以下免责条款，如果不同意请立即停止使用：https://www.shinnytech.com/blog/disclaimer/
+...................................................................................Parallel canonical context 1/1 (2 workers)
+.Parallel canonical context 1/2 (2 workers)
+Parallel canonical context 2/2 (2 workers)
+.........................................................................................................................................................................................................................................................................................PROGRESS 2021-12-10 fills=1
+.............PROGRESS 2021-12-13 fills=0
+.....PROGRESS 2021-12-10 fills=1
+.............PROGRESS 2021-12-13 fills=0
+.........................................PROGRESS 2021-12-10 fills=1
+.............PROGRESS 2021-12-13 fills=0
+................................PROGRESS 2021-12-10 fills=1
+.............PROGRESS 2021-12-13 fills=0
+..................E.
+======================================================================
+ERROR: test_complete_two_arm_frozen_pipeline_and_independent_2862_point_audit (test_stage097_validate_quarter_display.QuarterAuditTest.test_complete_two_arm_frozen_pipeline_and_independent_2862_point_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/test_stage097_validate_quarter_display.py", line 19, in test_complete_two_arm_frozen_pipeline_and_independent_2862_point_audit
+    report=audit.validate_pair(a['source'],b['source'],a['data'],out,a['raw'],b['raw'],a['fractional'],b['fractional'],a['weekly'],b['weekly'],a['final'],b['final'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage097_validate_quarter_display.py", line 64, in validate_pair
+    enabled_source,disabled_source,data_source=map(lambda p:Path(p).resolve(),(enabled_source,disabled_source,data_source));ns,proof=audit_namespace();a,am=source_mode(enabled_source,True);b,bm=source_mode(disabled_source,False)
+                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage097_validate_quarter_display.py", line 59, in source_mode
+    for row in open_rows:independent.check(json.loads(row['stage059_weekly_signal_snapshot']) is None and json.loads(row['stage059_weekly_open_snapshot']) is None,'off_trade_claims_weekly_authorization_expected_null')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage081_validate_fractional_display.py", line 19, in check
+    if not ok:raise ValueError(reason)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: off_trade_claims_weekly_authorization_expected_null
+
+----------------------------------------------------------------------
+Ran 515 tests in 38.119s
+
+FAILED (errors=1)

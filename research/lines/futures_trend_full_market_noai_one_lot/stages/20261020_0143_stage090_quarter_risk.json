@@ -1,0 +1,38 @@
+{
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "time": "2026-10-20T01:43:00+08:00",
+  "status": "TESTS_PASS_PENDING_INDEPENDENT_REVIEW",
+  "financial_replay_performed": false,
+  "financial_results": null,
+  "author_implemented_module": true,
+  "author_is_independent_financial_reviewer": false,
+  "old_files_modified": false,
+  "old_financial_outputs_modified": false,
+  "git_mutations": false,
+  "production_access": false,
+  "overfitting": false,
+  "continuation_has_value": true,
+  "stage": "090",
+  "source": "tools/stage090_quarter_risk.py",
+  "source_sha256": "f4d21961f53a6dff26c0b6c6c71804de6b9bfbd65c93e29aa970b5975fa31eae",
+  "tests_sha256": "ade62a466b231daa41cf0e8a45f01bae1002e0db84e1c1e9ea04a033e93c21fe",
+  "risk_fraction": 0.0025,
+  "one_million_budget": 2500,
+  "new_economic_parameters": {},
+  "modified_economic_parameters": {
+    "stage068_risk_fraction": [
+      0.005,
+      0.0025
+    ]
+  },
+  "red": {
+    "tests": 6,
+    "failures": 5
+  },
+  "green": {
+    "tests": 6,
+    "seconds": 0.022
+  },
+  "legacy_type_accepted": false,
+  "legacy_field_names_preserved": true
+}

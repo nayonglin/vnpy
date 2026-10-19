@@ -1,0 +1,100 @@
+{
+  "review_time": "2026-10-20T01:21:49.092183+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "scope": "independent_audit_code_retention_only",
+  "status": "AUDIT_CODE_RETAINED_ACTUAL_V3_PENDING",
+  "financial_replays": 0,
+  "runtime_changes": 0,
+  "immutable_preflight_files": {
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0114_stage088_v3_independent_prerun_review.json": "1f4fa37b217b0d647687947dfaefcb6c5e4daec5534f1f7848235a174049adfb",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0114_stage088_v3_independent_prerun_review.md": "376b0b60eb0479b2ab27def7e48a7f5f74972cd9813886e98a0572f3efef773b"
+  },
+  "source_hashes": {
+    "stage085_pending_open_lifecycle.py": "33099a87fbc2d37b2f64d839ae652113d5c47c91eb8eaf03a024fa8066c625c3",
+    "stage086_run_fractional_risk.py": "90ac9d27ef0326eb3a72be1e84e26e186d85e066e95f9eb2462b61aec4ce3bf4"
+  },
+  "files": [
+    {
+      "name": "stage080_delayed_intent_repro.py",
+      "original_path": "/private/tmp/stage080_delayed_intent_repro.py",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage080_delayed_intent_repro.py",
+      "sha256": "86a6d31f8873127a3cf12245eeb90f3b62d22ec9d26cb0b6c4a56a7e63d28a1b",
+      "bytes": 1355,
+      "role": "已实际使用的v2最小真实MRO合成复现，核延期低量后reconcile丢原层；不是金融回放"
+    },
+    {
+      "name": "stage080_delayed_intent_repro.json",
+      "original_path": "/private/tmp/stage080_delayed_intent_repro.json",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage080_delayed_intent_repro.json",
+      "sha256": "fe82642f167db0bb8b63c433e010a7870e4fb734baa4683bf4bbc576f456491e",
+      "bytes": 334,
+      "role": "v2最小复现原始结果"
+    },
+    {
+      "name": "stage088_v3_independent_oracle.py",
+      "original_path": "/private/tmp/stage088_v3_independent_oracle.py",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_v3_independent_oracle.py",
+      "sha256": "b01ca071e6c4f4ecc51a1133f23ced7197772a5ceaaf033cefa3ae5ceca81b15",
+      "bytes": 5222,
+      "role": "已实际使用的v3最终086独立83项资金/PNL/时序oracle"
+    },
+    {
+      "name": "stage088_v3_independent_oracle.json",
+      "original_path": "/private/tmp/stage088_v3_independent_oracle.json",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_v3_independent_oracle.json",
+      "sha256": "1cd6c6c5363953f02bb516162d94b89ae7123172be7071955cf07ccaf529e347",
+      "bytes": 2163,
+      "role": "83项oracle原始结果"
+    },
+    {
+      "name": "stage088_actual_v3_audit.py",
+      "original_path": "/private/tmp/stage088_actual_v3_audit.py",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_actual_v3_audit.py",
+      "sha256": "47b237a9792ef35ea3f8517a1c0ef133fa30826f1f805d395c542fef8ca93959",
+      "bytes": 38892,
+      "role": "已准备、仅语法AST验证，须完整v3 manifest及root exit0后才执行的独立全量实际审计脚本；不导入068/069/085金融算法"
+    },
+    {
+      "name": "stage088_rollover_pnl_cache_probe.py",
+      "original_path": "/private/tmp/stage088_rollover_pnl_cache_probe.py",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_rollover_pnl_cache_probe.py",
+      "sha256": "d64a534c844454c102c769fc2fed0c59529b6040be4565ca5727854c1fd97270",
+      "bytes": 1956,
+      "role": "已实际使用的共享cluster假设合成缓存probe；仅说明未来兼容风险，不代表本轮实际P1"
+    },
+    {
+      "name": "stage088_rollover_pnl_cache_probe.json",
+      "original_path": "/private/tmp/stage088_rollover_pnl_cache_probe.json",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_rollover_pnl_cache_probe.json",
+      "sha256": "f69c14bfc2287da8afe9d6bcb18ea9e1aa3581f8c48abcf5bf158e9f650985e9",
+      "bytes": 896,
+      "role": "缓存probe原始结果"
+    },
+    {
+      "name": "stage088_effective_cluster_check.py",
+      "original_path": "/private/tmp/stage088_effective_cluster_check.py",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_effective_cluster_check.py",
+      "sha256": "5f6c8ac212070a7c5d70442f4bb9907782ae7fc50070812c4424b0a96270def1",
+      "bytes": 2061,
+      "role": "已实际使用的最终FeeStrategy有效默认值、原N参数与native cluster解析只读核验"
+    },
+    {
+      "name": "stage088_effective_cluster_check.json",
+      "original_path": "/private/tmp/stage088_effective_cluster_check.json",
+      "retained_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code/stage088_effective_cluster_check.json",
+      "sha256": "4d374faa81ce3f1e7141187ea1fdaca8d3200cef35ace7870cd8ba158da16271",
+      "bytes": 3388,
+      "role": "90非空独立cluster+3空cluster、有效heatgate=False原始结果"
+    }
+  ],
+  "actual_reader_status": "prepared_not_executed_no_partial_financial_result",
+  "potential_p2": {
+    "description": "native换月规划释放cached cluster PNL；合成共享cluster下会改变live heat，但本轮heatgate有效False，90非空cluster逐产品独立，3空cluster被heat消费者跳过，换月后continue且次日refresh，未发现本轮行为P1",
+    "native_source_sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9"
+  },
+  "limits": [
+    "脚本含本研究worktree和/tmp的绝对路径；重放独立合成oracle需对应被冻结的测试fixture与依赖，不是独立可移植金融引擎",
+    "v3实际审计脚本若因输出结构或审计自身缺陷需调整，将另存新版本并在实际报告绑定最终实际执行字节，不覆盖本附件",
+    "预审不是实际结果认证；预审原md/json未修改，v2仍withdrawn，v1失败前缀不当全周期结果"
+  ]
+}

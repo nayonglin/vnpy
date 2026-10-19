@@ -1,0 +1,42 @@
+[
+  {
+    "vt_symbol": "CJ202701.CZCE",
+    "direction": "short",
+    "volume": 4.0
+  },
+  {
+    "vt_symbol": "SH202611.CZCE",
+    "direction": "short",
+    "volume": 5.0
+  },
+  {
+    "vt_symbol": "ni202611.SHFE",
+    "direction": "short",
+    "volume": 1.0
+  },
+  {
+    "vt_symbol": "hc202701.SHFE",
+    "direction": "short",
+    "volume": 21.0
+  },
+  {
+    "vt_symbol": "ss202611.SHFE",
+    "direction": "short",
+    "volume": 1.0
+  },
+  {
+    "vt_symbol": "jd202612.DCE",
+    "direction": "short",
+    "volume": 15.0
+  },
+  {
+    "vt_symbol": "UR202701.CZCE",
+    "direction": "short",
+    "volume": 5.0
+  },
+  {
+    "vt_symbol": "sp202701.SHFE",
+    "direction": "short",
+    "volume": 3.0
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "status": "PREREGISTERED_BEFORE_BOTH_FINANCIAL_RUNS",
+  "created_at": "2026-10-20T01:46:35.913122+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "policy_record_sha256": "01922824113c0ecc0415668804a567ea1aaf4deaeb22419daae68e7a6f892877",
+  "source_hashes": {
+    "stage090_quarter_risk.py": "f4d21961f53a6dff26c0b6c6c71804de6b9bfbd65c93e29aa970b5975fa31eae",
+    "stage091_quarter_weekly.py": "f62474b4d21b1b0d0b19f48967ca6a7e353db6ef6f134bfde25d150bd0a6f983",
+    "stage092_quarter_pending_open.py": "3e0a64b49f59284c51174e2eae38208affd140fe8e7358d5242d0f56cb92798e",
+    "stage093_run_quarter_pair.py": "a4be6f21de029ee2588cd9e2b0cf7c4828bb87108564e424ae2e9a0b30635fd3"
+  },
+  "test_hashes": {
+    "test_stage090_quarter_risk.py": "ade62a466b231daa41cf0e8a45f01bae1002e0db84e1c1e9ea04a033e93c21fe",
+    "test_stage093_pair.py": "66d3f4b4aeaaa1d8e8f4178eb360d510c3fe1d70360fe58847c5e88385bc46e2"
+  },
+  "independent_preflight": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0145_stage099_quarter_pair_independent_preflight.json",
+    "sha256": "c95c2ff541b31d594b772792184b9891c155995c100bf132d15aab2f47bb9af3",
+    "status": "PASS_WITH_LIMITS_PREFLIGHT"
+  },
+  "full_suite": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0145_stage099_quarter_pair_independent_preflight_audit_code/stage099_full_suite.log",
+    "sha256": "5d6a7db0055c3cdb7136872dfb28b48d6aa6b6c0edc1d762d6f6e175976ea7c5",
+    "tail": ".................................................................................................................................................................................................................................PROGRESS 2021-12-10 fills=1\n.............PROGRESS 2021-12-13 fills=0\n.....PROGRESS 2021-12-10 fills=1\n.............PROGRESS 2021-12-13 fills=0\n.........................................PROGRESS 2021-12-10 fills=1\n.............PROGRESS 2021-12-13 fills=0\n................................PROGRESS 2021-12-10 fills=1\n.............PROGRESS 2021-12-13 fills=0\n....................\n----------------------------------------------------------------------\nRan 515 tests in 41.258s\n\nOK\n"
+  },
+  "retained_display_wip_failed_suite": {
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0145_stage093_full_suite.log": "5cb954c6c0c2e7982f60ae46de40ac61d8bc91f85686b9f2d9cc254608145f4a"
+  },
+  "parent_execution_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "initial_capital": 1000000,
+  "risk_fraction": 0.0025,
+  "initial_example_budget": 2500,
+  "window": "2015-01-05--2026-10-16 (2862 frozen sessions; no refresh)",
+  "arms": [
+    {
+      "id": "W025",
+      "weekly_filter": "enabled",
+      "output": "run_20261020_risk025_contract_weekly_v1"
+    },
+    {
+      "id": "NO_W025",
+      "weekly_filter": "disabled",
+      "output": "run_20261020_risk025_no_weekly_v1"
+    }
+  ],
+  "execution": "two separate processes concurrently, same frozen data and common source commit; display-only094-097 may finish during replay without financial mutation",
+  "interpretation": "fixed user policy pair, no scan; post-selection risk disclosed; no formal promotion or independent out-of-sample claim"
+}

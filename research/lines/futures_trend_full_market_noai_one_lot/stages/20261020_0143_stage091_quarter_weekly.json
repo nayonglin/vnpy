@@ -1,0 +1,23 @@
+{
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "time": "2026-10-20T01:43:00+08:00",
+  "status": "TESTS_PASS_PENDING_INDEPENDENT_REVIEW",
+  "financial_replay_performed": false,
+  "financial_results": null,
+  "author_implemented_module": true,
+  "author_is_independent_financial_reviewer": false,
+  "old_files_modified": false,
+  "old_financial_outputs_modified": false,
+  "git_mutations": false,
+  "production_access": false,
+  "overfitting": false,
+  "continuation_has_value": true,
+  "stage": "091",
+  "source": "tools/stage091_quarter_weekly.py",
+  "source_sha256": "f62474b4d21b1b0d0b19f48967ca6a7e353db6ef6f134bfde25d150bd0a6f983",
+  "clone_parent": "stage075_fractional_weekly.py",
+  "permitted_differences": [
+    "risk_import_090"
+  ],
+  "other_changes": false
+}

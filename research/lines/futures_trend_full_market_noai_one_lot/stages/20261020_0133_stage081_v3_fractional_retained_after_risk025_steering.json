@@ -1,0 +1,28 @@
+{
+  "stage": "Stage081",
+  "status": "HISTORICAL_FRACTIONAL_ONLY_NOT_FINAL_DELIVERY",
+  "time": "2026-10-20T01:33:00.691491",
+  "user_steering": "risk .0025 weekly-on/weekly-off replaces current .005 delivery",
+  "source_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "fractional_directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_contract_weekly_risk05_v3_fractional",
+  "fractional_summary_sha256": "91fa829b2b391dd648ead906520b78cdbd883cdc09c4a76ee70810d86ef0b4e1",
+  "artifact_sha256": {
+    "residual_open_positions.json": "46e9709ff60f81d3df32f11b51c8e98713e1212bc3fe214658e406c210b8d862",
+    "index.html": "3c373d254b57eee0e633fbe364602376a673b7973c411bc203dfbabf655e7b5a",
+    "all_trade_episodes.csv": "077daccc30c43a98db21adf1a520000895ca0e197e0f94ba5a9d0cb1dc03fa1d",
+    "partial_closes_of_residual_entries.csv": "347f5b0af6e88ea071975439ce3cc5653b783b93e27acd09e5dec8c95c1e300a",
+    "strategy_daily.csv": "527e5960b011ddef141bf3db0b8c6c0e6b5d4e93051f7fb40f0103977e30642d",
+    "fractional_recap_manifest.json": "8b0e6f1974c2acf060677b0bdefab741ce96031b22d6553d133618c95abfa8bc",
+    "records.json": "1705cde0968750779a07ba5cb4e1275ca620b976885b931bde7a48575545f860",
+    "chart_manifest.csv": "8fa0e1c4490c554a631bb88febb6740ca9808dcc77915b6c29a53c1813732f68",
+    "closed_lots.csv": "213210b4a5416d4e93388731b87247beb1f6978cd538ede53dbd89ea302c866b"
+  },
+  "completed_episodes": 1302,
+  "completed_contracts": 10325.0,
+  "protected_payload_sha256": "a110119523ffbefd29a1c5c88c934bdc5bc60173568a4cce5af81f85fc43d644",
+  "source_unchanged": true,
+  "raw_parent_unchanged": true,
+  "stage063_started": false,
+  "final_or_UI_generated": false,
+  "financial_replays": 0
+}

@@ -1,0 +1,29 @@
+{
+  "actual_position": 5,
+  "pending_close": 5,
+  "actual_pnl_function": {
+    "shared": -2500.0
+  },
+  "cached_before": {
+    "shared": -2500.0
+  },
+  "cached_after": {},
+  "heat_before": {
+    "risk_cluster_heat_pressure": 1.0,
+    "risk_cluster_heat_drawdown_pressure": 1.0,
+    "risk_cluster_heat_margin_pressure": 0.0,
+    "risk_cluster_heat_unrealized_loss_pressure": 1.0,
+    "risk_cluster_heat_margin_ratio": 0.077,
+    "risk_cluster_heat_unrealized_loss_ratio": 0.25,
+    "risk_cluster_heat_portfolio_drawdown_pct": 0.25
+  },
+  "heat_after": {
+    "risk_cluster_heat_pressure": 0.0,
+    "risk_cluster_heat_drawdown_pressure": 1.0,
+    "risk_cluster_heat_margin_pressure": 0.0,
+    "risk_cluster_heat_unrealized_loss_pressure": 0.0,
+    "risk_cluster_heat_margin_ratio": 0.077,
+    "risk_cluster_heat_unrealized_loss_ratio": 0.0,
+    "risk_cluster_heat_portfolio_drawdown_pct": 0.25
+  }
+}

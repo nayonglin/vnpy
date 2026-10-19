@@ -1,0 +1,177 @@
+{
+  "review_time": "2026-10-20T01:14:51.791053+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "reviewer": "independent_failed_run_review_agent",
+  "scope": "v3_preflight_only_no_financial_replay",
+  "source_manifest_sha256": null,
+  "expected_run": "run_20261020_contract_weekly_risk05_v3",
+  "baseline_source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "prior_withdrawn_source_manifest_sha256": "b5357eef7ec6f3ce9a844bfbf680b7eb5fe24e4fb6e91dec6e87f6ea56933635",
+  "prior_v2_actual_verdict": "FAIL_CONTRACT_PENDING_OPEN",
+  "verdict": "PASS_WITH_LIMITS_PREFLIGHT_V3",
+  "status": "PASS_WITH_LIMITS_PREFLIGHT_V3",
+  "decision": "最终085/086静态及独立合成预审未发现P0/P1，可启动已授权的新v3一次完整回放；实际结果须另审",
+  "remaining_p0": 0,
+  "remaining_p1": 0,
+  "financial_replays_by_reviewer": 0,
+  "implementation_changes_by_reviewer": 0,
+  "source_hashes": {
+    "stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2",
+    "stage078_forced_margin_planning.py": "a3b8477c949fb8321690401c6a9721394cd0ec0950b3599fbf826ba4eaa4f604",
+    "stage085_pending_open_lifecycle.py": "33099a87fbc2d37b2f64d839ae652113d5c47c91eb8eaf03a024fa8066c625c3",
+    "stage086_run_fractional_risk.py": "90ac9d27ef0326eb3a72be1e84e26e186d85e066e95f9eb2462b61aec4ce3bf4"
+  },
+  "tests": {
+    "independent_full_suite_count": 401,
+    "independent_full_suite_seconds": 30.857,
+    "pattern": "test_*.py",
+    "targeted_085_086_count": 63,
+    "independent_boundary_oracle": {
+      "checks_passed": 83,
+      "financial_replays": 0,
+      "checks": [
+        "missing_margin270",
+        "missing_cluster270",
+        "missing_pnl0",
+        "cache_dispatch_no_AM",
+        "same_receipt",
+        "later_actual3",
+        "later_original_snapshot",
+        "fund770_long0",
+        "true_pnl_long0",
+        "not_double_long0",
+        "extra_reserve_long0",
+        "projection_long0",
+        "restored_actual_long0",
+        "fund770_long1",
+        "true_pnl_long1",
+        "not_double_long1",
+        "extra_reserve_long1",
+        "projection_long1",
+        "restored_actual_long1",
+        "fund770_long2",
+        "true_pnl_long2",
+        "not_double_long2",
+        "extra_reserve_long2",
+        "projection_long2",
+        "restored_actual_long2",
+        "fund770_long3",
+        "true_pnl_long3",
+        "not_double_long3",
+        "extra_reserve_long3",
+        "projection_long3",
+        "restored_actual_long3",
+        "fund770_long4",
+        "true_pnl_long4",
+        "not_double_long4",
+        "extra_reserve_long4",
+        "projection_long4",
+        "restored_actual_long4",
+        "fund770_long5",
+        "true_pnl_long5",
+        "not_double_long5",
+        "extra_reserve_long5",
+        "projection_long5",
+        "restored_actual_long5",
+        "fund770_short0",
+        "true_pnl_short0",
+        "not_double_short0",
+        "extra_reserve_short0",
+        "projection_short0",
+        "restored_actual_short0",
+        "fund770_short1",
+        "true_pnl_short1",
+        "not_double_short1",
+        "extra_reserve_short1",
+        "projection_short1",
+        "restored_actual_short1",
+        "fund770_short2",
+        "true_pnl_short2",
+        "not_double_short2",
+        "extra_reserve_short2",
+        "projection_short2",
+        "restored_actual_short2",
+        "fund770_short3",
+        "true_pnl_short3",
+        "not_double_short3",
+        "extra_reserve_short3",
+        "projection_short3",
+        "restored_actual_short3",
+        "fund770_short4",
+        "true_pnl_short4",
+        "not_double_short4",
+        "extra_reserve_short4",
+        "projection_short4",
+        "restored_actual_short4",
+        "fund770_short5",
+        "true_pnl_short5",
+        "not_double_short5",
+        "extra_reserve_short5",
+        "projection_short5",
+        "restored_actual_short5",
+        "mapping_timing_False",
+        "mapping_timing_True",
+        "fresh_rollover_funding770",
+        "strict_preserve_still_false"
+      ]
+    }
+  },
+  "resolved_preflight_findings": [
+    {
+      "id": "P1_PENDING_OPEN",
+      "evidence": "valid original layer/receipt preserved through cross delay→native on_bars/reset/flatplan/rebalance→later full real fill; no reauthorization"
+    },
+    {
+      "id": "P1_MISSING_PENDING_MARGIN",
+      "evidence": "missing realbar pending3 close90 size10 margin.1 now global/cluster/reserved270, AM unchanged, no execution_data injection"
+    },
+    {
+      "id": "P1_MIXED_RESERVATION_AND_PNL",
+      "evidence": "actual500+valid pending270=770 for long/short×committed close0..5; true cluster PnL±250 from synced+pendingClose, zero unsynced paper PnL; ledger avoids doublecount and extra7 gives777"
+    },
+    {
+      "id": "P1_FRESH_ROLLOVER_FUNDING",
+      "evidence": "known own fresh new-leg dual object identity counts770 while strict preservation with old actual stillFalse; no new actual opening permission"
+    },
+    {
+      "id": "P1_DEFERRED_MAPPING_TIMING",
+      "evidence": "complete real new_bars deferred mapping invalid cancels beforefill/no fakeclose; ordinary first T→T+1 mapflip retains original behavior"
+    },
+    {
+      "id": "P2_ORPHAN_DIAGNOSTICS",
+      "evidence": "orphan noorder/nolayer target cleanup scans existing direction keys, archives cancellation without new authorization"
+    },
+    {
+      "id": "P2_CACHED_QUOTE_ASOF",
+      "evidence": "086 export-only causal_quote_asof/valuation_proxy distinguish engine event timestamp vs last frozen real mark, unchanged prices"
+    }
+  ],
+  "invariants": {
+    "risk_fraction": 0.005,
+    "same_economic_settings_as079": true,
+    "budget_quantity_weekly_gates_unchanged": true,
+    "actual_funding": "full actual factual margin + valid bound pending OPEN margin, including absent-bar causal cache",
+    "forced_planning": "actual minus valid pending CLOSE plus unsynced OPEN, 078-only scope",
+    "cluster_unrealized": "synced remaining layers + still actual pending CLOSE lots, no unfilled OPEN paper pnl",
+    "deferred_prefill_scope": "only witnessed real missingbar/lowquantity or preserved same original receipt; ordinary first next-open unchanged",
+    "cached_bar_scope": "dispatch/valuation only; never AM/signal/history_data/fill eligibility"
+  },
+  "limitations": [
+    "预审不能保证完整新金融必完成；v1失败与v2合同FAIL不撤销，v2不作N绩效基准。",
+    "缺少可验证active OPEN/layer/receipt/方向/数量/目标/映射证据时完整撤意向，不构造新授权；实际持仓成本basis不足则hard fail而非造entry。",
+    "延期身份是本单进程私有对象证据，未认证进程重启/持久化恢复或生产。",
+    "沿用日线近似/C2C9与供需停用、静态费用规格、研究主力、执行only报价、V>=qty非真实容量边界。",
+    "固定0.5%是初始止损计划风险，不是gap实际损失或组合回撤上限。"
+  ],
+  "overfitting": {
+    "answer": false,
+    "reason": "通用执行合同和资金/PnL事实修复，未按收益扫参数/品种/年份；仍为同样本后验研究"
+  },
+  "continuation_value": {
+    "answer": true,
+    "reason": "预注册新冻结v3完整回放可检验保留延期语义；不得把预审通过或旧诊断账本当最终绩效"
+  }
+}

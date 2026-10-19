@@ -1,0 +1,26 @@
+{
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "time": "2026-10-20T01:43:00+08:00",
+  "status": "TESTS_PASS_PENDING_INDEPENDENT_REVIEW",
+  "financial_replay_performed": false,
+  "financial_results": null,
+  "author_implemented_module": true,
+  "author_is_independent_financial_reviewer": false,
+  "old_files_modified": false,
+  "old_financial_outputs_modified": false,
+  "git_mutations": false,
+  "production_access": false,
+  "overfitting": false,
+  "continuation_has_value": true,
+  "stage": "092",
+  "source": "tools/stage092_quarter_pending_open.py",
+  "source_sha256": "3e0a64b49f59284c51174e2eae38208affd140fe8e7358d5242d0f56cb92798e",
+  "clone_parent": "stage085_pending_open_lifecycle.py",
+  "permitted_differences": [
+    "risk_type_090",
+    "weekly_authorization_type_091",
+    "explicit_boolean_weekly_mode_controls_original_long_authorization_check"
+  ],
+  "engine_weekly_flag": "weekly_filter_enabled",
+  "preserve_all_execution_funding_pnl_logic": true
+}

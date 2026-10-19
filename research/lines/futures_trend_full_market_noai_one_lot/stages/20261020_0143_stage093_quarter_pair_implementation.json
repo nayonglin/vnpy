@@ -1,0 +1,84 @@
+{
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "time": "2026-10-20T01:43:00+08:00",
+  "status": "TESTS_PASS_PENDING_INDEPENDENT_REVIEW",
+  "financial_replay_performed": false,
+  "financial_results": null,
+  "author_implemented_module": true,
+  "author_is_independent_financial_reviewer": false,
+  "old_files_modified": false,
+  "old_financial_outputs_modified": false,
+  "git_mutations": false,
+  "production_access": false,
+  "overfitting": false,
+  "continuation_has_value": true,
+  "stage": "093",
+  "source": "tools/stage093_run_quarter_pair.py",
+  "source_sha256": "a4be6f21de029ee2588cd9e2b0cf7c4828bb87108564e424ae2e9a0b30635fd3",
+  "tests_sha256": "66d3f4b4aeaaa1d8e8f4178eb360d510c3fe1d70360fe58847c5e88385bc46e2",
+  "parent_execution_run_id": "run_20261020_contract_weekly_risk05_v3",
+  "parent_execution_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "parent_execution_commit": "83e7669aca75811e50e009c3095c015311e646df",
+  "frozen_data_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "risk_fraction": 0.0025,
+  "arms": [
+    "enabled",
+    "disabled"
+  ],
+  "native_parameters_equal_between_arms": true,
+  "parent_parameter_changes": {
+    "stage068_risk_fraction": [
+      0.005,
+      0.0025
+    ]
+  },
+  "pair_whitelist": [
+    "weekly_mode_and_mro",
+    "provider_presence_and_weekly_evidence"
+  ],
+  "disabled_policy": null,
+  "disabled_checks": 0,
+  "disabled_actual_long_weekly_violations": null,
+  "disabled_feature_export": {
+    "scope": "disabled_no_weekly_queries",
+    "queried_contracts": [],
+    "rows": 0
+  },
+  "disabled_provider_construct_query_export_access": false,
+  "targeted_tests": {
+    "tests": 99,
+    "seconds": 0.512
+  },
+  "full_suite": {
+    "tests": 513,
+    "seconds": 32.062,
+    "exit_code": 0
+  },
+  "next": [
+    "independent_prerun_review",
+    "root_preregister_and_freeze",
+    "two_new_financial_runs_once",
+    "independent_actual_review_each_arm"
+  ],
+  "captured_post_record_suite": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fian-risk05-mpl .py311/bin/python -m unittest discover -s research/lines/futures_trend_full_market_noai_one_lot/tools -p 'test_stage*.py' > research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0145_stage093_full_suite.log 2>&1",
+    "tests": 515,
+    "seconds": 38.119,
+    "exit_code": 1,
+    "log": "20261020_0145_stage093_full_suite.log",
+    "sha256": "5cb954c6c0c2e7982f60ae46de40ac61d8bc91f85686b9f2d9cc254608145f4a",
+    "error": "new display097 fixture off_trade_claims_weekly_authorization_expected_null",
+    "finance_source_hashes_unchanged": true,
+    "failure_log_preserved": true,
+    "root_and_display_author_notified": true
+  },
+  "independent_suite_log_reference": {
+    "log": "20261020_0145_stage099_quarter_pair_independent_preflight_audit_code/stage099_full_suite.log",
+    "tests": 515,
+    "seconds": 41.258,
+    "exit_code": 0,
+    "sha256": "5d6a7db0055c3cdb7136872dfb28b48d6aa6b6c0edc1d762d6f6e175976ea7c5",
+    "author_is_other_agent": true,
+    "note": "reference only; independent conclusion belongs to Stage099"
+  }
+}

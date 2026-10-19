@@ -1,0 +1,9 @@
+Hash binding checked
+Weekly raw evidence independently recomputed
+Independent quantity/partial ledger checked
+Actual opening risk and daily account checked
+Traceback (most recent call last):
+  File "/private/tmp/stage088_actual_v3_audit.py", line 362, in <module>
+    ck('pending_original_qty_target',qty==int(row.volume) and int(row.target)==qty*(1 if side=='long' else -1))
+                                          ^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '113.0'

@@ -1,0 +1,11 @@
+# Stage088 独立审计代码留存附件
+
+时间：2026-10-20T01:21:49.092183+08:00。本附件只保留明确使用或准备的审计脚本及证据，不修改金融源码、旧输出或已预登记绑定的0114预审文件。不是重要策略突破，没有新增经济参数或金融回放结果。
+
+原预审JSON SHA256：`1f4fa37b217b0d647687947dfaefcb6c5e4daec5534f1f7848235a174049adfb`；原预审MD SHA256：`376b0b60eb0479b2ab27def7e48a7f5f74972cd9813886e98a0572f3efef773b`。085/086精确SHA见配套JSON。
+
+保留目录：`/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0121_stage088_independent_audit_code_attachment_code`。九个明确文件均按原字节复制并逐个校验；用途、SHA256、大小和原路径见配套JSON。v2最小复现和v3最终83项边界oracle已实际使用；实际v3全量审计reader目前只准备并通过AST语法检查，等完整manifest及退出状态后执行，未读取半成品作为结果。
+
+补充边界：原生换月规划函数会释放cached cluster PNL，合成共享cluster例可见heat变化。本轮有效heatgate=False；按真实native解析90个非空cluster各对应唯一产品，l_F/pp_F/v_F为空cluster且heat消费者跳过，换月后continue、次日refresh恢复事实PNL。故当前证据仅支持P2未来配置兼容边界，不支持已发生本轮风控失效，也不据此改原cluster或经济阈值。最终实际审查仍会核完整账本和资金事实。
+
+过拟合反思：否，本附件只保留审计证据、核时序和记账语义，没有扫描参数或按收益选样；继续有价值，因为实际结果必须可以追溯独立审计所执行的字节。
