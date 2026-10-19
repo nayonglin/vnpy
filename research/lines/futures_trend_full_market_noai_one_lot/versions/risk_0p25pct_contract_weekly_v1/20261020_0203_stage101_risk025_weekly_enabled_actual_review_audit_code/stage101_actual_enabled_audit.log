@@ -1,0 +1,279 @@
+Hash binding checked
+Weekly raw evidence independently recomputed
+Independent quantity/partial ledger checked
+Actual opening risk and daily account checked
+{
+  "reviewer": "independent_quarter_enabled_actual_reviewer",
+  "financial_replays": 0,
+  "implementation_changes": 0,
+  "source_changes": 0,
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "baseline_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "review_time": "2026-10-20T02:00:43.948956+08:00",
+  "source_commit": "9feb5784d7757ee81cbab007a610a0d64da64ca6",
+  "baseline_comparison": {
+    "source_manifest": true,
+    "expiry_execution_overlay": true,
+    "quantity_execution_overlay": true,
+    "lifecycle_sources": true,
+    "mode": true,
+    "start": true,
+    "end": true,
+    "official_material_identity": true
+  },
+  "hash_checks": {
+    "output_files": 30,
+    "code_hashes": 22,
+    "snapshots": 23,
+    "all_hash_checks_passed": true
+  },
+  "raw_input_reparse_precision": {
+    "open": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "high": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "low": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "volume": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close_oi": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    }
+  },
+  "weekly_all_attempts": {
+    "checks": 172,
+    "rejections": 0,
+    "method": "Independent exact-vt completed-week reconstruction for every attempted preopen, including denied orders; no weekly implementation import."
+  },
+  "weekly_independent": {
+    "full_rows": 93546,
+    "valid_weeks": 84255,
+    "invalid_weeks_retained": 9291,
+    "max_MA_difference": 2.7284841053187847e-12,
+    "actual_long_signal_checks": 109,
+    "actual_long_open_checks": 109,
+    "signal_candidate_checks": 2963,
+    "queried_contracts": 1851,
+    "export_scope": "queried_contracts_complete_local_weeks",
+    "method": "Independent exact-vt accepted-clean EOW closes after original clean source numeric/epoch binding; per-contract listing-local weeks, complete frozen calendar, math.fsum numerical verification and declared numpy-mean strict comparison; round_trip reads; no use of mapping for weekly MA and no Stage058/059 imports."
+  },
+  "mapping": {
+    "mapped_rows": 185722,
+    "missing_observation_bars": 0,
+    "max_oi_difference": 0.0,
+    "epoch_mismatch": 0
+  },
+  "quantity_ledger": {
+    "completed_entries": 1311,
+    "partial_exit_fills": 12,
+    "residual_entries": 7,
+    "residual_partial_fills": 0,
+    "residual_partial_realized_net": 0.0,
+    "residual_mark_pnl": 41235.0,
+    "residual_entry_cost": 564.7543399999714,
+    "ending_equity_bridge": 809719.7445772117,
+    "fee_max_error": 1.1368683772161603e-13,
+    "slip_max_error": 0.0,
+    "completed_net_max_error": 0.0,
+    "max_lots": 72,
+    "max_actual_products": 14
+  },
+  "budget": {
+    "audit_rows": 1880,
+    "actual_opens": 1318,
+    "rejections": 562,
+    "reasons": {
+      "total_order_risk_exceeds_fractional_budget_at_open": 456,
+      "stop_already_crossed_at_open": 106
+    },
+    "max_risk_budget_ratio": 0.9996732346465722,
+    "opening_equity_max_error": 2.3283064365386963e-09,
+    "matched_entry_risk_rows": 1318,
+    "max_actual_broker_ratio": 0.9143786561618525
+  },
+  "accounting": {
+    "daily_mtm_max_errors": [
+      2.2737367544323206e-13,
+      1.8189894035458565e-12,
+      3.637978807091713e-12
+    ],
+    "ending_equity": 809719.7445772124,
+    "max_margin": 547210.0,
+    "max_notional": 18828920.0,
+    "max_margin_equity_ratio": 0.5690808481946342,
+    "max_notional_equity_ratio": 22.929085445084556
+  },
+  "lifecycle": {
+    "deadlines_checked": 4328,
+    "actual_residuals": 7,
+    "late_position_days": 0
+  },
+  "stats": {
+    "ending_equity": 809719.744577212,
+    "net_pnl": -190280.25542278806,
+    "return_pct": -19.028025542278794,
+    "max_dd_pct": -37.111968008936934,
+    "max_dd_amount": -458606.64839778806,
+    "sharpe_240_log": -0.19656998442423415,
+    "commission": 47445.255422787006,
+    "slippage": 207215.0,
+    "fills": 2641,
+    "complete_episodes": 1311,
+    "win_rate_pct": 31.88405797101449,
+    "max_volume": 72,
+    "total_open_contracts": 7003,
+    "residual_contracts": 29
+  },
+  "annual": {
+    "2015": {
+      "net_pnl": 181349.18460000047,
+      "start_equity": 1000000.0,
+      "end_equity": 1181349.1846000005
+    },
+    "2016": {
+      "net_pnl": -114251.39261758394,
+      "start_equity": 1181349.1846000005,
+      "end_equity": 1067097.7919824165
+    },
+    "2017": {
+      "net_pnl": -62969.73450281506,
+      "start_equity": 1067097.7919824165,
+      "end_equity": 1004128.0574796015
+    },
+    "2018": {
+      "net_pnl": -36706.24304866239,
+      "start_equity": 1004128.0574796015,
+      "end_equity": 967421.814430939
+    },
+    "2019": {
+      "net_pnl": 53953.581533142875,
+      "start_equity": 967421.814430939,
+      "end_equity": 1021375.395964082
+    },
+    "2020": {
+      "net_pnl": 122080.0532733355,
+      "start_equity": 1021375.395964082,
+      "end_equity": 1143455.4492374174
+    },
+    "2021": {
+      "net_pnl": -24794.707500205448,
+      "start_equity": 1143455.4492374174,
+      "end_equity": 1118660.741737212
+    },
+    "2022": {
+      "net_pnl": -155137.9986999997,
+      "start_equity": 1118660.741737212,
+      "end_equity": 963522.7430372125
+    },
+    "2023": {
+      "net_pnl": -80471.31842499999,
+      "start_equity": 963522.7430372125,
+      "end_equity": 883051.4246122125
+    },
+    "2024": {
+      "net_pnl": 72165.1711600001,
+      "start_equity": 883051.4246122125,
+      "end_equity": 955216.5957722125
+    },
+    "2025": {
+      "net_pnl": 13150.425414999605,
+      "start_equity": 955216.5957722125,
+      "end_equity": 968367.0211872121
+    },
+    "2026": {
+      "net_pnl": -158647.2766100001,
+      "start_equity": 968367.0211872121,
+      "end_equity": 809719.744577212
+    }
+  },
+  "forced_planning": {
+    "actual_close_planning_events": 0,
+    "cancelled_whole_intents": 19,
+    "cancelled_contracts": 591,
+    "cancelled_receipts": 19,
+    "all_event_target_and_projection_formulas_checked": true,
+    "limitation": "Complete event formulas and account cash/margin independently checked; private intraday full candidate priority sets and all unfilled pending states are not exported, so per-event ranking inputs cannot be exhaustively reconstructed."
+  },
+  "pending_lifecycle": {
+    "event_counts": {
+      "preserve": 34,
+      "cancel": 11,
+      "cached_order_dispatch": 10
+    },
+    "unique_preserved_receipts": 16,
+    "preserved_eventual_fills": 1,
+    "unique_cancelled_receipts": 11,
+    "cached_dispatch_rows": 10,
+    "cached_dispatch_examples": [
+      [
+        "2015-11-25",
+        "bb201601.DCE",
+        "2015-11-24"
+      ],
+      [
+        "2015-12-25",
+        "RS201607.CZCE",
+        "2015-12-24"
+      ],
+      [
+        "2016-08-31",
+        "RI201701.CZCE",
+        "2016-08-30"
+      ],
+      [
+        "2017-02-22",
+        "RS201707.CZCE",
+        "2017-02-21"
+      ],
+      [
+        "2017-05-12",
+        "RI201709.CZCE",
+        "2017-05-11"
+      ],
+      [
+        "2019-08-16",
+        "wr201910.SHFE",
+        "2019-08-15"
+      ],
+      [
+        "2021-03-23",
+        "JR202105.CZCE",
+        "2021-03-22"
+      ],
+      [
+        "2021-08-11",
+        "JR202109.CZCE",
+        "2021-08-10"
+      ],
+      [
+        "2021-09-07",
+        "pg202110.DCE",
+        "2021-09-06"
+      ],
+      [
+        "2024-08-28",
+        "bb202501.DCE",
+        "2024-08-27"
+      ]
+    ],
+    "limitation": "Exports bind original receipt identities, observed preserve/cancel/dispatch transitions and factual fills. Full private funding candidate books and every intermediate cluster-PnL mutation are not exported; actual funding floors/MTM checked independently, dynamic pending funding/PnL scope additionally supported by frozen-code review and 83 synthetic oracle checks."
+  },
+  "review_audit_script_sha256": "f00373359e0b6b769f62392732d6323cb139cf5ec00e5caf0b4c578dd58c6043",
+  "error_count": 0,
+  "source_immutable": true
+}
+ERRORS 0
+[]

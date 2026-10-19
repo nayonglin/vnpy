@@ -1,0 +1,14 @@
+{
+  "stage": "Stage102",
+  "status": "PREPARED_WAITING_ROOT_COMPLETE_SOURCES",
+  "time": "2026-10-20T01:50:07.299032",
+  "script_sha256": "49dc734da8a4d57c72d5ce0fd1f81a3636fab29f70273a5df7f20f74c7471df8",
+  "shell_syntax": "bash -n PASS",
+  "raw_concurrency": {
+    "arms": 2,
+    "workers_per_arm": 2,
+    "total_context_workers": 4
+  },
+  "actual_generation_started": false,
+  "financial_replays": 0
+}

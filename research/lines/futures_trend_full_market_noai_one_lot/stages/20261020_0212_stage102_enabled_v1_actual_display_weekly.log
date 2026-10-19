@@ -1,0 +1,49 @@
+/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage095_quarter_weekly_display.py:49: DtypeWarning: Columns (15,16,18,20) have mixed types. Specify dtype option on import or set low_memory=False.
+  before=non_weekly_payload_hash(records);coords=coordinate_hash(records);tables=build_display_tables(pd.read_csv(source/'market_daily.csv',float_precision='round_trip'),pd.read_csv(source/'contract_metadata.csv',float_precision='round_trip'),pd.read_csv(source/'trading_calendar.csv'),{r['meta']['vt_symbol'] for r in records});replace_weekly_records(records,tables);validation=validate_weekly_records(records,tables)
+{
+  "generator_sha256": "a1d77563c8576c3b03f841ff6c78f0775340df953bd3ee627d5cd47f958391e5",
+  "dependency_sha256": {
+    "stage094_quarter_risk_recap.py": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+    "stage063_contract_weekly_recap.py": "935f9a827e9d31db2886ba2b487dd26e77ba2106044af7b2e2c3a4b12fb236be",
+    "stage001_frozen_recap.py": "ec19378d23818142baa51ad7068076425c270178519ab425652dcdbd96de3c9a"
+  },
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "parent_directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_fractional",
+  "parent_summary_sha256": "f66eb121602c691bcf8d92fadc6eaf2382126caa505e2572bf6b6af2e151e6db",
+  "parent_artifact_sha256": {
+    "residual_open_positions.json": "7f9948f7ede05a3679ab44d7953985ed38533edee49afc1ad345a30ef6a1ea7f",
+    "index.html": "33031f216554f058dbde3257f63a28c64f81e3efec9e34be33a44b21bdd7b9ca",
+    "all_trade_episodes.csv": "0e5875d038f215620dede19d0ee3ab543100c21326ae19e23d5a9137791e6428",
+    "partial_closes_of_residual_entries.csv": "347f5b0af6e88ea071975439ce3cc5653b783b93e27acd09e5dec8c95c1e300a",
+    "strategy_daily.csv": "a3feae60792c7426609b8120e169935ed5b70ae21d5571dc488e294dc318e34f",
+    "fractional_recap_manifest.json": "d652d0d90bf5a58330c984ea399e9b169e0633b63d4d920c1a83fe4c872e58d3",
+    "records.json": "0c855bd5beaa856f5d9aed3c498728f40f14506cea6a557b3b331ba98e09ab7b",
+    "chart_manifest.csv": "90020716ade00ed6a528fc8c1d6fc3d8ce37cfd1b76213df52caa0e90e7b6068",
+    "closed_lots.csv": "f799213ddc568983ffeb8c5bb4269c4f3f3c33172847b40f0c904e4a044ca4a9",
+    "quarter_risk_adapter_manifest.json": "4b950040f8e1881922aa535d60a9fe01f2eb32e0b2d645dbcacc16925c213ea3"
+  },
+  "canonical_renderer_sha256": "613672a4cc91493ba17dc055542e4b4172349de210ff932530caf04ce36bb93a",
+  "validation": {
+    "records_checked": 1311,
+    "contracts_checked": 1004,
+    "weekly_slots": 96857,
+    "ohlcv_values_checked": 484285,
+    "ma_values_checked": 387428,
+    "missing_weekly_slots": 35778,
+    "exact_table_values_match": true,
+    "calendar_gaps_preserved": true,
+    "frozen_strategy_feature_weeks_checked": 29203,
+    "strategy_weekly_filter": true,
+    "financial_provider_queries_by_display": 0
+  },
+  "weekly_filter": true,
+  "display_only_weekly_data": true,
+  "financial_provider_instantiated": false,
+  "financial_provider_queries": 0,
+  "non_weekly_payload_sha256_before": "e09a89960341d48d47ad5f1f4680428b78c6c9a166a5f665214b0d1c2991aa95",
+  "non_weekly_payload_sha256_after": "e09a89960341d48d47ad5f1f4680428b78c6c9a166a5f665214b0d1c2991aa95",
+  "weekly_coordinate_sha256_before": "ee2b8f4f9a201d3d71807f01208ee04c27664f26480eff359b9d237c78dd4859",
+  "weekly_coordinate_sha256_after": "ee2b8f4f9a201d3d71807f01208ee04c27664f26480eff359b9d237c78dd4859",
+  "financial_replays": 0,
+  "market_downloads": 0
+}

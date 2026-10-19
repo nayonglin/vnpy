@@ -1,6 +1,22 @@
-# 正式物料全市场无AI一手研究线
+# 正式物料全市场无AI仓位与周线研究线
 
-## 当前状态（2026-10-19 20:33 CST：交易合约自身周线）
+## 当前状态（2026-10-20 02:19 CST：0.25%原规则双臂，一完整一失败）
+
+- 原line_id保留，当前已解除1手帽。用户固定每笔总权益0.25%初始stop风险预算上限，100万2500；整手、其它门可减量、开盘取小预算复核，无AI/无4产品帽/不加仓，全市场。含臂仅long核交易合约自身完成周5>10>20>40，short不加；关闭臂完全禁用周provider。两进程同源并行，不改原截止/数据/成本。
+- 含臂金融9feb5784d，source outputs/run_20261020_risk025_contract_weekly_v1，manifest7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35。2015-01-05—2026-10-16/2862日；权益809,719.74、收益-19.0280%、DD-37.1120%、Sharpe-0.196570；手续费47,445.26、滑点207,215，2641fill/1311完整entry，净胜率31.8841%、净盈亏比1.953592。109long/1209short，最大14产品/72手，7实际残仓29手，末日另3手意向不计actual。
+- Stage101实际独审PASS_WITH_LIMITS，P0/P1=0；全部1318OPEN双预算/109long周授权/2862日资金和PNL/费用FIFO/quote生命周期/源hash通过。净收益负，不支持晋级。完整历年见Stage107，不按2024挑结论。
+- **关闭臂v1 2019-06-27 JR12手/截止真量7无法整单退出，硬失败，无全期manifest/业绩。Stage100 FAIL、P1=1完整性。JR风险2400≤预算2658.83合规，不能当比例bug；不伪造退出、不用次日量49、不按JR删交易。不能做完整双臂绩效比较。**
+- 最终有效逐笔outputs/recap_20261020_risk025_contract_weekly_v1_reviewed_v3/index.html；状态资金/回撤outputs/overview_20261020_risk025_v1_status_v2/index.html，只画含版，不伪造关闭版曲线。Stage105独立全图/MA/R/cost/marker/hash/JS及root Stage106 CUA默认、筛选/翻笔、当前交易三周期zoom+Reset通过。v3仅修毛排序文案，数据/图算法不改；稳定515suite+212独立oracle通过，先前fixture失败日志保留。
+- versions/risk_0p25pct_contract_weekly_v1、risk_0p25pct_no_weekly_v1_failed分别保存合格单臂与失败，旧.5v3及失败前史归档不改；大数据/完整大HTML本地hash闭包不冒称克隆即恢复。交付状态/全部指标及证据：20261020_0219_stage107_risk025_original_pair_delivery_state.md/json。仅保存同研究分支和诊断标签，不合master/生产；无下载/CTP/订单调用。
+- **待用户范围决定**：Stage104因果容量提前退出+真实部分CLOSE（原deadline不变、无新数值窗口）；已发异步选择，此时未答复、未实施或新金融。若同意须同源双臂重跑；未经决定不扩展共同退出模型。过拟合存在后验选择风险，当前无扫描/年份救参；保存真实失败有价值，不能据单次赢家晋级。
+
+## 历史状态（2026-10-20 01:33 CST：0.5%交易合约周线v3，因用户新要求归档）
+
+- .5v1强制规划硬失败、v2延期收据合同失败证据在versions/contract_weekly_risk_0p5pct_v2；通用修复后源83e7669ac的v3完整并经Stage088实际独审PASS_WITH_LIMITS、P0/P1=0，manifestf2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860。401回归/83独立oracle通过，原信号预算/延期授权/真实资金PNL不被意向替代。
+- v3同窗2862日权益758,087.52、收益-24.1912%、DD-66.3162%、Sharpe-0.152013，手续费75,067.48、滑点313,295，2621fill/1302完整，净胜率34.7926%、净盈亏比1.726241；8实际残仓55手。不是.25比较臂，不隐藏负结果。
+- versions/contract_weekly_risk_0p5pct_v3保存91文件SHA闭包，VERSION6cee94b717aa1b9addae9570a9ebfbaeb88fc57a22b48fed1d9fba83a3c3bddd。仅raw/fractional中间页，用户改.25前未完成最终周图/GUI，final_recap_ui_delivered=false；不可冒认已交付.5最终HTML。研究/日线/非PIT/生产缺项边界保留。
+
+## 历史状态（2026-10-19 20:33 CST：交易合约自身周线）
 
 - 用户纠正：仅开多MA5>MA10>MA20>MA40改用当前交易合约自身accepted-clean未复权完成周K，禁止主力或他合约拼历史；不足40有效周、缺/坏周、相等均不开多，双相位核原product+contract授权。short/全部close/env_probe不增条件，原风险预算最多1手及全市场自然容量保留。
 - 金融源码a922720f2；唯一新源outputs/run_20261019_contract_weekly_long_v1，manifest SHA256=859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25。实际2015-01-05—2026-10-16，2862日；权益1,205,102.81、收益20.5103%、DD-17.6508%、Sharpe0.161625、手续费23,507.19、滑点73,090；3126成交/1558完整，净胜率33.3761%、净盈亏比2.198598。181 long/1387 short，最大13产品且每产品1手，10正常残仓。

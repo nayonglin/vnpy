@@ -1,0 +1,206 @@
+{
+  "status": "FAIL_INCOMPLETE_LIFECYCLE",
+  "verdict": "FAIL",
+  "remaining_p0": 0,
+  "remaining_p1": 1,
+  "performance_valid": false,
+  "source_manifest_sha256": null,
+  "source_protocol_sha256": "fcb1176e51cf4bedd56879e4db2367ea16a0d7144fd4e6eb6f9574427af52914",
+  "source_commit": "9feb5784d7757ee81cbab007a610a0d64da64ca6",
+  "financial_replays_by_reviewer": 0,
+  "full_period_statistics": null,
+  "audit_script_sha256": "6eb190d68c8b870e658ae86606b148c69cc8b9016a91df97dfb5cdeb002ba53c",
+  "partial_ledger_validation": {
+    "actual_fills": 1492,
+    "last_fill_date": "2019-06-27",
+    "failure_day": "2019-06-27",
+    "actual_positions": {
+      "JR201907.CZCE": 12,
+      "rb201910.SHFE": 3,
+      "p201909.DCE": -2,
+      "SM201909.CZCE": 13,
+      "i201909.DCE": 8,
+      "ag201912.SHFE": 7
+    },
+    "account_snapshot_reconciliation_equity": 1099807.9544297631,
+    "account_snapshot_difference": 3.4924596548080444e-09,
+    "commission_recomputed": 35212.04557023609,
+    "slippage_recomputed": 142525.0,
+    "actual_margin_recomputed": 491551.0,
+    "scope": "failed-prefix reconciliation only; no full-period return/DD/Sharpe/win-rate claim"
+  },
+  "JR_opening": {
+    "trade_id": "BACKTESTING.1484",
+    "signal_snapshot": {
+      "authorized_volume": 12,
+      "contract_vt_symbol": "JR201907.CZCE",
+      "direction": "long",
+      "entry_context": "flat_entry",
+      "product_vt_symbol": "JR.CZCE",
+      "risk_fraction": 0.0025,
+      "risk_per_contract": 40.0,
+      "signal": "long_case2",
+      "signal_datetime": "2019-06-19T00:00:00+08:00",
+      "signal_equity": 1063530.6437024872,
+      "snapshot_id": "NoWeeklyFeeStrategy:JR201907.CZCE:long:1117",
+      "stop_price": 2905.0,
+      "target_risk_amount": 2658.826609256218
+    },
+    "opening_equity_net_prior_actual_costs": 1088479.9164297632,
+    "signal_budget": 2658.826609256218,
+    "opening_budget": 2658.826609256218,
+    "actual_total_stop_risk": 2400.0,
+    "actual_volume": 12,
+    "actual_price": 2915.0,
+    "budget_ok": true
+  },
+  "JR_lifecycle": {
+    "deadline": "2019-06-27",
+    "exit_signal_date": "2019-06-26",
+    "lifecycle_events": [
+      {
+        "date": "2019-06-26",
+        "vt_symbol": "JR201907.CZCE",
+        "event": "close_target_zero",
+        "actual_position": 12,
+        "deadline": "2019-06-27"
+      },
+      {
+        "date": "2019-06-27",
+        "vt_symbol": "JR201907.CZCE",
+        "event": "close_target_zero",
+        "actual_position": 12,
+        "deadline": "2019-06-27"
+      }
+    ],
+    "causal_daily_quotes": [
+      {
+        "date": "2019-06-19",
+        "open": 2906.0,
+        "high": 2954.0,
+        "low": 2905.0,
+        "close": 2907.0,
+        "volume": 12.0,
+        "close_oi": 47.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-20",
+        "open": 2925.0,
+        "high": 2925.0,
+        "low": 2914.0,
+        "close": 2914.0,
+        "volume": 9.0,
+        "close_oi": 43.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-21",
+        "open": 2915.0,
+        "high": 2915.0,
+        "low": 2914.0,
+        "close": 2914.0,
+        "volume": 12.0,
+        "close_oi": 31.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-24",
+        "open": 2916.0,
+        "high": 2942.0,
+        "low": 2914.0,
+        "close": 2916.0,
+        "volume": 6.0,
+        "close_oi": 26.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-25",
+        "open": 2916.0,
+        "high": 2916.0,
+        "low": 2915.0,
+        "close": 2915.0,
+        "volume": 9.0,
+        "close_oi": 17.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-26",
+        "open": 2916.0,
+        "high": 2916.0,
+        "low": 2914.0,
+        "close": 2915.0,
+        "volume": 6.0,
+        "close_oi": 11.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-27",
+        "open": 2915.0,
+        "high": 2956.0,
+        "low": 2915.0,
+        "close": 2921.0,
+        "volume": 7.0,
+        "close_oi": 7.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      },
+      {
+        "date": "2019-06-28",
+        "open": 3035.0,
+        "high": 3042.0,
+        "low": 2808.0,
+        "close": 3041.0,
+        "volume": 49.0,
+        "close_oi": 0.0,
+        "quote_class": "accepted_clean",
+        "execution_only": false
+      }
+    ],
+    "existing_expiry_overlay_rows": [],
+    "existing_quantity_overlay_rows": [],
+    "deadline_volume": 7.0,
+    "actual_close_order_qty": 12,
+    "partial_deadline_only_max_fill": 7,
+    "partial_deadline_only_remaining": 5,
+    "current_order": [
+      {
+        "id": "BACKTESTING.1936",
+        "vt_symbol": "JR201907.CZCE",
+        "offset": "Offset.CLOSE",
+        "direction": "Direction.SHORT",
+        "volume": 12,
+        "signal_date": "2019-06-27 00:00:00+08:00"
+      }
+    ],
+    "original_close_signal_time": "Not uniquely exported; provisional exit2915 matches both2019-06-25 and2019-06-26. Only lifecycle intent2019-06-26 and current reissue2019-06-27 are proven. No order/deferred/trade-event history in failure artifacts."
+  },
+  "root_cause": "Predeclared all-or-none full-quantity daily execution plus fixed lifecycle deadline conflict with this actually held low-volume position. Risk fraction .0025 and original authorization have not caused a budget arithmetic violation. Do not truncate at2019 or claim complete result.",
+  "honest_options": [
+    "Keep this execution contract: retain failed diagnosis, do not publish complete no-weekly performance.",
+    "Before a new paired experiment, declare a uniform causal advance-exit/liquidity-position policy applicable to both arms; it changes the common economic contract and cannot be chosen only forJR or tuned to this cutoff.",
+    "Uniform genuine partial CLOSE is an execution-policy change; if first close intent was only6/26, cutoff6/27 daily volume7 still leaves5, so it alone is not proven sufficient. It must conserve actual qty/cost and retain the deadline."
+  ],
+  "prohibited_shortcuts": [
+    "No download or invented quote evidence",
+    "No later6/28volume49 execution beyond frozen deadline",
+    "No JR blacklist or hindsight no-entry",
+    "No synthetic settlement or closing12 against day volume7",
+    "No unilateral disabled-arm policy patch",
+    "No relabeling failed prefix as whole2015-2026 backtest"
+  ],
+  "limits": [
+    "Failure prefix does not export every trade risk receipt/open-budget audit, weekly-null CSV, daily account snapshots, or complete unfilled books. OnlyJR preserved original receipt is available for actual opening budget independent proof; cannot extend it to all1492fills.",
+    "Complete financial source hashes and inputs verified, but no final manifest/summary exists. No complete netwin/payoff/annual table or recap generated.",
+    "Exact first native CLOSE event is not exported; earliest known lifecycle intent6/26 is not proof that no earlier native intent existed.",
+    "Daily proxy, disabled intradayC2/C9 and supply CSV, non-PIT fee/margin and real bid/ask/execution capacity remain."
+  ],
+  "errors": [],
+  "error_count": 0
+}

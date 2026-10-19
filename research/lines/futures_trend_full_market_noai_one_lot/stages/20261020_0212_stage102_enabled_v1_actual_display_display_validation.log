@@ -1,0 +1,20 @@
+/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage081_validate_fractional_display.py:28: DtypeWarning: Columns (15,16,18,20) have mixed types. Specify dtype option on import or set low_memory=False.
+  def csv(path):return pd.read_csv(path,float_precision='round_trip')
+{
+  "status": "PASS_ENABLED_V1_DISPLAY_VALIDATION_ONLY",
+  "complete_entries": 1311,
+  "complete_contracts": 6974,
+  "residual_entries": 7,
+  "residual_contracts": 29,
+  "exact_weekly": {
+    "records": 1311,
+    "contracts": 1004,
+    "slots": 96857,
+    "missing_slots": 35778,
+    "ohlcv_values": 484285,
+    "ma_values": 387428,
+    "max_absolute_delta": 0.0,
+    "nonweekly_sha256": "6095d1db46976578fc3522c45ae87a6a8c5e47f80b8cd26c41f93e6c7f450c16"
+  },
+  "pair_validation": false
+}

@@ -1,0 +1,19 @@
+{
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "final_html_sha256": "b0eca000d4af4b1af0f7868127da7c46bd267cec2b4e6a9136088c6990b74a48",
+  "audit_script_sha256": "16300660b66ca3991f992704bb61ff586ded1ebc6ee42bb4878c32e05797024c",
+  "records": 1311,
+  "gross_filter_counts": {
+    "profit": 426,
+    "loss": 880,
+    "flat": 5
+  },
+  "net_winners": 418,
+  "net_losers": 893,
+  "partial_complete_entries": 12,
+  "weighted_exit_differs_from_last_fill": 12,
+  "hidden_non_same_source_exit_markers": 0,
+  "financial_replays": 0,
+  "errors": [],
+  "error_count": 0
+}

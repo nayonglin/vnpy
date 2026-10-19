@@ -1,0 +1,231 @@
+{
+  "source_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "audit_script_sha256": "7da0792daae1033cc1956ecb0d405e9f35d4347b820f64911416f9aae946a4c4",
+  "financial_replays": 0,
+  "original_entry_intents": 2027,
+  "terminal_intents": 2026,
+  "ending_unfilled_intents": [
+    {
+      "born": "2026-10-16",
+      "vt": "SF202701.CZCE",
+      "qty": 6,
+      "terminal": null,
+      "terminal_reasons": []
+    }
+  ],
+  "eod_days": 2862,
+  "max_errors": {
+    "funding_cluster": 5.820766091346741e-11,
+    "actual_margin": 5.820766091346741e-11,
+    "actual_plus_pending_margin": 5.820766091346741e-11,
+    "reserved_margin": 5.820766091346741e-11,
+    "pending_margin_reservation": 5.820766091346741e-11,
+    "actual_pnl_cluster": 0.0
+  },
+  "examples": [
+    {
+      "date": "2015-01-05",
+      "actual_margin": 0,
+      "original_pending_margin": 22540.0,
+      "fresh_margin": 22540.0,
+      "pending": [
+        {
+          "vt": "cu201503.SHFE",
+          "qty": 2,
+          "born": "2015-01-05",
+          "terminal": "2015-01-06"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-08",
+      "actual_margin": 0,
+      "original_pending_margin": 78760.0,
+      "fresh_margin": 78760.0,
+      "pending": [
+        {
+          "vt": "m201505.DCE",
+          "qty": 55,
+          "born": "2015-01-08",
+          "terminal": "2015-01-09"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-09",
+      "actual_margin": 0,
+      "original_pending_margin": 74926.35,
+      "fresh_margin": 74926.35,
+      "pending": [
+        {
+          "vt": "jd201505.DCE",
+          "qty": 14,
+          "born": "2015-01-09",
+          "terminal": "2015-01-12"
+        },
+        {
+          "vt": "m201505.DCE",
+          "qty": 11,
+          "born": "2015-01-09",
+          "terminal": "2015-01-12"
+        },
+        {
+          "vt": "v201505.DCE",
+          "qty": 9,
+          "born": "2015-01-09",
+          "terminal": "2015-01-12"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-12",
+      "actual_margin": 63405.1,
+      "original_pending_margin": 9862.4,
+      "fresh_margin": 9862.4,
+      "pending": [
+        {
+          "vt": "bu201506.SHFE",
+          "qty": 8,
+          "born": "2015-01-12",
+          "terminal": "2015-01-13"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-13",
+      "actual_margin": 62223.1,
+      "original_pending_margin": 132809.2,
+      "fresh_margin": 132809.2,
+      "pending": [
+        {
+          "vt": "RM201505.CZCE",
+          "qty": 4,
+          "born": "2015-01-13",
+          "terminal": "2015-01-14"
+        },
+        {
+          "vt": "jm201505.DCE",
+          "qty": 42,
+          "born": "2015-01-13",
+          "terminal": "2015-01-14"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-14",
+      "actual_margin": 65412.5,
+      "original_pending_margin": 36540.0,
+      "fresh_margin": 36540.0,
+      "pending": [
+        {
+          "vt": "jm201505.DCE",
+          "qty": 12,
+          "born": "2015-01-14",
+          "terminal": "2015-01-15"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-16",
+      "actual_margin": 102149.80000000002,
+      "original_pending_margin": 26199.3,
+      "fresh_margin": 26199.3,
+      "pending": [
+        {
+          "vt": "hc201505.SHFE",
+          "qty": 6,
+          "born": "2015-01-16",
+          "terminal": "2015-01-19"
+        },
+        {
+          "vt": "zn201503.SHFE",
+          "qty": 5,
+          "born": "2015-01-16",
+          "terminal": "2015-01-19"
+        }
+      ]
+    },
+    {
+      "date": "2015-01-20",
+      "actual_margin": 108356.30000000002,
+      "original_pending_margin": 4976.0,
+      "fresh_margin": 4976.0,
+      "pending": [
+        {
+          "vt": "rb201505.SHFE",
+          "qty": 4,
+          "born": "2015-01-20",
+          "terminal": "2015-01-21"
+        }
+      ]
+    },
+    {
+      "date": "2015-02-04",
+      "actual_margin": 19276.0,
+      "original_pending_margin": 39660.0,
+      "fresh_margin": 39660.0,
+      "pending": [
+        {
+          "vt": "TC201505.CZCE",
+          "qty": 5,
+          "born": "2015-02-04",
+          "terminal": "2015-02-05"
+        },
+        {
+          "vt": "i201505.DCE",
+          "qty": 5,
+          "born": "2015-02-04",
+          "terminal": "2015-02-05"
+        }
+      ]
+    },
+    {
+      "date": "2015-02-09",
+      "actual_margin": 16660.0,
+      "original_pending_margin": 23630.0,
+      "fresh_margin": 23630.0,
+      "pending": [
+        {
+          "vt": "SM201505.CZCE",
+          "qty": 17,
+          "born": "2015-02-09",
+          "terminal": "2015-02-10"
+        }
+      ]
+    },
+    {
+      "date": "2015-03-03",
+      "actual_margin": 0,
+      "original_pending_margin": 71400.0,
+      "fresh_margin": 71400.0,
+      "pending": [
+        {
+          "vt": "j201505.DCE",
+          "qty": 10,
+          "born": "2015-03-03",
+          "terminal": "2015-03-04"
+        }
+      ]
+    },
+    {
+      "date": "2015-03-05",
+      "actual_margin": 70000.0,
+      "original_pending_margin": 39304.0,
+      "fresh_margin": 39304.0,
+      "pending": [
+        {
+          "vt": "au201506.SHFE",
+          "qty": 4,
+          "born": "2015-03-05",
+          "terminal": "2015-03-06"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "error_count": 0,
+  "method": "Entry-risk diagnostics create original signal-keyed intentions; actual OPEN, all opening rejection, forced archived receipts and092 cancellation receipts terminate them. EOD live original-authorized qty added to actual-fill positions. Actual cost-basis PnL, current causal marks, native string cluster identity reconstructed independently; no finance generator/ledger/risk imports.",
+  "limitations": [
+    "Only exported EOD books and all observed lifetime terminations can be reconstructed, not private intermediate intraday mutation order or forced candidate-ranking input sets."
+  ]
+}

@@ -1,0 +1,22 @@
+PROGRESS 2014-01-02 fills=0
+Strategy initialization complete
+Start replaying historical data
+PROGRESS 2015-01-05 fills=0
+PROGRESS 2016-01-04 fills=287
+PROGRESS 2017-01-03 fills=625
+PROGRESS 2018-01-02 fills=960
+PROGRESS 2019-01-02 fills=1282
+Exception triggered, backtest terminated
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/vnpy_portfoliostrategy/backtesting.py", line 235, in run_backtesting
+    self.new_bars(dt)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py", line 137, in new_bars
+    self.check_lifecycle_positions(dt,after_fills=True)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py", line 118, in check_lifecycle_positions
+    try:self.lifecycle_policy.assert_flat_by_deadline(self.strategy.pos_data,dt)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py", line 58, in assert_flat_by_deadline
+    if overdue:raise RuntimeError('unresolved_lifecycle_position:'+json.dumps(overdue,sort_keys=True))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unresolved_lifecycle_position:{"JR201907.CZCE": 12}
+

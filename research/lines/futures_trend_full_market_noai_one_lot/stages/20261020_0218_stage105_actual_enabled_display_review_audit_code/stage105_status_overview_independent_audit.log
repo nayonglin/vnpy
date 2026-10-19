@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/private/tmp/stage105_status_overview_independent_audit.py", line 66, in <module>
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'

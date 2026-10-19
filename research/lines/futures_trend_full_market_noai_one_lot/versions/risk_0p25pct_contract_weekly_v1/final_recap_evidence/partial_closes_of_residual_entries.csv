@@ -1,0 +1,1 @@
+lot_id,open_trade_id,close_trade_id,vt_symbol,product,direction,entry_date,exit_date,entry_price,exit_price,volume,size,realized_pnl,risk_amount,r_multiple,holding_calendar_days,exit_reason,signal,winner,commission,slippage,risk_per_lot,initial_risk_total,cost,net_pnl

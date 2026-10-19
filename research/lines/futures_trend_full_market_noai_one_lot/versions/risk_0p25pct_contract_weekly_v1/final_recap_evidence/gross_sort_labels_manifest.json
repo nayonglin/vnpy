@@ -1,0 +1,34 @@
+{
+  "scope": "two_sort_option_labels_and_plain_static_disclosure_only",
+  "parent_directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_reviewed_v2",
+  "parent_summary_sha256": "eccb555cacbc1b6581f35a59aa3b64cb38fd34463c3adea1b757bc9585756fa8",
+  "parent_html_sha256": "b0eca000d4af4b1af0f7868127da7c46bd267cec2b4e6a9136088c6990b74a48",
+  "generator_sha256": "0b0e4114f4d67774f776c8a867eeee82d1a0272d2e080c9239494964b1197df2",
+  "replacement_map": {
+    "净利润绝对值从大到小": "毛盈亏绝对值从大到小",
+    "净利润绝对值从小到大": "毛盈亏绝对值从小到大"
+  },
+  "note_id": "stage106-gross-sort-note",
+  "note_text": "排序与筛选口径：本页盈亏金额排序、盈利/亏损筛选及R的分子均使用毛价差盈亏；净盈亏在卡片单列，包含分摊手续费和滑点。账户总览中的胜率和盈亏比按完整原始开仓的净盈亏统计；部分平仓或每手不另计胜负样本。",
+  "reverse_html_byte_equivalence": true,
+  "chart_algorithm_changed": false,
+  "records_changed": false,
+  "financial_replays": 0,
+  "non_html_hashes": {
+    "residual_open_positions.json": "7f9948f7ede05a3679ab44d7953985ed38533edee49afc1ad345a30ef6a1ea7f",
+    "independent_review.md": "582b59f7bf5385e042771078b0d919fca15796f1596292047d79ccbbd808e70b",
+    "current_trade_reset_manifest.json": "45a7bb22e4eed736cb5136bc750f025c1dd71e806141f06450e9c413fda8d437",
+    "all_trade_episodes.csv": "0e5875d038f215620dede19d0ee3ab543100c21326ae19e23d5a9137791e6428",
+    "partial_closes_of_residual_entries.csv": "347f5b0af6e88ea071975439ce3cc5653b783b93e27acd09e5dec8c95c1e300a",
+    "quarter_weekly_display_manifest.json": "1f24fc353f34edf9da9a208fdddd9dc827077d5d5165a08cf6db0a6fe500f4b5",
+    "strategy_daily.csv": "a3feae60792c7426609b8120e169935ed5b70ae21d5571dc488e294dc318e34f",
+    "weekly_contract_chart_features.csv": "491dccde8393f3c382f35cdf2fb55794b74d9e2e79606251483269518945432d",
+    "quarter_risk_adapter_manifest.json": "4b950040f8e1881922aa535d60a9fe01f2eb32e0b2d645dbcacc16925c213ea3",
+    "fractional_recap_manifest.json": "d652d0d90bf5a58330c984ea399e9b169e0633b63d4d920c1a83fe4c872e58d3",
+    "records.json": "99a5aaac295e92fc226cd466e724fbd581b6bf13884c71a4d8a3be16a94d992b",
+    "independent_review.json": "3a0ba1efa4d54e887dc7862ee4be48baab0dfafd3b38952ceb0b2de29f7f950e",
+    "chart_manifest.csv": "3970402b47741fd09d5d4b806f552385ec1fbdd18504f2577a18bb81cfb2f1be",
+    "closed_lots.csv": "f799213ddc568983ffeb8c5bb4269c4f3f3c33172847b40f0c904e4a044ca4a9",
+    "final_multilot_display_manifest.json": "264d88ba0efe66741a103674c929115d61d87d7ec923fd953112c4ae33ae7aba"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "run_id": "run_20261020_risk025_contract_weekly_v1",
+  "chart_episodes": 1311,
+  "facts": {
+    "input_product_count": 93,
+    "input_exchanges": [
+      "CFFEX",
+      "CZCE",
+      "DCE",
+      "GFEX",
+      "INE",
+      "SHFE"
+    ],
+    "traded_product_count": 80,
+    "traded_exchanges": [
+      "CFFEX",
+      "CZCE",
+      "DCE",
+      "GFEX",
+      "INE",
+      "SHFE"
+    ],
+    "residual_quote_dates": [
+      {
+        "vt_symbol": "CJ202701.CZCE",
+        "direction": "short",
+        "volume": 2.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "SH202611.CZCE",
+        "direction": "short",
+        "volume": 3.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "hc202701.SHFE",
+        "direction": "short",
+        "volume": 11.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "ss202611.SHFE",
+        "direction": "short",
+        "volume": 2.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "jd202612.DCE",
+        "direction": "short",
+        "volume": 8.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "al202611.SHFE",
+        "direction": "short",
+        "volume": 1.0,
+        "last_quote_date": "2026-10-16"
+      },
+      {
+        "vt_symbol": "sp202701.SHFE",
+        "direction": "short",
+        "volume": 2.0,
+        "last_quote_date": "2026-10-16"
+      }
+    ],
+    "max_actual_products": 14,
+    "last_fill_date": "2026-10-16"
+  }
+}

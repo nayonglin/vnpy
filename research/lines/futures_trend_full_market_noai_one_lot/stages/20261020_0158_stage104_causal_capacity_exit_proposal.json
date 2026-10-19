@@ -1,0 +1,80 @@
+{
+  "status": "PROPOSAL_ONLY_REQUIRES_USER_SCOPE_DECISION",
+  "created_at": "2026-10-20T01:58:57.258804+08:00",
+  "failed_run": "run_20261020_risk025_no_weekly_v1",
+  "failed_review_sha256": "098d9b9d48d606024d9d1ee4ad6e48eb77cfd4afd9b47284fbb17c15cbe6d927",
+  "risk_fraction": 0.0025,
+  "initial_example_budget": 2500,
+  "policy": "causal_capacity_draining_and_real_partial_close",
+  "formula": "ceil(abs(actual_position) / floor(current_completed_real_executable_bar_volume)) >= remaining_calendar_sessions_in_(today, original_deadline]",
+  "missing_or_zero_volume": "enter_draining; cached_quotes_order_dispatch_only; never_synthetic_fill",
+  "actual_qty_includes": "pending_CLOSE_unfilled_real_position",
+  "lock": "irreversible exact-contract draining through original cutoff; cancel/archive own unfilled OPEN; forbid reopen/add/roll-into same contract; other contracts unchanged",
+  "close_execution": "shared per-contract per-session floor(real volume) minus prior real fills; partial real CLOSE only; remainder preserves actual position, margin, FIFO and pending-close conservation",
+  "open_execution": "same original all-or-none authorized quantity, unchanged .0025 budget, original stop and long-only weekly mode",
+  "unchanged": [
+    "all original deadlines",
+    "frozen prices/volumes/mapping/metadata/calendar",
+    "risk_fraction",
+    "AI off",
+    "93 product universe",
+    "all short cases",
+    "no adds",
+    "weekly-on/off treatment"
+  ],
+  "new_numeric_optimization_parameters": [],
+  "changed_semantics": [
+    "CLOSE partial execution",
+    "causal early draining exit"
+  ],
+  "quantity_only_fixture": [
+    {
+      "date": "2019-06-21",
+      "actual_qty": 12,
+      "completed_real_volume": 12,
+      "remaining_sessions": 4,
+      "clearance_sessions": 1,
+      "draining": false
+    },
+    {
+      "date": "2019-06-24",
+      "actual_qty": 12,
+      "completed_real_volume": 6,
+      "remaining_sessions": 3,
+      "clearance_sessions": 2,
+      "draining": false
+    },
+    {
+      "date": "2019-06-25",
+      "actual_qty": 12,
+      "completed_real_volume": 9,
+      "remaining_sessions": 2,
+      "clearance_sessions": 2,
+      "draining": true
+    },
+    {
+      "date": "2019-06-26",
+      "real_close_fill": 6,
+      "remaining_actual_qty": 6
+    },
+    {
+      "date": "2019-06-27",
+      "real_close_fill": 6,
+      "remaining_actual_qty": 0,
+      "volume_capacity": 7,
+      "deadline_unchanged": true
+    }
+  ],
+  "adverse_fixtures": [
+    "only start6/26 then6/27 capacity7 leaves5 => original deadline hard failure",
+    "future volume0 => hard failure",
+    "6/28 volume49 after deadline cannot rescue",
+    "two close orders share one capacity budget, no per-order volume reuse",
+    "pending_CLOSE consumes actual quantity until real fills",
+    "future volume cannot size prior OPEN or select trades"
+  ],
+  "financial_replays_by_proposal": 0,
+  "implementation_completed": false,
+  "approval_received": false,
+  "limitations": "Using total daily volume at next-open prices is still a daily upper-bound proxy, not proof of actual open auction liquidity; causal planning cannot guarantee future liquidity. If a new run fails, retain the failure; no iterative threshold rescue."
+}

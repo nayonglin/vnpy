@@ -1,0 +1,38 @@
+{
+  "status": "PASS_STATIC_DISPLAY_ONLY",
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "audit_script_sha256": "16acbc2218e73ce4f5b81426dc916c5595b90fd5cfae3b0dacd918376f4c3b81",
+  "overview_summary_sha256": "1fc768b8e6c3fd3d5a585551bb3bdafa5f4ad6b04fe2365dd6a7afa8e2752a8d",
+  "final_recap_summary_sha256": "eccb555cacbc1b6581f35a59aa3b64cb38fd34463c3adea1b757bc9585756fa8",
+  "actual_review_json_sha256": "3a0ba1efa4d54e887dc7862ee4be48baab0dfafd3b38952ceb0b2de29f7f950e",
+  "source_financial_replays": 0,
+  "points": 2862,
+  "traces": 4,
+  "ending_equity": 809719.744577212,
+  "max_dd_pct": -37.111968008936934,
+  "max_dd_peak_date": "2015-07-08",
+  "max_dd_trough_date": "2026-09-21",
+  "ending_dd_pct": -34.47479803893088,
+  "javascript_blocks": 3,
+  "png_size": [
+    2240,
+    1200
+  ],
+  "png_visual_check": "separate_view_image_required",
+  "browser_check": "root_responsibility_not_claimed",
+  "failed_full_period_performance": "N/A_no_complete_manifest",
+  "artifact_sha256": {
+    "summary.json": "1fc768b8e6c3fd3d5a585551bb3bdafa5f4ad6b04fe2365dd6a7afa8e2752a8d",
+    "index.html": "878bac4542476910c9ba2af1d2397dd3a48c1c002582fc5f9587aec329e861e3",
+    "failed_review.md": "9bb3702e70e0f4cb87afc511016d376fd3dede7d971ee05927db6858f355745c",
+    "equity_drawdown.png": "1a195dc32f2ad4640780213055302421a3f1f0c4cbfb13ab03f594e75fc81802",
+    "failed_review.json": "098d9b9d48d606024d9d1ee4ad6e48eb77cfd4afd9b47284fbb17c15cbe6d927",
+    "status_overview_generator.py": "03b445f175ce0e9f38edbe780a070229570d82ff76cca3de2f6ac91c9baf63a2",
+    "equity_drawdown.csv": "6f40ec9947945c1ad302e24749bde7e13923d4e2a253b02285e288c08c1458ed",
+    "capacity_exit_proposal.json": "49dcd9e6eb367a10724d2de8117f49aa32b9162edffac1c7bfc8f2c12c778e74",
+    "figure.json": "7c74a013e1f4d6e01d21a5334ec863dd1b73881613adb3f0260616efcd1c4f76",
+    "capacity_exit_proposal.md": "4c1a7aba99259e76a40668450c12ff0687dc350e9f4a65efadf5edf6834f5da1"
+  },
+  "errors": [],
+  "error_count": 0
+}

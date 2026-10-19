@@ -1,0 +1,144 @@
+{
+  "status": "PASS_UI",
+  "scope": "completed_enabled_arm_and_failed_other_arm_status_only",
+  "created_at": "2026-10-20T02:16:31.761772+08:00",
+  "method": "CUA actual in-app browser DOM actions, SVG DOM observations and screenshots; localhost read-only serving; no private chart/runtime state",
+  "browser_id": "2",
+  "temporary_tab_id": "4",
+  "final_html_sha256": "382abac2b94232f0b485da6c4246ff9f3d1a6b36b081a64573da919c4571edee",
+  "records_sha256": "99a5aaac295e92fc226cd466e724fbd581b6bf13884c71a4d8a3be16a94d992b",
+  "overview_html_sha256": "02418a64ea4054dc884078495123167bbf8b0159151262f5a0b0b493f83ca6d1",
+  "complete_pair_comparison_qualified": false,
+  "recap": {
+    "directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_reviewed_v3",
+    "default_periods": [
+      "30日K",
+      "日K"
+    ],
+    "all_complete_entries": 1311,
+    "default_candle_paths": 388,
+    "year_filter": "2024",
+    "gross_loss_count": 92,
+    "next_prev_verified": true,
+    "final_record": "#2 rr202409.DCE short PnL=-15,050 2024-07-30→2024-08-01",
+    "actual_entry_quantity": 35,
+    "gross_pnl": -15050,
+    "net_pnl": -15820,
+    "cost": 770,
+    "display_R": -14.33,
+    "three_periods": [
+      "30日K",
+      "周K",
+      "日K"
+    ],
+    "subplots": 6,
+    "candle_paths": 477,
+    "ticks_before": [
+      "2023-05-08",
+      "2023-06-05",
+      "2023-07-05",
+      "2023-08-02",
+      "2023-08-30",
+      "2023-09-27",
+      "2023-11-02",
+      "2023-11-30",
+      "2023-12-28",
+      "2024-01-26",
+      "2024-03-04",
+      "2024-04-01",
+      "2024-05-06",
+      "2024-06-03",
+      "2024-07-02",
+      "2024-07-30",
+      "2024-08-27",
+      "2024-09-26"
+    ],
+    "ticks_zoomed": [
+      "2023-11-30",
+      "2023-12-28",
+      "2024-01-26",
+      "2024-03-04",
+      "2024-04-01",
+      "2024-05-06",
+      "2024-06-03",
+      "2024-07-02",
+      "2024-07-30",
+      "2024-08-27",
+      "2024-09-26"
+    ],
+    "ticks_after": [
+      "2023-05-08",
+      "2023-06-05",
+      "2023-07-05",
+      "2023-08-02",
+      "2023-08-30",
+      "2023-09-27",
+      "2023-11-02",
+      "2023-11-30",
+      "2023-12-28",
+      "2024-01-26",
+      "2024-03-04",
+      "2024-04-01",
+      "2024-05-06",
+      "2024-06-03",
+      "2024-07-02",
+      "2024-07-30",
+      "2024-08-27",
+      "2024-09-26"
+    ],
+    "zoom_changed": true,
+    "reset_current_record": true,
+    "record_unchanged_after_reset": true,
+    "labels": [
+      "毛盈亏绝对值从大到小",
+      "毛盈亏绝对值从小到大"
+    ],
+    "gross_vs_net_disclosure_present": true,
+    "reported_console_errors_and_warnings": []
+  },
+  "overview": {
+    "directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/overview_20261020_risk025_v1_status_v2",
+    "recap_link": "../recap_20261020_risk025_contract_weekly_v1_reviewed_v3/index.html",
+    "failed_metric_cells": 13,
+    "failed_cell_text": "未完成，不提供全期指标",
+    "legend": [
+      "总权益",
+      "历史高点",
+      "回撤",
+      "最大回撤"
+    ],
+    "ticks_before": [
+      "2016",
+      "2018",
+      "2020",
+      "2022",
+      "2024",
+      "2026"
+    ],
+    "ticks_zoomed": [
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024"
+    ],
+    "ticks_after": [
+      "2016",
+      "2018",
+      "2020",
+      "2022",
+      "2024",
+      "2026"
+    ],
+    "zoom_changed": true,
+    "reset_passed": true,
+    "reported_console_errors_and_warnings": []
+  },
+  "limitations": [
+    "Only completed enabled arm has recap UI; failed disabled arm has no legitimate full-period recap or paired equity curve.",
+    "SVG ticks sorted before comparison because D3 node reuse changes DOM order.",
+    "No policy change, financial replay, quote download or external order operation during UI validation."
+  ],
+  "pending_user_scope_decision": "Whether to permit common causal capacity draining plus real partial CLOSE before same original deadline, followed by new same-source paired replay; no reply received at record time."
+}

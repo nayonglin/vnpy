@@ -1,0 +1,79 @@
+{
+  "status": "ORIGINAL_POLICY_ONE_COMPLETE_ONE_FAILED_PENDING_USER_SCOPE_DECISION",
+  "created_at": "2026-10-20T02:19:41.587047+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "financial_replays": 2,
+  "financial_source_commit": "9feb5784d7757ee81cbab007a610a0d64da64ca6",
+  "display_source_commit": "e13f9e497b51c147b034d556eb6376156bc68700",
+  "risk_fraction": 0.0025,
+  "initial_capital": 1000000,
+  "initial_example_budget": 2500,
+  "actual_full_window": [
+    "2015-01-05",
+    "2026-10-16"
+  ],
+  "full_sessions": 2862,
+  "enabled_metrics": {
+    "end_balance": 809719.744577212,
+    "total_return": -19.028025542278794,
+    "max_ddpercent": -37.111968008936934,
+    "sharpe_ratio": -0.19656998442423415,
+    "total_commission": 47445.255422787006,
+    "total_slippage": 207215.0,
+    "total_trade_count": 2641,
+    "completed_episodes": 1311,
+    "completed_contracts": 6974,
+    "win_rate_pct": 31.88405797101449,
+    "payoff_ratio": 1.953592406378762,
+    "profit_factor": 0.9144475093687823,
+    "actual_long_open_count": 109,
+    "actual_short_open_count": 1209,
+    "max_actual_products": 14,
+    "max_lots_per_product": 72,
+    "residual_open_positions": 7,
+    "residual_contracts": 29,
+    "actual_open_budget_violations": 0,
+    "actual_long_weekly_violations": 0
+  },
+  "disabled_full_period_metrics": null,
+  "enabled_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "disabled_protocol_sha256": "fcb1176e51cf4bedd56879e4db2367ea16a0d7144fd4e6eb6f9574427af52914",
+  "disabled_failure_sha256": "bbb1459983f309d50b9e9ea84db72b9d157a262438a89babf5f8c9b619638550",
+  "enabled_financial_review_sha256": "3a0ba1efa4d54e887dc7862ee4be48baab0dfafd3b38952ceb0b2de29f7f950e",
+  "disabled_failed_review_sha256": "098d9b9d48d606024d9d1ee4ad6e48eb77cfd4afd9b47284fbb17c15cbe6d927",
+  "display_review": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0218_stage105_actual_enabled_display_review.json",
+    "sha256": "09ae3e3171b39b6a5b91ee0c2d74711d85343f4bb4068ac33070d8a310490fe9"
+  },
+  "ui_review_sha256": "ee736f073cae6e6733a7eaed5cd4f98aaa501def9a2814e9e1e8996cb4103c1a",
+  "enabled_version_sha256": "b7f694baa1f7cf2e3a1a76ffb37d1b8ef828a9e5834cb4c6a97d51debd3c587c",
+  "disabled_failed_version_sha256": "8cde7e775b81c5282fc7e192b05bc047b510f285efe1a606530509549aba9c3d",
+  "final_recap": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_reviewed_v3/index.html",
+    "sha256": "382abac2b94232f0b485da6c4246ff9f3d1a6b36b081a64573da919c4571edee"
+  },
+  "status_overview": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/overview_20261020_risk025_v1_status_v2/index.html",
+    "sha256": "02418a64ea4054dc884078495123167bbf8b0159151262f5a0b0b493f83ca6d1"
+  },
+  "complete_pair_comparison_qualified": false,
+  "next_policy_proposal": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0158_stage104_causal_capacity_exit_proposal.md",
+    "json_sha256": "49dcd9e6eb367a10724d2de8117f49aa32b9162edffac1c7bfc8f2c12c778e74",
+    "user_reply_received": false,
+    "implementation_started": false,
+    "new_financial_replays": 0
+  },
+  "tests": {
+    "stable_full_suite": 515,
+    "independent_boundary_oracles": 212,
+    "full_suite_log_sha256": "7e396fb5949b02813c288e378d550a061baa0ad3253e0b32d7ab38e736ad450a",
+    "retained_earlier_display_fixture_failure": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0145_stage093_full_suite.log"
+  },
+  "research_judgment": "Risk budget correctness cannot guarantee liquidation liquidity; unchanged deadline+AON close genuinely fails for JR. No complete binary performance ranking is justified.",
+  "overfit_reflection": "Post-selection risk exists after seeing older fractions; no sweep/contract exclusion/deadline relaxation. Retain negative and failed evidence.",
+  "continue_value": "Preserve reviewable current facts. Complete paired replay needs explicit shared execution policy choice; do not run parameter search or promote.",
+  "market_downloads": 0,
+  "production_api_calls": 0,
+  "order_api_calls": 0
+}

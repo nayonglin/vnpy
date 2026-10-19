@@ -1,0 +1,36 @@
+/private/tmp/stage105_enabled_recap_independent_audit.py:28: DtypeWarning: Columns (15,16,18,20) have mixed types. Specify dtype option on import or set low_memory=False.
+  def csv(path):return pd.read_csv(path,float_precision='round_trip')
+{
+  "independent_method_source_sha256": "843e7bdcc8ffe3014d34e8195003a0dcbcf5cdf395ce7e06a9255318b4d38f52",
+  "quarter_formula_literal": 0.0025,
+  "status": "PASS_DISPLAY_ONLY",
+  "source": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/run_20261020_risk025_contract_weekly_v1",
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "baseline": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/run_20261019_contract_weekly_long_v1",
+  "baseline_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "complete_entries": 1311,
+  "complete_contracts": 6974,
+  "partial_segments": 0,
+  "residual_entries": 7,
+  "residual_contracts": 29,
+  "remaining_entry_cash_cost": 564.7543399999714,
+  "all_fill_cost": 254660.2554227874,
+  "actual_open_risk_receipts": 1318,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "source_mutations": 0,
+  "browser_status": "separate_root_check_required",
+  "raw_fractional_protected_sha256": "c1e80efc43ae5ca600b69a84d08245898e2238a44fbdb0b59b958384ff797293",
+  "exact_weekly": {
+    "records": 1311,
+    "contracts": 1004,
+    "slots": 96857,
+    "missing_slots": 35778,
+    "ohlcv_values": 484285,
+    "ma_values": 387428,
+    "max_absolute_delta": 0.0,
+    "nonweekly_sha256": "6095d1db46976578fc3522c45ae87a6a8c5e47f80b8cd26c41f93e6c7f450c16"
+  },
+  "final_records_byte_sha256": "99a5aaac295e92fc226cd466e724fbd581b6bf13884c71a4d8a3be16a94d992b",
+  "validator_sha256": "6adbde516c45080d2e26a0840f88871b1367cebc1a7dd36284f2d9983009f355"
+}

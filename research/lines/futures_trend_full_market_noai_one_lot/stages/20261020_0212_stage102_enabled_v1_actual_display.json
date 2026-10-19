@@ -1,0 +1,72 @@
+{
+  "stage": "Stage102",
+  "status": "ENABLED_V1_DISPLAY_TOOL_VALIDATION_PASS_PAIR_NOT_QUALIFIED",
+  "time": "2026-10-20T02:12:03.984114",
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "source_commit": "9feb5784d7757ee81cbab007a610a0d64da64ca6",
+  "final_directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_reviewed_v2",
+  "final_summary_sha256": "eccb555cacbc1b6581f35a59aa3b64cb38fd34463c3adea1b757bc9585756fa8",
+  "final_html_sha256": "b0eca000d4af4b1af0f7868127da7c46bd267cec2b4e6a9136088c6990b74a48",
+  "final_records_sha256": "99a5aaac295e92fc226cd466e724fbd581b6bf13884c71a4d8a3be16a94d992b",
+  "actual_validation_report": "research/lines/futures_trend_full_market_noai_one_lot/stages/stage102_validate_enabled_v1_display.json",
+  "actual_validation_report_sha256": "94284b8b043b16c93c23e2e961a169cf3fdea6b2105dedc9698743b84e1a47c3",
+  "frozen_display_sha256": {
+    "stage094_quarter_risk_recap.py": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+    "stage095_quarter_weekly_display.py": "a1d77563c8576c3b03f841ff6c78f0775340df953bd3ee627d5cd47f958391e5",
+    "stage096_quarter_pair_overview.py": "ef3c4db803e97320e99b181d8bf61ae1af688f336db9bc2f48419d8c058cb552",
+    "stage097_validate_quarter_display.py": "f31fc85b5f82eef83905b92df94df5ef78fe117b686d4562680f336f6a6c45b7"
+  },
+  "actual_logs_sha256": {
+    "20261020_0212_stage102_enabled_v1_actual_display_raw.log": "27ebf2d09f8cee4d9e5617c0c6ec28544cda626de3dc8c5437b68fd1d193ca97",
+    "20261020_0212_stage102_enabled_v1_actual_display_fractional.log": "4b950040f8e1881922aa535d60a9fe01f2eb32e0b2d645dbcacc16925c213ea3",
+    "20261020_0212_stage102_enabled_v1_actual_display_weekly.log": "18cea267be92adda7131a84fe9325539a69c5db2614f0a879addd48c09f08f4c",
+    "20261020_0212_stage102_enabled_v1_actual_display_reviewed.log": "62d16f213690ee6118951c5d17c20f580f45cec268b948afd0c304a5b4434bf3",
+    "20261020_0212_stage102_enabled_v1_actual_display_labels.log": "264d88ba0efe66741a103674c929115d61d87d7ec923fd953112c4ae33ae7aba",
+    "20261020_0212_stage102_enabled_v1_actual_display_reset.log": "45a7bb22e4eed736cb5136bc750f025c1dd71e806141f06450e9c413fda8d437",
+    "20261020_0212_stage102_enabled_v1_actual_display_display_validation.log": "55cac8b9ba18777c21423ff5c0b770eed2cc64d58047a6268d77cd8b5398a8a2"
+  },
+  "source_metrics": {
+    "initial_capital": 1000000,
+    "analysis_start": "2015-01-01",
+    "analysis_end": "2026-10-16",
+    "end_balance": 809719.744577212,
+    "total_return": -19.028025542278794,
+    "max_ddpercent": -37.111968008936934,
+    "sharpe_ratio": -0.19656998442423415,
+    "total_slippage": 207215.0,
+    "total_commission": 47445.255422787006,
+    "total_trade_count": 2641,
+    "completed_episodes": 1311,
+    "win_rate_pct": 31.88405797101449,
+    "payoff_ratio": 1.953592406378762,
+    "profit_factor": 0.9144475093687823
+  },
+  "exact_weekly": {
+    "records": 1311,
+    "contracts": 1004,
+    "slots": 96857,
+    "missing_slots": 35778,
+    "ohlcv_values": 484285,
+    "ma_values": 387428,
+    "max_absolute_delta": 0.0,
+    "nonweekly_sha256": "6095d1db46976578fc3522c45ae87a6a8c5e47f80b8cd26c41f93e6c7f450c16"
+  },
+  "javascript_blocks": {
+    "raw": 2,
+    "fractional": 2,
+    "weekly": 2,
+    "final": 3
+  },
+  "pair_validation": false,
+  "off_status": "failed_no_complete_manifest_no_curve_no_096_pair",
+  "independent_agent_review": false,
+  "actual_financial_review": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0203_stage101_risk025_weekly_enabled_actual_review.json",
+    "sha256": "3a0ba1efa4d54e887dc7862ee4be48baab0dfafd3b38952ceb0b2de29f7f950e",
+    "verdict": "PASS_WITH_LIMITS"
+  },
+  "financial_replays_by_display_author": 0,
+  "market_downloads": 0,
+  "source_mutations": 0,
+  "browser_validation": "root_and_financial_reader_pending_separate_check"
+}

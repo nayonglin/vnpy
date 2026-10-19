@@ -1,0 +1,12 @@
+date,vt_symbol,event,actual_position,deadline
+2015-04-28,ME201505.CZCE,close_target_zero,1,2015-04-29
+2015-11-26,bu201512.SHFE,close_target_zero,-6,2015-11-27
+2016-12-28,SF201701.CZCE,close_target_zero,-8,2016-12-29
+2016-12-28,WH201701.CZCE,close_target_zero,2,2016-12-29
+2017-04-26,sn201705.SHFE,close_target_zero,-3,2017-04-27
+2017-08-29,sn201709.SHFE,close_target_zero,-3,2017-08-30
+2018-05-29,pb201806.SHFE,close_target_zero,2,2018-05-30
+2018-12-26,WH201901.CZCE,close_target_zero,-3,2018-12-27
+2019-06-26,JR201907.CZCE,close_target_zero,12,2019-06-27
+2019-06-26,fb201907.DCE,close_target_zero,-6,2019-06-27
+2019-06-27,JR201907.CZCE,close_target_zero,12,2019-06-27

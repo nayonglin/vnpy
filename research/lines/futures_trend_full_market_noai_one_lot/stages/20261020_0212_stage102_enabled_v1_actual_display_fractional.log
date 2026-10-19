@@ -1,0 +1,36 @@
+{
+  "generator_sha256": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+  "algorithm": {
+    "source_sha256": "007a29ea34511d2b164955ded29394f4ef4d331c0e797547b03b57cb34b90ef8",
+    "reused_functions": [
+      "budget",
+      "normalize_receipts",
+      "enrich"
+    ],
+    "constant_changes": [
+      [
+        ".005",
+        ".0025"
+      ],
+      [
+        0.005,
+        0.0025
+      ],
+      [
+        "【日线近似】全市场无AI · 0.5%总权益风险预算 · 多手整数定仓逐笔复盘",
+        "【日线近似】全市场无AI · 0.25%总权益风险预算 · 多手整数定仓逐笔复盘"
+      ],
+      [
+        "合约自身完成周线N为基线；0.5%风险预算，多手、不加仓",
+        "0.25%总权益风险，多手、不加仓；启用周过滤"
+      ]
+    ],
+    "only_declared_constants_changed": true,
+    "original_AST_sha256": "406ffd805ad42290cd2b994ae42a2089c95ab7070377b4b6b7792c00a63ca7d5",
+    "adapted_AST_sha256": "9279eb86367ce071602f71e5e42e0a1953f9fbfac34632e13feb0e734139579c"
+  },
+  "parent_execution_manifest_sha256": "f2fb3b9d17621ab5d9d64001238b305fbf9fb4fd3dd8fa72432bc0a3955f6860",
+  "frozen_data_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "weekly_filter": true,
+  "financial_replays": 0
+}

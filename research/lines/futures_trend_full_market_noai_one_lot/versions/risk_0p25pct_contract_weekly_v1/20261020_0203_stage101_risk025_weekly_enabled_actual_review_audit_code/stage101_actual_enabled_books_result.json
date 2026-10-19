@@ -1,0 +1,127 @@
+{
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "audit_script_sha256": "7621798029cc46381d398b1d71f9eff2fcdb5d6d660497745716a6d417cbe4c4",
+  "financial_replays": 0,
+  "method": "All original entry diagnostics partitioned by actual fill/budget or weekly rejection/forced or lifecycle cancellation; EOD pending originals from causal lifetime; factual basis exclusively from actual fills with partial closes. Native financial algorithms not imported.",
+  "original_intentions": 1911,
+  "terminal_intentions": 1910,
+  "unterminated_intentions": [
+    {
+      "date": "2026-10-16",
+      "contract": "SF202701.CZCE",
+      "direction": "short",
+      "signal": "short_case1a",
+      "quantity": 3
+    }
+  ],
+  "ending_pending_intentions": [
+    {
+      "signal_date": "2026-10-16",
+      "contract": "SF202701.CZCE",
+      "direction": "short",
+      "signal": "short_case1a",
+      "quantity": 3
+    }
+  ],
+  "account_days": 2862,
+  "pending_days": 1245,
+  "fresh_pending_days": 1225,
+  "max_pending_margin": 476354.0,
+  "mixed_actual_pending_days": 1084,
+  "mixed_examples": [
+    {
+      "date": "2015-01-12",
+      "actual_margin": 36128.3,
+      "pending_margin": 2465.6,
+      "total": 38593.9,
+      "fresh_margin": 2465.6
+    },
+    {
+      "date": "2015-01-13",
+      "actual_margin": 35485.3,
+      "pending_margin": 66404.6,
+      "total": 101889.90000000001,
+      "fresh_margin": 66404.6
+    },
+    {
+      "date": "2015-01-14",
+      "actual_margin": 37076.5,
+      "pending_margin": 18270.0,
+      "total": 55346.5,
+      "fresh_margin": 18270.0
+    },
+    {
+      "date": "2015-01-16",
+      "actual_margin": 55417.40000000001,
+      "pending_margin": 11123.4,
+      "total": 66540.8,
+      "fresh_margin": 11123.4
+    },
+    {
+      "date": "2015-01-20",
+      "actual_margin": 58465.90000000001,
+      "pending_margin": 2488.0,
+      "total": 60953.90000000001,
+      "fresh_margin": 2488.0
+    },
+    {
+      "date": "2015-02-04",
+      "actual_margin": 8958.0,
+      "pending_margin": 15864.0,
+      "total": 24822.0,
+      "fresh_margin": 15864.0
+    },
+    {
+      "date": "2015-02-09",
+      "actual_margin": 15904.0,
+      "pending_margin": 11120.0,
+      "total": 27024.0,
+      "fresh_margin": 11120.0
+    },
+    {
+      "date": "2015-03-03",
+      "actual_margin": 9296.0,
+      "pending_margin": 35700.0,
+      "total": 44996.0,
+      "fresh_margin": 35700.0
+    },
+    {
+      "date": "2015-03-05",
+      "actual_margin": 35000.0,
+      "pending_margin": 19652.0,
+      "total": 54652.0,
+      "fresh_margin": 19652.0
+    },
+    {
+      "date": "2015-03-06",
+      "actual_margin": 35035.0,
+      "pending_margin": 9672.0,
+      "total": 44707.0,
+      "fresh_margin": 9672.0
+    },
+    {
+      "date": "2015-03-09",
+      "actual_margin": 44845.0,
+      "pending_margin": 3178.0000000000005,
+      "total": 48023.0,
+      "fresh_margin": 3178.0000000000005
+    },
+    {
+      "date": "2015-03-10",
+      "actual_margin": 47695.0,
+      "pending_margin": 1998.4,
+      "total": 49693.4,
+      "fresh_margin": 1998.4
+    }
+  ],
+  "max_abs_errors": {
+    "actual_margin": 2.9103830456733704e-11,
+    "actual_plus_pending_margin": 5.820766091346741e-11,
+    "reserved_margin": 5.820766091346741e-11,
+    "pending_margin_reservation": 5.820766091346741e-11,
+    "funding_by_cluster_json": 5.820766091346741e-11,
+    "actual_pnl_by_cluster_json": 0.0
+  },
+  "errors": [],
+  "error_count": 0
+}

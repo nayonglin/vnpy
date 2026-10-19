@@ -1,0 +1,40 @@
+{
+  "generator_sha256": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+  "source_manifest_sha256": "7614f09d8dab584fae901901bfafc6dae7f72bca1beba4b6193195642f323d35",
+  "parent_directory": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261020_risk025_contract_weekly_v1_raw",
+  "parent_summary_sha256": "288bdce7cfeb0398b9bca182dc54cf482e25d6c26558dcc5db2117a9cb59392a",
+  "parent_artifact_sha256": {
+    "residual_open_positions.json": "7f9948f7ede05a3679ab44d7953985ed38533edee49afc1ad345a30ef6a1ea7f",
+    "index.html": "688547f392bd5b790bdf4753899dc29edafc7d12ce6d35c113a44b401490a330",
+    "all_trade_episodes.csv": "bcbf6b41254cde5dbf635b955ed458550b31921bd492e18769330b860f100c4d",
+    "strategy_daily.csv": "a3feae60792c7426609b8120e169935ed5b70ae21d5571dc488e294dc318e34f",
+    "records.json": "7e2a560e5d44c12ff6220f1e2a63706e6949b4eed1833845f0f9117925660da0",
+    "chart_manifest.csv": "ed0d2844674a99b244bb12a7cc6d03096025efdafa3206425bb539b85720a1b5",
+    "closed_lots.csv": "c6690abdee539796bd80f2cc36e39ccee6b0b23cb7216f8aaf10d01e987d4f32"
+  },
+  "completed_episodes": 1311,
+  "completed_contracts": 6974.0,
+  "partial_close_segments_of_residual_entries": 0,
+  "all_closed_matched_segments": 1323,
+  "unallocated_remaining_entry_cash_cost": 564.754339999985,
+  "complete_gross_pnl": 23144.999999998894,
+  "complete_net_pnl": -230950.50108278816,
+  "protected_payload_sha256_before": "c1e80efc43ae5ca600b69a84d08245898e2238a44fbdb0b59b958384ff797293",
+  "protected_payload_sha256_after": "c1e80efc43ae5ca600b69a84d08245898e2238a44fbdb0b59b958384ff797293",
+  "risk_denominator": "accepted_actual_total_initial_stop_risk_stage068_entry_risk",
+  "fractional_risk_policy": {
+    "risk_fraction": 0.0025,
+    "equity_basis": "causal_marked_total_account_equity",
+    "signal_budget": "signal_equity * 0.0025",
+    "opening_budget": "min(original_signal_budget, opening_equity_after_prior_fills_costs * 0.0025)",
+    "rounding": "floor_integer_contracts_no_minimum_one",
+    "opening_order_policy": "all_or_none_reject_if_total_stop_risk_exceeds_budget",
+    "currency_min_max_and_risk_multipliers": "replaced_by_fixed_equity_fraction",
+    "native_quantity_and_margin_gates": "preserved_reduce_only",
+    "one_lot_cap": false,
+    "adds": false
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "source_mutations": 0
+}
