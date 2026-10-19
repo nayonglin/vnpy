@@ -1,0 +1,20 @@
+{
+  "stage": "Stage096",
+  "status": "FROZEN_FIXTURE_PASS_REAL_RUN_PENDING",
+  "timestamp": "2026-10-20T01:46:39.969313",
+  "tests": 9,
+  "test_seconds": 9.028,
+  "source_files_sha256": {
+    "stage094_quarter_risk_recap.py": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+    "stage095_quarter_weekly_display.py": "a1d77563c8576c3b03f841ff6c78f0775340df953bd3ee627d5cd47f958391e5",
+    "stage096_quarter_pair_overview.py": "ef3c4db803e97320e99b181d8bf61ae1af688f336db9bc2f48419d8c058cb552",
+    "stage097_validate_quarter_display.py": "f31fc85b5f82eef83905b92df94df5ef78fe117b686d4562680f336f6a6c45b7",
+    "test_stage094_quarter_risk_recap.py": "903ab11a1d29000a0e840b8fbcd212d2661f015ff012becfc4c960f787bea045",
+    "test_stage095_quarter_weekly_display.py": "fd0ce494db058fbe6f0a0f388b2ae831d518409f0e1c8247bec6cdce6ec906c0",
+    "test_stage096_quarter_pair_overview.py": "a88a1e14c4212d5a7453657031c21def85641bd559aa671fd21927d26ed99852",
+    "test_stage097_validate_quarter_display.py": "5cc4e62ed6ef12bea5cc10fa59c09c006d34ba38360b6e658e0d84720c06a1ee"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_access": false
+}

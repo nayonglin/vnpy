@@ -1,0 +1,33 @@
+{
+  "stage": "Stage097",
+  "status": "STABLE_CODE_FROZEN_FULL_SUITE_PASS_REAL_OUTPUT_PENDING",
+  "timestamp": "2026-10-20T01:48:06.077829",
+  "full_suite": {
+    "tests": 515,
+    "seconds": 41.17,
+    "exit_code": 0,
+    "result": "OK",
+    "path": "research/lines/futures_trend_full_market_noai_one_lot/stages/20261020_0147_stage094_097_stable_full_suite.log",
+    "sha256": "7e396fb5949b02813c288e378d550a061baa0ad3253e0b32d7ab38e736ad450a"
+  },
+  "specialized": {
+    "tests": 9,
+    "seconds": 9.028,
+    "result": "PASS"
+  },
+  "source_sha256": {
+    "stage094_quarter_risk_recap.py": "d57815e4e8df26b0390c0f54fe7d687e23502f1fc7e82fe48fd49ae1f9675b04",
+    "stage095_quarter_weekly_display.py": "a1d77563c8576c3b03f841ff6c78f0775340df953bd3ee627d5cd47f958391e5",
+    "stage096_quarter_pair_overview.py": "ef3c4db803e97320e99b181d8bf61ae1af688f336db9bc2f48419d8c058cb552",
+    "stage097_validate_quarter_display.py": "f31fc85b5f82eef83905b92df94df5ef78fe117b686d4562680f336f6a6c45b7",
+    "test_stage094_quarter_risk_recap.py": "903ab11a1d29000a0e840b8fbcd212d2661f015ff012becfc4c960f787bea045",
+    "test_stage095_quarter_weekly_display.py": "fd0ce494db058fbe6f0a0f388b2ae831d518409f0e1c8247bec6cdce6ec906c0",
+    "test_stage096_quarter_pair_overview.py": "a88a1e14c4212d5a7453657031c21def85641bd559aa671fd21927d26ed99852",
+    "test_stage097_validate_quarter_display.py": "5cc4e62ed6ef12bea5cc10fa59c09c006d34ba38360b6e658e0d84720c06a1ee"
+  },
+  "off_null_required": true,
+  "off_empty_audits_supported": true,
+  "old_failed_log_preserved": "20261020_0145_stage093_full_suite.log",
+  "financial_replays": 0,
+  "real_outputs_generated": false
+}
