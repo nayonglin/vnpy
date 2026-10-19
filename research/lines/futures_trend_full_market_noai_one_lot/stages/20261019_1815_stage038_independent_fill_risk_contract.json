@@ -1,0 +1,49 @@
+{
+  "review_time": "2026-10-19T18:15:35.429405+08:00",
+  "scope": "Read-only implementation contract advice for future Stage039/040; not implementation acceptance or financial replay",
+  "source_code_sha256": {
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage018_run.py": "4eeebc435d0ae13aaeef8728d08dfd4eed71cf6d0ef2ac086f73d417c98035f1",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage003_candidate.py": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca"
+  },
+  "financial_reruns": 0,
+  "files_changed_other_than_this_record": false,
+  "findings": [
+    "fixed_size must remain 0, risk_budget final selected volume may only be capped downward to one.",
+    "The complete native risk_amount is a frozen per-intent authorization ceiling; do not substitute raw risk_ratio times total equity.",
+    "Fill risk uses actual open and unique unsynced matching layer effective stop; no signal-price distance and no same-day future close/ATR.",
+    "Reject stale/missing/invalid intent budget, stopped-through open, nonpositive capital; cancel target/order and only unmatched unfilled state.",
+    "Native minimum monetary risk budget and minimum per-contract tick risk differ from forbidden quantity floor zero-to-one.",
+    "Rollover OPEN also requires an authentic budget."
+  ],
+  "recommendations": {
+    "native_budget": "min(max(limited_balance * selected_risk_ratio, min_risk_per_trade), max_risk_per_trade) * effective_multiplier * overheat_scale * directional_30d_multiplier",
+    "limited_balance": "max(0,min(sizing_equity-actual_and_pending_reserved_margin,sizing_equity*effective_capital_usage_ratio-actual_and_pending_reserved_margin))",
+    "fill_risk": "max(direction_sign*(actual_open-effective_layer_stop)*contract_size,max(tick*contract_size,1))*1, after strict stop direction validation",
+    "budget_ceiling": "Original final signal risk_amount bound to unique intent is mandatory. If also reapplying current capital, use min(original authorized final amount, pure causal open-account recomputation using frozen factors); do not silently expand a stale intent.",
+    "state_identity": "contract + direction + original signal timestamp + unique unsynced one-lot layer identity; reissued order time is separate.",
+    "cost_scope": "Keep native stop-distance budget definition explicit. Already realized costs reduce open equity; fees/slippage remain separately reported and cannot justify guaranteed-loss claims."
+  },
+  "tests": [
+    "signal passes but opening gap over budget rejects without pos mutation; same-day close change cannot alter decision",
+    "exact budget equality allows; epsilon-over rejects; long and short mirrors",
+    "risk_budget zero must stay zero through all floors/recovery wrappers",
+    "missing/nonfinite budget, price, tick, size, stop or opening equity fails closed",
+    "open already on wrong side of stop rejects, not absolute-distance accept",
+    "stale and reissued intent use original identity/budget and cancel is idempotent",
+    "close pending does not release actual margin; actual close fill may release it",
+    "two opens sequentially consume actual opening margin/cost; no same-day future-close leak",
+    "rollover opens cannot bypass native risk budget or materialize >1 product gross",
+    "rejected new intent removes only unsynced state and targeted pending diagnostic links; actual positions survive"
+  ],
+  "limitations": [
+    "This preimplementation note does not certify future code.",
+    "Stop-distance risk is a planning scenario, not a guarantee of actual maximum loss under gap, limit moves, missing quotes or next-open exits.",
+    "Does not change risk clusters, thresholds, product inclusion or intraday-disabled policy."
+  ],
+  "external_sources": [
+    "https://www.cmegroup.com/education/courses/trade-and-risk-management/proper-position-size",
+    "https://www.cmegroup.com/education/courses/things-to-know-before-trading-cme-futures/position-and-risk-management"
+  ]
+}

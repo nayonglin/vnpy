@@ -1,0 +1,65 @@
+{
+  "review_kind": "implementation_preflight",
+  "source_manifest_sha256": null,
+  "review_decision": "allow_new_frozen_research_run_not_financial_result_pass",
+  "reviewed_at": "2026-10-18T20:37",
+  "reviewer": "/root/failed_run_review",
+  "P0": 0,
+  "P1": 0,
+  "financial_result_reviewed": false,
+  "financial_replays_performed": 0,
+  "isolated_run_entry": "stage018_run.py",
+  "previous_entry_preserved": "stage004_run.py",
+  "red_evidence": {
+    "initial_tests": 11,
+    "initial_failures": 11,
+    "old_behavior_failures": [
+      "fifth product blocked despite adequate margin",
+      "environment count reduced 4 to 1",
+      "old concurrent gate masked actual margin gate"
+    ],
+    "final_policy_before_implementation_tests": 13,
+    "final_policy_before_implementation_failures": 13,
+    "cancel_state_red_tests": [
+      "pending open cancellation leaves unmatched unsynced state",
+      "deadline actual-fill cancellation leaves unmatched unsynced state"
+    ]
+  },
+  "green_evidence": {
+    "lifecycle_tests": 19,
+    "all_line_tests": 60,
+    "all_passed": true,
+    "elapsed_seconds": 2.857
+  },
+  "reviewed_code_hashes": {
+    "research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502",
+    "research/lines/futures_trend_full_market_noai_one_lot/tools/stage018_run.py": "e635781cc678f7c66da47ecc727e3d0d10997102a63e856d64c344d0dee33931",
+    "research/lines/futures_trend_full_market_noai_one_lot/tools/test_stage017_lifecycle_regressions.py": "7a6616cdabbe1ea47adce71cb345b8160c4662fd52b4d4c91aedc7df42b0ae2d"
+  },
+  "policy": {
+    "index_expiry_buffer_sessions": 1,
+    "non_index_expiry_buffer_sessions": 10,
+    "non_index_delivery_month_buffer_sessions": 2,
+    "next_open_intent_lead_sessions": 1,
+    "index_codes": [
+      "IF",
+      "IH",
+      "IC",
+      "IM"
+    ],
+    "non_index_classes": [
+      "Commodity",
+      "Government"
+    ],
+    "arbitrary_concurrent_count_cap_removed": true,
+    "natural_universe_capacity": 93,
+    "actual_margin_and_cluster_broker_gates_retained": true,
+    "hindsight_last_bar_used": false
+  },
+  "limitations": [
+    "fixed operational research policy, not full historical regulatory replication",
+    "metadata class/maturity and independent calendar must be known and hashbound",
+    "liquidity may disappear before the conservative cutoff; unresolved position must fail closed",
+    "preflight success is not performance validation or production qualification"
+  ]
+}

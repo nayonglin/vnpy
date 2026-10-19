@@ -1,0 +1,20 @@
+{
+  "source_manifest_sha256": "b0893921b612ed284458625bd6405fef5a994a36beb9214839a8a4a7b27be983",
+  "report_summary_sha256": "3f0fda88b7582793f8d44382fc30bf7e9258f3715c1670a3c030932ba19d4985",
+  "report_html_sha256": "5f469c07bbced439036237171d75cda659a0b972c7d1ae1f7591039f010560b5",
+  "browser_table_counts": [
+    3,
+    3,
+    3,
+    74,
+    8,
+    12,
+    340
+  ],
+  "browser_contract_warning_visible": true,
+  "original_trade_rows_and_values_validated": 340,
+  "accounting_validated": true,
+  "target_risk_budget_contract_validated": false,
+  "configuration_modified": false,
+  "financial_replays": 0
+}

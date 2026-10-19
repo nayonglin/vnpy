@@ -1,0 +1,60 @@
+{
+  "review_time": "2026-10-18 20:51 Asia/Shanghai",
+  "reviewer": "independent_agent_failed_run_review",
+  "source_manifest_sha256": null,
+  "review_decision": "PREFLIGHT_NO_P0_P1_FOUND_NEW_FROZEN_RUN_ALLOWED_NOT_FINANCIAL_PASS",
+  "financial_backtests_by_reviewer": 0,
+  "performance_statistics_computed": false,
+  "source_receipt_sha256": "ed46d2b4f40b9af5859b17a0183f9101d64c0d383190c5cb8e47de230777ee4a",
+  "source_overlay_sha256": "90821fff6adee2812ea2fa6b718475892fc74686396af5411788f6239467c233",
+  "code_sha256": {
+    "stage023_quantity_price_overlay.py": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be",
+    "stage024_execution_quotes.py": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025",
+    "stage018_run.py": "4eeebc435d0ae13aaeef8728d08dfd4eed71cf6d0ef2ac086f73d417c98035f1",
+    "stage016_contract_lifecycle.py": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502",
+    "test_stage017_lifecycle_regressions.py": "c831e9e5d29073dbb005aa01f860c477bcc10326860d816b0066bb3f02d3be39"
+  },
+  "audit": {
+    "rows": 669,
+    "sources_hash_verified": 283,
+    "inputs_hash_verified": 8,
+    "raw_RQ_rows_re_read": 669,
+    "raw_TQ_rows_re_read": 357,
+    "official_original_proofs_checked": 669,
+    "official_member_blobs_hash_verified": 152,
+    "price_conflict_passed": 0,
+    "accepted_or_expiry_overlap": 0,
+    "unique_products": 23,
+    "loader_source_sha256": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025",
+    "qualifier_sha256": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be",
+    "receipt_sha256": "ed46d2b4f40b9af5859b17a0183f9101d64c0d383190c5cb8e47de230777ee4a",
+    "csv_sha256": "90821fff6adee2812ea2fa6b718475892fc74686396af5411788f6239467c233"
+  },
+  "loader_actual": {
+    "accepted_rows": 809279,
+    "expiry_rows": 133,
+    "quantity_rows": 669,
+    "all_accepted_values_unchanged": true,
+    "duplicate_keys": 0
+  },
+  "tests": {
+    "total_synthetic_tests": 82,
+    "all_pass": true,
+    "lifecycle_tests": 21,
+    "new_bug_observed_red_before_fix": true,
+    "new_bug": "quote_only_signal_day_target_zero_without_close_order",
+    "fix": "direct StrategyTemplate close-only rebalance; no unheld OPEN target materialization"
+  },
+  "lifecycle_policy_unchanged_since_failed_v1": true,
+  "price_disagreement_recovery_permitted": false,
+  "quantity_certified": false,
+  "scope": "Existing-position execution and valuation only, no OPEN, indicators, signal, selection, mapping or training",
+  "confidence": "High for hash-bound data and code boundaries; not evidence of real-world counterfactual liquidity or completed financial performance",
+  "limitations": [
+    "Official row-level proofs checked in receipt; 152 original spreadsheet member blobs independently hash-verified, not all 669 XLS rows separately re-decoded by reviewer.",
+    "Daily bar positive total volume does not establish liquidity for an actual order at open.",
+    "No new financial replay launched by reviewer; actual complete run still requires independent result review."
+  ],
+  "overfitting": false,
+  "research_value_remaining": true
+}

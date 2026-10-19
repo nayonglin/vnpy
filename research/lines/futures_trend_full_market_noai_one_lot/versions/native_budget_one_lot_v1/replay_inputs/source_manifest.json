@@ -1,0 +1,100 @@
+{
+  "status": "all_market_daily_research_inputs_only",
+  "financial_replays": 0,
+  "model_fits": 0,
+  "start": "2014-01-01",
+  "trade_start": "2015-01-01",
+  "end": "2026-10-16",
+  "source_inputs": {
+    "clean": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+      "bytes": 378552320,
+      "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711"
+    },
+    "instruments": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/futures_metadata.json",
+      "bytes": 7112153,
+      "sha256": "7feb3e6a98b9f6c054b329fb74a2044be2700ae83f7f11c8de07632cd9f2ae89"
+    },
+    "future_info": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/future_info.json",
+      "bytes": 1759224,
+      "sha256": "e040dbc9ebd26c6c1cdff6366e1ac258b583d15710fbe6d6418cf237c537919e"
+    },
+    "calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+    }
+  },
+  "historical_products": 93,
+  "exchanges": [
+    "CFFEX",
+    "CZCE",
+    "DCE",
+    "GFEX",
+    "INE",
+    "SHFE"
+  ],
+  "mapping_policy": "previous_calendar_session_close_oi_desc_volume_desc_epoch_asc_next_session_effective",
+  "candidate_filter": "delivery_yyyymm_ge_effective_yyyymm_and_known_maturity_ge_effective_day",
+  "contract_epochs": 4328,
+  "market_rows": 809279,
+  "source_calendar_days": 3107,
+  "mapping_grid_rows": 288951,
+  "mapped_product_days": 185722,
+  "missing_mapping_product_days": 103229,
+  "selected_contract_missing_real_bar_days": 3056,
+  "tick_fee_sources": {
+    "rq_exact_contract": 3705,
+    "rq_product_fallback": 623
+  },
+  "commission_type_counts": {
+    "by_volume": 2456,
+    "by_money": 1872
+  },
+  "boundaries": [
+    "Daily source only; cannot reproduce C9 intraday half-R stop/progress ordering or retry.",
+    "Known contract lifecycle is a vendor snapshot; no historical publication-time/PIT certification.",
+    "Fees/margins/ticks are contract or product vendor snapshots, not historical daily broker terms.",
+    "By-volume fees require explicit engine per-lot accounting; rate=0 is not fee-free.",
+    "Different open/close/close-today rates require explicit engine handling.",
+    "Universe includes 93 historical codes including ME/TC and separate monthly-average F families.",
+    "Only epochs ever selected by causal policy are materialized, with their complete available warmup/held history.",
+    "Missing bars remain missing; cached valuation cannot authorize signals or fills.",
+    "Slippage fixed one tick, except existing formal JM minimum one price unit; not a TCA estimate."
+  ],
+  "output_files": {
+    "contract_metadata.csv": {
+      "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/inputs/contract_metadata.csv",
+      "bytes": 1563323,
+      "sha256": "933505f37221cd64903ceb6f5551280f0cbea5f2107792cdb12668a357953528"
+    },
+    "mapping.csv": {
+      "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/inputs/mapping.csv",
+      "bytes": 32911543,
+      "sha256": "c35478d09c9ac9db37b75a9ea15e5a88b308d2895cee23fef728107def0ec91d"
+    },
+    "market_daily.csv": {
+      "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/inputs/market_daily.csv",
+      "bytes": 96537174,
+      "sha256": "316b1e875002dc176d1d5237e1610b2f18ae454e46726f160ff4c8ce9b6ae3c3"
+    },
+    "product_universe.csv": {
+      "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/inputs/product_universe.csv",
+      "bytes": 9674,
+      "sha256": "3ab73a0b1bf97c097323f8d012b2ca7d3d601ea9558d9dcf58937675d7879c67"
+    }
+  },
+  "code": {
+    "path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage002_market_source.py",
+    "bytes": 16120,
+    "sha256": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab"
+  },
+  "margin_sources": {
+    "rq_exact_contract": 3705,
+    "rq_exact_instrument": 623
+  },
+  "metadata_revision": "exact_fee_contract_margin_then_exact_instrument_margin_before_product_fallback",
+  "margin_revision_changed_epochs": 589
+}

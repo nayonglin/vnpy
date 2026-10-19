@@ -1,0 +1,266 @@
+{
+  "inventory": {
+    "daily_rows": 2862,
+    "start": "2015-01-05",
+    "end": "2026-10-16",
+    "fills": 1344,
+    "open": 674,
+    "close": 670,
+    "episodes": 670,
+    "products": 93,
+    "exchanges": [
+      "CFFEX",
+      "CZCE",
+      "DCE",
+      "GFEX",
+      "INE",
+      "SHFE"
+    ],
+    "traded_products": 67,
+    "last_fill": "2022-09-01",
+    "bad_daily_duplicates": 0,
+    "market_dupes": 0,
+    "all_volume_one": true
+  },
+  "stats": {
+    "ending_equity": 1175305.835252929,
+    "net_pnl": 175305.83525292948,
+    "total_return_pct": 17.530583525292908,
+    "max_dd_pct": -9.771712930111654,
+    "max_dd_amount": -119955.87419540691,
+    "sharpe_240_log": 0.25366697953826445,
+    "sharpe_252_log": 0.25993130502782763,
+    "commission": 9734.164747071058,
+    "slippage": 30725.0,
+    "roundtrip_win_rate_pct": 34.776119402985074,
+    "closed_net_pnl": 132926.13081292962,
+    "daily_equity_difference": 2.3283064365386963e-10,
+    "snapshot_equity_difference": 3.725290298461914e-09
+  },
+  "fills": {
+    "missing_bar": 0,
+    "nonpositive_volume": 0,
+    "price_open_error": 0.0,
+    "outside_bar_range": 0,
+    "overlay_fills": 0,
+    "overlay_open_fills": 0,
+    "signals": {
+      "long_case2": 190,
+      "short_case2": 148,
+      "long_case1a": 105,
+      "short_case1a": 95,
+      "long_case3": 65,
+      "short_case3": 57,
+      "rollover_reopen": 14
+    },
+    "signal_not_before_fill": 0,
+    "reissue_not_before_fill": 0,
+    "signal_after_reissue": 0,
+    "reissued_opens": 3,
+    "missing_original_signal_bar": 0,
+    "overlay_original_signal": 0,
+    "signal_mapping_mismatches": []
+  },
+  "ledger": {
+    "violations": [],
+    "max_product_gross_after_fill": 1,
+    "max_products_after_fill": 4,
+    "max_contracts_after_fill": 4,
+    "fee_max_abs_error": 2.842170943040401e-14,
+    "slippage_max_abs_error": 0.0,
+    "roundtrip_net_max_error": 7.275957614183426e-12,
+    "residuals": {
+      "fb201801.DCE": 1,
+      "IH201812.CFFEX": -1,
+      "IC202112.CFFEX": 1,
+      "ZC202209.CZCE": 1
+    },
+    "total_residual_mark_pnl": 42729.99999999988,
+    "residual_entry_cost": 350.29556,
+    "cash_plus_closed_plus_residual_reconstruction": 1175305.8352529295
+  },
+  "independent_daily": {
+    "holding_max_error": 3.637978807091713e-12,
+    "trading_max_error": 1.8189894035458565e-12,
+    "net_pnl_max_error": 3.637978807091713e-12,
+    "snapshot_position_disagreements": 0,
+    "max_actual_margin_above_snapshot": 7.275957614183426e-12,
+    "max_actual_margin": 468094.3999999998,
+    "max_reported_margin": 468094.3999999998,
+    "max_products_eod": 4,
+    "all_4_products_from": "2022-09-01"
+  },
+  "residual_details": [
+    {
+      "vt_symbol": "fb201801.DCE",
+      "entry": "2017-12-27",
+      "direction": "long",
+      "entry_price": 103.7,
+      "last_bar": "2018-01-02",
+      "last_close": 109.8,
+      "maturity": "2018-01-15",
+      "mark_pnl": 3049.9999999999973,
+      "days_stale": 3209
+    },
+    {
+      "vt_symbol": "IH201812.CFFEX",
+      "entry": "2018-12-19",
+      "direction": "short",
+      "entry_price": 2403.6,
+      "last_bar": "2018-12-21",
+      "last_close": 2294.8,
+      "maturity": "2018-12-21",
+      "mark_pnl": 32639.99999999992,
+      "days_stale": 2856
+    },
+    {
+      "vt_symbol": "IC202112.CFFEX",
+      "entry": "2021-12-10",
+      "direction": "long",
+      "entry_price": 7288.2,
+      "last_bar": "2021-12-17",
+      "last_close": 7323.4,
+      "maturity": "2021-12-17",
+      "mark_pnl": 7039.999999999964,
+      "days_stale": 1764
+    },
+    {
+      "vt_symbol": "ZC202209.CZCE",
+      "entry": "2022-09-01",
+      "direction": "long",
+      "entry_price": 807.6,
+      "last_bar": "2022-09-01",
+      "last_close": 807.6,
+      "maturity": "2022-09-07",
+      "mark_pnl": 0.0,
+      "days_stale": 1506
+    }
+  ],
+  "mapping": {
+    "nonpast_observation_count": 0,
+    "missing_observation_bars": 0,
+    "oi_max_difference": 0.0,
+    "overlay_as_mapping_observation": 0
+  },
+  "post2023": {
+    "daily_rows": 915,
+    "fills": 0,
+    "net_pnl": 0.0,
+    "unchanged_equity": true,
+    "candidate_rows": 2148,
+    "candidate_status_counts": {
+      "skipped": 2148
+    },
+    "skip_reason_counts": {
+      "concurrent_limit": 1777,
+      "sizing_zero_volume": 371
+    }
+  },
+  "code_snapshot_hashes": {
+    "stage004_run.py": {
+      "expected": "6d840d75022ed086adec705e448f8713b9698a7dd93747bd308f4808df6beb0e",
+      "snapshot": "6d840d75022ed086adec705e448f8713b9698a7dd93747bd308f4808df6beb0e",
+      "match": true
+    },
+    "stage003_candidate.py": {
+      "expected": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca",
+      "snapshot": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca",
+      "match": true
+    },
+    "stage002_market_source.py": {
+      "expected": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab",
+      "snapshot": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab",
+      "match": true
+    }
+  },
+  "blocked": [
+    {
+      "date": "2015-07-29",
+      "order_id": "BACKTESTING.136",
+      "vt_symbol": "SF201509.CZCE",
+      "reason": "actual_concurrency_limit"
+    },
+    {
+      "date": "2015-07-30",
+      "order_id": "BACKTESTING.137",
+      "vt_symbol": "SF201509.CZCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2017-06-16",
+      "order_id": "BACKTESTING.609",
+      "vt_symbol": "fb201709.DCE",
+      "reason": "actual_concurrency_limit"
+    },
+    {
+      "date": "2017-06-21",
+      "order_id": "BACKTESTING.613",
+      "vt_symbol": "fb201709.DCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2018-06-15",
+      "order_id": "BACKTESTING.924",
+      "vt_symbol": "IH201806.CFFEX",
+      "reason": "execution_only_quote_no_new_open"
+    },
+    {
+      "date": "2021-08-13",
+      "order_id": "BACKTESTING.2793",
+      "vt_symbol": "ru202201.SHFE",
+      "reason": "existing_actual_product_position"
+    },
+    {
+      "date": "2021-08-16",
+      "order_id": "BACKTESTING.2796",
+      "vt_symbol": "ru202201.SHFE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2021-09-24",
+      "order_id": "BACKTESTING.2866",
+      "vt_symbol": "al202111.SHFE",
+      "reason": "existing_actual_product_position"
+    },
+    {
+      "date": "2021-09-27",
+      "order_id": "BACKTESTING.2869",
+      "vt_symbol": "al202111.SHFE",
+      "reason": "stale_open_intent"
+    }
+  ],
+  "overlay_actual_trades": [],
+  "files_hashes": {
+    "daily.csv": "ba0101ee3caf190144385c1df184e00e6f85388dd09f8d43c9479ecb87a87862",
+    "trades.csv": "dc763b9053413e932c98c06a197a75e154039f97b4e7e69e34ce0b3a1aa6ea90",
+    "account_snapshots.csv": "d6a00a308b39ae3056471b5f0bfc6cf2e9e7cb540b3da8ba3f4d52cdccf0d3e2",
+    "residual_open_positions.json": "2b2c23935c3982fdfbc48bbdadbddf000a15e38cff91a6d6a67aaf0be1afbd11",
+    "market_daily.csv": "d378ec9840ae24046cc433e61923b94a6f03749a4e1c636465c7428bab252110",
+    "mapping.csv": "c35478d09c9ac9db37b75a9ea15e5a88b308d2895cee23fef728107def0ec91d",
+    "closed_episodes.csv": "51bf9e68b22cb25965514732282ec92584375475788857c665b38991cef1089a",
+    "contract_metadata.csv": "35f78bd7b432c837f2fb4874737c8ded016e6816914dfbd6fb4c0bb87f74bd27"
+  },
+  "recovery_validation": {
+    "summary_matches_independent_recalculation": true,
+    "manifest_file_hash_mismatches": [],
+    "direct_dependency_hash_mismatches": [],
+    "original_runtime_snapshot_hash_mismatches": [],
+    "source_input_hash_mismatches": [],
+    "source_output_hash_mismatches": [],
+    "recovery_tool_hash_matches_receipt": true,
+    "accepted_market_values_unchanged_after_key_sort": true,
+    "mapped_overlay_rows": 133,
+    "overlay_actual_fills": 0,
+    "serialization_regression_tests_passed": 1,
+    "filled_entry_diagnostics": 674,
+    "matched_opens": 674,
+    "signal_order_id_duplicates": 0,
+    "candidate_rows_2023_onward": 2148,
+    "candidate_concurrent_limit_2023_onward": 1777,
+    "days_after_last_fill": 995,
+    "final_cached_margin": 333335.19999999984,
+    "validity": "diagnostic_only_performance_not_certifiable",
+    "financial_replays_by_reviewer": 0
+  },
+  "audit_code_sha256": "102bda69e8f7c2af9176d095000d1e232f8c73442eee04bd369778b60cf3737d"
+}

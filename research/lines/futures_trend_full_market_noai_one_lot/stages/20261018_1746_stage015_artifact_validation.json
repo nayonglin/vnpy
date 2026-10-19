@@ -1,0 +1,18 @@
+{
+  "status": "PASS_diagnostic_artifact_only",
+  "episodes": 670,
+  "source_fills": 1344,
+  "gross_result_counts": {
+    "loss": 428,
+    "profit": 239,
+    "flat": 3
+  },
+  "daily_ma_points_independently_checked": 866810,
+  "all_entry_exit_dates_prices_signals_matched": true,
+  "metrics_unchanged": true,
+  "missing_minutes_qualified_unavailable": true,
+  "html_sha256": "9947fd2e27037c1768f14229929c7c405af298f1d6cf14c3a4eb451be36ff7c3",
+  "summary_sha256": "366bde693d0d9b9fa0aafe1fee3c84ca4b5419ee01f936d408f11d51caa0d252",
+  "source_manifest_sha256": "fbeac4c2874d3fdc90cee424a27f4e0c2ec00ac7b5265630a20dff18db349955",
+  "performance_certifiable": false
+}

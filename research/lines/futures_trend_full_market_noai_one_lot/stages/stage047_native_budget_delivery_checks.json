@@ -1,0 +1,65 @@
+{
+  "created_at": "2026-10-19T18:51:24.310254+08:00",
+  "source_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "reviewed_recap_html_sha256": "fc8b7eb865ef0ae3072c89af573a8955d3061efef7060eda170e708725042405",
+  "overview_html_sha256": "518adef1ef026362b2954006acca0b77fe5dfde16810f19373a6623c121117b3",
+  "overview_browser": {
+    "metrics_and_risk_policy_visible": true,
+    "equity_and_drawdown_panels_rendered": true,
+    "zoom_changed_both_svg_curve_geometries": true,
+    "reset_restored_full_2016_to_2026_date_labels": true,
+    "byte_identical_svg_after_reset": false,
+    "reset_note": "全日期刻度恢复；首次响应式布局与复位的SVG舍入几何微差，未宣称路径字节全等。"
+  },
+  "recap_browser": {
+    "status": "interrupted_before_observation",
+    "default_periods_confirmed": false,
+    "filters_confirmed": false,
+    "next_previous_confirmed": false,
+    "linked_zoom_confirmed": false,
+    "note": "导航约215MiB完整页时浏览器验收中断；不重试用户接管的浏览器，不冒认UI通过。"
+  },
+  "artifact_validation": {
+    "status": "PASS_native_budget_daily_research_artifact",
+    "episodes": 3059,
+    "source_fills": 6130,
+    "gross_result_counts": {
+      "loss": 1999,
+      "profit": 1041,
+      "flat": 19
+    },
+    "period_bar_counts": {
+      "day30": 131882,
+      "day10": 388446,
+      "monthly": 62973,
+      "weekly": 225360,
+      "daily": 1052245,
+      "intraday": 0
+    },
+    "ma_points_independently_checked": 6432734,
+    "javascript_syntax_checked": true,
+    "javascript_scripts_checked": 2,
+    "actual_opens_budget_checked": 3071,
+    "actual_open_budget_violations": 0,
+    "original_signal_snapshot_binding_checked": true,
+    "native_signal_and_open_budget_independently_recalculated": true,
+    "all_entry_exit_dates_prices_signals_matched": true,
+    "frozen_metrics_unchanged": true,
+    "configured_product_capacity": 93,
+    "max_actual_products": 21,
+    "max_products_reconstructed_after_each_fill": 21,
+    "max_product_gross_lots": 1,
+    "last_fill_date": "2026-10-16",
+    "performance_certifiable": true,
+    "financial_replays": 0,
+    "source_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+    "html_sha256": "fc8b7eb865ef0ae3072c89af573a8955d3061efef7060eda170e708725042405",
+    "summary_sha256": "039250fe78cecf4b2f32629f0c248f9fd3ebd41c8c22c90023cd014e486f348e",
+    "validator_sha256": "27cb66d7209c93a0d878326fb3582436251496d6e31c6e9fdefc331cc0e9b0ec"
+  },
+  "tests_passed": 137,
+  "financial_replays_this_change": 1,
+  "market_downloads": 0,
+  "production_access": false,
+  "order_api_calls": 0
+}

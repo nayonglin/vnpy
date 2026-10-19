@@ -1,0 +1,226 @@
+{
+  "version": "native_budget_one_lot_v1",
+  "created_at": "2026-10-19T19:01:22.076614+08:00",
+  "branch": "codex/full-market-noai-one-lot",
+  "baseline_parent_commit": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "run_id": "run_20261019_native_budget_one_lot_v1",
+  "run_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "next_change_excluded": "long_weekly_ma5_gt_ma10_gt_ma20_gt_ma40",
+  "production_qualified": false,
+  "external_large_files": {
+    "market_daily.csv": {
+      "local_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/run_20261019_native_budget_one_lot_v1/market_daily.csv",
+      "bytes": 117776943,
+      "sha256": "312cbee19cdf52b91894d2edf608e541e8c56348e8afd4e760fa6d0f7b7a1c5d"
+    },
+    "mapping.csv": {
+      "local_path": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/run_20261019_native_budget_one_lot_v1/mapping.csv",
+      "bytes": 32911543,
+      "sha256": "c35478d09c9ac9db37b75a9ea15e5a88b308d2895cee23fef728107def0ec91d"
+    }
+  },
+  "local_full_recap": "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/outputs/recap_20261019_native_budget_one_lot_v1_reviewed/index.html",
+  "note": "Git保存源码/测试/研究记录/冻结财务账本/参数/代码快照/报价资格输入及哈希。大行情、主力映射和约215MiB自包含HTML依仓库ignore保留本地，不伪称fresh clone自带私有原始数据。",
+  "files": {
+    "README.md": {
+      "bytes": 1589,
+      "sha256": "e754bc587926c8ed6935a7fc6c2540e27f7a5c7629065d8f775cf077c83e8a1f"
+    },
+    "overview_summary.json": {
+      "bytes": 29458,
+      "sha256": "9b3930bb4ac553d68c0dff763d1914283e23e293602a020a9a1f90ef41c936a2"
+    },
+    ".gitattributes": {
+      "bytes": 157,
+      "sha256": "da451c1094f2a52837efacd383c26a785ec1c1854e78f91b9812ae28dac4a590"
+    },
+    "overview_equity_drawdown.png": {
+      "bytes": 279446,
+      "sha256": "6f9e122689edd10794709f8268d4c8ae64d8a71500458d5c4a74739dc01a3b8f"
+    },
+    "replay_inputs/source_manifest.json": {
+      "bytes": 4726,
+      "sha256": "60c1f64a5fb97d7be7ada5e6bfdd97005bf356d959daf5b497f5117544c3a761"
+    },
+    "replay_inputs/product_universe.csv": {
+      "bytes": 9674,
+      "sha256": "3ab73a0b1bf97c097323f8d012b2ca7d3d601ea9558d9dcf58937675d7879c67"
+    },
+    "replay_inputs/expiry_execution_overlay.csv": {
+      "bytes": 32002,
+      "sha256": "7a9916c55da85daf9eb58cc753fe8be3f6af6a0a78b5eec33a7ee93e3be173cc"
+    },
+    "replay_inputs/contract_metadata.csv": {
+      "bytes": 1563323,
+      "sha256": "933505f37221cd64903ceb6f5551280f0cbea5f2107792cdb12668a357953528"
+    },
+    "replay_inputs/expiry_execution_overlay_manifest.json": {
+      "bytes": 780585,
+      "sha256": "104a5b9d43bea5908d519f466507b275dfc4fbcab434afe2b1b029e699ca4429"
+    },
+    "replay_inputs/stage023_quantity_price_overlay/execution_quotes.csv": {
+      "bytes": 166524,
+      "sha256": "90821fff6adee2812ea2fa6b718475892fc74686396af5411788f6239467c233"
+    },
+    "replay_inputs/stage023_quantity_price_overlay/receipt.json": {
+      "bytes": 4600071,
+      "sha256": "ed46d2b4f40b9af5859b17a0183f9101d64c0d383190c5cb8e47de230777ee4a"
+    },
+    "code_snapshot/backtesting.py": {
+      "bytes": 34265,
+      "sha256": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2"
+    },
+    "code_snapshot/stage024_execution_quotes.py": {
+      "bytes": 2858,
+      "sha256": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025"
+    },
+    "code_snapshot/stage003_candidate.py": {
+      "bytes": 6426,
+      "sha256": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca"
+    },
+    "code_snapshot/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": {
+      "bytes": 21604,
+      "sha256": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd"
+    },
+    "code_snapshot/stage002_market_source.py": {
+      "bytes": 16120,
+      "sha256": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab"
+    },
+    "code_snapshot/stage004_run.py": {
+      "bytes": 28743,
+      "sha256": "82fe78d9d60e2dcdaf7764da4c06693cefb57d41634c749c84634e5740da5d6f"
+    },
+    "code_snapshot/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py": {
+      "bytes": 32998,
+      "sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5"
+    },
+    "code_snapshot/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py": {
+      "bytes": 19355,
+      "sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57"
+    },
+    "code_snapshot/stage016_contract_lifecycle.py": {
+      "bytes": 7240,
+      "sha256": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502"
+    },
+    "code_snapshot/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py": {
+      "bytes": 28868,
+      "sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647"
+    },
+    "code_snapshot/stage040_run.py": {
+      "bytes": 38118,
+      "sha256": "bda26ecd4a2d099a939ca571b7274afdbed66c5d96cc64fb1d8a5b864967b696"
+    },
+    "code_snapshot/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+      "bytes": 50824,
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64"
+    },
+    "code_snapshot/stage039_risk_budget_candidate.py": {
+      "bytes": 6569,
+      "sha256": "583da051b2be119e195ed9e0531bd4a5e3c4e3606b9825bc783768030bec57df"
+    },
+    "code_snapshot/stage041_open_risk.py": {
+      "bytes": 7901,
+      "sha256": "9ed9840bb9188543842d9322755a1a57091afcc32a9cddc4cc0c4a3ff8eddd47"
+    },
+    "code_snapshot/template.py": {
+      "bytes": 10402,
+      "sha256": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a"
+    },
+    "code_snapshot/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": {
+      "bytes": 44621,
+      "sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2"
+    },
+    "code_snapshot/qmt_roll_portfolio_strategy.py": {
+      "bytes": 492864,
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9"
+    },
+    "code_snapshot/stage023_quantity_price_overlay.py": {
+      "bytes": 18456,
+      "sha256": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be"
+    },
+    "run_evidence/summary.json": {
+      "bytes": 4561,
+      "sha256": "ade12e750183e646f50cfd9cc751dfb66879fa9a45bfc6d67e5854226132a58a"
+    },
+    "run_evidence/residual_open_positions.json": {
+      "bytes": 18738,
+      "sha256": "319e0ea8e0c83009c3c0c1bd6671b3e5fdd0b8a6d270ad5d7a6c3ae283844722"
+    },
+    "run_evidence/lifecycle_events.csv": {
+      "bytes": 4494,
+      "sha256": "201c5bec708b584b2db2d84089e5b1e94b173ebf3843536e6d91746540243038"
+    },
+    "run_evidence/lifecycle_deadlines.csv": {
+      "bytes": 437899,
+      "sha256": "be8d1ce3833b709768fed4be73fcf30f8893cc41220f408e0aabef563466421f"
+    },
+    "run_evidence/candidates.csv": {
+      "bytes": 7706413,
+      "sha256": "b5a17a7ebf71ce3a7df4989f61367486c41867125036317328ce1f6cd6929153"
+    },
+    "run_evidence/daily.csv": {
+      "bytes": 576403,
+      "sha256": "e53cabb4c782a15442617e413e39f21daf2708a57fff24dd78a4694ce1848e24"
+    },
+    "run_evidence/account_snapshots.csv": {
+      "bytes": 494729,
+      "sha256": "9ff07982e7ee2781b5e1ad68f76378eb4b11f51c137acd8d01d2820fef0a2ca6"
+    },
+    "run_evidence/trades.csv": {
+      "bytes": 3906060,
+      "sha256": "d939799abd21ee6d33e28221bd6e7dd4af02a04674efaf01d10ddda86e1ae66c"
+    },
+    "run_evidence/annual.csv": {
+      "bytes": 1137,
+      "sha256": "9605853f51994f49cd7113d275326b8d9e97af3a610d7f2853f6febf4e933867"
+    },
+    "run_evidence/manifest.json": {
+      "bytes": 106309,
+      "sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3"
+    },
+    "run_evidence/protocol.json": {
+      "bytes": 98251,
+      "sha256": "4a366c42f492e666d1dc4e3e274d189033ca71ace3112ef1908b969a183af208"
+    },
+    "run_evidence/contract_metadata.csv": {
+      "bytes": 1592452,
+      "sha256": "f30e40c38f4501066aff0d76befa90e4a20a4e3513e42fd9e9eb123fafd60990"
+    },
+    "run_evidence/closed_episodes.csv": {
+      "bytes": 391823,
+      "sha256": "ccb6a37ee38afb646ed3c02fed828dd5749359b72262da0fcf0a54c5f85a5591"
+    },
+    "run_evidence/deferred_orders.csv": {
+      "bytes": 3665,
+      "sha256": "630d63d7237ea77de0b8148452151eddeb51bfec2e32075501ccdabc8bbe12fb"
+    },
+    "run_evidence/open_budget_audit.csv": {
+      "bytes": 3194835,
+      "sha256": "87797d4e78b536987b074d55fc9305ca41b1468471c88b58776772cedb4a4504"
+    },
+    "run_evidence/engine.log": {
+      "bytes": 609,
+      "sha256": "0191199f593c7b570eefe94c6bdaa37ca4a37fa669a2808973ac36986abbb64d"
+    },
+    "run_evidence/trade_events.csv": {
+      "bytes": 997311,
+      "sha256": "1d509b48001a32757fc53a2bc6811ecc857aee74b7e33268e75aceeaf98d43ae"
+    },
+    "run_evidence/held_missing.csv": {
+      "bytes": 2388,
+      "sha256": "8cc0514fa3339b86559f873a594653d9a28faddaf1d9b80e417f8f652698a980"
+    },
+    "run_evidence/entry_risk.csv": {
+      "bytes": 3864501,
+      "sha256": "8f471c1f2216b05bd4aef75362eafc8554ad3162e616c2b488ff97a2212abfac"
+    },
+    "run_evidence/code_start_hashes.json": {
+      "bytes": 3826,
+      "sha256": "450e1216507ab2de6b407e369d611c27db401af270f32ae761b9fcda24ac423f"
+    },
+    "run_evidence/blocked_open_orders.csv": {
+      "bytes": 11855,
+      "sha256": "65d2bb80dbc6f26fc7841c129b21c1e2b65ca21917f2a6beacfcad99720a758e"
+    }
+  }
+}

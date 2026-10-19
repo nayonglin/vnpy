@@ -1,0 +1,464 @@
+{
+  "inventory": {
+    "daily_rows": 2862,
+    "start": "2015-01-05",
+    "end": "2026-10-16",
+    "fills": 6448,
+    "open": 3230,
+    "close": 3218,
+    "episodes": 3218,
+    "products": 93,
+    "exchanges": [
+      "CFFEX",
+      "CZCE",
+      "DCE",
+      "GFEX",
+      "INE",
+      "SHFE"
+    ],
+    "traded_products": 92,
+    "last_fill": "2026-10-16",
+    "bad_daily_duplicates": 0,
+    "market_dupes": 0,
+    "all_volume_one": true
+  },
+  "stats": {
+    "ending_equity": 1376927.909761006,
+    "net_pnl": 376927.909761006,
+    "total_return_pct": 37.69279097610061,
+    "max_dd_pct": -37.93893509198823,
+    "max_dd_amount": -578947.182382999,
+    "sharpe_240_log": 0.18049989145781187,
+    "sharpe_252_log": 0.18495735010292497,
+    "commission": 49387.090238994635,
+    "slippage": 156840.0,
+    "roundtrip_win_rate_pct": 33.6544437538844,
+    "closed_net_pnl": 351923.1081810058,
+    "daily_equity_difference": 4.656612873077393e-10,
+    "snapshot_equity_difference": 4.190951585769653e-09
+  },
+  "fills": {
+    "missing_bar": 0,
+    "nonpositive_volume": 0,
+    "price_open_error": 0.0,
+    "outside_bar_range": 0,
+    "overlay_fills": 4,
+    "overlay_open_fills": 0,
+    "signals": {
+      "long_case2": 890,
+      "short_case2": 708,
+      "long_case1a": 576,
+      "short_case1a": 496,
+      "long_case3": 259,
+      "short_case3": 241,
+      "rollover_reopen": 60
+    },
+    "signal_not_before_fill": 0,
+    "reissue_not_before_fill": 0,
+    "signal_after_reissue": 0,
+    "reissued_opens": 9,
+    "missing_original_signal_bar": 0,
+    "overlay_original_signal": 0,
+    "signal_mapping_mismatches": []
+  },
+  "ledger": {
+    "violations": [],
+    "max_product_gross_after_fill": 1,
+    "max_products_after_fill": 22,
+    "max_contracts_after_fill": 22,
+    "fee_max_abs_error": 2.842170943040401e-14,
+    "slippage_max_abs_error": 0.0,
+    "roundtrip_net_max_error": 2.9103830456733704e-11,
+    "residuals": {
+      "CJ202701.CZCE": -1,
+      "hc202701.SHFE": -1,
+      "SH202611.CZCE": -1,
+      "AP202701.CZCE": -1,
+      "au202612.SHFE": -1,
+      "PL202611.CZCE": 1,
+      "ni202611.SHFE": -1,
+      "jd202612.DCE": -1,
+      "TF202612.CFFEX": 1,
+      "UR202701.CZCE": -1,
+      "al202611.SHFE": -1,
+      "sp202701.SHFE": -1
+    },
+    "total_residual_mark_pnl": 25314.99999999993,
+    "residual_entry_cost": 310.1984199999964,
+    "cash_plus_closed_plus_residual_reconstruction": 1376927.9097610058
+  },
+  "independent_daily": {
+    "holding_max_error": 1.4551915228366852e-11,
+    "trading_max_error": 3.637978807091713e-12,
+    "net_pnl_max_error": 7.275957614183426e-12,
+    "snapshot_position_disagreements": 0,
+    "max_actual_margin_above_snapshot": 5.820766091346741e-11,
+    "max_actual_margin": 664173.6,
+    "max_reported_margin": 664173.6,
+    "max_products_eod": 22,
+    "days_more_than_four_products": 1951
+  },
+  "residual_details": [
+    {
+      "vt_symbol": "CJ202701.CZCE",
+      "entry": "2026-09-11",
+      "direction": "short",
+      "entry_price": 7700.0,
+      "last_bar": "2026-10-16",
+      "last_close": 6420.0,
+      "maturity": "2027-01-14",
+      "mark_pnl": 6400.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "AP202701.CZCE",
+      "entry": "2026-09-22",
+      "direction": "short",
+      "entry_price": 7081.0,
+      "last_bar": "2026-10-16",
+      "last_close": 5998.0,
+      "maturity": "2027-01-14",
+      "mark_pnl": 10830.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "au202612.SHFE",
+      "entry": "2026-09-29",
+      "direction": "short",
+      "entry_price": 901.04,
+      "last_bar": "2026-10-16",
+      "last_close": 901.82,
+      "maturity": "2026-12-15",
+      "mark_pnl": -780.0000000000864,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "SH202611.CZCE",
+      "entry": "2026-09-30",
+      "direction": "short",
+      "entry_price": 1822.0,
+      "last_bar": "2026-10-16",
+      "last_close": 1757.0,
+      "maturity": "2026-11-13",
+      "mark_pnl": 1950.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "PL202611.CZCE",
+      "entry": "2026-10-09",
+      "direction": "long",
+      "entry_price": 9900.0,
+      "last_bar": "2026-10-16",
+      "last_close": 9908.0,
+      "maturity": "2026-11-13",
+      "mark_pnl": 160.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "ni202611.SHFE",
+      "entry": "2026-10-09",
+      "direction": "short",
+      "entry_price": 119750.0,
+      "last_bar": "2026-10-16",
+      "last_close": 115040.0,
+      "maturity": "2026-11-16",
+      "mark_pnl": 4710.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "hc202701.SHFE",
+      "entry": "2026-10-12",
+      "direction": "short",
+      "entry_price": 3263.0,
+      "last_bar": "2026-10-16",
+      "last_close": 3242.0,
+      "maturity": "2027-01-15",
+      "mark_pnl": 210.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "jd202612.DCE",
+      "entry": "2026-10-14",
+      "direction": "short",
+      "entry_price": 3572.0,
+      "last_bar": "2026-10-16",
+      "last_close": 3332.0,
+      "maturity": "2026-12-28",
+      "mark_pnl": 2400.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "TF202612.CFFEX",
+      "entry": "2026-10-15",
+      "direction": "long",
+      "entry_price": 106.69,
+      "last_bar": "2026-10-16",
+      "last_close": 106.735,
+      "maturity": "2026-12-11",
+      "mark_pnl": 450.00000000001705,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "UR202701.CZCE",
+      "entry": "2026-10-15",
+      "direction": "short",
+      "entry_price": 1664.0,
+      "last_bar": "2026-10-16",
+      "last_close": 1676.0,
+      "maturity": "2027-01-14",
+      "mark_pnl": -240.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "al202611.SHFE",
+      "entry": "2026-10-15",
+      "direction": "short",
+      "entry_price": 23155.0,
+      "last_bar": "2026-10-16",
+      "last_close": 23270.0,
+      "maturity": "2026-11-16",
+      "mark_pnl": -575.0,
+      "days_stale": 0
+    },
+    {
+      "vt_symbol": "sp202701.SHFE",
+      "entry": "2026-10-15",
+      "direction": "short",
+      "entry_price": 4736.0,
+      "last_bar": "2026-10-16",
+      "last_close": 4756.0,
+      "maturity": "2027-01-15",
+      "mark_pnl": -200.0,
+      "days_stale": 0
+    }
+  ],
+  "mapping": {
+    "nonpast_observation_count": 0,
+    "missing_observation_bars": 0,
+    "oi_max_difference": 0.0,
+    "overlay_as_mapping_observation": 0
+  },
+  "post2023": {
+    "daily_rows": 915,
+    "fills": 2509,
+    "net_pnl": -52042.992847999674,
+    "unchanged_equity": false,
+    "candidate_rows": 2163,
+    "candidate_status_counts": {
+      "opened": 1233,
+      "skipped": 930
+    },
+    "skip_reason_counts": {
+      "sizing_zero_volume": 930
+    }
+  },
+  "code_snapshot_hashes": {
+    "stage018_run.py": {
+      "expected": "4eeebc435d0ae13aaeef8728d08dfd4eed71cf6d0ef2ac086f73d417c98035f1",
+      "snapshot": "4eeebc435d0ae13aaeef8728d08dfd4eed71cf6d0ef2ac086f73d417c98035f1",
+      "match": true
+    },
+    "stage003_candidate.py": {
+      "expected": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca",
+      "snapshot": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca",
+      "match": true
+    },
+    "stage002_market_source.py": {
+      "expected": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab",
+      "snapshot": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab",
+      "match": true
+    },
+    "stage016_contract_lifecycle.py": {
+      "expected": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502",
+      "snapshot": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502",
+      "match": true
+    },
+    "stage004_run.py": {
+      "expected": "82fe78d9d60e2dcdaf7764da4c06693cefb57d41634c749c84634e5740da5d6f",
+      "snapshot": "82fe78d9d60e2dcdaf7764da4c06693cefb57d41634c749c84634e5740da5d6f",
+      "match": true
+    },
+    "stage024_execution_quotes.py": {
+      "expected": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025",
+      "snapshot": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025",
+      "match": true
+    },
+    "stage023_quantity_price_overlay.py": {
+      "expected": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be",
+      "snapshot": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be",
+      "match": true
+    }
+  },
+  "blocked": [
+    {
+      "date": "2020-06-19",
+      "order_id": "BACKTESTING.2396",
+      "vt_symbol": "m202009.DCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2021-09-09",
+      "order_id": "BACKTESTING.3195",
+      "vt_symbol": "pg202110.DCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2021-11-10",
+      "order_id": "BACKTESTING.3288",
+      "vt_symbol": "b202201.DCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2023-06-19",
+      "order_id": "BACKTESTING.4243",
+      "vt_symbol": "RS202309.CZCE",
+      "reason": "stale_open_intent"
+    },
+    {
+      "date": "2024-04-15",
+      "order_id": "BACKTESTING.4769",
+      "vt_symbol": "fb202406.DCE",
+      "reason": "stale_open_intent"
+    }
+  ],
+  "overlay_actual_trades": [
+    {
+      "trade_id": "BACKTESTING.2878",
+      "date": "2021-04-26",
+      "vt_symbol": "al202105.SHFE",
+      "offset": "close",
+      "price": 18340.0
+    },
+    {
+      "trade_id": "BACKTESTING.2978",
+      "date": "2021-06-24",
+      "vt_symbol": "cu202107.SHFE",
+      "offset": "close",
+      "price": 68790.0
+    },
+    {
+      "trade_id": "BACKTESTING.3165",
+      "date": "2021-09-24",
+      "vt_symbol": "al202110.SHFE",
+      "offset": "close",
+      "price": 23520.0
+    },
+    {
+      "trade_id": "BACKTESTING.4891",
+      "date": "2024-07-15",
+      "vt_symbol": "rb202410.SHFE",
+      "offset": "close",
+      "price": 3523.0
+    }
+  ],
+  "files_hashes": {
+    "daily.csv": "be3b288c15b805685d53eed9e5b7f6fe15f4d90603da4a71bdf6fbf126d4d790",
+    "trades.csv": "7bc3c9fddb6b05108800ce55002f1ca6af76659e3b1454ea8c91f1adc15e720f",
+    "account_snapshots.csv": "4be5234f2286f2099b64a6eb648c9eb426007b022d8605b70521b90e0301145b",
+    "residual_open_positions.json": "a0521da921f71fbbc9eb4544012d56d176fc0c5be3c61a98f3236cede705c862",
+    "market_daily.csv": "312cbee19cdf52b91894d2edf608e541e8c56348e8afd4e760fa6d0f7b7a1c5d",
+    "mapping.csv": "c35478d09c9ac9db37b75a9ea15e5a88b308d2895cee23fef728107def0ec91d",
+    "closed_episodes.csv": "2c06fd12620add581c75cf1c6c3bead8faf699f0370ec09585147915a6678366",
+    "contract_metadata.csv": "f30e40c38f4501066aff0d76befa90e4a20a4e3513e42fd9e9eb123fafd60990"
+  },
+  "review_time": "2026-10-18 21:03 Asia/Shanghai",
+  "reviewer": "independent_agent_failed_run_review",
+  "run_id": "run_20261018_lifecycle_unlimited_v2",
+  "source_manifest_sha256": "b0893921b612ed284458625bd6405fef5a994a36beb9214839a8a4a7b27be983",
+  "verdict": "PASS：完整日线近似研究账本与执行约束核验通过；非正式策略或生产资格认证",
+  "review_decision": "PASS_WITH_DECLARED_DAILY_PROXY_RESEARCH_LIMITS",
+  "financial_metrics_valid_within_daily_proxy_scope": true,
+  "production_qualified": false,
+  "financial_reruns_by_reviewer": 0,
+  "extra_audit": {
+    "source_manifest_sha256": "b0893921b612ed284458625bd6405fef5a994a36beb9214839a8a4a7b27be983",
+    "manifest_files_hashes_checked": 21,
+    "code_current_hashes_checked": 11,
+    "code_start_snapshot_hashes_checked": 7,
+    "deadline_rows_independently_recomputed": 4328,
+    "late_position_days": 0,
+    "open_on_or_after_cutoff": 0,
+    "actual_broker_margin_open_violations": 0,
+    "max_broker_margin_equity_ratio_at_open": 0.9261796283943753,
+    "quantity_overlay_actual_fills": 4,
+    "all_fill_evidence_and_flags_match_market": true,
+    "signal_order_ids_nonempty_unique": true,
+    "expired_or_overdue_residuals": 0,
+    "final_residual_count": 12,
+    "all_residuals_fresh": true,
+    "max_gross_notional": 6699170.0,
+    "max_gross_notional_to_equity_ratio": 6.466005593701489,
+    "max_margin_to_equity_ratio": 0.5555087488373676,
+    "final_gross_notional": 2690330.0,
+    "log_error_lines": [],
+    "effective_disabled_settings": {
+      "enable_add_position": false,
+      "enable_selection_pairwise_v2": false,
+      "enable_selection_pairwise_v2_catastrophic_veto": false,
+      "enable_selection_pairwise_v2_volume_tilt": false,
+      "enable_ai_product_pool_filter": false,
+      "enable_supply_demand_headwind_filter": false,
+      "enable_stage827_intraday_c2_stop": false,
+      "enable_stage847_half_r_stop_retry": false,
+      "enable_selection_pairwise_v2_catastrophic_hard_filter": false
+    },
+    "years_fills": {
+      "2015": 349,
+      "2016": 381,
+      "2017": 409,
+      "2018": 443,
+      "2019": 551,
+      "2020": 552,
+      "2021": 648,
+      "2022": 606,
+      "2023": 587,
+      "2024": 670,
+      "2025": 684,
+      "2026": 568
+    },
+    "untraded_products": [
+      "l_F.DCE"
+    ]
+  },
+  "inactive_date_feature_risk": {
+    "priority": "P2",
+    "description": "Lifecycle exit intent precedes native current_bar_date update; outcome date could read prior session if cooldown or failure-memory features enabled in a later version.",
+    "enable_product_direction_failure_cooldown_effective_class_and_instance": false,
+    "enable_failure_memory_micro_sizing_effective_class_and_instance": false,
+    "protocol_keys_present": false,
+    "first_guard_returns_before_date_and_history": true,
+    "current_run_behavior_affected": false
+  },
+  "additional_performance": {
+    "calendar_cagr_pct": 2.750261236429541,
+    "cost_total": 206227.09023899463,
+    "ending_margin": 249260.1,
+    "ending_gross_notional": 2690330.0
+  },
+  "findings": [
+    {
+      "priority": "P2",
+      "topic": "inactive lifecycle outcome date",
+      "blocking": false,
+      "current_run_affected": false
+    },
+    {
+      "priority": "P2",
+      "topic": "provenance completeness",
+      "blocking": false,
+      "description": "Manifest records 11 direct code files and 7 start snapshots plus source commit/material identity; it does not hash/snapshot the complete transitive Python import closure. Current listed files all match. A future broader reproducibility bundle should enumerate inherited Stage827/830 and config helpers too."
+    }
+  ],
+  "confidence": "High for this complete frozen ledger, daily accounting, data bindings and stated execution constraints; limited for real counterfactual liquidity, historical PIT fees/specs/maturity publication, and intraday ordering.",
+  "boundaries": [
+    "Daily proxy, C2/C9 intraday stop/retry disabled, supply filter disabled by prior authorization.",
+    "Static vendor contract/fee/margin snapshot; not historical daily PIT broker terms.",
+    "Causal prior-source-session OI/volume main mapping; not formal frozen mapping.",
+    "Fixed lifecycle operating policy 1T index / min(month-2T,maturity-10T) non-index; not historical legal delivery rules.",
+    "No new OPEN, AM, selection, mapping or training from 669 quantity-conflict or 133 expiry execution-only quotes.",
+    "12 normal live-ended positions remain marked, not force-closed at end; closed win rate excludes them.",
+    "Same history used to diagnose implementation failures; this is not out-of-sample strategy validation."
+  ],
+  "overfitting_assessment": "未见以收益扫参或品种例外；通用数据与生命周期修复不是alpha调参，但同一历史区间研发反馈不等于样本外验证。",
+  "continuation_value": "有：形成可复验的无AI全市场基准；Sharpe约0.18、回撤约37.94%，不能据此宣称强alpha或正式晋级。"
+}

@@ -1,0 +1,19 @@
+{
+  "persisted_by": "root",
+  "source": "独立agent /root/data_scope 在浏览器中断前的复核消息",
+  "agent_report_file_saved": false,
+  "note": "原代理回报已完成计算，但其唯一Stage048报告落盘前会话中断；本文件只留存已收到的消息，不冒充代理另行签发的文件。",
+  "source_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "verdict": "PASS_WITH_LIMITS",
+  "actual_open_risk_recomputed": 3071,
+  "complete_episode_gross_r_recomputed": 3059,
+  "csv_r_values_checked": 9177,
+  "unchanged_non_r_csv_cells": 315077,
+  "unchanged_period_payloads": 18354,
+  "unchanged_non_r_record_fields": 137655,
+  "overview_daily_points": 2862,
+  "overview_curve_points": 8586,
+  "max_curve_error": 4.44e-14,
+  "note_gross": "21笔毛赚但净亏仍按毛PnL标签，定义披露一致。",
+  "browser_verdict_included": false
+}

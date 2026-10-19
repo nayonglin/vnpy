@@ -1,0 +1,20 @@
+{
+  "status": "PASS_corrected_daily_research_artifact",
+  "episodes": 3218,
+  "source_fills": 6448,
+  "gross_result_counts": {
+    "loss": 2087,
+    "profit": 1109,
+    "flat": 22
+  },
+  "daily_ma_points_independently_checked": 4186502,
+  "all_entry_exit_dates_prices_signals_matched": true,
+  "metrics_unchanged": true,
+  "missing_minutes_qualified_unavailable": true,
+  "html_sha256": "b2ae39a5551d6b47c0cbd82d6ad3f7b5b2d6814939a6be5feec632d07c3e7e5e",
+  "summary_sha256": "8cdbacdde5310b9c4d8b8e7ae161368ce96ed694d5b53474ca6e85ce722b9cc8",
+  "source_manifest_sha256": "b0893921b612ed284458625bd6405fef5a994a36beb9214839a8a4a7b27be983",
+  "performance_certifiable": true,
+  "max_actual_products": 22,
+  "last_fill_date": "2026-10-16"
+}

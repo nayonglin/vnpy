@@ -1,0 +1,107 @@
+{
+  "review_time": "2026-10-18 20:45 Asia/Shanghai",
+  "reviewer": "independent_agent_failed_run_review",
+  "run_id": "run_20261018_lifecycle_unlimited_v1",
+  "source_manifest_sha256": null,
+  "source_protocol_sha256": "8e15f06ea287117274a13044af05ca495fac30d276072bf2f9def53b615d143e",
+  "source_failure_snapshot_sha256": "bc21c2e98e7b86c3d641e455292dd5b0df5cd6cefeb4e4f0b648f0f6ee736801",
+  "source_artifact_sha256": {
+    "failure_snapshot.json": "bc21c2e98e7b86c3d641e455292dd5b0df5cd6cefeb4e4f0b648f0f6ee736801",
+    "lifecycle_deadlines.csv": "be8d1ce3833b709768fed4be73fcf30f8893cc41220f408e0aabef563466421f",
+    "protocol.json": "8e15f06ea287117274a13044af05ca495fac30d276072bf2f9def53b615d143e",
+    "engine.log": "31692d58b2537fcaea45fce1f6398d922f643a97188acae3c148a87830e63466",
+    "failed_lifecycle_events.csv": "f653b421765b9b84f955e9ca79ae7ab82b0b68f806c1aa82c65011be202e0f93",
+    "code_start_hashes.json": "2e8f8431c50e0f3e92ca389e3f3530674cd1f3503fc516e0381af4d05e30ec95",
+    "failed_prefix_trades.csv": "23e8b550e5d6a7cd2a6c2aaad03892f3c7f17debf6d3e3a8813ac498bd47f977"
+  },
+  "review_decision": "FAILED_BEFORE_COMPLETE_DATA_EXECUTION_GAP",
+  "financial_metrics_valid": false,
+  "performance_statistics_computed": false,
+  "financial_reruns_by_reviewer": 0,
+  "failure": {
+    "date": "2021-09-24",
+    "error": "unresolved_lifecycle_position",
+    "vt_symbol": "al202110.SHFE",
+    "actual_position": 1,
+    "deadline": "2021-09-24",
+    "exit_signal_date": "2021-09-23"
+  },
+  "prefix_integrity": {
+    "fill_count": 3168,
+    "non_one_lot_fills": 0,
+    "invalid_closes_or_product_gross_violations": 0,
+    "max_actual_products": 15,
+    "positions_match_failure_snapshot": true,
+    "missing_fill_bars": 0,
+    "nonpositive_volume_fills": 0,
+    "max_fill_price_minus_bar_open_abs": 0.0
+  },
+  "cause": {
+    "classification": "quantity_conflict_quarantine_removed_execution_price",
+    "not_true_market_price_absence": true,
+    "lifecycle_target_zero_timely": true,
+    "direct_prior_day_order_receipt_retained": false,
+    "clean_key_absent": true,
+    "quarantine_reason": "unresolved_cross_source_quantity_conflict",
+    "quarantine_action": "exclude_entire_contract_day_all_sources",
+    "price_ohlc": [
+      23520,
+      23635,
+      22760,
+      23115
+    ],
+    "official_and_tq": {
+      "volume": 191338,
+      "close_oi": 90833
+    },
+    "rq": {
+      "volume": 180549,
+      "close_oi": 87233
+    },
+    "existing_expiry_oi_only_overlay_qualifies": false
+  },
+  "original_source_bindings": {
+    "official_archive": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/other_exchanges/shfe/raw_years/shfe_futures_2021.zip",
+      "sha256": "e9962695770b84da1001a108fd42b2422ce5be2b9c954fcd7c40e879c32eba48",
+      "member": "╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ2021.09.xls",
+      "member_sha256": "897666bd3505f8606a4beac50822210329e92bc6c065ce8e85714d2a3bc29e80",
+      "sheet": "所内合约行情报表",
+      "row_1based": 271
+    },
+    "official_normalized": {
+      "sha256": "79c1961919782278852c237fd44ff3a323a41aadebd47365f29c803ef2313663",
+      "row_product": "al",
+      "contract_month": "202110"
+    },
+    "rq_h5": {
+      "sha256": "d288f6e4c7468981e95fbb0c1c9e2e1e66bfb99f5ba607843728aec535c8bfee",
+      "key": "AL2110",
+      "row_0based": 232
+    },
+    "tq_csv": {
+      "sha256": "a6c8777c2add75bc418f6446e8550234862037d89c3a194c0458a48147f2e5b3",
+      "symbol": "SHFE.al2110",
+      "day": "2021-09-24"
+    }
+  },
+  "provenance_checks": {
+    "five_code_snapshots_match_start_hashes": true,
+    "protocol_source_input_hashes_match": true,
+    "stage002_output_hashes_match": true
+  },
+  "confidence": {
+    "quote_and_quarantine_root_cause": "high",
+    "timely_close_target": "high",
+    "prior_day_order_sent": "code_path_supported_without_retained_order_receipt"
+  },
+  "next_gate": "Independent review of generic price-consensus execution-only qualifier and loader; new frozen run required, no continuation of failed prefix.",
+  "overfitting": false,
+  "research_value_remaining": true,
+  "limitations": [
+    "No final manifest exists because run hard-failed; source_manifest_sha256 is null intentionally.",
+    "No complete-period performance claim or partial return reported.",
+    "No order-level receipt for 2021-09-23 retained; close intent is directly observed, order routing inferred from frozen code.",
+    "Quantity-conflicted source rows remain excluded from training, selection, mapping, signal bars and OPEN eligibility."
+  ]
+}

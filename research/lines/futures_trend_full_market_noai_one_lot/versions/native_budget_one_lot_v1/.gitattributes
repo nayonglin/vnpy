@@ -1,0 +1,4 @@
+# Immutable byte-exact execution snapshots; active implementation lives in tools/.
+code_snapshot/** -text -diff
+run_evidence/** -text
+replay_inputs/** -text

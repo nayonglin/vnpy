@@ -1,0 +1,75 @@
+{
+  "review_time": "2026-10-19T18:21:35.954695+08:00",
+  "reviewer": "independent_agent_failed_run_review",
+  "source_manifest_sha256": null,
+  "verdict": "PREFLIGHT_PASS：允许冻结当前代码启动一次新运行；不是金融结果PASS",
+  "code_sha256": {
+    "stage039_risk_budget_candidate.py": "583da051b2be119e195ed9e0531bd4a5e3c4e3606b9825bc783768030bec57df",
+    "stage040_run.py": "bda26ecd4a2d099a939ca571b7274afdbed66c5d96cc64fb1d8a5b864967b696",
+    "stage041_open_risk.py": "9ed9840bb9188543842d9322755a1a57091afcc32a9cddc4cc0c4a3ff8eddd47"
+  },
+  "source_comparison_manifest_sha256": "b0893921b612ed284458625bd6405fef5a994a36beb9214839a8a4a7b27be983",
+  "actual_full_parameters_diff": {
+    "fixed_size": [
+      1,
+      0
+    ]
+  },
+  "synthetic_tests": {
+    "full_line": 113,
+    "pass_count": 113,
+    "independent_runtime_seconds": 11.675,
+    "stage039_native_tests": 11,
+    "stage041_tests": 16,
+    "extra_real_dataclass_end_to_end_cases": 2
+  },
+  "fixes_reviewed": [
+    "039 long factor names aligned with041 pure budget arithmetic",
+    "Receipt contract/product/direction/signal/date/id checks before actual OPEN mutation",
+    "LayerNone ambiguous all-unsynced actual-flat cancellation clears ghost state and pending product",
+    "Rejected diagnostics remain immutable rows with rejection reason, pending indices removed",
+    "Inherited strategy and engine MRO code files added to start hash/snapshot; module inspect import scope fixed"
+  ],
+  "independently_observed_red": "Before cleanup fix: actual0, two unfilled layers, layer=None rejection left both layers and pending product; after fix root actual-engine regression independently GREEN.",
+  "actual_dataclass_cases": [
+    {
+      "signal_risk_budget": 20,
+      "signal_close": 100,
+      "stop": 98,
+      "size": 10,
+      "actual_open": 100,
+      "actual_position": 1
+    },
+    {
+      "signal_risk_budget": 20,
+      "signal_close": 100,
+      "stop": 98,
+      "size": 10,
+      "actual_open": 100.01,
+      "actual_position": 0,
+      "unfilled_state_clean": true
+    }
+  ],
+  "contract": {
+    "native_sizing": "risk_budget",
+    "fixed_size": 0,
+    "cap": 1,
+    "zero_stays_zero": true,
+    "fill_budget": "min(original final signal authorization, causal opening resources with frozen native factors)",
+    "actual_open_and_effective_stop": true,
+    "broker_multiplier_separate": true,
+    "prior_close_pending_no_margin_release": true,
+    "rollover_included": true
+  },
+  "scope_limitations": [
+    "No financial replay run by reviewer.",
+    "Future completed or failed run requires independent actual output review.",
+    "Snapshot min/max/factors freeze and reservation of all other pending intents are intentionally conservative and disclosed.",
+    "Whole-key pending diagnostic removal accepted only under one-layer/no-add policy; not a generic multilayer implementation.",
+    "Daily proxy and stop-gap execution limitations remain; stop-distance budget is not guaranteed actual loss maximum."
+  ],
+  "blocking_findings": [],
+  "financial_reruns": 0,
+  "source_or_line_modified": false,
+  "overfitting": false
+}
