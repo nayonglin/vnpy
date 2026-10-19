@@ -1,0 +1,81 @@
+{
+  "review_time": "2026-10-20T00:48:07.812552+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "reviewer": "independent_failed_run_review_agent",
+  "scope": "v2_preflight_only",
+  "source_manifest_sha256": null,
+  "expected_run": "run_20261020_contract_weekly_risk05_v2",
+  "baseline_source_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "prior_failed_protocol_sha256": "74bf1c2a7003155cbc4369f59ac8e8f245fa45a9eb3456ef0f048e3fc4708184",
+  "prior_review": "20261020_0040_stage076_failed_v1_independent_review",
+  "verdict": "PASS_WITH_LIMITS_PREFLIGHT_V2",
+  "decision": "本次最终冻结078/079未发现P0/P1，可开始已授权的一次新v2完整回放；实际结果须另审",
+  "remaining_p0": 0,
+  "remaining_p1": 0,
+  "source_hashes": {
+    "stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2",
+    "stage078_forced_margin_planning.py": "a3b8477c949fb8321690401c6a9721394cd0ec0950b3599fbf826ba4eaa4f604",
+    "stage079_run_fractional_risk.py": "26a9bbff7e9eaf0ad433d0b8442e1a25ce11449d2723d8b1808914fccda7cd4e"
+  },
+  "financial_replays_by_reviewer": 0,
+  "tests": {
+    "full_suite_independent": 332,
+    "full_suite_seconds": 28.747,
+    "stage078_including_final_runner_mro": 41,
+    "projection_oracle_cases": 42,
+    "after_final_diagnostic_export_runner_tests": 2
+  },
+  "fixed_findings": [
+    {
+      "id": "P1-1",
+      "evidence": "actual0未成交OPEN先整单取消，不进入原Close event/PnL/streak；双向+混合+rollover/pending真实close保护合成GREEN"
+    },
+    {
+      "id": "P1-2",
+      "evidence": "forced-only projection=actual−有效pendingClose+unsyncedOPEN；actual5/750例仅queue2，连续/跨日幂等；实际margin仍550直到真实2手close成交才降330"
+    },
+    {
+      "id": "P2-1",
+      "evidence": "079 strategy级失败快照覆盖actual/target/layers+synced+授权/pending/forced事件；不是仅_fill_order异常捕获"
+    }
+  ],
+  "auditability": {
+    "full_forced_events_csv": true,
+    "forced_columns": 19,
+    "empty_forced_events_have_header": true,
+    "cancellation_receipts_archived": true,
+    "prior_failure_hashbound": true
+  },
+  "preserved": {
+    "risk_fraction": 0.005,
+    "integer_floor_no_minimum_fallback": true,
+    "all_or_none_exact_receipt": true,
+    "weekly_exact_contract_all_long_two_phases": true,
+    "short_close_env_no_weekly": true,
+    "adds": false,
+    "one_lot_cap": false,
+    "trigger": 0.95,
+    "target": 0.8,
+    "broker_multiplier": 1.65,
+    "max_reductions": 100,
+    "priority": "largest_margin"
+  },
+  "boundaries": [
+    "会计现金/实际margin不使用forced投影，只有try/finally作用域内规划函数看投影。",
+    "当前shape rollover启用通过_reserve_intrabar_entry的本日delta ledger跟踪；adds禁用，不走未跟踪的add-only _reserve_intrabar_margin。跨日pending计数按native每日reset，不从实际margin释放取消额度。",
+    "source078算法最终hash已整线验证；079最终仅追加19列forced事件CSV诊断，之后2项runner测试复核；不把此前运行称作最终诊断hash的整线实测。",
+    "v1独审FAIL不撤销、不覆写；本审查不保证v2一定完成，不预认收益/完整C9/生产资格。",
+    "保留Stage073日线近似、静态费率规格、量仓冲突退出报价、V>=qty非排队/冲击、计划close统计非现金等限制。"
+  ],
+  "overfitting": {
+    "answer": false,
+    "reason": "修复目标/实际和规划保证金边界，阈值/参数/数据未按收益改动；仍非样本外"
+  },
+  "continuation_value": {
+    "answer": true,
+    "reason": "修正两项可复现P1后新冻结完整v2有验证价值，失败前缀不作绩效"
+  }
+}

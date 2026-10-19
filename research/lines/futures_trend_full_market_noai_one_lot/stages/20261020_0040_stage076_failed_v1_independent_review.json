@@ -1,0 +1,154 @@
+{
+  "review_time": "2026-10-20T00:40:23.820870+08:00",
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "reviewer": "independent_failed_run_review_agent",
+  "source_manifest_sha256": null,
+  "source_manifest_absent": true,
+  "source_protocol_sha256": "74bf1c2a7003155cbc4369f59ac8e8f245fa45a9eb3456ef0f048e3fc4708184",
+  "source_commit": "07254b5c971077d9722cf8f6b991c5016413a6ed",
+  "run_id": "run_20261020_contract_weekly_risk05_v1",
+  "verdict": "FAIL_INCOMPLETE_FINANCIAL_RUN_P1_INTEGRATION",
+  "performance_certifiable": false,
+  "financial_metrics_valid": false,
+  "financial_reruns_by_reviewer": 0,
+  "complete_performance_reported": false,
+  "failure_date": "2017-03-13 00:00:00+08:00",
+  "failure_error": "stage074_requested_close_direction_mismatch",
+  "prefix_fill_count": 341,
+  "reconstructed_actual_positions": {
+    "a201705.DCE": -20,
+    "SR201705.CZCE": -18
+  },
+  "failure_active_orders": [
+    {
+      "id": "BACKTESTING.586",
+      "vt_symbol": "SR201705.CZCE",
+      "offset": "Offset.CLOSE",
+      "direction": "Direction.LONG",
+      "volume": 18,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.587",
+      "vt_symbol": "TA201705.CZCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 16,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.588",
+      "vt_symbol": "p201709.DCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 17,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.589",
+      "vt_symbol": "v201705.DCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 29,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    }
+  ],
+  "hashes": {
+    "failure_snapshot.json": "758bd38a95297a2c11b4b3eb6e0fc3a827c2e2f6102d8fdeb4b524cba2845e10",
+    "lifecycle_deadlines.csv": "be8d1ce3833b709768fed4be73fcf30f8893cc41220f408e0aabef563466421f",
+    "protocol.json": "74bf1c2a7003155cbc4369f59ac8e8f245fa45a9eb3456ef0f048e3fc4708184",
+    "engine.log": "32064ce3f2a14cfb3a27616aa08c0a425fa653f8b862a5634db4094d317aa163",
+    "failed_lifecycle_events.csv": "64c01c4cfa4c6fa03949c3360c457ef9fdcfedd28a6c9dd3b77ebe26231138e7",
+    "code_start_hashes.json": "f13f8ab22d2875303ef4c6cda3d9cc58ecc19ee852c4a499d82042a87b6772c8",
+    "failed_prefix_trades.csv": "2a52fe827e29d224ecd988ddb5e1bb228ddc0cd114b6e4a96d5abcf73b457d6b"
+  },
+  "start_snapshot_files_verified": 21,
+  "all_start_snapshot_hashes_match": true,
+  "source_input_and_output_hashes_verified": true,
+  "prefix_source_bar_checks": {
+    "fills": 341,
+    "missing_bars": 0,
+    "price_not_open": 0,
+    "insufficient_bar_volume": 0,
+    "execution_only_opens": 0
+  },
+  "findings": [
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "status": "confirmed_frozen_source_synthetic_and_actual_stack",
+      "title": "强制降杠杆候选混入未成交OPEN层",
+      "cause": "native候选只看state.layers/active_volume/bar，不核actual pos与entry_price_synced；_reduce把该层当真实close传074。actual0的direction为空，与layer方向不一致，074正确硬失败。",
+      "synthetic": {
+        "reproduced": true,
+        "error": "stage074_requested_close_direction_mismatch",
+        "actual_position": 0,
+        "target": 17,
+        "candidate_volume": 17,
+        "pending_close_lots": {},
+        "actual_trades": 0,
+        "layer_synced": false
+      }
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "status": "confirmed_synthetic_related_blocker_actual_prefix_effect_not_quantified",
+      "title": "实际保证金floor与强减循环重复排平",
+      "cause": "queue关闭层不改变actual margin是正确的，但native while把同一未释放margin再次当新增减仓缺口，反复减remaining layers。",
+      "synthetic": {
+        "actual_before_and_after": 5,
+        "margin_actual": 550.0,
+        "equity": 750.0,
+        "first_native_target_close_qty": 2,
+        "actual_pending_close_quantity": 5,
+        "pending_pieces": [
+          2,
+          2,
+          1
+        ],
+        "remaining_layers": 0,
+        "target": 0,
+        "actual_trades": 0,
+        "forced_iterations": 3
+      }
+    },
+    {
+      "id": "P2-1",
+      "severity": "P2",
+      "title": "strategy-on_bars异常快照缺state/target/forced events",
+      "evidence": "failure_snapshot.snapshot={}，只有active_orders；当前generic _fill_order异常捕获不能覆盖on_bars forced planning异常。",
+      "limit": "真实具体命中合约及完整迭代顺序不能直接观测；p最大剩余计划保证金是强支持推断，不冒认直接快照。"
+    }
+  ],
+  "candidate_margin_from_bound_actual_prices": {
+    "p201709.DCE": 188768.0,
+    "v201705.DCE": 186760.0,
+    "a201705.DCE": 156480.0,
+    "TA201705.CZCE": 81536.0,
+    "SR201705.CZCE": 243684.0
+  },
+  "actual_candidate_identity": "not_directly_recorded; p strongly inferred if SR already entirely pending-close/reset",
+  "minimal_fix_contract": [
+    "未成交OPEN意向只能整单撤销，必须在Close reason/plan PnL/streak之前完成，取消target/活动OPEN/未成交layer与对应pending资金预留并保留原receipt诊断；不伪造close。",
+    "forced候选只含已同步actual未承诺余层，不能误选actual0；方向/数量硬约束继续保留。",
+    "单独投影已承诺pending CLOSE的保证金释放量，含本日新增和跨日已有pending，不重复排平；实际margin floor到真实fill前不释放。",
+    "保留原trigger/target/priority/max reductions及预算/qty/weekly/生命周期；只改执行计划会计边界，不按日期品种改规则。",
+    "增加strategy-level失败快照positions/targets/states+synced/receipts/pending close和open/forced events；新源码hash、新v2目录、完整独立审查。"
+  ],
+  "confidence": {
+    "account_position_prefix": "high:341 actual fills signed conservation",
+    "source_prices": "high:all341 match bound frozen bar/open/V",
+    "root_cause": "high:actual stack + frozen074/native synthetic reproduction",
+    "exact_failed_contract": "bounded inference; missing runtime state snapshot",
+    "complete_performance": "unavailable; no final manifest or complete account"
+  },
+  "overfitting": {
+    "answer": false,
+    "reason": "泛化修复目标/实际和pending close投影语义，无收益选参/例外；不能当样本外"
+  },
+  "continuation_value": {
+    "answer": true,
+    "reason": "修正执行集成后新冻结一次v2有价值；v1前缀无完整绩效资格"
+  }
+}

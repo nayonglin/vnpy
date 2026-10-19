@@ -1,0 +1,23 @@
+{
+  "stage": "Stage081",
+  "status": "PREPARED_FIXTURE_PASS_REAL_V2_PENDING",
+  "timestamp": "2026-10-20T00:46:09.251108",
+  "scope": "display_readonly",
+  "tests": {
+    "validator": 4,
+    "combined_071_072_081": 13,
+    "result": "PASS",
+    "seconds": 3.283
+  },
+  "generator_sha256": {
+    "stage071_fractional_recap.py": "007a29ea34511d2b164955ded29394f4ef4d331c0e797547b03b57cb34b90ef8",
+    "stage072_fractional_overview.py": "18413d4f4a75ec0ef9fa7d750ed20549999ee232714f335ea87949addefe8aa7",
+    "stage081_validate_fractional_display.py": "fb6565cb95642901227819c76c12f8d2cb61ab7aae1926910e61fdc65444b1da",
+    "test_stage081_validate_fractional_display.py": "0373aab1283f252fc094ebb9b6bc73e9a921f84a1cad03275232d7bd3ecb0557"
+  },
+  "financial_replays": 0,
+  "actual_new_source_rendered": false,
+  "failed_v1_excluded": true,
+  "market_downloads": 0,
+  "production_access": false
+}

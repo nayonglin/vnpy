@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-20T00:47:58.936310+08:00",
+  "run_id": "run_20261020_contract_weekly_risk05_v2",
+  "financial_runs_before_v2": 1,
+  "first_run_status": "incomplete_failed_2017-03-13_no_performance",
+  "risk_fraction": 0.005,
+  "source_hashes": {
+    "stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2",
+    "stage078_forced_margin_planning.py": "a3b8477c949fb8321690401c6a9721394cd0ec0950b3599fbf826ba4eaa4f604",
+    "stage079_run_fractional_risk.py": "26a9bbff7e9eaf0ad433d0b8442e1a25ce11449d2723d8b1808914fccda7cd4e"
+  },
+  "prior_failed_protocol_sha256": "74bf1c2a7003155cbc4369f59ac8e8f245fa45a9eb3456ef0f048e3fc4708184",
+  "root_full_suite": {
+    "tests": 332,
+    "status": "PASS",
+    "seconds": 28.587,
+    "log_sha256": "dc9a4d282d1a4cf28c1671aed43ca0685d233f1625847dda260a14c5e89cff63"
+  },
+  "baseline_commit": "e553d1703bc4efb9c612143a6c3f2ccc9885f6b3",
+  "baseline_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "market_downloads": 0,
+  "production_access": false
+}
