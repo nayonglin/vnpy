@@ -1,0 +1,40 @@
+{
+  "status": "failed_before_complete",
+  "date": "2017-03-13 00:00:00+08:00",
+  "snapshot": {},
+  "financial_metrics_valid": false,
+  "active_orders": [
+    {
+      "id": "BACKTESTING.586",
+      "vt_symbol": "SR201705.CZCE",
+      "offset": "Offset.CLOSE",
+      "direction": "Direction.LONG",
+      "volume": 18,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.587",
+      "vt_symbol": "TA201705.CZCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 16,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.588",
+      "vt_symbol": "p201709.DCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 17,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    },
+    {
+      "id": "BACKTESTING.589",
+      "vt_symbol": "v201705.DCE",
+      "offset": "Offset.OPEN",
+      "direction": "Direction.SHORT",
+      "volume": 29,
+      "signal_date": "2017-03-13 00:00:00+08:00"
+    }
+  ]
+}

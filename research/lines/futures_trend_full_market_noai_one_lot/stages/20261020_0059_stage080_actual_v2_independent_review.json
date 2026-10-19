@@ -1,0 +1,623 @@
+{
+  "reviewer": "independent_failed_run_review_agent",
+  "financial_replays": 0,
+  "implementation_changes": 0,
+  "source_changes": 0,
+  "findings": [
+    {
+      "id": "P1_PENDING_OPEN",
+      "severity": "P1",
+      "status": "actual_evidence_and_final_mro_synthetic_confirmed",
+      "title": "缺量延期后native actual0 reconcile删除有效pending OPEN layer/receipt但保留target/order",
+      "actual_cases": 13,
+      "mapping_unchanged_cases": 8,
+      "mapping_invalidated_cases": 5,
+      "implementation": "stage070/079 cross_delayed_orders正确保留不足量整单，但native qmt_roll_portfolio_strategy._reconcile_state_with_position在current_pos0时state.reset；随后旧target可rebalance成空receipt请求。",
+      "effect": "安全闸门正确阻止13次无授权成交，不代表原授权延期语义正确；不能认领用户批准合同。",
+      "fix_contract": "同合约/方向/数量/授权/目标/截止仍有效的pending OPEN保留原layer/receipt；失效mapping/deadline或授权异常必须显式撤活动OPEN/target/layer/diag/reserve，不能无条件保留或伪造新receipt。还须防未成交layer进入actual-only退出/换月路径。",
+      "limitation": "无每日private state快照，真实13案具体删层时点由原始数据/延迟记录/冻结源码与最终MRO复现强支持；不推算修好后成交数或收益。"
+    },
+    {
+      "id": "P2_CACHED_QUOTE_TIMESTAMP",
+      "severity": "P2",
+      "title": "1次撤单报价时间字段是估值缓存时间而非真实源bar时间",
+      "date": "2021-08-11",
+      "vt_symbol": "JR202109.CZCE",
+      "source_date": "2021-08-10",
+      "carried_close": 2552.0,
+      "price_is_causal": true,
+      "has_fake_fill": false,
+      "detail": "Stage502缺bar日把前收盘值包成今日datetime的cache bar；078记录quote_datetime因此看似今日真实报价，释放ratio用前收盘可独立精确对上。"
+    },
+    {
+      "id": "LIMIT_PRIVATE_STATES",
+      "severity": "LIMIT",
+      "title": "完整pending/candidate集合未逐日导出",
+      "detail": "153取消收据、量/ratio释放、实际账户均核验；无全部私有候选集合，不能独立逐事件穷举原priority排名；0 actual forced事件不等于曾实际验证全部强减成交路径。"
+    }
+  ],
+  "source_manifest_sha256": "b5357eef7ec6f3ce9a844bfbf680b7eb5fe24e4fb6e91dec6e87f6ea56933635",
+  "baseline_manifest_sha256": "859982f079da55aa1292154d5fc9b1004d1f0d5f23f75c4ec58ca892a102cb25",
+  "review_time": "2026-10-20T00:59:31.595428+08:00",
+  "source_commit": "a7d2daedbfb430f144eecad051da3fe2771a9e7f",
+  "baseline_comparison": {
+    "source_manifest": true,
+    "expiry_execution_overlay": true,
+    "quantity_execution_overlay": true,
+    "lifecycle_sources": true,
+    "mode": true,
+    "start": true,
+    "end": true,
+    "official_material_identity": true
+  },
+  "hash_checks": {
+    "output_files": 29,
+    "code_hashes": 21,
+    "snapshots": 22,
+    "all_hash_checks_passed": true
+  },
+  "raw_input_reparse_precision": {
+    "open": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "high": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "low": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "volume": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close_oi": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    }
+  },
+  "weekly_independent": {
+    "full_rows": 93545,
+    "valid_weeks": 84254,
+    "invalid_weeks_retained": 9291,
+    "max_MA_difference": 2.7284841053187847e-12,
+    "actual_long_signal_checks": 119,
+    "actual_long_open_checks": 119,
+    "signal_candidate_checks": 2964,
+    "queried_contracts": 1851,
+    "export_scope": "queried_contracts_complete_local_weeks",
+    "method": "Independent exact-vt accepted-clean EOW closes after original clean source numeric/epoch binding; per-contract listing-local weeks, complete frozen calendar, math.fsum numerical verification and declared numpy-mean strict comparison; round_trip reads; no use of mapping for weekly MA and no Stage058/059 imports."
+  },
+  "mapping": {
+    "mapped_rows": 185722,
+    "missing_observation_bars": 0,
+    "max_oi_difference": 0.0,
+    "epoch_mismatch": 0
+  },
+  "quantity_ledger": {
+    "completed_entries": 1313,
+    "partial_exit_fills": 8,
+    "residual_entries": 8,
+    "residual_partial_fills": 0,
+    "residual_partial_realized_net": 0.0,
+    "residual_mark_pnl": 120145.0,
+    "residual_entry_cost": 1066.4024799999393,
+    "ending_equity_bridge": 844011.9276240845,
+    "fee_max_error": 5.684341886080802e-14,
+    "slip_max_error": 0.0,
+    "completed_net_max_error": 0.0,
+    "max_lots": 112,
+    "max_actual_products": 15
+  },
+  "budget": {
+    "audit_rows": 1897,
+    "actual_opens": 1321,
+    "rejections": 576,
+    "reasons": {
+      "total_order_risk_exceeds_fractional_budget_at_open": 459,
+      "stop_already_crossed_at_open": 104,
+      "unbound_fractional_signal_authorization": 13
+    },
+    "max_risk_budget_ratio": 0.9999440766328295,
+    "opening_equity_max_error": 1.862645149230957e-09,
+    "matched_entry_risk_rows": 1321,
+    "max_actual_broker_ratio": 0.9489221378000382
+  },
+  "accounting": {
+    "daily_mtm_max_errors": [
+      1.8189894035458565e-12,
+      1.8189894035458565e-12,
+      3.637978807091713e-12
+    ],
+    "ending_equity": 844011.9276240846,
+    "max_margin": 557824.0,
+    "max_notional": 18474480.0,
+    "max_margin_equity_ratio": 0.587958979309906,
+    "max_notional_equity_ratio": 24.996214883288193
+  },
+  "lifecycle": {
+    "deadlines_checked": 4328,
+    "actual_residuals": 8,
+    "late_position_days": 0
+  },
+  "stats": {
+    "ending_equity": 844011.9276240839,
+    "net_pnl": -155988.07237591536,
+    "return_pct": -15.598807237591606,
+    "max_dd_pct": -64.51470173841177,
+    "max_dd_amount": -970574.8828309153,
+    "sharpe_240_log": -0.09107631302670058,
+    "commission": 76923.07237591356,
+    "slippage": 320655.0,
+    "fills": 2642,
+    "complete_episodes": 1313,
+    "win_rate_pct": 34.72962680883473,
+    "max_volume": 112,
+    "total_open_contracts": 10702,
+    "residual_contracts": 58
+  },
+  "annual": {
+    "2015": {
+      "net_pnl": 339200.2646500011,
+      "start_equity": 1000000.0,
+      "end_equity": 1339200.264650001
+    },
+    "2016": {
+      "net_pnl": -261841.67391323554,
+      "start_equity": 1339200.264650001,
+      "end_equity": 1077358.5907367656
+    },
+    "2017": {
+      "net_pnl": -77467.88328925087,
+      "start_equity": 1077358.5907367656,
+      "end_equity": 999890.7074475148
+    },
+    "2018": {
+      "net_pnl": -75148.37818854282,
+      "start_equity": 999890.7074475148,
+      "end_equity": 924742.329258972
+    },
+    "2019": {
+      "net_pnl": -4310.022638772443,
+      "start_equity": 924742.3292589718,
+      "end_equity": 920432.3066201996
+    },
+    "2020": {
+      "net_pnl": 92743.0064636267,
+      "start_equity": 920432.3066201996,
+      "end_equity": 1013175.3130838262
+    },
+    "2021": {
+      "net_pnl": -149115.95150474145,
+      "start_equity": 1013175.3130838263,
+      "end_equity": 864059.3615790849
+    },
+    "2022": {
+      "net_pnl": -229828.90809999953,
+      "start_equity": 864059.3615790849,
+      "end_equity": 634230.4534790854
+    },
+    "2023": {
+      "net_pnl": -94537.56237500005,
+      "start_equity": 634230.4534790854,
+      "end_equity": 539692.8911040851
+    },
+    "2024": {
+      "net_pnl": 163046.33018499994,
+      "start_equity": 539692.8911040851,
+      "end_equity": 702739.2212890848
+    },
+    "2025": {
+      "net_pnl": 77169.22731999993,
+      "start_equity": 702739.2212890848,
+      "end_equity": 779908.4486090845
+    },
+    "2026": {
+      "net_pnl": 64103.47901499967,
+      "start_equity": 779908.4486090845,
+      "end_equity": 844011.9276240839
+    }
+  },
+  "forced_planning": {
+    "actual_close_planning_events": 0,
+    "cancelled_whole_intents": 153,
+    "cancelled_contracts": 1982,
+    "cancelled_receipts": 153,
+    "all_event_target_and_projection_formulas_checked": true,
+    "limitation": "Complete event formulas and account cash/margin independently checked; private intraday full candidate priority sets and all unfilled pending states are not exported, so per-event ranking inputs cannot be exhaustively reconstructed.",
+    "all153_cancellation_ratio_arithmetic_checked": true,
+    "max_cancellation_ratio_error": 6.661338147750939e-16,
+    "carried_mark_cases": [
+      {
+        "date": "2021-08-11",
+        "vt_symbol": "JR202109.CZCE",
+        "reported_quote_datetime": "2021-08-11 00:00:00+08:00",
+        "actual_source_date": "2021-08-10",
+        "causal_cached_close": 2552.0,
+        "ratio_error": 0.0
+      }
+    ]
+  },
+  "errors": [],
+  "error_count": 0,
+  "source_immutable": true,
+  "resolved_audit_findings": [
+    {
+      "type": "P2_CARRIED_MARK_TIMESTAMP",
+      "detail": "Stage502 updates cache datetime on absent-bar days; causal carried previous close verified independently, not new real quote.",
+      "cases": [
+        {
+          "date": "2021-08-11",
+          "vt_symbol": "JR202109.CZCE",
+          "reported_quote_datetime": "2021-08-11 00:00:00+08:00",
+          "actual_source_date": "2021-08-10",
+          "causal_cached_close": 2552.0,
+          "ratio_error": 0.0
+        }
+      ]
+    }
+  ],
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "run_id": "run_20261020_contract_weekly_risk05_v2",
+  "verdict": "FAIL_CONTRACT_PENDING_OPEN",
+  "review_decision": "完整实际账本与实际成交预算核验通过，但缺量延期后有效授权层被actual0 reconcile抹掉，违反保留延期意向合同；不能用于最终交付或N绩效比较。",
+  "performance_certifiable": false,
+  "performance_metrics_scope": "完整冻结错误实现的诊断账本数值，非已确认研究合同的有效绩效",
+  "financial_replays_by_reviewer": 0,
+  "implementation_changes_by_reviewer": 0,
+  "remaining_p0": 0,
+  "remaining_p1": 1,
+  "arithmetic_and_ledger_check_failures": 0,
+  "prior_preflight_does_not_certify_actual_contract": true,
+  "all_output_hashes": {
+    "summary.json": "bde5a1b3aa13cd2cc8c17fad785f39a0d3b277caf325694b340bf707933834ce",
+    "residual_open_positions.json": "0c9be3b9e3d97dbf10b20523aed85d9c67a51c55bee1c014ee21ab489ce72225",
+    "lifecycle_events.csv": "570e7af54d7e0016d817bffa381b0ea9bbb2884905e0b6cd860838589eafd304",
+    "lifecycle_deadlines.csv": "be8d1ce3833b709768fed4be73fcf30f8893cc41220f408e0aabef563466421f",
+    "weekly_execution_audit.csv": "0ca098e20df0c6f75c5beac90393920d20f3cfc1d7993df81c1d4365b6343d77",
+    "mapping.csv": "c35478d09c9ac9db37b75a9ea15e5a88b308d2895cee23fef728107def0ec91d",
+    "partial_closes_of_residual_entries.csv": "da92d6944bf584f2816fc41bb96c0af4aa2eafc686d6c0a86cdd146813070827",
+    "weekly_signal_audit.csv": "150c8f1b051307d9003bfec9da523f7fa30af2c7c53f48c994f245066b7996c5",
+    "candidates.csv": "088e9e06f56907bbad7a68396440366ee7e8659fb38240046b85775056eb68ed",
+    "daily.csv": "97e6b1090c157a2698bb8ecbe96e9d227dfbb941332f97a9f31ef880781a4a32",
+    "account_snapshots.csv": "c3dcf3a90d951cd6e5a72045c5b07930a87d86ad66e08d9c428987d50ff17a33",
+    "market_daily.csv": "312cbee19cdf52b91894d2edf608e541e8c56348e8afd4e760fa6d0f7b7a1c5d",
+    "trading_calendar.csv": "d76e5d6c96048d4eb1f9462aca03142941f1e37a600419af8d85c647622dc539",
+    "trades.csv": "09c0707ab94a53df102bb0fac82bf78d67473a57e7780dd4b984c803b43f08aa",
+    "annual.csv": "a4f62febfa5091c3c01c755ff537eea506f891426d883fe1c533dcfac0538e21",
+    "protocol.json": "ccba699bf4b3576d17442c9f655ec7596a385f13750c9c6b39ce50666dd2aa50",
+    "unfilled_intent_cancellations.csv": "75143a65e94190c5803ae98eb2852d2c4e98798fb53eb0c445e4c30b2f9813c1",
+    "contract_metadata.csv": "f30e40c38f4501066aff0d76befa90e4a20a4e3513e42fd9e9eb123fafd60990",
+    "forced_margin_deleverage_events.csv": "4476695772aba34aa1be56dc7d041992138af8f77c536e7cf543044ad6fbaec9",
+    "closed_episodes.csv": "ba417d01d093e503759b38a03de86e633ee0d83dc39c9aa65e002c7b5859eb4b",
+    "deferred_orders.csv": "a3f90c73e78c5907e98a5e6bc830ba450baa1ce0f4ca45d915ec0db52e4a79a0",
+    "weekly_contract_features.csv": "9ab317bee53133d2573849ce89847659ee743d6b3e3eda8b7655cc128b5347b4",
+    "open_budget_audit.csv": "549a33a48f70d9bca475b86156db69fb80a55b580d9e218ca63f45c9d83261c9",
+    "engine.log": "9c2ab8bdf29cfd474877b1a165edf77925932ace91fe5691f107ea0f01c97f07",
+    "trade_events.csv": "eda3ae11754d8abb5100aa7a82de95071fc5f35674715e3ea96bab6d3b435368",
+    "held_missing.csv": "cfc2c7e97cf7a1e3286e1941fb90b7ce50856c6711768978cbf17f4db8687c3b",
+    "entry_risk.csv": "0f96bc3ab0dbe63f71b76586a45175c71f459a4b653312ff706a399505c7e27c",
+    "code_start_hashes.json": "602100165db526e7c72a7fca68edbb57236d437e32def18a0af2cda03530a481",
+    "blocked_open_orders.csv": "66c5c6829179743f40eaca32a47101aa1799697fd58b0574b56c3f5f182e00ef"
+  },
+  "source_hashes": {
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage079_run_fractional_risk.py": "26a9bbff7e9eaf0ad433d0b8442e1a25ce11449d2723d8b1808914fccda7cd4e",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage003_candidate.py": "b1facda9ba608d900d7e634bbbbecb0bc1044ad947adbea779599d198d0167ca",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage058_weekly_contract.py": "546f2097b80117be1a0b0c2c29f4a39c380c9313270a6e31056bf29029eee491",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage075_fractional_weekly.py": "431c170b83d05171adbde5955ab8ef4e7ba6fc12b9c7c306fe6343f326ea26b2",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage068_fractional_risk.py": "c795551c7b5b3457016397320d7d131a99b5a032cb4f7d8f3aa6e8fdf8073982",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage069_quantity_ledger.py": "ef3597da5bc76a84a146ee50401cafd8d121da4f3d8a3a4e066fb68934b21382",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage074_pending_close_quantity.py": "2c098f576d2dd7be1458a1f9973b70314e8604ff242aaf546e3b4fc490f50255",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage078_forced_margin_planning.py": "a3b8477c949fb8321690401c6a9721394cd0ec0950b3599fbf826ba4eaa4f604",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage002_market_source.py": "b53a3fa90afc2a5ae5aab16b965b0c35676ae6dcaf6e9ff833d9118955b588ab",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/vnpy_portfoliostrategy/backtesting.py": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+    "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/vnpy_portfoliostrategy/template.py": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py": "a4915981fa9f68f646839a1a0fe4bfb872e547305c1cd47f80e0759e03bc3502",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage024_execution_quotes.py": "5a13a7a2ec1bcec21252ef67192f78b0faead3028d84fab5f6f9d854c0f2b025",
+    "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage023_quantity_price_overlay.py": "d16626856a205057c5a1f6a29f59201bc7b1bb1bdf3ea45b902e4287ebe337be"
+  },
+  "unbound_cases": [
+    {
+      "date": "2015-06-08",
+      "vt_symbol": "RS201509.CZCE",
+      "order_id": "BACKTESTING.87",
+      "volume": 113,
+      "original_signal_date": "2015-06-04",
+      "original_signal": "short_case1a",
+      "signal_snapshot": {},
+      "next_session": "2015-06-05",
+      "next_session_bar_volume": 6.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2015-06-05",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2015-07-10",
+      "vt_symbol": "fb201509.DCE",
+      "order_id": "BACKTESTING.137",
+      "volume": 13,
+      "original_signal_date": "2015-07-08",
+      "original_signal": "short_case3",
+      "signal_snapshot": {},
+      "next_session": "2015-07-09",
+      "next_session_bar_volume": 7.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2015-07-09",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2016-03-25",
+      "vt_symbol": "RS201607.CZCE",
+      "order_id": "BACKTESTING.384",
+      "volume": 168,
+      "original_signal_date": "2015-12-22",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2015-12-23",
+      "next_session_bar_volume": 7.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [
+        "",
+        "RS201611.CZCE"
+      ],
+      "defer_first_date": "2015-12-23",
+      "defer_attempts": 49,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": {
+        "date": "2015-12-28",
+        "main_contract_vt": ""
+      }
+    },
+    {
+      "date": "2017-03-07",
+      "vt_symbol": "RS201707.CZCE",
+      "order_id": "BACKTESTING.580",
+      "volume": 24,
+      "original_signal_date": "2017-02-15",
+      "original_signal": "short_case1a",
+      "signal_snapshot": {},
+      "next_session": "2017-02-16",
+      "next_session_bar_volume": 4.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [
+        ""
+      ],
+      "defer_first_date": "2017-02-16",
+      "defer_attempts": 12,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": {
+        "date": "2017-02-23",
+        "main_contract_vt": ""
+      }
+    },
+    {
+      "date": "2017-07-05",
+      "vt_symbol": "RI201709.CZCE",
+      "order_id": "BACKTESTING.715",
+      "volume": 23,
+      "original_signal_date": "2017-05-10",
+      "original_signal": "short_case1a",
+      "signal_snapshot": {},
+      "next_session": "2017-05-11",
+      "next_session_bar_volume": 8.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [
+        "",
+        "RI201801.CZCE"
+      ],
+      "defer_first_date": "2017-05-11",
+      "defer_attempts": 28,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": {
+        "date": "2017-05-15",
+        "main_contract_vt": ""
+      }
+    },
+    {
+      "date": "2019-07-12",
+      "vt_symbol": "RI201909.CZCE",
+      "order_id": "BACKTESTING.1176",
+      "volume": 23,
+      "original_signal_date": "2019-07-09",
+      "original_signal": "short_case3",
+      "signal_snapshot": {},
+      "next_session": "2019-07-10",
+      "next_session_bar_volume": 8.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2019-07-10",
+      "defer_attempts": 2,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2019-08-20",
+      "vt_symbol": "wr201910.SHFE",
+      "order_id": "BACKTESTING.1212",
+      "volume": 12,
+      "original_signal_date": "2019-08-13",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2019-08-14",
+      "next_session_bar_volume": 1.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [
+        ""
+      ],
+      "defer_first_date": "2019-08-14",
+      "defer_attempts": 3,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": {
+        "date": "2019-08-19",
+        "main_contract_vt": ""
+      }
+    },
+    {
+      "date": "2020-02-28",
+      "vt_symbol": "wr202005.SHFE",
+      "order_id": "BACKTESTING.1342",
+      "volume": 19,
+      "original_signal_date": "2020-02-26",
+      "original_signal": "short_case1a",
+      "signal_snapshot": {},
+      "next_session": "2020-02-27",
+      "next_session_bar_volume": 14.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2020-02-27",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2020-09-14",
+      "vt_symbol": "WH202101.CZCE",
+      "order_id": "BACKTESTING.1469",
+      "volume": 24,
+      "original_signal_date": "2020-09-10",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2020-09-11",
+      "next_session_bar_volume": 11.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2020-09-11",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2021-04-06",
+      "vt_symbol": "RS202107.CZCE",
+      "order_id": "BACKTESTING.1618",
+      "volume": 8,
+      "original_signal_date": "2021-04-01",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2021-04-02",
+      "next_session_bar_volume": 3.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2021-04-02",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2021-04-15",
+      "vt_symbol": "JR202105.CZCE",
+      "order_id": "BACKTESTING.1636",
+      "volume": 22,
+      "original_signal_date": "2021-03-22",
+      "original_signal": "short_case1a",
+      "signal_snapshot": {},
+      "next_session": "2021-03-23",
+      "next_session_bar_volume": null,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [
+        ""
+      ],
+      "defer_first_date": "2021-03-23",
+      "defer_attempts": 9,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": {
+        "date": "2021-03-24",
+        "main_contract_vt": ""
+      }
+    },
+    {
+      "date": "2021-12-13",
+      "vt_symbol": "WH202205.CZCE",
+      "order_id": "BACKTESTING.1849",
+      "volume": 20,
+      "original_signal_date": "2021-12-09",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2021-12-10",
+      "next_session_bar_volume": 6.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2021-12-10",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    },
+    {
+      "date": "2022-02-15",
+      "vt_symbol": "WH202205.CZCE",
+      "order_id": "BACKTESTING.1887",
+      "volume": 16,
+      "original_signal_date": "2022-02-11",
+      "original_signal": "short_case2",
+      "signal_snapshot": {},
+      "next_session": "2022-02-14",
+      "next_session_bar_volume": 15.0,
+      "next_session_missing_or_insufficient": true,
+      "mapping_other_contracts": [],
+      "defer_first_date": "2022-02-14",
+      "defer_attempts": 1,
+      "actual_position_on_reject": 0,
+      "has_matching_actual_order": false,
+      "first_invalid_mapping": null
+    }
+  ],
+  "pending_intent_synthetic_reproduction": {
+    "reproduced": true,
+    "sequence": "real_cross_delay_volume2_for_qty3_then_native_reconcile_actual0",
+    "actual_position": 0,
+    "target": -3,
+    "active_order_count": 1,
+    "layers_after_reconcile": 0,
+    "original_authorized_volume": 3,
+    "original_snapshot_id": "signal1",
+    "actual_fills": 0,
+    "receipt_survived_on_state": false
+  },
+  "confidence": {
+    "frozen_source_and_account": "高：29输出hash、21终态源码、22起始快照/原始数据绑定、全部日MTM和分平桥接一致",
+    "actual_budget_and_weekly": "高：1321 OPEN、119 long双相位与93545周数据独立复算",
+    "research_contract": "不通过：P1延期授权生命周期缺陷",
+    "market_capacity": "有限：日线量下界/静态费用保证金，非盘口容量/PIT/完整C9/生产"
+  },
+  "overfitting": {
+    "answer": false,
+    "reason": "按用户预登记0.5%与保留延期意向合同诊断通用状态bug，不按负收益、日期或品种扫参；仍是同样本后验研究"
+  },
+  "continuation_value": {
+    "answer": true,
+    "reason": "应只修窄pending OPEN生命周期并新冻结v3，独立预审及一次完整回放；不在v2上优化alpha或作N胜负判定"
+  },
+  "financial_result_changes": "本阶段仅新增独立审查与合同资格降级；没有修改冻结源/结果，没有金融重跑。",
+  "status": "FAIL_CONTRACT_PENDING_OPEN"
+}

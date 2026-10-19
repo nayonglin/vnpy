@@ -1,0 +1,31 @@
+PROGRESS 2014-01-02 fills=0
+Strategy initialization complete
+Start replaying historical data
+PROGRESS 2015-01-05 fills=0
+PROGRESS 2016-01-04 fills=196
+PROGRESS 2017-01-03 fills=300
+Exception triggered, backtest terminated
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/vnpy_portfoliostrategy/backtesting.py", line 235, in run_backtesting
+    self.new_bars(dt)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage016_contract_lifecycle.py", line 136, in new_bars
+    super().new_bars(dt)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage070_run_fractional_risk.py", line 183, in new_bars
+    super().new_bars(dt)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py", line 136, in new_bars
+    self.strategy.on_bars(bars)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage070_run_fractional_risk.py", line 221, in on_bars
+    try:return self._accounted_on_bars(bars)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage070_run_fractional_risk.py", line 227, in _accounted_on_bars
+    super(LifecycleStrategyMixin,self).on_bars(signal_bars)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py", line 1806, in on_bars
+    self._process_forced_margin_deleverage(bars)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py", line 7927, in _process_forced_margin_deleverage
+    self._reduce_position_to_target(state, target_volume, close_price)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py", line 8417, in _reduce_position_to_target
+    self._queue_pending_close_lot(state.contract_vt_symbol, last_layer, exit_price, closed_volume)
+  File "/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian/research/lines/futures_trend_full_market_noai_one_lot/tools/stage074_pending_close_quantity.py", line 66, in _queue_pending_close_lot
+    raise RuntimeError("stage074_requested_close_direction_mismatch")
+RuntimeError: stage074_requested_close_direction_mismatch
+

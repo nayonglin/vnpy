@@ -1,0 +1,4 @@
+code_snapshot/** -text -diff
+run_evidence/** -text
+failed_run_evidence/** -text
+failed_run_evidence/code_snapshot/** -diff

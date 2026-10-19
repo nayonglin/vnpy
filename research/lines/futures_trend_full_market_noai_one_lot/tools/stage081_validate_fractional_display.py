@@ -53,7 +53,7 @@ def match_entries(trades,sizes):
         if a['remaining']==0:
             pieces=a['pieces'];gross=sum(p['gross_pnl'] for p in pieces);cash=float(e['commission']+e['slippage'])+sum((float(p['cost'])-float((e['commission']+e['slippage'])*p['volume']/e['volume'])) for p in pieces)
             risk=e['stage068_entry_risk'];check(risk>0 and math.isfinite(risk),'missing_initial_total_risk')
-            complete[str(e['trade_id'])]=dict(volume=int(e['volume']),gross_pnl=gross,cost=cash,net_pnl=gross-cash,risk_amount=risk,r_multiple=gross/risk,weighted_exit_price=sum(p['exit_price']*p['volume'] for p in pieces)/e['volume'],entry_price=e['price'],exit_trade_id=ident,vt_symbol=e['vt_symbol'],direction=side,entry_date=e['date'],exit_date=r['date']);del active[key]
+            complete[str(e['trade_id'])]=dict(volume=int(e['volume']),gross_pnl=gross,cost=cash,net_pnl=gross-cash,risk_amount=risk,r_multiple=gross/risk,weighted_exit_price=sum(p['exit_price']*p['volume'] for p in pieces)/e['volume'],entry_price=e['price'],exit_price=r['price'],exit_trade_id=ident,vt_symbol=e['vt_symbol'],direction=side,entry_date=e['date'],exit_date=r['date']);del active[key]
     residual={str(a['entry']['trade_id']):dict(volume=a['remaining'],original_open_volume=int(a['entry']['volume']),closed_volume=int(a['entry']['volume'])-a['remaining'],cost=(a['entry']['commission']+a['entry']['slippage'])*a['remaining']/a['entry']['volume']) for a in active.values()}
     partial=[p for a in active.values() for p in a['pieces']];remaining=sum(r['cost'] for r in residual.values())
     close(all_cost,sum(r['cost'] for r in complete.values())+sum(p['cost'] for p in partial)+remaining,'all_fill_cost_closure')
@@ -134,8 +134,11 @@ def validate(source,baseline,raw=None,fractional=None,weekly=None,final=None,ove
         if label!='raw':
             for r in recs:
                 e=expected[str(r['meta']['open_trade_id'])];mta=r['meta']
-                for key,a in [('volume',e['volume']),('realized_pnl',e['gross_pnl']),('net_pnl',e['net_pnl']),('cost',e['cost']),('risk_amount',e['risk_amount']),('r_multiple',e['r_multiple']),('weighted_exit_price',e['weighted_exit_price'])]:close(mta[key],a,'record_'+key)
-            page=(root/'index.html').read_text();check('0.5%' in page and '5000' in page and "['交易手数',m.volume]" in page and '每品种1手' not in summ['source_warning'],'multi_lot_display_text')
+                for key,a in [('volume',e['volume']),('realized_pnl',e['gross_pnl']),('net_pnl',e['net_pnl']),('cost',e['cost']),('risk_amount',e['risk_amount']),('r_multiple',e['r_multiple']),('weighted_exit_price',e['weighted_exit_price']),('exit_price',e['exit_price']),('entry_price',e['entry_price'])]:close(mta[key],a,'record_'+key)
+                check(mta['exit_date']==e['exit_date'] and mta['entry_date']==e['entry_date'],'actual_entry_exit_dates')
+                if mta['exit_source']==mta['vt_symbol']:close(mta['exit_marker_price'],e['exit_price'],'actual_final_exit_marker')
+            page=(root/'index.html').read_text();check('0.5%' in page and '5000' in page and '每品种1手' not in summ['source_warning'],'multi_lot_display_text')
+            if label in ('fractional','final'):check("['交易手数',m.volume]" in page and "['毛/净盈亏'" in page,'final_multilot_metric_labels')
     if {'raw','fractional'}.issubset(all_records):check(protected(all_records['raw'],'risk')==protected(all_records['fractional'],'risk'),'raw_fractional_nonfinancial_payload');report['raw_fractional_protected_sha256']=protected(all_records['raw'],'risk')
     if {'fractional','weekly'}.issubset(all_records):
         before,after=all_records['fractional'],all_records['weekly'];check(protected(before,'weekly')==protected(after,'weekly'),'nonweekly_payload')

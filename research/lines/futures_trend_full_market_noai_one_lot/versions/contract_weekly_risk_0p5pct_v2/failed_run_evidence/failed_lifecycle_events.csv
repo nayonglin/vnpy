@@ -1,0 +1,6 @@
+date,vt_symbol,event,actual_position,deadline
+2015-05-27,bu201506.SHFE,close_target_zero,-7,2015-05-28
+2015-12-29,bb201601.DCE,cancel_pending_open,0,2015-12-30
+2015-12-29,fb201601.DCE,cancel_pending_open,0,2015-12-30
+2016-12-28,WH201701.CZCE,close_target_zero,4,2016-12-29
+2016-12-28,SF201701.CZCE,close_target_zero,-14,2016-12-29

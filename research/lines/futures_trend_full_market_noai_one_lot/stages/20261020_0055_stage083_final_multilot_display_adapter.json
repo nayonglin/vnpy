@@ -1,0 +1,17 @@
+{
+  "stage": "Stage083",
+  "status": "FROZEN_FIXTURE_PASS_REAL_RENDER_PENDING",
+  "time": "2026-10-20T00:55:12.908891",
+  "tests": 3,
+  "tests_result": "PASS",
+  "test_seconds": 0.942,
+  "combined081_083_tests": 7,
+  "combined_test_seconds": 2.595,
+  "sha256": {
+    "stage083_final_multilot_labels.py": "d4ab4471ec71297ddc3938bf5e687ff42227845f2ffd07cc07d81eb2745d8571",
+    "test_stage083_final_multilot_labels.py": "ced9fff14ee96c45a8acb5fbbf397ca576bf30e26c01ae069f8790f6bc99fd0b",
+    "stage081_validate_fractional_display.py": "843e7bdcc8ffe3014d34e8195003a0dcbcf5cdf395ce7e06a9255318b4d38f52"
+  },
+  "financial_replays": 0,
+  "old_modules_modified": false
+}
