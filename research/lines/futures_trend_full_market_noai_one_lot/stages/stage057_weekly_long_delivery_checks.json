@@ -1,0 +1,53 @@
+{
+  "status": "PASS_research_weekly_long_delivery",
+  "created_at": "2026-10-19T19:35:17.725363+08:00",
+  "source_manifest_sha256": "7e6f2647de1d99253ba2cbade3e0852158d50d3cbfde19e8da4afdba6f16fed4",
+  "source_commit": "a97819927f6f3bc4086dc557345b4f422b7eed05",
+  "baseline_commit": "87487e32d36a443942f612ac7eeef71ede9ea46a",
+  "financial_replays": 1,
+  "market_downloads": 0,
+  "production_reads": 0,
+  "order_api_calls": 0,
+  "tests": 174,
+  "independent_financial_review": "stages/20261019_1928_stage054_weekly_long_actual_independent_review.json",
+  "independent_financial_review_sha256": "765efe288b7a531f8c4e2633b8ac817cd84e536d20b216494feb672a6895b198",
+  "artifact_acceptance": "stages/stage056_weekly_long_artifact_acceptance.json",
+  "browser": {
+    "recap": true,
+    "recap_total_options": 1868,
+    "default_periods": [
+      "30日K",
+      "日K"
+    ],
+    "previous_next": true,
+    "result_and_year_filter_2024_loss_count": 122,
+    "restored_all_episodes": 1868,
+    "weekly_panel_toggle": true,
+    "recap_two_panel_zoom": true,
+    "recap_reset_full_tick_dates": true,
+    "overview": true,
+    "overview_comparison_rows": 12,
+    "overview_two_panel_zoom": true,
+    "overview_reset_full_period": true,
+    "observed_application_console_errors": [],
+    "method": "same immutable HTML served on local 127.0.0.1:8765; DOM, click and screenshot checks through cua_repl",
+    "local_file_auto_navigation": "blocked by browser protocol policy; no workaround attempted; deliver absolute artifact links",
+    "temporary_tabs_closed": true,
+    "temporary_server_stopped": true,
+    "user_existing_tabs_untouched": true
+  },
+  "delivered_artifacts": {
+    "outputs/recap_20261019_weekly_long_v1_reviewed/index.html": "9009a4efbfb657f25b9be76e65290f2bb17b7a2dc84f30540a82fd078234fbeb",
+    "outputs/recap_20261019_weekly_long_v1_reviewed/summary.json": "0925075b86077001be1721072d941c19b71a7153a8078c305d01670c22b22990",
+    "outputs/overview_20261019_weekly_long_v1/index.html": "c4bdef9fc9e41642064471f9d69ebed0ed3a855faea60277414d8381af8a919d",
+    "outputs/overview_20261019_weekly_long_v1/equity_drawdown.png": "afade338b3970b27c7a3bcf146b0a97cec7e4f1ed131c4799a503ec93c3e5d5f",
+    "outputs/overview_20261019_weekly_long_v1/summary.json": "c8edfe427bf4c8f2e1313f54fe9041a524533e4f3a51e5b077ecac55285b7094"
+  },
+  "limitations": [
+    "daily proxy: C2/C9 intraday rules and missing frozen supply filter remain disabled by prior authorization",
+    "static fees/spec/margin are not historical PIT",
+    "one inherited stale short target rejected before fill; private pending composition not independently itemized",
+    "unadjusted causal-main roll gaps can affect weekly MAs; canonical contextual chart MAs are a different display series",
+    "single full sample posthoc research; no multistart or out of sample certification; not production qualification"
+  ]
+}

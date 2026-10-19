@@ -1,0 +1,902 @@
+{
+  "reviewer": "independent_weekly_preflight_agent",
+  "financial_replays": 0,
+  "implementation_changes": 0,
+  "source_changes": 0,
+  "findings": [
+    {
+      "priority": "P2",
+      "topic": "继承的孤儿target旧单重挂",
+      "cases": 1,
+      "date": "2021-11-10",
+      "vt_symbol": "b202201.DCE",
+      "direction": "short",
+      "effect": "Stage041 unbound_signal_risk_budget在实际成交前拒绝；没有对应成交/费用/假持仓。与A已披露同一案例一致。",
+      "confidence": "源缺价/映射/旧目标清理路径由先前审查和冻结源码支持；private targets逐日细节未输出。",
+      "next_action": "保留冻结结果与失败证据；将来单独清理目标生命周期，不声称修复后经济路径不变。"
+    }
+  ],
+  "source_manifest_sha256": "7e6f2647de1d99253ba2cbade3e0852158d50d3cbfde19e8da4afdba6f16fed4",
+  "baseline_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "review_time": "2026-10-19T19:24:30.773003+08:00",
+  "source_commit": "a97819927f6f3bc4086dc557345b4f422b7eed05",
+  "baseline_comparison": {
+    "parameters": true,
+    "source_manifest": true,
+    "expiry_execution_overlay": true,
+    "quantity_execution_overlay": true,
+    "lifecycle_sources": true,
+    "mode": true,
+    "start": true,
+    "end": true,
+    "official_material_identity": true
+  },
+  "hash_checks": {
+    "output_files": 25,
+    "code_hashes": 19,
+    "snapshots": 20,
+    "all_hash_checks_passed": true
+  },
+  "raw_input_reparse_precision": {
+    "open": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "high": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "low": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "volume": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    },
+    "close_oi": {
+      "max_abs_delta": 0.0,
+      "different_binary_values": 0
+    }
+  },
+  "weekly_independent": {
+    "full_rows": 61008,
+    "valid_weeks": 38599,
+    "invalid_weeks_retained": 22409,
+    "max_MA_difference": 2.7284841053187847e-12,
+    "actual_long_signal_checks": 496,
+    "actual_long_open_checks": 496,
+    "signal_candidate_checks": 2962,
+    "method": "Independent accepted-clean EOW mapping join after original clean source numeric/epoch binding, ISO natural-week calendar, math.fsum numeric verification and declared numpy-mean strict comparison; all frozen CSV read round_trip; no Stage050 imports."
+  },
+  "mapping": {
+    "mapped_rows": 185722,
+    "missing_observation_bars": 0,
+    "max_oi_difference": 0.0,
+    "epoch_mismatch": 0
+  },
+  "daily_independent": {
+    "holding": 3.637978807091713e-12,
+    "trading": 0.0,
+    "net": 7.275957614183426e-12,
+    "equity": 4.190951585769653e-09,
+    "snapshot": 3.4924596548080444e-09,
+    "fee_max_error": 2.842170943040401e-14,
+    "slippage_max_error": 0.0,
+    "opening_equity_max_error": 3.4924596548080444e-09,
+    "budget_max_error": 4.3655745685100555e-10,
+    "risk_max_error": 0.0,
+    "max_product_gross": 1,
+    "max_actual_products": 14,
+    "max_actual_broker_ratio": 0.7983320085047053,
+    "pending_margin_extra_min": -1.8189894035458565e-12,
+    "pending_margin_extra_max": 364224.0
+  },
+  "metrics": {
+    "ending_equity": 1128882.7319003856,
+    "total_return_pct": 12.888273190038557,
+    "max_drawdown_pct": -24.758359340500412,
+    "sharpe_240": 0.08682851099494172,
+    "commission": 27832.26809961105,
+    "slippage": 90480.0,
+    "fills": 3748,
+    "open_count": 1880,
+    "close_count": 1868,
+    "episodes": 1868,
+    "net_win_rate_pct": 33.565310492505354,
+    "net_payoff_ratio": 2.06424718513968,
+    "closed_net_pnl": 103077.9303203893,
+    "residual_gross_pnl": 26114.999999999913,
+    "residual_entry_cost": 310.1984199999964,
+    "residuals": 12
+  },
+  "residuals": [
+    {
+      "vt_symbol": "CJ202701.CZCE",
+      "direction": "short",
+      "entry_date": "2026-09-11",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2027-01-14",
+      "deadline": "2026-12-30",
+      "gross_unrealized": 6400.0,
+      "entry_cost": 28.0
+    },
+    {
+      "vt_symbol": "AP202701.CZCE",
+      "direction": "short",
+      "entry_date": "2026-09-22",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2027-01-14",
+      "deadline": "2026-12-30",
+      "gross_unrealized": 10830.0,
+      "entry_cost": 15.0
+    },
+    {
+      "vt_symbol": "au202612.SHFE",
+      "direction": "short",
+      "entry_date": "2026-09-29",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-12-15",
+      "deadline": "2026-11-27",
+      "gross_unrealized": -780.0000000000864,
+      "entry_cost": 40.0
+    },
+    {
+      "vt_symbol": "SH202611.CZCE",
+      "direction": "short",
+      "entry_date": "2026-09-30",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-11-13",
+      "deadline": "2026-10-29",
+      "gross_unrealized": 1950.0,
+      "entry_cost": 36.0126
+    },
+    {
+      "vt_symbol": "PL202611.CZCE",
+      "direction": "long",
+      "entry_date": "2026-10-09",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-11-13",
+      "deadline": "2026-10-29",
+      "gross_unrealized": 160.0,
+      "entry_cost": 23.0
+    },
+    {
+      "vt_symbol": "ni202611.SHFE",
+      "direction": "short",
+      "entry_date": "2026-10-09",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-11-16",
+      "deadline": "2026-10-29",
+      "gross_unrealized": 4710.0,
+      "entry_cost": 13.0
+    },
+    {
+      "vt_symbol": "hc202701.SHFE",
+      "direction": "short",
+      "entry_date": "2026-10-12",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2027-01-15",
+      "deadline": "2026-12-30",
+      "gross_unrealized": 210.0,
+      "entry_cost": 13.5893
+    },
+    {
+      "vt_symbol": "jd202612.DCE",
+      "direction": "short",
+      "entry_date": "2026-10-14",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-12-28",
+      "deadline": "2026-11-27",
+      "gross_unrealized": 2400.0,
+      "entry_cost": 15.893799999996428
+    },
+    {
+      "vt_symbol": "UR202701.CZCE",
+      "direction": "short",
+      "entry_date": "2026-10-15",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2027-01-14",
+      "deadline": "2026-12-30",
+      "gross_unrealized": -240.0,
+      "entry_cost": 23.660800000000002
+    },
+    {
+      "vt_symbol": "al202611.SHFE",
+      "direction": "short",
+      "entry_date": "2026-10-15",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-11-16",
+      "deadline": "2026-10-29",
+      "gross_unrealized": -575.0,
+      "entry_cost": 28.0
+    },
+    {
+      "vt_symbol": "sp202701.SHFE",
+      "direction": "short",
+      "entry_date": "2026-10-15",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2027-01-15",
+      "deadline": "2026-12-30",
+      "gross_unrealized": -200.0,
+      "entry_cost": 21.04192
+    },
+    {
+      "vt_symbol": "T202612.CFFEX",
+      "direction": "long",
+      "entry_date": "2026-10-16",
+      "last_quote_date": "2026-10-16",
+      "maturity": "2026-12-11",
+      "deadline": "2026-11-27",
+      "gross_unrealized": 1250.0,
+      "entry_cost": 53.0
+    }
+  ],
+  "annual_direction_c": [
+    {
+      "year": 2015,
+      "long": -12815.974151999766,
+      "short": 30955.01027500021
+    },
+    {
+      "year": 2016,
+      "long": 76970.64530626513,
+      "short": -20638.05975568759
+    },
+    {
+      "year": 2017,
+      "long": -13791.369111861914,
+      "short": -13538.023731056242
+    },
+    {
+      "year": 2018,
+      "long": 18918.54940909119,
+      "short": -39481.86760940028
+    },
+    {
+      "year": 2019,
+      "long": 13792.567001650725,
+      "short": -41032.01184539452
+    },
+    {
+      "year": 2020,
+      "long": -13503.616543934197,
+      "short": 13415.12340539818
+    },
+    {
+      "year": 2021,
+      "long": -105644.05988240663,
+      "short": -30865.64252727563
+    },
+    {
+      "year": 2022,
+      "long": 59655.25429999981,
+      "short": 119488.31823000031
+    },
+    {
+      "year": 2023,
+      "long": -20023.282300000163,
+      "short": -19555.813076999922
+    },
+    {
+      "year": 2024,
+      "long": 120230.60722500028,
+      "short": -46201.37692499981
+    },
+    {
+      "year": 2025,
+      "long": -17261.71241200011,
+      "short": 30236.68083500011
+    },
+    {
+      "year": 2026,
+      "long": -27573.42293499987,
+      "short": 67146.20872099992
+    }
+  ],
+  "episode_direction_c": [
+    {
+      "direction": "long",
+      "episodes": 494,
+      "net_pnl": 77620.18590480446,
+      "gross_pnl": 111200.00000000019
+    },
+    {
+      "direction": "short",
+      "episodes": 1374,
+      "net_pnl": 25457.74441558479,
+      "gross_pnl": 109880.00000000012
+    }
+  ],
+  "annual_c": [
+    {
+      "date": 2015,
+      "net_pnl": 18139.036123000453,
+      "commission": 950.9638769999601,
+      "slippage": 5560.0,
+      "trade_count": 225,
+      "start_equity": 1000000.0,
+      "return_pct": 1.8139036123000454
+    },
+    {
+      "date": 2016,
+      "net_pnl": 56332.58555057753,
+      "commission": 1857.4144494225798,
+      "slippage": 4355.0,
+      "trade_count": 209,
+      "start_equity": 1018139.0361230004,
+      "return_pct": 5.53289713407787
+    },
+    {
+      "date": 2017,
+      "net_pnl": -27329.39284291816,
+      "commission": 999.392842918,
+      "slippage": 5315.0,
+      "trade_count": 231,
+      "start_equity": 1074471.621673578,
+      "return_pct": -2.54351927883869
+    },
+    {
+      "date": 2018,
+      "net_pnl": -20563.3182003091,
+      "commission": 1308.3182003091001,
+      "slippage": 5870.0,
+      "trade_count": 259,
+      "start_equity": 1047142.2288306598,
+      "return_pct": -1.9637559859726113
+    },
+    {
+      "date": 2019,
+      "net_pnl": -27239.444843743797,
+      "commission": 1354.4448437439,
+      "slippage": 6510.0,
+      "trade_count": 279,
+      "start_equity": 1026578.9106303507,
+      "return_pct": -2.6534194850172743
+    },
+    {
+      "date": 2020,
+      "net_pnl": -88.49313853601188,
+      "commission": 1688.4931385354,
+      "slippage": 6905.0,
+      "trade_count": 260,
+      "start_equity": 999339.4657866069,
+      "return_pct": -0.008855162991722393
+    },
+    {
+      "date": 2021,
+      "net_pnl": -136509.70240968227,
+      "commission": 4504.7024096824,
+      "slippage": 9295.0,
+      "trade_count": 434,
+      "start_equity": 999250.9726480709,
+      "return_pct": -13.6612028555673
+    },
+    {
+      "date": 2022,
+      "net_pnl": 179143.57253000012,
+      "commission": 3606.42747,
+      "slippage": 7980.0,
+      "trade_count": 333,
+      "start_equity": 862741.2702383887,
+      "return_pct": 20.764460761277828
+    },
+    {
+      "date": 2023,
+      "net_pnl": -39579.095377000085,
+      "commission": 2514.0953769999833,
+      "slippage": 8160.0,
+      "trade_count": 339,
+      "start_equity": 1041884.8427683887,
+      "return_pct": -3.7987975016350752
+    },
+    {
+      "date": 2024,
+      "net_pnl": 74029.23030000046,
+      "commission": 3350.7696999998475,
+      "slippage": 10110.0,
+      "trade_count": 408,
+      "start_equity": 1002305.7473913888,
+      "return_pct": 7.385893026421299
+    },
+    {
+      "date": 2025,
+      "net_pnl": 12974.968422999988,
+      "commission": 3370.031576999904,
+      "slippage": 11370.0,
+      "trade_count": 431,
+      "start_equity": 1076334.9776913892,
+      "return_pct": 1.2054767978301473
+    },
+    {
+      "date": 2026,
+      "net_pnl": 39572.785786000044,
+      "commission": 2327.214213999975,
+      "slippage": 9050.0,
+      "trade_count": 340,
+      "start_equity": 1089309.9461143892,
+      "return_pct": 3.632830667447562
+    }
+  ],
+  "annual_a": [
+    {
+      "date": 2015,
+      "net_pnl": 18940.09127300031,
+      "commission": 1339.9087269999602,
+      "slippage": 8485.0,
+      "trade_count": 321,
+      "start_equity": 1000000.0,
+      "return_pct": 1.8940091273000312
+    },
+    {
+      "date": 2016,
+      "net_pnl": 83217.37337750262,
+      "commission": 4017.6266224975634,
+      "slippage": 7150.0,
+      "trade_count": 367,
+      "start_equity": 1018940.0912730002,
+      "return_pct": 8.167052615776067
+    },
+    {
+      "date": 2017,
+      "net_pnl": -11248.152345636978,
+      "commission": 1848.1523456368,
+      "slippage": 9235.0,
+      "trade_count": 393,
+      "start_equity": 1102157.4646505031,
+      "return_pct": -1.0205576522773718
+    },
+    {
+      "date": 2018,
+      "net_pnl": 6355.909825066231,
+      "commission": 2284.0901749339,
+      "slippage": 10080.0,
+      "trade_count": 425,
+      "start_equity": 1090909.3123048658,
+      "return_pct": 0.5826249490562609
+    },
+    {
+      "date": 2019,
+      "net_pnl": -46976.78538270015,
+      "commission": 3221.7853826999,
+      "slippage": 12950.0,
+      "trade_count": 523,
+      "start_equity": 1097265.2221299321,
+      "return_pct": -4.28126075950099
+    },
+    {
+      "date": 2020,
+      "net_pnl": 155935.34520902453,
+      "commission": 2624.6547909748,
+      "slippage": 12065.0,
+      "trade_count": 518,
+      "start_equity": 1050288.436747232,
+      "return_pct": 14.846906788001968
+    },
+    {
+      "date": 2021,
+      "net_pnl": -181425.7528317312,
+      "commission": 6825.7528317321,
+      "slippage": 15005.0,
+      "trade_count": 628,
+      "start_equity": 1206223.7819562566,
+      "return_pct": -15.040803833057783
+    },
+    {
+      "date": 2022,
+      "net_pnl": 204194.8398600002,
+      "commission": 5060.16014,
+      "slippage": 13735.0,
+      "trade_count": 566,
+      "start_equity": 1024798.0291245254,
+      "return_pct": 19.925373981685134
+    },
+    {
+      "date": 2023,
+      "net_pnl": 7006.289250999545,
+      "commission": 4048.7107489999075,
+      "slippage": 14050.0,
+      "trade_count": 565,
+      "start_equity": 1228992.8689845256,
+      "return_pct": 0.5700838001434948
+    },
+    {
+      "date": 2024,
+      "net_pnl": 38880.93981500046,
+      "commission": 5009.060184999788,
+      "slippage": 15265.0,
+      "trade_count": 636,
+      "start_equity": 1235999.1582355252,
+      "return_pct": 3.145709247124869
+    },
+    {
+      "date": 2025,
+      "net_pnl": 229288.60894200014,
+      "commission": 5421.391057999819,
+      "slippage": 16795.0,
+      "trade_count": 652,
+      "start_equity": 1274880.0980505254,
+      "return_pct": 17.9851116424686
+    },
+    {
+      "date": 2026,
+      "net_pnl": 327901.9246850002,
+      "commission": 3773.075314999928,
+      "slippage": 13675.0,
+      "trade_count": 536,
+      "start_equity": 1504168.7069925258,
+      "return_pct": 21.799544370299785
+    }
+  ],
+  "annual_direction_a": [
+    {
+      "year": 2015,
+      "long": -12014.91900199989,
+      "short": 30955.01027500021
+    },
+    {
+      "year": 2016,
+      "long": 103855.43313319022,
+      "short": -20638.05975568759
+    },
+    {
+      "year": 2017,
+      "long": 2289.8713854192633,
+      "short": -13538.023731056242
+    },
+    {
+      "year": 2018,
+      "long": 45837.7774344665,
+      "short": -39481.86760940028
+    },
+    {
+      "year": 2019,
+      "long": -5944.77353730563,
+      "short": -41032.01184539452
+    },
+    {
+      "year": 2020,
+      "long": 142520.22180362634,
+      "short": 13415.12340539818
+    },
+    {
+      "year": 2021,
+      "long": -161863.38856445558,
+      "short": -19562.3642672756
+    },
+    {
+      "year": 2022,
+      "long": 85045.61230999991,
+      "short": 119149.22755000032
+    },
+    {
+      "year": 2023,
+      "long": -26783.13734000056,
+      "short": 33789.42659100011
+    },
+    {
+      "year": 2024,
+      "long": 145970.08415200032,
+      "short": -107089.14433699985
+    },
+    {
+      "year": 2025,
+      "long": 199051.928107,
+      "short": 30236.68083500011
+    },
+    {
+      "year": 2026,
+      "long": 186273.20885200027,
+      "short": 141628.71583299988
+    }
+  ],
+  "budget_audit": {
+    "rows": 1993,
+    "filled": 1880,
+    "rejection_reasons": {
+      "stop_already_crossed_at_open": 104,
+      "one_lot_exceeds_native_risk_budget_at_open": 8,
+      "unbound_signal_risk_budget": 1
+    }
+  },
+  "weekly_execution_audit": {
+    "rows": 521,
+    "filled": 496,
+    "rejection_reasons": {}
+  },
+  "inventory": {
+    "daily_rows": 2862,
+    "fills": 3748,
+    "input_products": 93,
+    "traded_products": 90,
+    "exchanges": [
+      "CFFEX",
+      "CZCE",
+      "DCE",
+      "GFEX",
+      "INE",
+      "SHFE"
+    ],
+    "contract_epochs": 4328,
+    "market_rows": 810081,
+    "last_fill": "2026-10-16",
+    "weekly_rows": 61008
+  },
+  "errors": [],
+  "status": "PASS_WITH_LIMITS",
+  "limitations": [
+    "Original unadjusted causal-main roll gaps affect weekly MA alignment.",
+    "Private other-pending margin component receipts are not emitted; independent actual-margin floor and arithmetic checked.",
+    "Daily approximation disables C2/C9 intraday stop/retry and frozen supply filter by authorization.",
+    "Static fees/specs/maturity vendor snapshots are not historical publication-time PIT certification.",
+    "Short rules and env_probe have no new gate, but portfolio cash/positions can indirectly change short fills.",
+    "Historical sample is posterior research, not an out-of-sample or formal production qualification."
+  ],
+  "structure_diagnostics": {
+    "run_20261019_native_budget_one_lot_v1": {
+      "open_direction": {
+        "long": 1682,
+        "short": 1389
+      },
+      "open_signals": {
+        "long_case2": 850,
+        "short_case2": 664,
+        "long_case1a": 553,
+        "short_case1a": 469,
+        "long_case3": 248,
+        "short_case3": 230,
+        "rollover_reopen": 57
+      },
+      "annual_open_direction": {
+        "2015": {
+          "long": 56,
+          "short": 106
+        },
+        "2016": {
+          "long": 132,
+          "short": 52
+        },
+        "2017": {
+          "long": 107,
+          "short": 88
+        },
+        "2018": {
+          "long": 112,
+          "short": 103
+        },
+        "2019": {
+          "long": 144,
+          "short": 118
+        },
+        "2020": {
+          "long": 178,
+          "short": 80
+        },
+        "2021": {
+          "long": 193,
+          "short": 121
+        },
+        "2022": {
+          "long": 154,
+          "short": 129
+        },
+        "2023": {
+          "long": 152,
+          "short": 130
+        },
+        "2024": {
+          "long": 160,
+          "short": 159
+        },
+        "2025": {
+          "long": 149,
+          "short": 176
+        },
+        "2026": {
+          "long": 145,
+          "short": 127
+        }
+      },
+      "closed_direction": {
+        "long": {
+          "trades": 1680,
+          "net_pnl": 703703.9187339412,
+          "gross_pnl": 811870.0000000003
+        },
+        "short": {
+          "trades": 1379,
+          "net_pnl": 103361.9113635848,
+          "gross_pnl": 188850.00000000012
+        }
+      }
+    },
+    "run_20261019_weekly_long_v1": {
+      "open_direction": {
+        "short": 1384,
+        "long": 496
+      },
+      "open_signals": {
+        "short_case2": 662,
+        "short_case1a": 468,
+        "short_case3": 228,
+        "long_case1a": 197,
+        "long_case2": 174,
+        "long_case3": 109,
+        "rollover_reopen": 42
+      },
+      "annual_open_direction": {
+        "2015": {
+          "long": 7,
+          "short": 106
+        },
+        "2016": {
+          "long": 54,
+          "short": 52
+        },
+        "2017": {
+          "long": 26,
+          "short": 88
+        },
+        "2018": {
+          "long": 29,
+          "short": 103
+        },
+        "2019": {
+          "long": 19,
+          "short": 118
+        },
+        "2020": {
+          "long": 51,
+          "short": 80
+        },
+        "2021": {
+          "long": 97,
+          "short": 120
+        },
+        "2022": {
+          "long": 37,
+          "short": 128
+        },
+        "2023": {
+          "long": 41,
+          "short": 129
+        },
+        "2024": {
+          "long": 48,
+          "short": 158
+        },
+        "2025": {
+          "long": 37,
+          "short": 176
+        },
+        "2026": {
+          "long": 50,
+          "short": 126
+        }
+      },
+      "closed_direction": {
+        "long": {
+          "trades": 494,
+          "net_pnl": 77620.18590480446,
+          "gross_pnl": 111200.00000000019
+        },
+        "short": {
+          "trades": 1374,
+          "net_pnl": 25457.74441558479,
+          "gross_pnl": 109880.00000000012
+        }
+      },
+      "native_eligible_long_candidates": 2417,
+      "native_eligible_week_reasons": {
+        "not_strict_bullish": 1502,
+        "strict_bullish": 623,
+        "invalid_week_in_window": 274,
+        "execution_only_or_unknown_quote": 12,
+        "missing_main_mapping": 6
+      },
+      "annual_native_eligible_week_reasons": {
+        "2015": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 13,
+          "missing_main_mapping": 3,
+          "not_strict_bullish": 58,
+          "strict_bullish": 7
+        },
+        "2016": {
+          "execution_only_or_unknown_quote": 2,
+          "invalid_week_in_window": 14,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 116,
+          "strict_bullish": 70
+        },
+        "2017": {
+          "execution_only_or_unknown_quote": 1,
+          "invalid_week_in_window": 9,
+          "missing_main_mapping": 1,
+          "not_strict_bullish": 98,
+          "strict_bullish": 30
+        },
+        "2018": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 16,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 87,
+          "strict_bullish": 30
+        },
+        "2019": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 21,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 144,
+          "strict_bullish": 24
+        },
+        "2020": {
+          "execution_only_or_unknown_quote": 4,
+          "invalid_week_in_window": 36,
+          "missing_main_mapping": 1,
+          "not_strict_bullish": 141,
+          "strict_bullish": 62
+        },
+        "2021": {
+          "execution_only_or_unknown_quote": 2,
+          "invalid_week_in_window": 51,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 91,
+          "strict_bullish": 121
+        },
+        "2022": {
+          "execution_only_or_unknown_quote": 2,
+          "invalid_week_in_window": 24,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 167,
+          "strict_bullish": 55
+        },
+        "2023": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 21,
+          "missing_main_mapping": 1,
+          "not_strict_bullish": 164,
+          "strict_bullish": 49
+        },
+        "2024": {
+          "execution_only_or_unknown_quote": 1,
+          "invalid_week_in_window": 30,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 126,
+          "strict_bullish": 63
+        },
+        "2025": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 14,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 170,
+          "strict_bullish": 48
+        },
+        "2026": {
+          "execution_only_or_unknown_quote": 0,
+          "invalid_week_in_window": 25,
+          "missing_main_mapping": 0,
+          "not_strict_bullish": 140,
+          "strict_bullish": 64
+        }
+      }
+    }
+  },
+  "audit_script_sha256": "d5c8550c6b0f29d9d647aceb400a19e8112b3607d47e05a22493bb6f7c335ccb",
+  "audit_script_source": "from pathlib import Path\nfrom collections import defaultdict\nfrom bisect import bisect_left,bisect_right\nfrom datetime import datetime\nfrom zoneinfo import ZoneInfo\nimport hashlib,json,math\nimport pandas as pd\nimport numpy as np\n\nROOT=Path('/Users/mac/.codex/worktrees/full-market-noai-one-lot/fian')\nLINE=ROOT/'research/lines/futures_trend_full_market_noai_one_lot'\nA=LINE/'outputs/run_20261019_native_budget_one_lot_v1'\nC=LINE/'outputs/run_20261019_weekly_long_v1'\nR={'reviewer':'independent_weekly_preflight_agent','financial_replays':0,'implementation_changes':0,'source_changes':0,'findings':[]}\nerrors=[]\ndef ck(name,value,detail=None):\n if not bool(value):errors.append({'check':name,'detail':detail})\ndef near(a,b,atol=1e-7):return math.isfinite(float(a)) and math.isfinite(float(b)) and abs(float(a)-float(b))<=atol\n\ndef sha(p):\n h=hashlib.sha256()\n with Path(p).open('rb') as f:\n  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)\n return h.hexdigest()\ndef read(folder,name):return pd.read_csv(folder/(name+'.csv'),keep_default_na=False,float_precision='round_trip')\ndef js(p):return json.loads(Path(p).read_text())\ndef flag(v):return str(v).lower()=='true'\ndef dump(v):\n if isinstance(v,dict):return {str(k):dump(x) for k,x in v.items()}\n if isinstance(v,(list,tuple)):return [dump(x) for x in v]\n if isinstance(v,np.generic):return dump(v.item())\n if isinstance(v,float) and not math.isfinite(v):return None\n return v\n\nif not (C/'manifest.json').exists():raise SystemExit('Complete manifest not present; no audit of partial run.')\ncm=js(C/'manifest.json');am=js(A/'manifest.json');summary=js(C/'summary.json')\nR['source_manifest_sha256']=sha(C/'manifest.json');R['baseline_manifest_sha256']=sha(A/'manifest.json');R['review_time']=datetime.now(ZoneInfo('Asia/Shanghai')).isoformat();R['source_commit']=cm['source_commit']\nck('baseline_manifest_bound',R['baseline_manifest_sha256']==cm['baseline_run_manifest_sha256'])\ncompare_keys=['parameters','source_manifest','expiry_execution_overlay','quantity_execution_overlay','lifecycle_sources','mode','start','end','official_material_identity']\nR['baseline_comparison']={k:am[k]==cm[k] for k in compare_keys}\nfor k,v in R['baseline_comparison'].items():ck('baseline_'+k,v)\nck('daily_proxy_only',cm['mode']=='daily-proxy')\nck('production_false',cm['production_qualified'] is False and cm['order_api_calls']==0 and cm['market_downloads']==0)\nchecks=[]\nfor filename,digest in cm['hashes'].items():\n actual=sha(C/filename);ck('output_hash:'+filename,actual==digest);checks.append(filename)\nfor path,digest in cm['code_hashes'].items():\n ck('current_code_hash:'+path,sha(path)==digest)\nfor filename,digest in cm['code_snapshot_hashes'].items():ck('snapshot:'+filename,sha(C/'code_snapshot'/filename)==digest)\nfor path,digest in js(C/'code_start_hashes.json').items():\n ck('start_code:'+path,sha(path)==digest);ck('start_snapshot:'+path,sha(C/'code_snapshot'/Path(path).name)==digest)\nfor group in ['source_inputs','output_files']:\n for label,item in cm['source_manifest'][group].items():ck('original_'+group+':'+label,sha(item['path'])==item['sha256'])\nfor path,digest in cm['lifecycle_sources'].items():ck('lifecycle_source:'+path,sha(path)==digest)\nfor filename in ['mapping.csv','market_daily.csv','contract_metadata.csv','lifecycle_deadlines.csv']:\n ck('AC_same_'+filename,sha(A/filename)==sha(C/filename))\nR['hash_checks']={'output_files':len(checks),'code_hashes':len(cm['code_hashes']),'snapshots':len(cm['code_snapshot_hashes']),'all_hash_checks_passed':not errors}\nprint('Hash binding checked',flush=True)\nparams=cm['parameters']\nck('native_policy',params['fixed_size']==0 and params['max_position_size']==1 and params['max_concurrent_positions']==93)\nfor key in ['enable_ai_product_pool_filter','enable_selection_pairwise_v2','enable_add_position','enable_donchian_add_position','enable_post_entry_quality_add','enable_supply_demand_headwind_filter','enable_stage827_intraday_c2_stop','enable_stage847_half_r_stop_retry']:ck('policy_off:'+key,not params[key])\ntr=read(C,'trades');daily=read(C,'daily');meta=read(C,'contract_metadata').set_index('vt_symbol');mapping=read(C,'mapping');wout=read(C,'weekly_main_features')\nck('daily_dates_unique',not daily.date.duplicated().any());ck('daily_endpoints',daily.iloc[0].date=='2015-01-05' and daily.iloc[-1].date=='2026-10-16' and len(daily)==2862)\nck('fills_one_lot',tr.volume.eq(1).all());ck('trades_unique',not tr.trade_id.duplicated().any());ck('fill_endpoint',tr.date.max()=='2026-10-16')\nmarket=read(C,'market_daily');ck('market_unique',not market.duplicated(['date','vt_symbol']).any())\nraw_original=read(LINE/'outputs/inputs','market_daily');original_ix=raw_original.set_index(['date','vt_symbol']);mapix=mapping.set_index(['date','continuous_symbol_vt']);mktix=market.set_index(['date','vt_symbol'])\nraw=market.loc[~market.execution_only.map(flag)].copy();rawix=raw.set_index(['date','vt_symbol'])\nck('accepted_clean_source_keys',set(rawix.index)==set(original_ix.index))\nbound=rawix.reindex(original_ix.index);precision={}\nfor field in ['open','high','low','close','volume','close_oi']:\n x=original_ix[field].astype(float).to_numpy();y=bound[field].astype(float).to_numpy();delta=np.abs(x-y)\n precision[field]={'max_abs_delta':float(delta.max()),'different_binary_values':int((x!=y).sum())}\n ck('raw_input_close_binding:'+field,np.isclose(x,y,rtol=1e-14,atol=1e-10,equal_nan=True).all())\nck('raw_input_epoch_binding',original_ix.contract_epoch_id.tolist()==bound.contract_epoch_id.tolist())\nR['raw_input_reparse_precision']=precision\n\ncalendar_path=cm['source_manifest']['source_inputs']['calendar']['path'];cal=pd.to_datetime(np.load(calendar_path).astype(str),format='%Y%m%d').strftime('%Y-%m-%d').tolist()\nprev=dict(zip(cal[1:],cal[:-1]));week_ends={}\nfor d in cal:\n y,w,_=pd.Timestamp(d).isocalendar();week_ends[(int(y),int(w))]=d\nfirst=tuple(map(int,pd.Timestamp(mapping.date.min()).isocalendar()[:2]));last=tuple(map(int,pd.Timestamp(mapping.date.max()).isocalendar()[:2]))\nends=[d for key,d in sorted(week_ends.items()) if first<=key<=last]\nck('calendar_extends_beyond_end',cal[-1]>'2026-10-16')\n# Independent weekly close construction: no imports of Stage050/051 or saved weekly features.\nweekly={};maerr=0.;weekly_bad=0;valid_count=0\nfor product in sorted(mapping.continuous_symbol_vt.unique()):\n hist=[];rows=[];evidence=[]\n for eow in ends:\n  key=(eow,product);mr=mapix.loc[key] if key in mapix.index else None\n  vt=str(mr.main_contract_vt) if mr is not None else '';obs=str(mr.observation_date) if mr is not None else ''\n  bar=rawix.loc[(eow,vt)] if (eow,vt) in rawix.index else None\n  good=bool(vt and obs and obs<eow and bar is not None and math.isfinite(float(bar.close)) and float(bar.close)>0 and float(bar.volume)>0)\n  close=float(bar.close) if good else float('nan');hist.append(close)\n  means={f'ma{n}':math.fsum(hist[-n:])/n if len(hist)>=n and all(math.isfinite(x) for x in hist[-n:]) else float('nan') for n in (5,10,20,40)}\n  strict_means=[float(np.mean(hist[-n:])) if len(hist)>=n else float('nan') for n in (5,10,20,40)]\n  allow=bool(len(hist)>=40 and all(math.isfinite(x) for x in hist[-40:]) and strict_means[0]>strict_means[1]>strict_means[2]>strict_means[3])\n  item={'product_vt_symbol':product,'week_last_session':eow,'main_contract_vt':vt or None,'observation_date':obs or None,'close':close,'valid':good,'allowed':allow,**means}\n  # Actual authorizations contain only all-valid windows; reconstruct their exact source evidence IDs independently.\n  evidence.append(dict(week_last_session=eow,main_contract_vt=vt or None,observation_date=obs or None,raw_close=float(bar.close) if bar is not None else None,volume=float(bar.volume) if bar is not None else None,quote_issue=None if good else 'invalid'))\n  item['evidence_id']=hashlib.sha256(json.dumps(dict(policy='causal_main_completed_week_ma5_10_20_40_v1',product_vt_symbol=product,window=evidence[-40:]),sort_keys=True,ensure_ascii=True,allow_nan=False,separators=(',',':')).encode()).hexdigest() if allow else ''\n  rows.append(item)\n weekly[product]=rows\nfor r in wout.itertuples():\n exp=weekly[r.product_vt_symbol][ends.index(r.week_last_session)]\n ck('weekly_valid',flag(r.valid)==exp['valid'],[r.product_vt_symbol,r.week_last_session]);ck('weekly_allowed',flag(r.allowed)==exp['allowed'],[r.product_vt_symbol,r.week_last_session])\n for n in (5,10,20,40):\n  a=getattr(r,f'ma{n}');b=exp[f'ma{n}']\n  if a=='':ck('weekly_nan',not math.isfinite(b))\n  else:\n   delta=abs(float(a)-b) if math.isfinite(b) else float('inf');maerr=max(maerr,delta);ck('weekly_MA',delta<1e-7,[r.product_vt_symbol,r.week_last_session,n])\n valid_count+=int(exp['valid']);weekly_bad+=int(not exp['valid'])\ndef weekly_get(product,date,phase):\n index=(bisect_right(ends,date) if phase=='signal_close' else bisect_left(ends,date))-1\n return weekly[product][index] if index>=0 else None\nweekly_receipts=0;signal_checks=0;open_checks=0\nfor t in tr.itertuples():\n if t.offset!='open' or t.direction!='long':\n  ck('no_weekly_gate_on_short_or_close',json.loads(t.stage051_weekly_signal_snapshot)=={} and json.loads(t.stage051_weekly_open_snapshot)=={})\n  continue\n product=meta.loc[t.vt_symbol].product_vt_symbol;sigdate=str(t.signal_datetime)[:10]\n for column,date,phase in [('stage051_weekly_signal_snapshot',sigdate,'signal_close'),('stage051_weekly_open_snapshot',t.date,'open')]:\n  actual=json.loads(getattr(t,column));exp=weekly_get(product,date,phase)\n  ck('weekly_actual_allowed',exp is not None and exp['allowed'],t.trade_id)\n  if exp is None:continue\n  ck('weekly_snapshot_identity',actual['product_vt_symbol']==product and actual['asof_date']==date and actual['phase']==phase and actual['week_last_session']==exp['week_last_session'],t.trade_id)\n  ck('weekly_evidence_hash',actual['evidence_id']==exp['evidence_id'],t.trade_id)\n  ck('weekly_main_identity',actual['main_contract_vt']==exp['main_contract_vt'] and actual['observation_date']==exp['observation_date'],t.trade_id)\n  for n in (5,10,20,40):ck('weekly_actual_MA',near(actual[f'ma{n}'],exp[f'ma{n}']),[t.trade_id,n])\n  if phase=='signal_close':signal_checks+=1\n  else:open_checks+=1\n weekly_receipts+=1\nwa=read(C,'weekly_signal_audit')\nfor r in wa.itertuples():\n exp=weekly_get(r.product_vt_symbol,r.date,'signal_close');expected=exp is not None and exp['allowed']\n ck('weekly_candidate_gate',flag(r.weekly_allowed)==expected)\n ck('weekly_candidate_only_reduces',int(r.selected_volume)==(int(r.native_selected_volume) if expected else 0))\n ck('weekly_candidate_long_no_env',r.direction=='long' and r.entry_context!='env_probe')\nR['weekly_independent']={'full_rows':len(wout),'valid_weeks':valid_count,'invalid_weeks_retained':weekly_bad,'max_MA_difference':maerr,'actual_long_signal_checks':signal_checks,'actual_long_open_checks':open_checks,'signal_candidate_checks':len(wa),'method':'Independent accepted-clean EOW mapping join after original clean source numeric/epoch binding, ISO natural-week calendar, math.fsum numeric verification and declared numpy-mean strict comparison; all frozen CSV read round_trip; no Stage050 imports.'}\nprint('Weekly raw evidence independently recomputed',flush=True)\n# Verify causal mapping observations and exact chosen epoch against accepted clean data.\nmap_bad=0;obs_miss=0;oierr=0.;main_epoch_bad=0\nfor r in mapping[mapping.main_contract_vt.ne('')].itertuples():\n ck('mapping_previous_calendar_session',r.observation_date==prev.get(r.date),[r.date,r.continuous_symbol_vt])\n k=(r.observation_date,r.main_contract_vt)\n if k not in rawix.index:obs_miss+=1;continue\n bar=rawix.loc[k];oierr=max(oierr,abs(float(bar.close_oi)-float(r.close_oi)))\n if str(bar.contract_epoch_id)!=r.contract_epoch_id:main_epoch_bad+=1\nck('mapping_observation_exists',obs_miss==0);ck('mapping_oi',oierr<1e-7);ck('mapping_epoch',main_epoch_bad==0)\nR['mapping']={'mapped_rows':int(mapping.main_contract_vt.ne('').sum()),'missing_observation_bars':obs_miss,'max_oi_difference':oierr,'epoch_mismatch':main_epoch_bad}\n# Independent lifecycle policy from original calendar and exact contract metadata.\ndead=read(C,'lifecycle_deadlines').set_index('vt_symbol');deadline={}\nfor vt,m in meta.iterrows():\n expiry=bisect_left(cal,m.maturity_date);ck('maturity_exact_calendar',cal[expiry]==m.maturity_date,vt)\n if m.product_class=='Index':idx=expiry-1\n else:idx=min(bisect_left(cal,str(m.contract_yyyymm)[:4]+'-'+str(m.contract_yyyymm)[4:]+'-01')-2,expiry-10)\n deadline[vt]=cal[idx];ck('lifecycle_deadline',deadline[vt]==dead.loc[vt].deadline,vt);ck('lifecycle_signal',cal[idx-1]==dead.loc[vt].exit_signal_date,vt)\n\nmarket_days={d:g.set_index('vt_symbol') for d,g in market.groupby('date',sort=False)}\nprices_by_day={d:{vt:float(v) for vt,v in zip(g.vt_symbol,g.close)} for d,g in market.groupby('date',sort=False)}\naudit=read(C,'open_budget_audit');audit_by_day={d:g for d,g in audit.groupby('date',sort=False)}\nopens=tr[tr.offset.eq('open')];ck('all_open_have_budget_audit',set(opens.trade_id)==set(audit.loc[audit.filled.map(flag),'trade_id']))\nfeeserr=sliperr=episodeerr=0.;budgeterr=riskerr=open_eq_err=0.;max_ratio=0.;reserved_extra=[]\nmax_products=max_product_gross=0;pos=defaultdict(int);entries={};closed=[];lastclose={};lastdate={};daily_dir=[];dailyerr={'holding':0.,'trading':0.,'net':0.,'equity':0.,'snapshot':0.};eq=1000000.;snap=read(C,'account_snapshots').set_index('date');dailyix=daily.set_index('date');trade_by_day={d:g for d,g in tr.groupby('date',sort=False)}\nfor d in daily.date:\n bars=market_days.get(d);closes=prices_by_day.get(d,{})\n hold=0.;side_pnl={'long':0.,'short':0.}\n startpos={vt:q for vt,q in pos.items() if q};marks={vt:closes.get(vt,lastclose.get(vt)) for vt in startpos}\n for vt,q in startpos.items():\n  h=q*(marks[vt]-lastclose[vt])*float(meta.loc[vt]['size']);hold+=h;side_pnl['long' if q>0 else 'short']+=h\n opmarks={vt:(float(bars.loc[vt].open) if bars is not None and vt in bars.index and float(bars.loc[vt].volume)>0 else lastclose[vt]) for vt in startpos}\n opening=eq+sum(q*(opmarks[vt]-lastclose[vt])*float(meta.loc[vt]['size']) for vt,q in startpos.items())\n group=trade_by_day.get(d,tr.iloc[:0]);comm=slip=trading=0.;before_open_cost=0.\n # Actual engine closes all old positions before processing open orders.\n for t in group[group.offset.eq('close')].itertuples():before_open_cost+=float(t.commission)+float(t.slippage)\n auditpos=dict(startpos)\n for t in group[group.offset.eq('close')].itertuples():auditpos[t.vt_symbol]=auditpos.get(t.vt_symbol,0)+(1 if t.direction=='long' else -1)*int(t.volume)\n if d in audit_by_day:\n  for r in audit_by_day[d].itertuples():\n   expected_eq=opening-before_open_cost;open_eq_err=max(open_eq_err,abs(float(r.opening_equity)-expected_eq))\n   s=json.loads(r.signal_snapshot);floor=sum(abs(q)*(float(bars.loc[vt].open) if bars is not None and vt in bars.index and float(bars.loc[vt].volume)>0 else lastclose[vt])*float(meta.loc[vt]['size'])*float(meta.loc[vt].margin_ratio) for vt,q in auditpos.items() if q)\n   ck('reserved_above_actual_margin',float(r.reserved_margin)+1e-6>=floor,[d,r.order_id]);reserved_extra.append(float(r.reserved_margin)-floor)\n   if flag(r.filled):\n    t=tr.loc[tr.trade_id.eq(r.trade_id)].iloc[0];m=meta.loc[r.vt_symbol]\n    signal_budget=min(float(s['max_risk_per_trade']),max(float(s['min_risk_per_trade']),float(s['limited_balance'])*float(s['risk_ratio'])))*float(s['risk_multiplier'])*float(s['portfolio_overheat_cooldown_scale'])*float(s['directional_30d_risk_boost_multiplier'])\n    ck('signal_budget_arithmetic',near(signal_budget,s['target_risk_amount']))\n    cap=min(float(s['sizing_equity']),expected_eq);reserved=float(r.reserved_margin)\n    limited=max(0.,min(cap-reserved,cap*float(s['effective_capital_usage_ratio'])-reserved))\n    calculated=min(float(s['target_risk_amount']),min(float(s['max_risk_per_trade']),max(float(s['min_risk_per_trade']),limited*float(s['risk_ratio'])))*float(s['risk_multiplier'])*float(s['portfolio_overheat_cooldown_scale'])*float(s['directional_30d_risk_boost_multiplier']))\n    budgeterr=max(budgeterr,abs(calculated-float(r.opening_budget)))\n    risk=max(abs(float(t.price)-float(r.stop_price))*float(m['size']),float(m.pricetick)*float(m['size']),1.)\n    riskerr=max(riskerr,abs(risk-float(r.one_lot_risk)))\n    ck('actual_risk_within_budget',risk<=float(r.opening_budget)+1e-7 and float(r.opening_budget)<=float(s['target_risk_amount'])+1e-7,t.trade_id)\n    ck('actual_risk_trade_evidence',near(t.stage041_entry_risk,risk) and near(t.stage041_open_budget,r.opening_budget))\n    ck('stop_not_crossed',(t.direction=='long' and t.price>float(r.stop_price)) or (t.direction=='short' and t.price<float(r.stop_price)))\n    ck('budget_snapshot_identity',s['contract_vt_symbol']==t.vt_symbol and s['product_vt_symbol']==m.product_vt_symbol and s['direction']==t.direction and s['signal']==t.signal and str(s['signal_datetime'])[:10]==str(t.signal_datetime)[:10])\n    ck('budget_snapshot_not_reissued',json.loads(t.stage041_signal_snapshot)==s)\n    actual_broker=(floor+float(t.price)*float(m['size'])*float(m.margin_ratio))*float(params['stage830_broker_margin_multiplier'])/expected_eq\n    max_ratio=max(max_ratio,actual_broker);ck('actual_broker_cap',actual_broker<=float(params['stage830_projected_broker10_margin_to_equity_cap'])+1e-8)\n    before_open_cost+=float(t.commission)+float(t.slippage);auditpos[t.vt_symbol]=auditpos.get(t.vt_symbol,0)+(1 if t.direction=='long' else -1)*int(t.volume)\n for t in group.itertuples():\n  m=meta.loc[t.vt_symbol];bar=mktix.loc[(d,t.vt_symbol)];sgn=1 if t.direction=='long' else -1\n  ck('fill_real_positive_volume',float(bar.volume)>0,t.trade_id);ck('fill_open_price',near(t.price,bar.open),t.trade_id);ck('fill_price_in_bar',float(bar.low)-1e-7<=t.price<=float(bar.high)+1e-7,t.trade_id)\n  side=t.direction if t.offset=='open' else ('short' if t.direction=='long' else 'long')\n  if t.offset=='open':\n   ck('no_duplicate_contract_open',pos[t.vt_symbol]==0,t.trade_id);ck('no_quote_only_open',not flag(bar.execution_only),t.trade_id)\n   ck('signal_before_fill',str(t.signal_datetime)[:10]<d and str(t.order_reissue_datetime)[:10]<d and str(t.signal_datetime)[:10]<=str(t.order_reissue_datetime)[:10],t.trade_id)\n   signalkey=(str(t.signal_datetime)[:10],m.product_vt_symbol)\n   ck('open_signal_mapping',signalkey in mapix.index and mapix.loc[signalkey].main_contract_vt==t.vt_symbol,t.trade_id)\n   ck('original_signal_clean',(str(t.signal_datetime)[:10],t.vt_symbol) in rawix.index,t.trade_id)\n   ck('fill_lifecycle',d<deadline[t.vt_symbol],t.trade_id);ck('fill_epoch_dates',m.listed_date<=d<=m.maturity_date,t.trade_id)\n   entries[t.vt_symbol]=t\n  else:\n   ck('close_actual_position',pos[t.vt_symbol]*sgn<0 and abs(pos[t.vt_symbol])>=t.volume,t.trade_id)\n  same=t.offset=='close' and str(entries[t.vt_symbol].date)==d\n  feevalue=float(m.fee_open if t.offset=='open' else m.fee_close_today if same else m.fee_close)\n  fee=feevalue*float(t.volume)*(float(t.price)*float(m['size']) if m.fee_method=='by_money' else 1.)\n  slippage=float(t.volume)*float(m['size'])*float(m.slippage);feeserr=max(feeserr,abs(fee-float(t.commission)));sliperr=max(sliperr,abs(slippage-float(t.slippage)))\n  tp=sgn*float(t.volume)*(closes.get(t.vt_symbol,lastclose.get(t.vt_symbol))-float(t.price))*float(m['size']);trading+=tp;side_pnl[side]+=tp-fee-slippage;comm+=fee;slip+=slippage\n  if t.offset=='close':\n   en=entries.pop(t.vt_symbol);gross=(float(t.price)-float(en.price))*float(m['size'])*(1 if en.direction=='long' else -1);net=gross-sum(float(x.commission)+float(x.slippage) for x in (en,t));closed.append(dict(entry_trade_id=en.trade_id,exit_trade_id=t.trade_id,vt_symbol=t.vt_symbol,direction=en.direction,entry_date=en.date,exit_date=d,gross_pnl=gross,net_pnl=net))\n  pos[t.vt_symbol]+=sgn*int(t.volume)\n  grossprod=defaultdict(int)\n  for vt,q in pos.items():grossprod[meta.loc[vt].product_vt_symbol]+=abs(q)\n  max_product_gross=max(max_product_gross,max(grossprod.values(),default=0));max_products=max(max_products,sum(x>0 for x in grossprod.values()))\n  ck('gross_product_at_most_one',max_product_gross<=1,t.trade_id)\n net=hold+trading-comm-slip;eq+=net;dr=dailyix.loc[d]\n for field,value in [('holding',hold-float(dr.holding_pnl)),('trading',trading-float(dr.trading_pnl)),('net',net-float(dr.net_pnl)),('equity',eq-float(dr.equity)),('snapshot',eq-float(snap.loc[d].strategy_equity))]:dailyerr[field]=max(dailyerr[field],abs(value))\n ck('direction_pnl_ties',near(side_pnl['long']+side_pnl['short'],net))\n actualpos={vt:q for vt,q in pos.items() if q};ck('snapshot_positions',actualpos==json.loads(snap.loc[d].positions),d)\n for vt,q in actualpos.items():ck('eod_lifecycle',d<deadline[vt],[d,vt])\n for vt,price in closes.items():lastclose[vt]=price;lastdate[vt]=d\n daily_dir.append(dict(date=d,year=int(d[:4]),long=side_pnl['long'],short=side_pnl['short']))\nR['daily_independent']={**dailyerr,'fee_max_error':feeserr,'slippage_max_error':sliperr,'opening_equity_max_error':open_eq_err,'budget_max_error':budgeterr,'risk_max_error':riskerr,'max_product_gross':max_product_gross,'max_actual_products':max_products,'max_actual_broker_ratio':max_ratio,'pending_margin_extra_min':min(reserved_extra),'pending_margin_extra_max':max(reserved_extra)}\nfor k,v in dailyerr.items():ck('daily_'+k,v<1e-6)\nfor k,v in [('fee',feeserr),('slippage',sliperr),('open_eq',open_eq_err),('budget',budgeterr),('risk',riskerr)]:ck('independent_'+k,v<1e-6)\nclosed=pd.DataFrame(closed);saved=read(C,'closed_episodes').set_index('entry_trade_id')\nck('closed_count',len(closed)==len(saved))\nfor r in closed.itertuples():episodeerr=max(episodeerr,abs(r.net_pnl-float(saved.loc[r.entry_trade_id].net_pnl)))\nck('episode_pnl',episodeerr<1e-6)\nresidual=[];resgross=rescost=0.\nfor vt,en in entries.items():\n m=meta.loc[vt];gross=(lastclose[vt]-float(en.price))*float(m['size'])*(1 if en.direction=='long' else -1);cost=float(en.commission)+float(en.slippage);resgross+=gross;rescost+=cost\n residual.append(dict(vt_symbol=vt,direction=en.direction,entry_date=en.date,last_quote_date=lastdate[vt],maturity=m.maturity_date,deadline=deadline[vt],gross_unrealized=gross,entry_cost=cost))\nrecon=1000000.+closed.net_pnl.sum()+resgross-rescost;ck('closed_residual_equity',near(recon,eq,1e-6))\nret=np.log(daily.equity.astype(float)/daily.equity.astype(float).shift(1)).fillna(0);dd=(daily.equity/daily.equity.cummax()-1)*100\nmetrics=dict(ending_equity=eq,total_return_pct=(eq/1000000-1)*100,max_drawdown_pct=float(dd.min()),sharpe_240=float(ret.mean()/ret.std(ddof=1)*math.sqrt(240)),commission=float(tr.commission.sum()),slippage=float(tr.slippage.sum()),fills=len(tr),open_count=len(opens),close_count=int(tr.offset.eq('close').sum()),episodes=len(closed),net_win_rate_pct=float(closed.net_pnl.gt(0).mean()*100),net_payoff_ratio=float(closed.loc[closed.net_pnl.gt(0),'net_pnl'].mean()/abs(closed.loc[closed.net_pnl.lt(0),'net_pnl'].mean())),closed_net_pnl=float(closed.net_pnl.sum()),residual_gross_pnl=resgross,residual_entry_cost=rescost,residuals=len(residual))\nfor key,skey in [('ending_equity','end_balance'),('total_return_pct','total_return'),('max_drawdown_pct','max_ddpercent'),('sharpe_240','sharpe_ratio')]:ck('summary_'+key,near(metrics[key],summary[skey],1e-6))\nR['metrics']=metrics;R['residuals']=residual;R['annual_direction_c']=pd.DataFrame(daily_dir).groupby('year')[['long','short']].sum().reset_index().to_dict('records');R['episode_direction_c']=closed.groupby('direction').agg(episodes=('net_pnl','size'),net_pnl=('net_pnl','sum'),gross_pnl=('gross_pnl','sum')).reset_index().to_dict('records')\nR['annual_c']=read(C,'annual').to_dict('records');R['annual_a']=read(A,'annual').to_dict('records')\n# Baseline directional daily marking, using the identical frozen market and independently allocated holding/trading/cost legs.\nat=read(A,'trades');ag={d:g for d,g in at.groupby('date',sort=False)};ap=defaultdict(int);last={};adir=[]\nfor d in read(A,'daily').date:\n closes=prices_by_day.get(d,{});sides={'long':0.,'short':0.}\n for vt,q in ap.items():\n  if q:sides['long' if q>0 else 'short']+=q*(closes.get(vt,last[vt])-last[vt])*float(meta.loc[vt]['size'])\n for t in ag.get(d,at.iloc[:0]).itertuples():\n  side=t.direction if t.offset=='open' else ('short' if t.direction=='long' else 'long');sgn=1 if t.direction=='long' else -1\n  sides[side]+=sgn*float(t.volume)*(closes.get(t.vt_symbol,last.get(t.vt_symbol))-float(t.price))*float(meta.loc[t.vt_symbol]['size'])-float(t.commission)-float(t.slippage);ap[t.vt_symbol]+=sgn*int(t.volume)\n last.update(closes);adir.append(dict(year=int(d[:4]),**sides))\nR['annual_direction_a']=pd.DataFrame(adir).groupby('year')[['long','short']].sum().reset_index().to_dict('records')\nR['budget_audit']={'rows':len(audit),'filled':int(audit.filled.map(flag).sum()),'rejection_reasons':audit.loc[~audit.filled.map(flag),'reason'].value_counts().to_dict()}\nwe=read(C,'weekly_execution_audit');R['weekly_execution_audit']={'rows':len(we),'filled':int(we.filled.map(flag).sum()),'rejection_reasons':we.loc[~we.weekly_allowed.map(flag),'reason'].value_counts().to_dict()};R['inventory']={'daily_rows':len(daily),'fills':len(tr),'input_products':int(meta.product_vt_symbol.nunique()),'traded_products':int(meta.loc[tr.vt_symbol].product_vt_symbol.nunique()),'exchanges':sorted(meta.exchange.unique()),'contract_epochs':len(meta),'market_rows':len(market),'last_fill':tr.date.max(),'weekly_rows':len(wout)}\nck('weekly_fills_complete',set(we.loc[we.filled.map(flag),'trade_id'])==set(opens.loc[opens.direction.eq('long'),'trade_id']))\nck('no_runtime_errors','Traceback (most recent call last)' not in (C/'engine.log').read_text() and '触发异常' not in (C/'engine.log').read_text())\nR['errors']=errors;R['status']='FAIL' if errors else 'PASS_WITH_LIMITS'\nR['limitations']=['Original unadjusted causal-main roll gaps affect weekly MA alignment.','Private other-pending margin component receipts are not emitted; independent actual-margin floor and arithmetic checked.','Daily approximation disables C2/C9 intraday stop/retry and frozen supply filter by authorization.','Static fees/specs/maturity vendor snapshots are not historical publication-time PIT certification.','Short rules and env_probe have no new gate, but portfolio cash/positions can indirectly change short fills.','Historical sample is posterior research, not an out-of-sample or formal production qualification.']\nPath('/private/tmp/stage054_actual_review_result.json').write_text(json.dumps(dump(R),ensure_ascii=False,indent=2,allow_nan=False))\nprint(json.dumps(dump({'status':R['status'],'source_manifest_sha256':R['source_manifest_sha256'],'errors':errors[:20],'metrics':metrics,'weekly_independent':R['weekly_independent'],'daily_independent':R['daily_independent'],'annual_direction_c':R['annual_direction_c']}),ensure_ascii=False,indent=2))\n",
+  "confidence": "对当前冻结真实成交、原始周close/映射、双相位授权、预算算术、会计、1手与生命周期置信度高；private pending逐项组成、真实反事实流动性、历史PIT费用元数据与完整C9盘中行为有明确限制。",
+  "decision": "周门按已声明合同执行；本次C明显弱于A，不晋级、不选参补救。2024局部改善不能抵消全期恶化，且改善主要发生于短侧间接路径。",
+  "overfitting": "未进行收益选参，固定通用窗口和严格排列；用户在看过历史后提出，属于后验研究样本，不是样本外证明。",
+  "continuation_value": "完成本次固定候选证伪和交付有价值；目前无证据支持沿这组周门主动调阈值继续优化或晋级。",
+  "strict_actual_budget_comparisons": {
+    "float_precision": "round_trip",
+    "risk_gt_opening_budget": 0,
+    "opening_budget_gt_original_ceiling": 0,
+    "max_risk_to_opening_budget": 0.9867691127093033,
+    "comparison_tolerance": 0
+  }
+}

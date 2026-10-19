@@ -1,0 +1,63 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "integration_tests": 3,
+  "calendar_min": "20050104",
+  "calendar_max": "20271231",
+  "strategy_mro": [
+    "FeeStrategy",
+    "LifecycleStrategyMixin",
+    "FullMarketWeeklyLong",
+    "WeeklyLongEntryMixin",
+    "FullMarketNativeRiskBudgetOneLot",
+    "NativeRiskBudgetSizingMixin",
+    "FullMarketNoAIOneLot",
+    "QmtRollPortfolioStrategyStage847C9StopRetry",
+    "QmtRollPortfolioStrategyStage830C2Broker10MarginCap",
+    "QmtRollPortfolioStrategyStage827C2",
+    "QmtRollPortfolioStrategyLongTighterInitialStop",
+    "QmtRollPortfolioStrategyExactAm",
+    "QmtRollPortfolioStrategy",
+    "StrategyTemplate",
+    "ABC",
+    "object"
+  ],
+  "engine_mro": [
+    "FullMarketDailyEngine",
+    "WeeklyLongExecutionMixin",
+    "OpeningRiskBudgetMixin",
+    "LifecycleEngineMixin",
+    "CleanExecution",
+    "ConfirmedDailyNextRealOpenEngine",
+    "SameDayCloseBacktestingEngine",
+    "BacktestingEngine",
+    "object"
+  ],
+  "code_hashes": {
+    "stage050_weekly_main.py": "b0275cf2feb959161cb8dd1d71822829135b9f07d7fcb0a4228dc736daef7060",
+    "stage051_weekly_long_candidate.py": "ec8d2740cd13208e908faf19d5a103941aff74e6445086ca1d40098e6de6ab4e",
+    "stage052_run_weekly_long.py": "57aed89a1c03a13230ed031f49d0abbab387e0d8360515109d29a61d86e230fa",
+    "test_stage050_weekly_main.py": "f861bc33843e1fa382cb2d79493062f169fc915934f9dbe8a050a52c7c21b020",
+    "test_stage051_weekly_long.py": "1f5dd3ebed416face9c887fea589b62ca426925c159002cfccd96dbee6bb4e2a",
+    "test_stage052_weekly_integration.py": "d141b8b4852368502c3057717ece450e08f940fa3a4e80c9795d6e42e046806e"
+  },
+  "stage": 53,
+  "line_id": "futures_trend_full_market_noai_one_lot",
+  "review_time": "2026-10-19T19:19:05.254864+08:00",
+  "reviewer": "independent_weekly_preflight_agent",
+  "blockers": [],
+  "full_suite": {
+    "tests": 166,
+    "seconds": 25.724,
+    "result": "OK"
+  },
+  "additional_integration": {
+    "tests": 3,
+    "seconds": 0.055,
+    "result": "OK"
+  },
+  "financial_replays": 0,
+  "production_reads": 0,
+  "implementation_changes": 0,
+  "baseline_commit": "87487e32d36a443942f612ac7eeef71ede9ea46a",
+  "baseline_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3"
+}

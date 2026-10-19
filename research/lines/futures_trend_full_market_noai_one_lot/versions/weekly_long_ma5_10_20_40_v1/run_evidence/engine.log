@@ -1,0 +1,18 @@
+PROGRESS 2014-01-02 fills=0
+Strategy initialization complete
+Start replaying historical data
+PROGRESS 2015-01-05 fills=0
+PROGRESS 2016-01-04 fills=225
+PROGRESS 2017-01-03 fills=434
+PROGRESS 2018-01-02 fills=665
+PROGRESS 2019-01-02 fills=926
+PROGRESS 2020-01-02 fills=1203
+PROGRESS 2021-01-04 fills=1464
+PROGRESS 2022-01-04 fills=1897
+PROGRESS 2023-01-03 fills=2230
+PROGRESS 2024-01-02 fills=2570
+PROGRESS 2025-01-02 fills=2979
+PROGRESS 2026-01-05 fills=3408
+Historical backtest complete
+Start calculating daily mark-to-market profit and loss
+The daily mark-to-market profit and loss calculation is complete

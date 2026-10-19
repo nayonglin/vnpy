@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "created_at": "2026-10-19T19:33:12.750612+08:00",
+  "source_run": "run_20261019_weekly_long_v1",
+  "points_checked": 2862,
+  "figure_traces": 4,
+  "panels": 2,
+  "linked_x_axis": true,
+  "embedded_plot_data_matches_figure": true,
+  "png_dimensions": [
+    2240,
+    1200
+  ],
+  "png_visual_inspection": "PASS: equity/high-watermark and drawdown panels legible, max DD 2021-04-22 annotated",
+  "javascript_blocks_checked": 3,
+  "comparison_rows_checked": 12,
+  "max_absolute_csv_errors": {
+    "equity": 2.3283064365386963e-10,
+    "high_watermark": 2.3283064365386963e-10,
+    "drawdown_amount": 4.656612873077393e-10,
+    "drawdown_pct": 4.440892098500626e-14
+  },
+  "hash_bindings_checked": 105,
+  "summary_sha256": "c8edfe427bf4c8f2e1313f54fe9041a524533e4f3a51e5b077ecac55285b7094",
+  "artifact_sha256": {
+    "index.html": "c4bdef9fc9e41642064471f9d69ebed0ed3a855faea60277414d8381af8a919d",
+    "equity_drawdown.png": "afade338b3970b27c7a3bcf146b0a97cec7e4f1ed131c4799a503ec93c3e5d5f",
+    "equity_drawdown.csv": "dcdce3b3a60abe74a476748a0ff1bed3fc4e50ba685875620d28edfedaac22bc",
+    "figure.json": "56c16c2db25be357875ed83be502ee6ac9cd173e946c3ec4ef1809c5eb6cd06e"
+  },
+  "artifact_bytes": {
+    "index.html": 5139782,
+    "equity_drawdown.png": 278295,
+    "equity_drawdown.csv": 237654,
+    "figure.json": 281994
+  },
+  "source_manifest_sha256": "7e6f2647de1d99253ba2cbade3e0852158d50d3cbfde19e8da4afdba6f16fed4",
+  "baseline_manifest_sha256": "a8696e2b73b25399251d1efc46e47dfd49f89d23bfc80f6bc1f33bfdbe5237c3",
+  "parent_summary_sha256": "0925075b86077001be1721072d941c19b71a7153a8078c305d01670c22b22990",
+  "browser_check": "pending_root",
+  "financial_rerun": false,
+  "market_download": false,
+  "production_access": false,
+  "embedded_plot_layout_matches_figure": true
+}
