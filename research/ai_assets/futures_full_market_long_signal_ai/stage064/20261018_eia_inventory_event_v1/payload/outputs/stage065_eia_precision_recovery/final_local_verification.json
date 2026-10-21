@@ -1,0 +1,27 @@
+{
+  "schema": "stage065_final_local_finite_verification_v1",
+  "declared_role": "finite_final_binding_and_causal_interface_verification_no_refit",
+  "verified_at": "2026-10-18T07:52:07.087988+00:00",
+  "checks": {
+    "stage060_eia_report_import_manifest_artifacts_bound": true,
+    "stage065_eia_precision_recovery_manifest_artifacts_bound": true,
+    "original060_manifest_and_source_unchanged": true,
+    "full_calendar_identity_and_three_components": true,
+    "unique_event_u_and_source_end": true,
+    "all_original_known_values_unchanged": true,
+    "shared_missing_neutral": true,
+    "all_sham_donors_within_strict_prior52": true,
+    "causal_u_after_NY_date_end": true,
+    "tail_native_D_pending": true,
+    "precision_audit_cells": 582,
+    "precision_audit_reports": 198
+  },
+  "original060_manifest_sha256": "00a964468d6fc2cd272d522ae1343227df13b05e3a17dc216305c890a30ba923",
+  "stage065_manifest_sha256": "41e3018e0a22ac0bd993f4f47518888af1b5f4347be5e673a9815bc7ebc5c8b6",
+  "actual065_authorized_receipt_sha256": "8b44fcee96bb340225fc7ffe4a66a62cffd8cf8f8da17006ff383b7a66a6d7bd",
+  "model_fits": 0,
+  "cash_accounts": 0,
+  "sql_queries": 0,
+  "new_http_requests": 0,
+  "independent_review": false
+}

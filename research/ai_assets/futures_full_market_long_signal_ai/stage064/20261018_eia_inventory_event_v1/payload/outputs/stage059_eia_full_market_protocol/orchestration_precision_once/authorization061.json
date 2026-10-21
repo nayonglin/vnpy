@@ -1,0 +1,24 @@
+{
+  "kind": "stage061_fit_once",
+  "authorized": true,
+  "fit_calls": 6,
+  "protocol_sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158",
+  "source_import_manifest_sha256": "41e3018e0a22ac0bd993f4f47518888af1b5f4347be5e673a9815bc7ebc5c8b6",
+  "source_sha256": "7d61a8b5c309ad24881d9d36d0ffffe7f2ae39af4750b7d4130dbb316857503d",
+  "root_controlled_by": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/run_once_after_precision_recovery.py",
+    "bytes": 11102,
+    "sha256": "f386af4697233916e76a73856d0350cda6af0fa523eca65646442a8a01130af5"
+  },
+  "implementation_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_source_preflight.json",
+    "bytes": 7346,
+    "sha256": "e1c1af267c37aee1b4b8eaf7ba489a5326247952648d9aca1fbc5bac95bb2c7c"
+  },
+  "zero_fit_preflight": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/source_preflight/preflight_terminal.json",
+    "bytes": 1036,
+    "sha256": "4951af71a15de789079e5efd763c5b5c784f41350a274ac114b184dba973f7fe"
+  },
+  "no_parameter_changes": true
+}

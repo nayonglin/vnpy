@@ -1,0 +1,25 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "started_at": "2026-10-18T06:48:10.182118+00:00",
+  "finished_at": "2026-10-18T06:49:35.096061+00:00",
+  "elapsed_seconds": 84.91396316699684,
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/independent_review.py",
+    "bytes": 34304,
+    "sha256": "974834cda1ed399b2a6b565c1d18d3ead164e97c185f84d11128ad24c54b4637"
+  },
+  "cash_adapter": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/cash_adapter.py",
+    "bytes": 16092,
+    "sha256": "a79040c6b06da4703843bcd8294d45d351566c6758292adf32ed5acb9d6e58b7"
+  },
+  "independent_cash_core": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/cash_review_core.py",
+    "bytes": 6195,
+    "sha256": "4310bdd81375e17406b1773658c582ccb570a25d09b8fa53d15461c76cbb3eaa"
+  },
+  "sql_queries": 0,
+  "model_fit_calls": 0,
+  "strategy_replays": 0
+}

@@ -1,0 +1,6 @@
+test_three_generations_real_identity_and_fail_closed_inputs (__main__.ProviderRuntimeSelectionTest.test_three_generations_real_identity_and_fail_closed_inputs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.894s
+
+OK

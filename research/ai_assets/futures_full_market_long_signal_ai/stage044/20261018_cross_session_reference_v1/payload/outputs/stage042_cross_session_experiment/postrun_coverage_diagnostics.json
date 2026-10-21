@@ -1,0 +1,586 @@
+{
+  "schema": "stage042_author_output_coverage_v1",
+  "source": "generated final output tables only; no strategy/source replay",
+  "cash_accounts": [
+    {
+      "account_id": "base__full_2010",
+      "fill_rows": 1985,
+      "entry_fills": 991,
+      "exit_fills": 994,
+      "traded_epochs": 822,
+      "traded_products": 64,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 4,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 1443,
+        "product_default_snapshot": 542
+      },
+      "deferred_exit_fills": 27,
+      "days_with_stale_positions": 44,
+      "max_stale_notional": 183245.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 10,
+      "closed_episodes_with_original_path_unknown": 27,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 3309,
+        "family_occupied": 1985,
+        "entered": 991,
+        "lifecycle_entry_rejected": 70,
+        "same_family_priority_rejected": 26,
+        "executed_reduction": 10,
+        "research_no_quote_entry_cancel": 2,
+        "existing_risk_margin_over_cap": 2,
+        "own_open_allocation_insufficient": 1
+      }
+    },
+    {
+      "account_id": "base__primary_2020",
+      "fill_rows": 950,
+      "entry_fills": 475,
+      "exit_fills": 475,
+      "traded_epochs": 421,
+      "traded_products": 54,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 4,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 950
+      },
+      "deferred_exit_fills": 24,
+      "days_with_stale_positions": 29,
+      "max_stale_notional": 183245.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 24,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 2401,
+        "family_occupied": 918,
+        "entered": 475,
+        "lifecycle_entry_rejected": 28,
+        "same_family_priority_rejected": 25,
+        "research_no_quote_entry_cancel": 1
+      }
+    },
+    {
+      "account_id": "base__year_2020",
+      "fill_rows": 189,
+      "entry_fills": 99,
+      "exit_fills": 90,
+      "traded_epochs": 81,
+      "traded_products": 34,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 189
+      },
+      "deferred_exit_fills": 7,
+      "days_with_stale_positions": 16,
+      "max_stale_notional": 141260.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 7,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 311,
+        "family_occupied": 223,
+        "entered": 99,
+        "lifecycle_entry_rejected": 4,
+        "research_no_quote_entry_cancel": 1
+      }
+    },
+    {
+      "account_id": "base__year_2021",
+      "fill_rows": 108,
+      "entry_fills": 55,
+      "exit_fills": 53,
+      "traded_epochs": 48,
+      "traded_products": 28,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 108
+      },
+      "deferred_exit_fills": 4,
+      "days_with_stale_positions": 4,
+      "max_stale_notional": 79290.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 4,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 393,
+        "family_occupied": 137,
+        "entered": 55,
+        "lifecycle_entry_rejected": 8
+      }
+    },
+    {
+      "account_id": "base__year_2022",
+      "fill_rows": 108,
+      "entry_fills": 57,
+      "exit_fills": 51,
+      "traded_epochs": 52,
+      "traded_products": 25,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 108
+      },
+      "deferred_exit_fills": 3,
+      "days_with_stale_positions": 3,
+      "max_stale_notional": 115440.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 3,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 338,
+        "family_occupied": 107,
+        "entered": 57,
+        "lifecycle_entry_rejected": 1
+      }
+    },
+    {
+      "account_id": "base__year_2023",
+      "fill_rows": 143,
+      "entry_fills": 73,
+      "exit_fills": 70,
+      "traded_epochs": 67,
+      "traded_products": 31,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 143
+      },
+      "deferred_exit_fills": 4,
+      "days_with_stale_positions": 2,
+      "max_stale_notional": 138220.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 4,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 349,
+        "family_occupied": 142,
+        "entered": 73
+      }
+    },
+    {
+      "account_id": "base__year_2024",
+      "fill_rows": 103,
+      "entry_fills": 52,
+      "exit_fills": 51,
+      "traded_epochs": 47,
+      "traded_products": 33,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 103
+      },
+      "deferred_exit_fills": 4,
+      "days_with_stale_positions": 4,
+      "max_stale_notional": 127410.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 4,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 339,
+        "family_occupied": 69,
+        "entered": 52,
+        "lifecycle_entry_rejected": 4
+      }
+    },
+    {
+      "account_id": "base__year_2025",
+      "fill_rows": 147,
+      "entry_fills": 77,
+      "exit_fills": 70,
+      "traded_epochs": 71,
+      "traded_products": 38,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 147
+      },
+      "deferred_exit_fills": 0,
+      "days_with_stale_positions": 0,
+      "max_stale_notional": 0.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 0,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 297,
+        "entered": 77,
+        "family_occupied": 72,
+        "lifecycle_entry_rejected": 11
+      }
+    },
+    {
+      "account_id": "base__year_2026",
+      "fill_rows": 124,
+      "entry_fills": 62,
+      "exit_fills": 62,
+      "traded_epochs": 59,
+      "traded_products": 34,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 4,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 124
+      },
+      "deferred_exit_fills": 0,
+      "days_with_stale_positions": 0,
+      "max_stale_notional": 0.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 0,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 442,
+        "family_occupied": 99,
+        "entered": 62,
+        "same_family_priority_rejected": 25,
+        "own_open_allocation_insufficient": 1
+      }
+    },
+    {
+      "account_id": "stress__full_2010",
+      "fill_rows": 1750,
+      "entry_fills": 875,
+      "exit_fills": 875,
+      "traded_epochs": 731,
+      "traded_products": 59,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 2,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 1258,
+        "product_default_snapshot": 492
+      },
+      "deferred_exit_fills": 24,
+      "days_with_stale_positions": 40,
+      "max_stale_notional": 138220.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 24,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 3683,
+        "family_occupied": 1729,
+        "entered": 875,
+        "lifecycle_entry_rejected": 71,
+        "same_family_priority_rejected": 26,
+        "own_open_allocation_insufficient": 1,
+        "research_no_quote_entry_cancel": 1
+      }
+    },
+    {
+      "account_id": "stress__primary_2020",
+      "fill_rows": 844,
+      "entry_fills": 422,
+      "exit_fills": 422,
+      "traded_epochs": 376,
+      "traded_products": 47,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 844
+      },
+      "deferred_exit_fills": 22,
+      "days_with_stale_positions": 28,
+      "max_stale_notional": 138220.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 22,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 2534,
+        "family_occupied": 837,
+        "entered": 422,
+        "lifecycle_entry_rejected": 28,
+        "same_family_priority_rejected": 26,
+        "research_no_quote_entry_cancel": 1
+      }
+    },
+    {
+      "account_id": "stress__year_2020",
+      "fill_rows": 179,
+      "entry_fills": 94,
+      "exit_fills": 85,
+      "traded_epochs": 81,
+      "traded_products": 35,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 179
+      },
+      "deferred_exit_fills": 7,
+      "days_with_stale_positions": 16,
+      "max_stale_notional": 121080.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 7,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 318,
+        "family_occupied": 221,
+        "entered": 94,
+        "lifecycle_entry_rejected": 4,
+        "research_no_quote_entry_cancel": 1
+      }
+    },
+    {
+      "account_id": "stress__year_2021",
+      "fill_rows": 102,
+      "entry_fills": 52,
+      "exit_fills": 50,
+      "traded_epochs": 49,
+      "traded_products": 28,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 102
+      },
+      "deferred_exit_fills": 4,
+      "days_with_stale_positions": 4,
+      "max_stale_notional": 79290.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 4,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 409,
+        "family_occupied": 124,
+        "entered": 52,
+        "lifecycle_entry_rejected": 8
+      }
+    },
+    {
+      "account_id": "stress__year_2022",
+      "fill_rows": 104,
+      "entry_fills": 55,
+      "exit_fills": 49,
+      "traded_epochs": 51,
+      "traded_products": 25,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 104
+      },
+      "deferred_exit_fills": 3,
+      "days_with_stale_positions": 3,
+      "max_stale_notional": 115440.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 3,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 344,
+        "family_occupied": 103,
+        "entered": 55,
+        "lifecycle_entry_rejected": 1
+      }
+    },
+    {
+      "account_id": "stress__year_2023",
+      "fill_rows": 132,
+      "entry_fills": 67,
+      "exit_fills": 65,
+      "traded_epochs": 62,
+      "traded_products": 30,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 132
+      },
+      "deferred_exit_fills": 4,
+      "days_with_stale_positions": 2,
+      "max_stale_notional": 138220.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 4,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 371,
+        "family_occupied": 126,
+        "entered": 67
+      }
+    },
+    {
+      "account_id": "stress__year_2024",
+      "fill_rows": 89,
+      "entry_fills": 45,
+      "exit_fills": 44,
+      "traded_epochs": 42,
+      "traded_products": 30,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 89
+      },
+      "deferred_exit_fills": 3,
+      "days_with_stale_positions": 3,
+      "max_stale_notional": 127410.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 3,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 360,
+        "family_occupied": 55,
+        "entered": 45,
+        "lifecycle_entry_rejected": 4
+      }
+    },
+    {
+      "account_id": "stress__year_2025",
+      "fill_rows": 139,
+      "entry_fills": 73,
+      "exit_fills": 66,
+      "traded_epochs": 69,
+      "traded_products": 36,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 0,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 139
+      },
+      "deferred_exit_fills": 0,
+      "days_with_stale_positions": 0,
+      "max_stale_notional": 0.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 0,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 302,
+        "entered": 73,
+        "family_occupied": 71,
+        "lifecycle_entry_rejected": 11
+      }
+    },
+    {
+      "account_id": "stress__year_2026",
+      "fill_rows": 106,
+      "entry_fills": 53,
+      "exit_fills": 53,
+      "traded_epochs": 50,
+      "traded_products": 33,
+      "traded_exchanges": [
+        "CZCE",
+        "DCE",
+        "GFEX",
+        "INE",
+        "SHFE"
+      ],
+      "F_fill_rows": 2,
+      "untickized_fill_rows": 0,
+      "future_info_scope_fill_counts": {
+        "exact_contract": 106
+      },
+      "deferred_exit_fills": 0,
+      "days_with_stale_positions": 0,
+      "max_stale_notional": 0.0,
+      "max_daily_equity_identity_abs_error": 0.0,
+      "risk_reduction_sell_fills": 0,
+      "closed_episodes_with_original_path_unknown": 0,
+      "budget_D_state_counts": {
+        "risk_margin_or_one_lot_rejected": 459,
+        "family_occupied": 92,
+        "entered": 53,
+        "same_family_priority_rejected": 25
+      }
+    }
+  ],
+  "model_fits": 0,
+  "native_reads": 0,
+  "additional_research_cash_runs": 0
+}

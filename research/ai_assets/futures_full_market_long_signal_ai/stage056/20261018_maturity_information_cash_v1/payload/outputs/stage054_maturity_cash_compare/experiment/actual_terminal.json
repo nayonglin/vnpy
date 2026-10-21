@@ -1,0 +1,22 @@
+{
+  "actual_model_fit_calls": 0,
+  "completed_research_cash_accounts": 12,
+  "computed_research_cash_accounts": 12,
+  "elapsed_seconds": 62.854490208032075,
+  "error": null,
+  "exit_code": 0,
+  "finished_at": "2026-10-18T06:44:19.546541+00:00",
+  "fixture": false,
+  "native_source_queries": 1,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "source": {
+    "bytes": 35598,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage054_maturity_cash_compare.py",
+    "sha256": "f5f73732747b64b812e48c09202f5d52dcf3f59726e20e05e21ba616453884bd"
+  },
+  "started_at": "2026-10-18T06:43:16.691938+00:00",
+  "started_research_cash_accounts": 12,
+  "status": "completed"
+}

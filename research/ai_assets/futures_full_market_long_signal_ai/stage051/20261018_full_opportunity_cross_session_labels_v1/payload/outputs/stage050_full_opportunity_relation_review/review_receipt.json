@@ -1,0 +1,333 @@
+{
+  "schema": "stage050_independent_actual_review_v1",
+  "status": "completed",
+  "started_at": "2026-10-18T06:21:40.296531+00:00",
+  "finished_at": "2026-10-18T06:21:58.292820+00:00",
+  "elapsed_seconds": 17.99632366700098,
+  "manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/manifest.json",
+    "bytes": 7268,
+    "sha256": "eff6b642d0727ddd7280589da8d9b61beba6f13ebf784faa96c37c3abe4d5145"
+  },
+  "required_assets_verified": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/actual_started.json",
+      "bytes": 758,
+      "sha256": "8d986b63e91279ab0c9c7e4c9f60cfa011f1cddb016a64853541c277e852c85a"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/actual_terminal.json",
+      "bytes": 990,
+      "sha256": "61741661985c777a159312dfc24c335824d92ec9fd5d648f33366168f53e69db"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/source_read_receipt.json",
+      "bytes": 968,
+      "sha256": "e830d89429f2a16aaaf8d32774ef083b3f3f54d1b0f110c3a3d768b0243b47b3"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/protocol.json",
+      "bytes": 8720,
+      "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/input_bindings.json",
+      "bytes": 3419,
+      "sha256": "4b7ad95a2cd81c086b7bc1d2a36d8975656d76931ed028e2a59dbb76cb3bdbe1"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/features_all.csv.gz",
+      "bytes": 37056572,
+      "sha256": "1661c46cec4d7b73ea5830a20668332654b4465384ecfc83d2709c2f94d3951c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/peer_mapping.csv.gz",
+      "bytes": 36019116,
+      "sha256": "2ef11a7c4de49f7098e081105a7bde97ab2d77982771241f95c449c86b7a83f7"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/event_economic_labels.csv.gz",
+      "bytes": 53980842,
+      "sha256": "adb37b2dbc05d8f201588402ca04343a7dfa34e8cb5ba9e487d39738346f197b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/dependency_intervals.csv.gz",
+      "bytes": 22202521,
+      "sha256": "d64d115d2b7f234bd33223717020d20aadd1eff357696e326e03922d33d3e39f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/time_family_coverage.csv.gz",
+      "bytes": 19633,
+      "sha256": "0ad531e5a537af61f70c441c0b56555e9f7fc606e3c22f9febd3817125592435"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/label_state_summary.json",
+      "bytes": 2138,
+      "sha256": "58fcc7ac83764188ecc1905a60a3577d65fb1472bdd7c839628c8d27f236c42c"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/feature_summary.json",
+      "bytes": 781,
+      "sha256": "968f1cb2fb649763d8c483c8188ae2ff93e0674a4800bb0d53ac94203423f2f0"
+    }
+  ],
+  "author_terminal": {
+    "actual_model_fit_calls": 0,
+    "actual_start_count": 1,
+    "completed_actual_builds": 1,
+    "completed_label_rows": 399252,
+    "elapsed_seconds": 75.517025750014,
+    "error": null,
+    "exit_code": 0,
+    "feature_module": {
+      "bytes": 10066,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+      "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+    },
+    "finished_at": "2026-10-18T06:19:20.708053+00:00",
+    "fixture": false,
+    "native_source_queries": 1,
+    "network_calls": 0,
+    "new_cash_accounts": 0,
+    "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "source": {
+      "bytes": 30955,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_full_opportunity_builder.py",
+      "sha256": "27bdd8c8905520e75d32297e69f67d6b560dd635d07946a6b030c2c1f3388bf0"
+    },
+    "started_at": "2026-10-18T06:18:05.190906+00:00",
+    "status": "completed"
+  },
+  "source_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage050_full_opportunity_relation_review/independent_review.py",
+      "bytes": 16875,
+      "sha256": "924b6133fdfffdd6ee1789e4893fce35a03197d81e42c8fcee9f4cc703559c4f"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage050_full_opportunity_relation_review/review_core.py",
+      "bytes": 18206,
+      "sha256": "724a0b39eb69cb2d534f4f432904c77fa6b032b48d5a95adefb60f9c56c6d95b"
+    }
+  ],
+  "labels": {
+    "mother_rows": 399252,
+    "history_ready20": 195328,
+    "filled": 185077,
+    "complete_trade_labels": 180507,
+    "label_states": {
+      "not_history_ready": 203924,
+      "closed_complete_bar_model": 180507,
+      "known_nonparticipation": 9812,
+      "path_or_execution_unknown": 4029,
+      "open_right_censored": 541,
+      "entry_execution_unknown": 358,
+      "intent_right_censored": 81
+    },
+    "max_absolute_errors": {
+      "normalizer_N042_over_C": 0.0,
+      "fixed_cash_risk_unit": 0.0,
+      "gross_reference": 0.0,
+      "base_entry_fill": 0.0,
+      "base_entry_fee": 0.0,
+      "base_entry_slippage": 0.0,
+      "base_exit_fill": 0.0,
+      "base_exit_fee": 0.0,
+      "base_exit_slippage": 0.0,
+      "base_total_fee": 0.0,
+      "base_total_slippage": 0.0,
+      "base_net_CNY": 0.0,
+      "base_net_R": 0.0,
+      "stress_entry_fill": 0.0,
+      "stress_entry_fee": 0.0,
+      "stress_entry_slippage": 0.0,
+      "stress_exit_fill": 0.0,
+      "stress_exit_fee": 0.0,
+      "stress_exit_slippage": 0.0,
+      "stress_total_fee": 0.0,
+      "stress_total_slippage": 0.0,
+      "stress_net_CNY": 0.0,
+      "stress_net_R": 0.0
+    },
+    "independent_events_not_accounts": true
+  },
+  "peer_mapping": {
+    "feature_rows": 399252,
+    "peer_rows": 1197457,
+    "q_ready": 157045,
+    "all_saved_mapping_and_bag_arithmetic": true,
+    "native_peer_membership_and_log_returns_full_recomputed": false,
+    "native_scope": "bounded saved native cases separately; no SQL",
+    "max_absolute_errors": {
+      "tau": 0.0,
+      "return_mean": 4.163336342344337e-17,
+      "return_std": 1.3877787807814457e-17,
+      "return_min": 0.0,
+      "return_max": 0.0,
+      "tenor_span_years": 0.0,
+      "q_aligned": 3.552713678800501e-15,
+      "q_shuffled": 2.6645352591003757e-15
+    }
+  },
+  "front_next_control_support": {
+    "rows": 399252,
+    "front_next_available": 199251,
+    "identity_span_and_missing_full": true,
+    "absolute_log_levels_full_source_recomputed": false,
+    "absolute_log_levels_scope": "bounded native case",
+    "tenor_span_max_absolute_error": 1.1102230246251565e-16
+  },
+  "represented_epoch_economic_errors": {
+    "multiplier": 0.0,
+    "round_lot": 0.0,
+    "tick_size": 0.0
+  },
+  "closed_holding_source_days": {
+    "scope": "closed complete independent events only, not IID or strategy tuning",
+    "count": 180507,
+    "median": 8.0,
+    "p95_linear": 42.0,
+    "max": 104
+  },
+  "support_2020_onward": {
+    "mother": 161014,
+    "ready20": 108181,
+    "q_ready": 95034,
+    "closed": 98742
+  },
+  "dependency_intervals_rows": 399252,
+  "coverage_rows": 3454,
+  "all_summary_decompositions": true,
+  "finite_native": {
+    "cases": [
+      {
+        "kind": "seed20",
+        "event_id": "stage004_product_day_long_v1_cab5684b198d82b5c89e80f02700da3c68577177fdb9e8fb1d7c20b0cb348e2c",
+        "history_bars": 20,
+        "path_days": 12,
+        "passed": true
+      },
+      {
+        "kind": "gap_history",
+        "event_id": "stage004_product_day_long_v1_412c13067f89e56af9d6f920ee4f70a72ecbcf10ea37f1b3834b8cacabbe4f93",
+        "history_bars": 1,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "strict_D_missing",
+        "event_id": "stage004_product_day_long_v1_fb6e8c526e9e8f7a3b10e55a52896fd833bd4ecd2149374a48ae922ce063752e",
+        "history_bars": 158,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "stale_cancel",
+        "event_id": "stage004_product_day_long_v1_6e7fe42b16723f8dd922637a40da8d83026ff26352d34d371334c45985e561b8",
+        "history_bars": 30,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "entry_samebar_stop",
+        "event_id": "stage004_product_day_long_v1_41b54d41aa595febb42ec6afe275ae5f77677e7b21be891433d3e957d6fcfefa",
+        "history_bars": 29,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "later_boundary",
+        "event_id": "stage004_product_day_long_v1_32f750e1ba0b667181ea864b95baaabfe0a5fb8a4075b56101df6d077e8ec8a3",
+        "history_bars": 28,
+        "path_days": 2,
+        "passed": true
+      },
+      {
+        "kind": "gap_stop",
+        "event_id": "stage004_product_day_long_v1_f25d4ca925f1dbaae5b9ca44abbdfb93cd2cc041774a2a36b97cde009e5bf76d",
+        "history_bars": 144,
+        "path_days": 4,
+        "passed": true
+      },
+      {
+        "kind": "old_epoch_roll",
+        "event_id": "stage004_product_day_long_v1_6290d76991fcbe3cb17aaed36582ab3d558bd2ee914218c326579c123c42c17e",
+        "history_bars": 119,
+        "path_days": 2,
+        "passed": true
+      },
+      {
+        "kind": "lifecycle_exit",
+        "event_id": "stage004_product_day_long_v1_cab5684b198d82b5c89e80f02700da3c68577177fdb9e8fb1d7c20b0cb348e2c",
+        "history_bars": 20,
+        "path_days": 12,
+        "passed": true
+      },
+      {
+        "kind": "lifecycle_cancel",
+        "event_id": "stage004_product_day_long_v1_1635c8df36bcdfa39c92ab3a72c1b2bc5b490eb9f31526e0185abec04b00f5ec",
+        "history_bars": 31,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "missing_absorbing",
+        "event_id": "stage004_product_day_long_v1_0b07a2550bed48bc02e294e87772d9066b71416d948e1ac17dec020083dd77b4",
+        "history_bars": 145,
+        "path_days": 14,
+        "passed": true
+      },
+      {
+        "kind": "open_censor",
+        "event_id": "stage004_product_day_long_v1_8fa83d3284e1d73980c917dc13d3105324618a0d49687d47e17ae46ae74202e5",
+        "history_bars": 119,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "intent_censor",
+        "event_id": "stage004_product_day_long_v1_6e47dd9b31c9b00b2f49f2d974593d1f07f2306c014f444164ac9e17f6467b95",
+        "history_bars": 120,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "F_economics",
+        "event_id": "stage004_product_day_long_v1_7e199a01da8f8cee66e91162dbbcdb22eceb269d802fbfbd616399e3b9b6a997",
+        "history_bars": 20,
+        "path_days": 1,
+        "passed": true
+      },
+      {
+        "kind": "maturity_relation_first",
+        "event_id": "stage004_product_day_long_v1_f25a01f7e555b0868e19e9bd163927d34a79be473e33ac9e5068aa64702da2d9",
+        "native_pairs": 4,
+        "passed": true
+      }
+    ],
+    "case_count": 15,
+    "native_feature_cases": 1,
+    "scope": "bounded first-cause cases only; not all source OHLC or all curve memberships independently re-read"
+  },
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "scope_limits": [
+    "independent_event_labels_not_cash_accounts",
+    "conditional_filled_complete_labels",
+    "static_snapshot_and_after_close_availability_assumptions",
+    "bounded_native_source_review_not_full_OHLC_replay",
+    "no_AI_quality_or_tiny_stop_or_betting_proof"
+  ],
+  "operations": {
+    "SQL": 0,
+    "model_fits": 0,
+    "strategy_replays": 0,
+    "cash_accounts": 0,
+    "downloads": 0
+  },
+  "financial_metrics": null,
+  "production_qualified": false
+}

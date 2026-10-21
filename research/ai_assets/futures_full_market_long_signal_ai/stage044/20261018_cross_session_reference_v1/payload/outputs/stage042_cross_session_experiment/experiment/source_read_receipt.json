@@ -1,0 +1,24 @@
+{
+  "database_after": {
+    "bytes": 378552320,
+    "inode": 28078628,
+    "mtime_ns": 1792236170627661666,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "shm_present": false,
+    "wal_present": false
+  },
+  "database_before": {
+    "bytes": 378552320,
+    "inode": 28078628,
+    "mtime_ns": 1792236170627661666,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "shm_present": false,
+    "wal_present": false
+  },
+  "database_rehashed": false,
+  "database_sha256_inherited": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+  "execution_bar_definition": "accepted OHLC finite positive, legal ordering, positive volume; invalid/missing becomes unknown/stale",
+  "native_contract_days": 1552456,
+  "native_epochs": 9520,
+  "native_source_queries": 1
+}

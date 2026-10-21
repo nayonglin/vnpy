@@ -1,0 +1,18 @@
+{
+  "schema": "stage012_actual_review_terminal_v1",
+  "command": [
+    ".py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_actual.py"
+  ],
+  "started_at": "2026-10-18T11:48:56+08:00",
+  "finished_at": "2026-10-18T11:48:56+08:00",
+  "elapsed_seconds": 0.03802479198202491,
+  "exit_code": 1,
+  "actual_review_invocations": 1,
+  "source_sha256": "d8caf3318c9fc75a23df4c8d4290f2f4dd056b95b0c68f7215341b82c439e98a",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "8db6de3e6a3baf1c69be4154c903e743885b1ff99bd05690790089d75214b4be",
+  "model_fits_by_reviewer": 0,
+  "SQL_queries": 0,
+  "financial_runs": 0
+}

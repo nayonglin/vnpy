@@ -1,0 +1,75 @@
+{
+  "audit_fields_not_automatic_X": [
+    "N_u",
+    "low20_u",
+    "u_close",
+    "multiplier",
+    "tick_size",
+    "round_lot",
+    "cash_risk_unit",
+    "*_u_fee_roundtrip_per_lot",
+    "*_u_slippage_roundtrip_per_lot"
+  ],
+  "cancel_reasons": {
+    "known_entry_ineligible_lifecycle": 5644,
+    "stale_boundary_at_open": 4168
+  },
+  "complete_trade_labels": 180507,
+  "denominator": "2*N_u*exact_epoch_multiplier",
+  "event_sum_is_not_account_equity": true,
+  "exit_reasons": {
+    "gap_stop": 11823,
+    "lifecycle_exit": 3789,
+    "liquidity_reference_changed": 54492,
+    "stop_boundary": 110403
+  },
+  "filled": 185077,
+  "future_outcome_fields_never_X": [
+    "entry_*",
+    "exit_*",
+    "label_*except_history_ready20",
+    "net_*",
+    "filled",
+    "cancel_*",
+    "unknown_*"
+  ],
+  "history_ready20": 195328,
+  "label_states": {
+    "closed_complete_bar_model": 180507,
+    "entry_execution_unknown": 358,
+    "intent_right_censored": 81,
+    "known_nonparticipation": 9812,
+    "not_history_ready": 203924,
+    "open_right_censored": 541,
+    "path_or_execution_unknown": 4029
+  },
+  "limitations": [
+    "static_vendor_specs_not_historical_broker_truth",
+    "after_close_source_availability_assumed_not_vintage_timestamp_proof",
+    "daily_bar_ideal_execution_not_actual_fills",
+    "independent_event_labels_not_portfolio",
+    "conditional_trade_quality_filled_complete_only_not_all_intent_policy_value",
+    "wide2N_reference_not_tiny_stop_or_betting_proof"
+  ],
+  "mother_rows": 399252,
+  "new_cash_accounts": 0,
+  "new_model_fits": 0,
+  "no_global_future_dependent_training_weights": true,
+  "participation_states": {
+    "execution_unknown": 358,
+    "filled": 185077,
+    "known_nonparticipation": 9812,
+    "not_history_ready": 203924,
+    "not_yet_observable": 81
+  },
+  "primary_target": "net_R_stress",
+  "production_qualified": false,
+  "products": 98,
+  "schema": "stage049_complete_opportunity_economic_labels_v1",
+  "source_dates": 4074,
+  "targets_conditional_on_filled_complete": true,
+  "unknown_reasons": {
+    "missing_or_invalid_D_bar": 358,
+    "missing_or_invalid_held_old_epoch_bar": 4029
+  }
+}

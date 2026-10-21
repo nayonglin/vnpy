@@ -1,0 +1,62 @@
+{
+  "schema": "stage042_actual_tool_process_receipt_v1",
+  "authorization": "Parent root explicitly authorized the unique handoff command after fresh source/test/protocol verification; no pilot or restart.",
+  "actual_starts": 1,
+  "actual_completions": 1,
+  "failed_actual_starts": 0,
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py --protocol research/lines/futures_full_market_long_signal_ai/outputs/stage039_cross_session_reference_protocol/protocol.json --protocol-sha256 58fe0f80de248f1d3095ac9ef859c0cb9bd84e369809a466f2b554dd38195466 --output research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment",
+  "stdout": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/actual_stdout.log",
+    "sha256": "804530c2568a4a5620c5acd8b8d756a16516470bb00debb9c79c4288bc7b4e66",
+    "bytes": 4288,
+    "role": "qualification_evidence",
+    "reproducibility_required": true,
+    "raw_ohlc": false
+  },
+  "exec_session_id": 27282,
+  "initial_tool_chunk": "2e0310",
+  "same_session_running_chunks": [
+    "17500c",
+    "1d1c62",
+    "1e16f5"
+  ],
+  "final_tool_chunk": "90a04d",
+  "final_tool_exit_code": 0,
+  "started_at_UTC": "2026-10-18T05:39:03.018098+00:00",
+  "finished_at_UTC": "2026-10-18T05:41:07.201213+00:00",
+  "elapsed_seconds": 124.18298533302732,
+  "native_source_queries": 1,
+  "started_research_cash_accounts": 18,
+  "computed_research_cash_accounts": 18,
+  "completed_research_cash_accounts": 18,
+  "model_fit_calls": 0,
+  "network_calls": 0,
+  "production_order_calls": 0,
+  "source": {
+    "bytes": 50405,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+    "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d"
+  },
+  "tests": {
+    "bytes": 9539,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage042_cross_session_experiment.py",
+    "sha256": "6541047f65bbe7ac63effce47fa11aebaba822e4c23d35de688ad73992de84c1"
+  },
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment/actual_terminal.json",
+    "sha256": "9a1a358322cc70a677fc1332f4758adfd45f38c6e21e0d0da584a18fc7f4b3ba",
+    "bytes": 785,
+    "role": "qualification_evidence",
+    "reproducibility_required": true,
+    "raw_ohlc": false
+  },
+  "final_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment/manifest.json",
+    "sha256": "f6ada95c6986e57303a0d76263f581a83dc536a3d13373b4bd1dd439cba16e47",
+    "bytes": 56612,
+    "role": "feature_contract",
+    "reproducibility_required": true,
+    "raw_ohlc": false
+  },
+  "observation_note": "The one existing session was observed to final exit0; timeouts/yields did not restart the process. A denied read-only ps observation was unnecessary and did not change the actual run."
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "stage059_precision_input_amendment_v1",
+  "frozen_at": "2026-10-18T15:41:27.916083+08:00",
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+    "bytes": 7162,
+    "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158"
+  },
+  "decision": "stop_downstream_before_first_fit_recover_only_rounding_compatible_official_values_offline",
+  "root_sequence_prior_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/orchestration_once/terminal.json",
+    "bytes": 400,
+    "sha256": "b1bc2e731f3bf56114efd7540cb7552ac1d0043eda6161083c81f54a171cffb8"
+  },
+  "reason": {
+    "observed_2020_known": 28,
+    "observed_2020_reports": 53,
+    "observed_537_reports_precision_rejections": 53,
+    "evidence_origin": "060 author live aggregate before outcomes; independent review pending",
+    "official_table": "https://www.eia.gov/petroleum/supply/weekly/pdf/table1.pdf",
+    "official_note": "Differences and percent changes are calculated using unrounded numbers.",
+    "github_review": "https://github.com/ropensci/eia/issues/11"
+  },
+  "normalization_rule": {
+    "precision_source": "exact printed Decimal exponent separately for current, prior-inline, reported Difference",
+    "compatibility": "abs(current-prior_inline-reported_Difference) <= (quantum_current+quantum_prior_inline+quantum_Difference)/2",
+    "recoverable_reports": "only original arithmetic-only rejection plus all three target stock rows otherwise valid and independently precision-compatible",
+    "all_reports_same_rule": true,
+    "kept_values": "original official current/prior-inline/reported Difference scaled by1000; never replace Difference with displayed-current-minus-prior",
+    "other_rejections": "missing/network/date/header/duplicate/invalid/real-out-of-bound remain unknown",
+    "ordinal_calendar_clock_scalar_sham": "unchanged Stage059 and060 semantics",
+    "source_bytes": "only completed060 saved raw bytes; exact receipts; no new network request",
+    "preserve_original_060_actual": true,
+    "save_per_cell_compatibility_and_original_rejection": true,
+    "limitation": "printed-precision compatibility, not reconstruction of unrounded truth or proof of contemporaneous byte-PIT"
+  },
+  "experiment_invariants": {
+    "research_model_fits_before_amendment": 0,
+    "research_cash_accounts_before_amendment": 0,
+    "native_SQL_before_amendment": 0,
+    "new_fit_calls_once": 6,
+    "new_cash_accounts_once": 12,
+    "all_family_universe": true,
+    "protocol_model_cost_cash_statistical_rules_unchanged": true,
+    "no_selection_based_on_performance": true,
+    "goal_complete": false,
+    "production": false
+  },
+  "next_gate": "independent precision/source increment review; completed060; exact065 code/test authorization; once offline065; then one fresh061 input preflight before first six fits and12books"
+}

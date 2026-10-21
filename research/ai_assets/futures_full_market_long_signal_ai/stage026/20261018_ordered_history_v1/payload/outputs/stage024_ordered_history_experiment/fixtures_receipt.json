@@ -1,0 +1,41 @@
+{
+  "schema": "stage024_implementation_fixture_v1",
+  "red": {
+    "tool_chunk_id": "8160fd",
+    "exit_code": 1,
+    "tests": 5,
+    "failures": 5,
+    "fixture_fit_calls": 0
+  },
+  "green": {
+    "tool_chunk_id": "218072",
+    "exit_code": 0,
+    "tests": 5,
+    "failures": 0,
+    "fixture_fit_calls": 1
+  },
+  "old_suites_run": 0,
+  "financial_runs": 0,
+  "real_data_fit_calls_before_full_run": 0,
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage024_ordered_history_experiment.py",
+    "sha256": "f2bfc43d2b685df6f77a535bd6fb696f18bf54dac93b6ff39f5b60cb6e03fa46",
+    "bytes": 30169
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage024_ordered_history_experiment.py",
+    "sha256": "2b69c1cc3d1801d0392efa3ef890df61832bf6cdb4937639ac64d2eefb9f0669",
+    "bytes": 5875
+  },
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage022_ordered_history_protocol/protocol.json",
+    "sha256": "ae0708cb9eb232d5c5d7936fc705f77b2f361e4b039442e707b82c828b27f99a",
+    "bytes": 3548
+  },
+  "sequence_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export/manifest.json",
+    "sha256": "3b8da3d7e94a9e3e3fc755b233d2bb93ef6ebf6813a66a0a0a913052eb8bf64a",
+    "bytes": 81847
+  },
+  "run_authorization": "root explicit message after fresh023 binding and022 independent design review; GREEN then sole108-fit allowed"
+}

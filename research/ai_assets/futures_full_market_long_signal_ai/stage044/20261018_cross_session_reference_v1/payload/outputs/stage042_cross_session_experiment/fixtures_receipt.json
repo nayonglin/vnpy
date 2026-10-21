@@ -1,0 +1,61 @@
+{
+  "schema": "stage042_fixture_receipt_v1",
+  "initial_red": {
+    "tool_chunk": "b0be1d",
+    "exit_code": 1,
+    "tests": 10,
+    "failures": 10
+  },
+  "core_green": {
+    "tool_chunk": "5f01ec",
+    "exit_code": 0,
+    "tests": 10,
+    "failures": 0
+  },
+  "strengthened_prefix_and_two_family_reserves_green": {
+    "tool_chunk": "6c216d",
+    "exit_code": 0,
+    "tests": 10,
+    "failures": 0
+  },
+  "runner_shared_prepared_green": {
+    "tool_chunk": "dff1cd",
+    "exit_code": 0,
+    "tests": 10,
+    "failures": 0
+  },
+  "synthetic_cash_account_calls_in_final_test_file": 4,
+  "synthetic_price_chain_calls": 1,
+  "real_native_source_reads": 0,
+  "real_research_cash_accounts": 0,
+  "models": 0,
+  "downloads": 0,
+  "old_suites": 0,
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+    "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+    "bytes": 50405
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage042_cross_session_experiment.py",
+    "sha256": "6541047f65bbe7ac63effce47fa11aebaba822e4c23d35de688ad73992de84c1",
+    "bytes": 9539
+  },
+  "machine_protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage039_cross_session_reference_protocol/protocol.json",
+    "sha256": "58fe0f80de248f1d3095ac9ef859c0cb9bd84e369809a466f2b554dd38195466",
+    "bytes": 9600
+  },
+  "actual_authorized": false,
+  "final_frozen_source_green": {
+    "tool_chunk": "df1cb1",
+    "exit_code": 0,
+    "tests": 10,
+    "failures": 0
+  },
+  "final_compile": {
+    "tool_chunk": "a2559f",
+    "exit_code": 0,
+    "new_files": 2
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "receipt_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope/B_OFF/81ffc8f704ce4c5eb701e97e0397b12a/request_08dc30017c54bdee9ab526a211a9aaff65eddc228092cf287837db61408be772/review/delivery_receipt.json",
+  "receipt_sha256": "f3fb83941183e539b80be06d67f9a0d8dd135d2b4a3c25740303d32b3580b254",
+  "request_sha256": "08dc30017c54bdee9ab526a211a9aaff65eddc228092cf287837db61408be772",
+  "schema": "stage022_delivery_pointer_v1"
+}

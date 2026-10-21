@@ -1,0 +1,77 @@
+test_future_prefix_cannot_change_past_contexts (__main__.PeerContextTests.test_future_prefix_cannot_change_past_contexts) ... FAIL
+test_held_family_counterfactual_cannot_pollute_train_context_or_market4 (__main__.PeerContextTests.test_held_family_counterfactual_cannot_pollute_train_context_or_market4) ... FAIL
+test_main_distribution_and_original_ready_id_storage_contract (__main__.PeerContextTests.test_main_distribution_and_original_ready_id_storage_contract) ... FAIL
+test_missing_constant_and_new_listing_keep_ready_unknown_rows (__main__.PeerContextTests.test_missing_constant_and_new_listing_keep_ready_unknown_rows) ... FAIL
+test_null_preserves_peer_values_and_one_peer_has_no_difference (__main__.PeerContextTests.test_null_preserves_peer_values_and_one_peer_has_no_difference) ... FAIL
+test_own_and_F_shock_excluded_but_query_history_is_used (__main__.PeerContextTests.test_own_and_F_shock_excluded_but_query_history_is_used) ... FAIL
+
+======================================================================
+FAIL: test_future_prefix_cannot_change_past_contexts (__main__.PeerContextTests.test_future_prefix_cannot_change_past_contexts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 45, in test_future_prefix_cannot_change_past_contexts
+    m = self.implementation(); frame, cal = fixture()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+======================================================================
+FAIL: test_held_family_counterfactual_cannot_pollute_train_context_or_market4 (__main__.PeerContextTests.test_held_family_counterfactual_cannot_pollute_train_context_or_market4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 72, in test_held_family_counterfactual_cannot_pollute_train_context_or_market4
+    m = self.implementation(); frame, cal = fixture()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+======================================================================
+FAIL: test_main_distribution_and_original_ready_id_storage_contract (__main__.PeerContextTests.test_main_distribution_and_original_ready_id_storage_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 113, in test_main_distribution_and_original_ready_id_storage_contract
+    m = self.implementation()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+======================================================================
+FAIL: test_missing_constant_and_new_listing_keep_ready_unknown_rows (__main__.PeerContextTests.test_missing_constant_and_new_listing_keep_ready_unknown_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 83, in test_missing_constant_and_new_listing_keep_ready_unknown_rows
+    m = self.implementation(); frame, cal = fixture(); frame.loc[frame.family_id.eq('SHFE.a'), 'r1_atr'] = 2.
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+======================================================================
+FAIL: test_null_preserves_peer_values_and_one_peer_has_no_difference (__main__.PeerContextTests.test_null_preserves_peer_values_and_one_peer_has_no_difference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 100, in test_null_preserves_peer_values_and_one_peer_has_no_difference
+    m = self.implementation()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+======================================================================
+FAIL: test_own_and_F_shock_excluded_but_query_history_is_used (__main__.PeerContextTests.test_own_and_F_shock_excluded_but_query_history_is_used)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 56, in test_own_and_F_shock_excluded_but_query_history_is_used
+    m = self.implementation(); frame, cal = fixture(); own = 'SHFE.a'; u = cal[23]
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py", line 40, in implementation
+    self.assertIsNotNone(MOD, 'Stage034 causal peer context is not implemented')
+AssertionError: unexpectedly None : Stage034 causal peer context is not implemented
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=6)

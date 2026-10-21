@@ -1,0 +1,16 @@
+{
+  "schema": "stage060_official_archive_acquisition_v1",
+  "url": "https://www.eia.gov/petroleum/supply/weekly/archive/index.php",
+  "route_attempts": 1,
+  "status": 200,
+  "transport": "existing_curl_chrome_user_agent",
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 174833,
+  "sha256": "ebe7e59d7e3f0b114c6a733c9b0f434edc1bf374eb7637aa6e94704bb3225ad5",
+  "elapsed_seconds": 13.269967,
+  "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/archive_index.html",
+  "response_headers": "HTTP/1.1 200 OK\nContent-Type: text/html; charset=UTF-8\nServer: Microsoft-IIS/10.0\nX-Powered-By: ASP.NET\nStrict-Transport-Security: max-age=31536000\nContent-Length: 174833\nExpires: Sun, 18 Oct 2026 07:08:52 GMT\nCache-Control: max-age=0, no-cache, no-store\nPragma: no-cache\nDate: Sun, 18 Oct 2026 07:08:52 GMT\nConnection: keep-alive\nAlt-Svc: h3=\":443\"; ma=93600\n\n",
+  "max_time_seconds": 20,
+  "automatic_retries": 0,
+  "observed_transfer_exit_code": 0
+}

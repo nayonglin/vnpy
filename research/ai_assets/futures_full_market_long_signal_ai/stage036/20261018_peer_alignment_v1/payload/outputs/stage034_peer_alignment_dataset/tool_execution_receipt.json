@@ -1,0 +1,24 @@
+{
+  "actual_terminal": {
+    "bytes": 2705,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/actual_terminal.json",
+    "sha256": "39f50228b90d1ae9c43b20002bac53984489ff9685d3aace3f367c31de7c028a"
+  },
+  "build_starts": 1,
+  "completed_builds": 1,
+  "elapsed_seconds": 16.051261792017613,
+  "exit_code": 0,
+  "final_tool_chunk": "6c10a5",
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T13:05:17+08:00",
+  "initial_tool_chunk": "9c74e0",
+  "manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/manifest.json",
+    "sha256": "2a3abe55eabf0fba5bb5d749fb4343d1bf341e3d217b93619554ab11bf98d990"
+  },
+  "model_fits": 0,
+  "schema": "stage034_tool_execution_receipt_v1",
+  "session_id": 44167,
+  "sql_queries": 0,
+  "started_at": "2026-10-18T13:05:01+08:00"
+}

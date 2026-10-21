@@ -1,0 +1,142 @@
+{
+  "schema": "stage044_local_registration_draft_request_v1",
+  "created_at": "2026-10-18T13:44:01+08:00",
+  "line_id": "futures_full_market_long_signal_ai",
+  "stage": "stage044",
+  "run_id": "20261018_cross_session_reference_v1",
+  "destination": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1",
+  "status": "prepared_only_waiting_final_assets_and_explicit_root_register_authorization",
+  "registrable": false,
+  "observed_known_assets": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage039_cross_session_reference_protocol.md",
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "sha256": "09f4102162116f1ac844328455b7365f31e6f916345e8885ccb6129de953101d",
+      "size_bytes": 12216,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage039_cross_session_reference_protocol/protocol.json",
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "sha256": "58fe0f80de248f1d3095ac9ef859c0cb9bd84e369809a466f2b554dd38195466",
+      "size_bytes": 9600,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1320_stage040_cross_session_minimum_cash_design_review.md",
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "sha256": "075eb18f5c3aeb6f6f3e9dee5d7806b60f2b9e4837fcd92285bd289210d9d952",
+      "size_bytes": 10718,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage040_cross_session_cash_design_review/read_receipt.json",
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "sha256": "3fc2e32c13610597cc7eea01b6570382583e1280ab88218f5d74f5e5b4588768",
+      "size_bytes": 2752,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "role": "decision_asset",
+      "reproducibility_required": true,
+      "sha256": "b546c81710e67f3a23eb6028c2a2b67f8ff3a0c87dc14a7e0e5a90463325ac63",
+      "size_bytes": 16560,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "sha256": "6021a03f152f4316b069ed3d78df9f85fa240119b40fd9311dd4a0db0a62ba9a",
+      "size_bytes": 8941,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "role": "decision_asset",
+      "reproducibility_required": true,
+      "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c",
+      "size_bytes": 8146494,
+      "state": "observed_current_bytes_await_root_final_authorization"
+    }
+  ],
+  "pending_deliverables": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/artifact_inventory.json",
+      "state": "awaiting_final_inventory",
+      "copy_rule": "显式逐项required=true且标准role；核SHA/size；source和tests均feature_contract"
+    },
+    {
+      "path_pattern": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/*stage042_*.md",
+      "state": "awaiting_final_Chinese_stage",
+      "role": "decision_asset"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage043_cross_session_cash_review/artifact_inventory.json",
+      "state": "awaiting_final_independent_review_inventory",
+      "copy_rule": "显式review源码/收据/stage及有限验证证据，核SHA/size，保留真实审查范围"
+    },
+    {
+      "path_pattern": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/*stage044_*.md",
+      "state": "awaiting_root_frozen_decision",
+      "role": "decision_asset"
+    },
+    {
+      "authorization": "register_and_exact_git_add",
+      "state": "not_yet_authorized_this_stage",
+      "required_sender": "root_after_final_043_and_044"
+    }
+  ],
+  "final_role_policy": {
+    "source_and_tests": "feature_contract",
+    "protocols": "feature_contract",
+    "economic_projection": "decision_asset",
+    "decision_and_cash_ledgers": "decision_asset",
+    "independent_review_and_terminal_receipts": "qualification_evidence",
+    "plot_png_and_plot_receipt": "cache_or_visualization"
+  },
+  "explicit_exclusions": [
+    "excluded_raw_audit/**",
+    "native_case_slices.json.gz",
+    "clean_daily.sqlite",
+    "raw OHLC",
+    "old Stage004 panel",
+    "old Stage009 full matrix",
+    "old Stage023 full history",
+    "previous Stage036 or038 payload duplication",
+    "private .env/account/runtime/secrets"
+  ],
+  "required_cash_scope": "首次固定跨期参考研究：接受18个现金账户的输出，仅经济投影、归一决策、账本和必要审查复现文件，不把原价审计切片混入payload。",
+  "visualization_policy": {
+    "role": "cache_or_visualization",
+    "reproducibility_required": false,
+    "copy_entity": false,
+    "plot_code_required_only_if_decision_relevant": false
+  },
+  "logical_names": "strip registrar-appended final suffix; same-stem different-format paths segregated by format directory",
+  "planned_checks": [
+    "final source SHA/size and explicit roles",
+    "finite protocol/economic/manifest/review closure without raw DB rehash",
+    "copied-source SHA/size all equality",
+    "canonical manifest hash",
+    "exact staged prefix equals payload+manifest",
+    "unrelated index retained"
+  ],
+  "mutations_this_prepare": {
+    "created_assets_destination": false,
+    "git_add": false,
+    "commit": false,
+    "push": false,
+    "production": false,
+    "model_fits": 0,
+    "financial_runs": 0,
+    "native_SQL_queries": 0,
+    "raw_database_hashes": 0
+  },
+  "judgment": "本次仅准备复现保存，没有新增策略选择或过拟合；有价值用于真实现金参考的可复验性，尚不宣称结果或策略获准。"
+}

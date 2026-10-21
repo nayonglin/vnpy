@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_actual.py", line 8, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'

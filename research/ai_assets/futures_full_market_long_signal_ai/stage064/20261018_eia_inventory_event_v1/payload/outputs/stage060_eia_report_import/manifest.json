@@ -1,0 +1,115 @@
+{
+  "schema": "stage060_eia_import_manifest_v1",
+  "status": "completed",
+  "artifacts": {
+    "calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/calendar.csv",
+      "bytes": 204918,
+      "sha256": "d46e05bfe488b4faba64016e5eed022085bdac9837b3b8d974c9ac13267b6104",
+      "declared_role": "normalized_official_release_calendar"
+    },
+    "normalized_stocks": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/normalized_stocks.csv",
+      "bytes": 781358,
+      "sha256": "9e93845c1c480b330a808e42c71809a5cce3b4b9f066d76dee463ef906bf0dc8",
+      "declared_role": "normalized_reproducibility_input_three_inventory_components"
+    },
+    "report_features": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/report_features.csv",
+      "bytes": 372461,
+      "sha256": "51769564f5136d9efe6148dfdd3c6d9b68d8f8b695a4db0e6b2e6da96860bf4f",
+      "declared_role": "causal_full_calendar_scalar_and_past_sham"
+    },
+    "event_map": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/event_map.csv",
+      "bytes": 369187,
+      "sha256": "1288e5746dac51ae3bf4d7bee73112d681e400c8019b161c9714d3e16123963f",
+      "declared_role": "unique_decision_date_causal_external_input_all_families"
+    },
+    "coverage": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/coverage.json",
+      "bytes": 45030,
+      "sha256": "e92c59ad750fe3a1b99e8248ed52fb061661e772a454b97da3f12de3664ee129",
+      "declared_role": "source_coverage_and_unknown_receipt"
+    },
+    "coverage_by_year": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/coverage_by_year.csv",
+      "bytes": 252,
+      "sha256": "7293ac79aa30f44cb8f543f428c29b89914d6aee88e7520f087f0bfc235e8167",
+      "declared_role": "source_annual_coverage"
+    },
+    "source_bindings": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/source_bindings.json",
+      "bytes": 1206818,
+      "sha256": "57e8b5cb518ec29409a4e0fa81ba8029b8db412faaf8df2daba45bcd218d004d",
+      "declared_role": "public_source_hash_header_and_status_bindings"
+    },
+    "source_progress": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/source_progress.jsonl",
+      "bytes": 1086415,
+      "sha256": "e90b121f9e3a7863fa7b48fb92ab35b857fb15be639ce3ae8e843a33b5ab1f3a",
+      "declared_role": "complete_actual_source_progress"
+    },
+    "actual_terminal": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/actual_terminal.json",
+      "bytes": 550,
+      "sha256": "f7334b3392dfdc4d267a96b80595edc0cca33bd74c7d0ab485dfd5444b1be6c2",
+      "declared_role": "actual_execution_terminal"
+    },
+    "tests_red": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/tests_red.log",
+      "bytes": 5001,
+      "sha256": "5a30fef25457f8cd403ba429278563b002976f1502b2e49bccb769d390d9e14c",
+      "declared_role": "new_behavior_red_evidence"
+    },
+    "tests_green": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/tests_green.log",
+      "bytes": 1284,
+      "sha256": "58aefc6688908e1ecc9249d9fae4ee4cc57bf30ecabd821530338520482e18d2",
+      "declared_role": "new_behavior_green_evidence"
+    }
+  },
+  "input_bindings": {
+    "protocol": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+      "bytes": 7162,
+      "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158",
+      "declared_role": "frozen_protocol"
+    },
+    "archive_acquisition": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/archive_fetch_receipt.json",
+      "bytes": 1056,
+      "sha256": "d6537e5b8e30b2ac17c631ed98bd48e1632d0adecf736999370bf94081410a30",
+      "declared_role": "official_index_acquisition_receipt"
+    },
+    "accepted_china_calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+      "declared_role": "accepted_source_trading_calendar_no_prices"
+    },
+    "stage058_cache_receipt": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage058_eia_small_source_probe/csv_probe_receipt.json",
+      "bytes": 11731,
+      "sha256": "29fbfdf21c335775af08f39d3b14f1c26af8e1cb1499232dbb1f314626792bf0",
+      "declared_role": "accepted_two_csv_cache_bindings"
+    },
+    "implementation": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py",
+      "bytes": 23966,
+      "sha256": "f40f1b07007d283b950187d05f144ec9954c125433eb130165285e1bac07d45e",
+      "declared_role": "implementation_contract"
+    },
+    "tests": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage060_eia_report_import.py",
+      "bytes": 8448,
+      "sha256": "3d404e97baacb700851474cda0960094e067d4985be7417847e3c2e0db263750",
+      "declared_role": "new_behavior_contract_tests"
+    }
+  },
+  "raw_source_handling": "excluded_raw_sources only; never register raw HTML/CSV/PDF",
+  "source_end": "2026-10-16",
+  "all_families_same_event_eligibility": true,
+  "fit_or_cash_authorized": false,
+  "goal_complete": false
+}

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py", line 356, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py", line 321, in main
+    source,events,source_result=check_source(fit['source_import_manifest'],dates)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py", line 172, in check_source
+    assert int(saved.source_row_number)==original['row'] and float(saved.unit_conversion_factor)==1000
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '3.0'

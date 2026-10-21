@@ -1,0 +1,61 @@
+{
+  "schema": "stage138_bounded_followup_v1",
+  "zero_volume_source": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP101.csv",
+    "sha256": "0e05dbebb1f6510cfd2d72d79d8dc5e0b94b361d091c48b12bd2e8f45bf64dc4",
+    "A_OFF_preflight_sha_match": true,
+    "row": {
+      "trade_date": "2021-01-14",
+      "datetime": "2021-01-14 00:00:00+08:00",
+      "open": "5778.0",
+      "high": "5778.0",
+      "low": "5778.0",
+      "close": "5778.0",
+      "volume": "0.0",
+      "open_oi": "51.0",
+      "close_oi": "51.0"
+    },
+    "later_csv_row": {
+      "trade_date": "2021-01-15",
+      "datetime": "2021-01-15 00:00:00+08:00",
+      "open": "5700.0",
+      "high": "5700.0",
+      "low": "5700.0",
+      "close": "5700.0",
+      "volume": "1.0",
+      "open_oi": "51.0",
+      "close_oi": "30.0"
+    },
+    "DB_sample_equal": true,
+    "provider_serial_completion_proved": false
+  },
+  "existing_FI_scope": {
+    "contracts": 533,
+    "original_exists": 400,
+    "original_preflight_bound": 397,
+    "original_missing": 133,
+    "source_hashes_repeated": false
+  },
+  "carry_source_bindings": {
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": {
+      "sha256": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+      "A_OFF_preflight_expected": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd"
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": {
+      "sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+      "A_OFF_preflight_expected": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2"
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py": {
+      "sha256": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+      "A_OFF_preflight_expected": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d"
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "A_OFF_preflight_expected": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64"
+    }
+  },
+  "prior_optional_probe_exit1": "AP101 CSV BOM header was read without utf-8-sig; corrected read only; no SQL repeated",
+  "financial_replays": 0,
+  "features_built": 0,
+  "qualification_granted": false
+}

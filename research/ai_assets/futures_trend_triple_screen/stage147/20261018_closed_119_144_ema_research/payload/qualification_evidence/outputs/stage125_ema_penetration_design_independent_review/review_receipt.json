@@ -1,0 +1,185 @@
+{
+  "schema": "stage125_independent_proposed_design_review_v1",
+  "reviewed_at": "2026-10-18T09:11:55+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "review_kind": "finite_static_design_and_necessary_interface_review_only",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "findings": [],
+  "status": "definition_design_acceptable_with_two_explicit_policy_choices_left_to_root",
+  "design_accepted_for_definition_only": true,
+  "implementation_reviewed": false,
+  "implementation_authorized": false,
+  "financial_authorized": false,
+  "alpha_or_profitability_claim": false,
+  "production_qualified": false,
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0902_stage124_ema_penetration_limit_proposed_design.md": {
+      "sha256": "28b584b28fab94f36dfb0368dea04980b1b26a9b7123abcab2103128d7070d33",
+      "bytes": 26732
+    }
+  },
+  "dependency_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0333_stage035_b_ts_execution_contract.md": {
+      "sha256": "a508b88e64cc67919716e4cff7604cb034e38c97b2b96ed6d7208d138e3653b8",
+      "bytes": 8355
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0234_stage028_conditional_execution_contract.md": {
+      "sha256": "12c2346bb50974ce70c0f24a4c4ba210c7d1daebb5883e3ed8afe284d403e2ee",
+      "bytes": 6515
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0242_stage028_entry_day_holding_causality.md": {
+      "sha256": "5a94fd9a7caec42b94d557de588f72d0929bb96eb0ceae496c927ce1f94916c9",
+      "bytes": 2411
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0546_stage062_pairwise_off_implementation_plan.md": {
+      "sha256": "fc31120390ab4c04c95d52a7dfd629992aab0f6a4abf139d1976a0b2252343e1",
+      "bytes": 29092
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0842_stage121_elder_ema_penetration_feasibility.md": {
+      "sha256": "f6ec0dfe2b619b90c2bda5e3f039ebac0bed3949c7e92374df70c21ceafc7fb0",
+      "bytes": 13001
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0848_stage123_ema_penetration_definition_boundary.md": {
+      "sha256": "0d6e39a6170e973b38fea9ccf68f68f16ad411f54951510c5a4f13f647bdea90",
+      "bytes": 6107
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage027_ordered_state.py": {
+      "sha256": "86149c15c2c7a5d46a8047fff7472bef14b29a56e29cb03a9763222b0bcb2e64",
+      "bytes": 13677
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py": {
+      "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+      "bytes": 25106
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py": {
+      "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+      "bytes": 11298
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py": {
+      "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+      "bytes": 13613
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py": {
+      "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+      "bytes": 14012
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": {
+      "sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+      "bytes": 44621
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": {
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "bytes": 50824
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py": {
+      "sha256": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+      "bytes": 8638
+    }
+  },
+  "context_bindings": {
+    "/Users/mac/Desktop/fian/AGENTS.md": {
+      "sha256": "e7b71beaa7ab4c7526743ca95843438651c26db30cc4c7a4adf8f75ba37713d9",
+      "bytes": 8193
+    },
+    "/Users/mac/Desktop/fian/research/registry.md": {
+      "sha256": "1407e3c82384e4390bdbffde5984b22593fadfe2b9f7d5ffbec2d7e99377a2c4",
+      "bytes": 22928
+    }
+  },
+  "registry_line_status": "existing_root_assigned_line_not_yet_listed_in_registry; no_duplicate_line_or_registry_edit",
+  "design_checks": {
+    "SMA13_seed_then_EMA13_26_valid_bar_window_needs_38_bars": true,
+    "positive_only_denominator_and_zero_unknown_explicit": true,
+    "only_u_known_inputs_real_contract_scale_epoch_reset_tick_metadata_separated": true,
+    "ordered_week_FI_prepared_consume_once_DAY_expiry_resources_frozen": true,
+    "L_through_original_recipe_gross_prefix_only_shrink_no_reallocation": true,
+    "long_short_signed_stop_side_no_abs_rescue_or_deleted_fill": true,
+    "native_economic_fill_cost_once_same_mother_R_and_retry_boundary": true,
+    "first_intrabar_favourable_extreme_mask_both_immediate_and_lifetime_consumers_explicit": true,
+    "volume_unit_strict_one_tick_all_or_none_approximation_not_queue_proof": true,
+    "fixed_next_minute_pessimistic_countermodel_implementable_and_not_a_real_queue_bound": true,
+    "strict_profit_DD_Sharpe_survival_gates_stronger_A0_and_weaker_A_OFF_limitations_retained": true,
+    "no_weak_year_parameter_rescue_or_midrun_B_selection": true
+  },
+  "root_decision_points": [
+    {
+      "id": "wrong_side_gap_close_no_retry",
+      "recommendation": "accept_as_explicit_new_mechanism_policy",
+      "reason": "Under the declared matching model, a valid pending initial limit can fill beyond S. It must consume setup and remain in the native cash/inventory/cost chain. Immediate same-mother protective close with R=N/A avoids fabricated abs-risk and any retry without a lawful initial R. No-retry is a deliberate conservative policy, not a uniquely deduced exchange rule.",
+      "future_boundary": "Intercept before native827 diagnostic abs and before847/827 protection; two actual accounting fills, no phantom CSV close."
+    },
+    {
+      "id": "initial_L_only_original_retry_unbounded_by_L",
+      "recommendation": "accept_as_explicit_preservation_of_original_retry",
+      "reason": "Original847 scans reclaim only after the first stop minute, uses original entry price and the original half-R stop with unchanged quantity; stop_fill can gap beyond initial L. Clamping retry to L would change the mechanism.",
+      "future_boundary": "Report actual retry price, cash loss and margin even beyond L; no initial-unfilled breakout fallback, no recomputed q/R, one retry only."
+    }
+  ],
+  "non_blocking_limits": [
+    {
+      "id": "first_bar_close_mask_is_extra_conservatism",
+      "detail": "Unknown ordering justifies removing a possible pre-entry favourable H/L. The completed minute close is after an intraminute fill; capping its favourable evidence is therefore an additional declared conservative assumption. Stage124 explicitly fixes that choice, so no change wave is requested; do not call it a recovered true path."
+    },
+    {
+      "id": "coarse_volume_and_queue_assumption",
+      "detail": "Full minute V>=q and one-tick penetration do not identify queue allocation or price-level liquidity. Open improvement conditional on completed-minute V is an offline minute matching assumption, not a strategy knowing V at the open. These limits are already disclosed and do not prohibit finite research."
+    },
+    {
+      "id": "countermodel_not_global_bound",
+      "detail": "The one-next-minute confirmation and worst legal bounded price may reduce fills, remove both wins and losses, and need not be a pathwise lower bound on the whole account. Passing it cannot prove real queue viability; failing the fixed advantage/survival gate must stop promotion."
+    },
+    {
+      "id": "actual_hooks_and_account_not_yet_proven",
+      "detail": "Existing028 only patches immediate first-bar open while its separate lifetime consumer rereads H/L;827 diagnostic and847 risk both use abs. The proposed private hooks can isolate these cases, but no source or fixture exists yet. Design acceptance is not code, data, account, or native-equivalence acceptance."
+    },
+    {
+      "id": "PIT_and_margin_scope",
+      "detail": "Historical A0 remains a restricted reference, short price improvement may raise actual margin, and existing close-only margin reporting does not establish intraminute peaks. These remain disclosed hard interpretation limits."
+    }
+  ],
+  "minimal_future_verification_boundary": [
+    "Only new EMA/identity/limit/gap hooks; do not modify frozen B or old recipe.",
+    "38-bar/zero-side/future-poison/epoch and tick boundary fixtures; no window search.",
+    "Unfilled DAY/no reserve duplication/no intraday resource redistribution.",
+    "Signed L/F/S mirror cases including wrong-side native open+protective close, diagnostic R=N/A and costs exactly once.",
+    "Immediate scanner plus separate lifetime holding consumer both use the declared first-minute view; raw market/history/account marks remain intact.",
+    "Lawful-R actual847 fallback/retry, next-minute only, actual retry gap beyond L, fixed q/initial R and one retry; same-bar adverse ordering.",
+    "Fixed pessimistic DAY-last-minute expiry and only-one-next-minute confirmation, no third confirmation.",
+    "Actual native fill/accounting interface independently reviewed before any separately authorized full account; finite design review never grants financial readiness."
+  ],
+  "read_only_execution_evidence": {
+    "target_pin_check_chunk": "3bf914",
+    "target_pin_check_exit": 0,
+    "dependency_contract_read_chunk": "4f381b",
+    "original_boundary_read_chunk": "51b5ed",
+    "interface_reads": [
+      "76fecc",
+      "2e1119",
+      "aaf313",
+      "fb2b79",
+      "97a78b",
+      "ddd1d4"
+    ],
+    "registry_exact_line_rg_chunk": "7bdc82",
+    "registry_exact_line_rg_exit": 1,
+    "registry_rg_interpretation": "expected_no_matching_existing_line_in_index_not_a_test_failure"
+  },
+  "data_runs": 0,
+  "tests": 0,
+  "provider_runs": 0,
+  "network_calls": 0,
+  "financial_runs": 0,
+  "model_load_predict_train": 0,
+  "B_directory_or_PnL_read": false,
+  "session47648_or_any_driver_touched": false,
+  "source_design_LINE_registry_or_git_modified": false,
+  "external_research": "Inherited bounded121/123 original-author/GitHub evidence; no new external lookup or claim of unique Elder algorithm.",
+  "overfitting": false,
+  "overfitting_reason": "Revenue-blind static definition review; no parameter or fill convention selected by outcomes. Historical multiple-selection bias remains.",
+  "continued_value": true,
+  "continued_value_reason": "One explicit, falsifiable independent adaptation is coherent enough for root to decide next scope; no profitability or promotion conclusion."
+}

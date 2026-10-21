@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "py_compile",
+    "research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py"
+  ],
+  "elapsed_seconds": 0.035157584003172815,
+  "exit_code": 0,
+  "role": "qualification_evidence",
+  "reproducibility_required": true
+}

@@ -1,0 +1,65 @@
+{
+  "cash_qualification_ready": false,
+  "financial_ready": false,
+  "financial_runs": 0,
+  "hard_cash_fields_missing_from_clean_schema": [
+    "effective multiplier/tick/currency/instrument economics",
+    "settlement",
+    "historical margin",
+    "fee schedule",
+    "session/limits/fill evidence",
+    "account trading eligibility"
+  ],
+  "implementation_created": false,
+  "issued_at": "2026-10-18T13:15:01+08:00",
+  "market_downloads": 0,
+  "model_fits": 0,
+  "new_inventory_runs": 0,
+  "policy": "close_confirmed_Donchian55_next_open_2N_initial_stop_20low_exit_no_PT_no_max_hold_no_AI_no_pyramiding",
+  "price_policy_events_computable_from_accepted_source": true,
+  "production_qualified": false,
+  "proposal_only": true,
+  "recommendation": "pause_DAY_feature_expansion; freeze_single_long_only_cross_session_policy_mother",
+  "registry_read_scope": "line identity and directory only",
+  "schema": "stage038_independent_cross_session_policy_design_receipt_v1",
+  "source_bindings": [
+    {
+      "bytes": 3548,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/contract.json",
+      "sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149"
+    },
+    {
+      "bytes": 6280,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/unit_contract.json",
+      "sha256": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c"
+    },
+    {
+      "bytes": 4965,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/dataset_manifest.json",
+      "sha256": "d77145c2b17fa115e3aa5f4a9689955447c09139dfb734f6fdde7376cc7c3ebd"
+    },
+    {
+      "bytes": 22517,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage266_clean_daily.py",
+      "sha256": "fe2bb08f88a80c40a1c7bbd2ad89747b969138d8874fdde87976f41983d30101"
+    },
+    {
+      "bytes": 30932,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage266_training_reader.py",
+      "sha256": "eaa0b51a4e76ab139c4b9b64af005304a19c895b20529f7366b8b88b6ad86c2c"
+    },
+    {
+      "bytes": 6430,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1108_stage003_product_day_opportunity_contract.md",
+      "sha256": "664a3210b666880b58d27c9ea31b0cfcc535572a0536f5b957867f1b87157bdf"
+    }
+  ],
+  "sql_queries": 0,
+  "stage": {
+    "bytes": 14880,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1314_stage038_cross_session_policy_mother_design.md",
+    "sha256": "769fddd904963fc7befc860fe5934221f6a361b041b2734e6bcd8a6618cf7edf"
+  },
+  "stage035_or_stage037_results_read": false,
+  "web_browsing_only": true
+}

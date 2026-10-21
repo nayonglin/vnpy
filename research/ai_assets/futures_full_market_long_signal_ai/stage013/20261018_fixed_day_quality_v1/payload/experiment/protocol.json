@@ -1,0 +1,125 @@
+{
+  "schema": "stage007_day_quality_proxy_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "frozen_spec": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1129_stage007_fixed_day_quality_protocol.md",
+    "sha256": "393062ccb353e5d803927ad4fe1d7e4223d60edc4a070a710b7c0f2eb549e135",
+    "bytes": 10148
+  },
+  "inputs": {
+    "opportunity_manifest": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json",
+      "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003",
+      "bytes": 257576
+    },
+    "opportunity_review": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/review_receipt.json",
+      "sha256": "4747240f4b7f508d056ee4eff98781169e5e07ac8bb899113ff3da13cd71d621",
+      "bytes": 4270
+    },
+    "source_bindings": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json",
+      "sha256": "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb",
+      "bytes": 5592
+    }
+  },
+  "scope": [
+    "2010-01-01",
+    "2026-10-16"
+  ],
+  "atr_window": 20,
+  "consecutive_real_bars": 21,
+  "stop_atr_fraction": 0.25,
+  "take_profit_atr_fraction": 1.0,
+  "horizon": "DAY",
+  "base_cost_budget_R": 0.2,
+  "stress_cost_budget_R": 1.0,
+  "own_features": [
+    "r1_atr",
+    "r5_atr",
+    "r20_atr",
+    "body_atr",
+    "range_atr",
+    "close_location",
+    "gap_atr",
+    "compression5_20",
+    "log_volume_ratio20",
+    "breakout20_atr",
+    "atr_pct"
+  ],
+  "market_features": [
+    "market_lag_median_r1",
+    "market_lag_breadth",
+    "market_lag_iqr_r1",
+    "market_lag_missing"
+  ],
+  "model_features": {
+    "M0": [
+      "r1_atr",
+      "r5_atr",
+      "r20_atr",
+      "body_atr",
+      "range_atr",
+      "close_location",
+      "gap_atr",
+      "compression5_20",
+      "log_volume_ratio20",
+      "breakout20_atr",
+      "atr_pct"
+    ],
+    "M1": [
+      "r1_atr",
+      "r5_atr",
+      "r20_atr",
+      "body_atr",
+      "range_atr",
+      "close_location",
+      "gap_atr",
+      "compression5_20",
+      "log_volume_ratio20",
+      "breakout20_atr",
+      "atr_pct",
+      "market_lag_median_r1",
+      "market_lag_breadth",
+      "market_lag_iqr_r1",
+      "market_lag_missing"
+    ]
+  },
+  "family_rule": "exchange.product_without_terminal__F",
+  "market_lag_source_calendar_days": 1,
+  "annual_test_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "primary_start": "2020-01-01",
+  "ridge": {
+    "alpha": 1.0,
+    "solver": "cholesky",
+    "fit_intercept": true
+  },
+  "product_holdout_groups": 2,
+  "mask_rule": "predicted_proxy_lower>0",
+  "bootstrap": {
+    "block_length_source_days": 60,
+    "repetitions": 2000,
+    "seed": 20261018
+  },
+  "minimum_support": {
+    "selected_dates_2020": 60,
+    "selected_families_2020": 8
+  },
+  "screen_metric": "date_equal_weight_conditional_proxy_bound_not_cash",
+  "protocol_version": "fixed_day_proxy_v1",
+  "financial_ready": false,
+  "production_qualified": false
+}

@@ -1,0 +1,33 @@
+{
+  "financial_runs": 0,
+  "green": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "log": {
+      "bytes": 1032,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/tests_green.log",
+      "sha256": "5a7a6c64bbed6e3a884b54ceb52f9c119a55520ce39531334d6cb74caae0725d"
+    },
+    "tests": 6,
+    "tool_chunk_id": "328156"
+  },
+  "model_fits": 0,
+  "old_suite_run": false,
+  "reason": "user requested bounded behavior verification, no repeated old suite",
+  "red": {
+    "errors": 0,
+    "exit_code": 1,
+    "failures": 6,
+    "log": {
+      "bytes": 6848,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/tests_red.log",
+      "sha256": "b13a86d5a0293d41c551ffaf97845406d604d6c46ea418410969235ff310b145"
+    },
+    "reason": "missing Stage023 implementation",
+    "tool_chunk_id": "c80d1b"
+  },
+  "schema": "stage023_behavior_test_receipt_v1",
+  "source_price_values_saved": false,
+  "test_methods": 6
+}

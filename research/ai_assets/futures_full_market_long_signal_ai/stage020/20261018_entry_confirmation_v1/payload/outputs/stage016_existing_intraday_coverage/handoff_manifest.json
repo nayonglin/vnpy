@@ -1,0 +1,48 @@
+{
+  "schema": "stage016_inventory_handoff_v1",
+  "artifacts": {
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1201_stage016_existing_intraday_coverage.md": {
+      "bytes": 8960,
+      "sha256": "925ff4760d991593a58ccfbe07288457fa91855756a6b57ecc7db8decf3be6e0"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/actual_terminal.json": {
+      "bytes": 797,
+      "sha256": "ed00fd6568927627188d9d8dfba2fb64ba4befe891c900cd37de8e31bee7ae70"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/bounded_csv_endpoints.json": {
+      "bytes": 3453,
+      "sha256": "a2f2243da4d673de7cae67fca08ab0efe1bb5a325b7f9c8c9f91593d6102cd15"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/current_workspace_candidate_files.csv": {
+      "bytes": 510393,
+      "sha256": "18bd3befeca90994decda01de0e057bc1f08ff87c9980331740bee68dfd258ce"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/database_metadata_and_probes.json": {
+      "bytes": 7542,
+      "sha256": "12ccda76fdd4c9f8a8c789a8dee87fe6c6d72ff79f966b1120c95b1e654559de"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/inherited_accepted_session_product_year.csv": {
+      "bytes": 30899,
+      "sha256": "9afd0baaf1903ff69b96c896f481be01809f4bacf3984c90c9ae40641e1ed5d3"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/initial_missing_source.json": {
+      "bytes": 214,
+      "sha256": "5ea5141b96a43d75600824250c3a3d5b1aa0223852bafa2c8f4c7b9bfdc95078"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/input_inventory.json": {
+      "bytes": 38641,
+      "sha256": "6daa0a22f792e8bc8ebd6150c3199a4a5eb7210a2dac36cecd1bb2194a35d526"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/inventory.py": {
+      "bytes": 10262,
+      "sha256": "b60505e5afd4c9963cccd054b8dab672717a23136ad30f178d097686ad049088"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/product_scope_inventory.csv": {
+      "bytes": 7325,
+      "sha256": "7391a1db3512858aebd40351b598a9c2c6f9736b4ec86f68c080030f4fe618ed"
+    }
+  },
+  "new_qualification": false,
+  "financial_attempts": 0,
+  "model_fits": 0
+}

@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py", line 231, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py", line 230, in main
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',required=True);print(json.dumps(execute(parser.parse_args()),ensure_ascii=False))
+                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py", line 214, in execute
+    events,calendar,diagnostics,inputs,protocol=load_inputs()
+                                                ^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py", line 198, in load_inputs
+    events,diagnostics=build_events(features,audit,calendar)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py", line 77, in build_events
+    if (known&~ready).any() or (ready&~observed).any():raise ValueError('invalid readiness')
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid readiness

@@ -1,0 +1,68 @@
+{
+  "arm": "SHUFFLED",
+  "cutoff": "2023-01-01",
+  "elapsed_seconds": 0.8538072079536505,
+  "fit_id": "2023_holdout_1_SHUFFLED",
+  "head_dimension": 53,
+  "held_family_group": 1,
+  "max_label_known_date": "2022-12-30",
+  "max_u_date": "2022-12-29",
+  "model": {
+    "bytes": 47552,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2023_holdout_1_SHUFFLED/model.joblib",
+    "sha256": "4ff4ffd6f6e5437fad1d46657c068604f2d5564dc09413e00f8b0136f93164a4"
+  },
+  "next_cutoff_exclusive": "2026-01-01",
+  "portable_model": {
+    "bytes": 266497,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2023_holdout_1_SHUFFLED/portable_model.json",
+    "sha256": "07033c92d17980ff35f23ccfabfd5421405a14c1577132ed9fadd123bf68e86b"
+  },
+  "prediction_rows": 42893,
+  "scaler": {
+    "bytes": 4791,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2023_holdout_1_SHUFFLED/scaler.json",
+    "sha256": "f768f7db04a08d8a19472f13aef58667e5873f7e97cd4d4cf2343bdd99b390d7"
+  },
+  "scope": "holdout_1",
+  "training_dates": 3139,
+  "training_family_ids": [
+    "CFFEX.IC",
+    "CFFEX.IH",
+    "CFFEX.TF",
+    "CZCE.ER",
+    "CZCE.FG",
+    "CZCE.LR",
+    "CZCE.MA",
+    "CZCE.PF",
+    "CZCE.PK",
+    "CZCE.RO",
+    "CZCE.RS",
+    "CZCE.WS",
+    "DCE.B",
+    "DCE.CS",
+    "DCE.EB",
+    "DCE.FB",
+    "DCE.I",
+    "DCE.JM",
+    "DCE.PG",
+    "DCE.RR",
+    "DCE.V",
+    "INE.BC",
+    "INE.LU",
+    "SHFE.AG",
+    "SHFE.CU",
+    "SHFE.FU",
+    "SHFE.HC",
+    "SHFE.RU",
+    "SHFE.SN",
+    "SHFE.WR"
+  ],
+  "training_ids_sha256": "fddcca6123ef5b4c5570b66c1afcc54649dc423b382fd80444d80047fe2d174e",
+  "training_rows": 40209,
+  "training_weights": {
+    "bytes": 3805502,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2023_holdout_1_SHUFFLED/training_weights.csv.gz",
+    "sha256": "955c791f13e220b36a521ab3a7a77ba78925bfb79b450960a06a76085d408b31"
+  }
+}

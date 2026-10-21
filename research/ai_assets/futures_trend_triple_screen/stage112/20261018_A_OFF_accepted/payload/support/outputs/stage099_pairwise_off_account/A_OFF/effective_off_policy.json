@@ -1,0 +1,10 @@
+{
+  "eight_key_policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+  "fallback": "metadata_sorted_product_insertion_order",
+  "model_fits": 0,
+  "model_loads": 0,
+  "model_predictions": 0,
+  "rank_protection": false,
+  "schema": "stage065_disabled_pairwise_policy_v1",
+  "status": "disabled_by_shared_pairwise_free_policy"
+}

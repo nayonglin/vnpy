@@ -1,0 +1,78 @@
+{
+  "actual_model_fit_calls": 0,
+  "actual_research_cash_accounts": 0,
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage062_eia_event_cash_compare.py",
+    "-v"
+  ],
+  "created_at_utc": "2026-10-18T07:21:14.687633+00:00",
+  "fresh_output_rejected_before_source_read": true,
+  "goal_complete": false,
+  "increased_bet_qualified": false,
+  "narrow_stop_qualified": false,
+  "native_source_queries": 0,
+  "new_synthetic_green": {
+    "bytes": 1214,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_cash_preflight/new_synthetic_green.log",
+    "sha256": "b2c13d0f4755b01f8f1eb103c591a1033c61b64b34e4ef55822c09a556745393"
+  },
+  "observed_red": {
+    "bytes": 405,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_cash_preflight/observed_red_receipt.json",
+    "sha256": "c0d430a75b770331e0a4fa3687d24d0fa3403133d0c7779628e0f7d14d44ee6d"
+  },
+  "old_suite_not_run": true,
+  "production_qualified": false,
+  "ready_for_actual_cash": false,
+  "reason": "complete060/actual061 manifests, root-issued twelve-account/one-SQL authorization and final independent source review required",
+  "research_judgment": "Fixed EIA report-event information test has value; no new search, but repeated history and unknown payoffs limit confidence.",
+  "schema": "stage062_eia_cash_preflight_v1",
+  "source": {
+    "bytes": 34254,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage062_eia_event_cash_compare.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "experiment_source",
+    "sha256": "2885b980dac69e503c2f14c51d1f42c4a17e05b0c80cfd0d8af7a01dc5fec32a"
+  },
+  "source_availability": {
+    "actual_cash_accounts": 0,
+    "actual_fit_calls": 0,
+    "bridge_use": "only042 load_all_inputs market/economics, never old model/score/action",
+    "market_economics_bridge": {
+      "bytes": 11987,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage052_maturity_information_cash_protocol/protocol.json",
+      "sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c"
+    },
+    "mutable_execution_ledger_is_not_training_contract": true,
+    "mutable_execution_ledger_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/execution_ledger.json",
+    "native_source_queries": 0,
+    "protocol": {
+      "bytes": 7162,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+      "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158"
+    },
+    "source_import_manifest": null,
+    "source_import_manifest_exists": false,
+    "source_import_status": "not_yet_complete"
+  },
+  "status": "implementation_tests_passed_inputs_pending",
+  "synthetic_account_runner": "stub only, twelve independent cells; no ref.run_cash_account invocation",
+  "synthetic_exit_code": 0,
+  "synthetic_tests": 5,
+  "tests": {
+    "bytes": 7671,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage062_eia_event_cash_compare.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "new_behavior_contract_tests",
+    "sha256": "89a744ea4cce5afe225f0772dd36714c8bca87db024a295c94991856292f82e9"
+  }
+}

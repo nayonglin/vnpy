@@ -1,0 +1,37 @@
+{
+  "schema": "stage109_runtime_implementation_receipt_v1",
+  "recorded_at": "2026-10-18T07:57:08.188186+08:00",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime_launcher.py": {
+      "sha256": "544809b18c6e8d1d74efd708cfec600b781b97da6bebd95d9e340e077f0ad93c",
+      "bytes": 12742
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime/sitecustomize.py": {
+      "sha256": "ba9ae3352dd5c20cf6f6a6e7c09de5dda174f1cb397c5f9c8fd460557f112bc5",
+      "bytes": 628
+    }
+  },
+  "test_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage109_provider_runtime.py": {
+      "sha256": "1ab6480cd70009f1bf618878700accab6ca7bab9afd52b472f91ea74fc055a08",
+      "bytes": 5157
+    }
+  },
+  "red_exit": 1,
+  "red_failures": 1,
+  "red_errors": 0,
+  "green_exit": 0,
+  "green_tests": 1,
+  "selected_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/135a5225518b47e88464a4d44da262c9/manifest.json",
+    "sha256": "007d37dff4850a5b6667d9d5b986b47ca983fbd97ebc087165b8fd86a2466516"
+  },
+  "startup_failure_returncode": 78,
+  "financial_runs": 0,
+  "provider_packets_created": 0,
+  "network_calls": 0,
+  "credentials_read": false,
+  "full_sdk_preflight_completed": false,
+  "independent_review": false,
+  "production_qualified": false
+}

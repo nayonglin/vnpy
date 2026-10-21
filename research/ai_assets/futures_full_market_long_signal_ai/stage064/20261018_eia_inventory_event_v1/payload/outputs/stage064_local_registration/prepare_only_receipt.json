@@ -1,0 +1,29 @@
+{
+  "schema": "stage064_prepare_only_receipt_v1",
+  "status": "ready_wait_final_inputs_and_explicit_root_authorization",
+  "helper": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage064_local_registration/prepare_and_register.py",
+    "sha256": "7f47de580624c69dbff19c9454c9d7649500c7dcfb5169accd7fa7e260b701e9",
+    "bytes": 17468,
+    "syntax": "AST_passed_no_helper_execution"
+  },
+  "stable_contract_count": 4,
+  "accepted_dependency_archives": 3,
+  "accepted_dependency_payload_references": 23,
+  "accepted_dependency_bytes_not_copied": 185811799,
+  "old_payload_full_hashes_repeated": false,
+  "archive_destination_exists": false,
+  "index_unchanged": true,
+  "index_sha256": "af565e1b742097391f12a19c7156799f13faefcf83ee0bcf4faf763d78a73fe2",
+  "half_actual_output_completion_claims": 0,
+  "actual_helper_prepare_calls": 0,
+  "register_calls": 0,
+  "git_add": false,
+  "new_downloads": 0,
+  "new_fits": 0,
+  "new_SQL": 0,
+  "new_cash_replays": 0,
+  "commit": false,
+  "push": false,
+  "production": false
+}

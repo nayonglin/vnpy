@@ -1,0 +1,101 @@
+{
+  "schema": "stage005_opportunity_independent_review_v1",
+  "issued_at": "2026-10-18T11:20:52.276904+08:00",
+  "reviewer": "ai_label_validation",
+  "independent_review": true,
+  "status": "accepted_fixed_source_catalog_calendar_long_observation_only",
+  "severity": {
+    "Critical": 0,
+    "Important": 0,
+    "Minor": 0
+  },
+  "accepted_code": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage004_product_day_opportunities.py",
+      "sha256": "a6093f91c30fe835f3ddd84882a074f7b13185ef36013d2ed6f41a0e9ee8f8af",
+      "bytes": 20441
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage004_product_day_opportunities.py",
+      "sha256": "f9357a8fc03ae90f310665b33578f023ad273e6796c87bbe3efa746c41edcd64",
+      "bytes": 10786
+    }
+  ],
+  "accepted_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json",
+    "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003",
+    "bytes": 257576
+  },
+  "accepted_actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/actual_terminal.json",
+    "sha256": "a72b06d9dcfab8e6e41261cc35d1e5dcb8c53762a28741463412b7c9f7da447b",
+    "bytes": 1400
+  },
+  "accepted_panel": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/product_day_opportunities.csv.gz",
+    "sha256": "8c6fc733cb14bb2ceb7573735d11f26e8885efd7cfce0d7be5232a3b3910a9ce",
+    "bytes": 24166354
+  },
+  "counts": {
+    "panel_rows": 399252,
+    "no_accepted_observation": 186400,
+    "observed_long_research_opportunity": 212852
+  },
+  "special_counts": {
+    "missing_open_oi_reference": 117995,
+    "train_false_reference": 117995,
+    "legacy_false_reference": 117995,
+    "last_u_observed": 85,
+    "F_reference_days": 702,
+    "DCE.S.empty": 4074
+  },
+  "actual_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/actual_review_checks.json",
+    "sha256": "8867dbb315a422e928abe40d6147ce99dd6a30bfe67abce1369d7020c655ca2f",
+    "bytes": 14562
+  },
+  "review_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/review_actual.py",
+    "sha256": "f968f30433c42187f4ac6c72a702d59d5328a3ed0cbbb05a771f8a06069c9549",
+    "bytes": 14622
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1119_stage005_opportunity_independent_review.md",
+    "sha256": "51eba4d5641776c11d36b601a32f3beea59d02bda068da49572c3291b8b360e0",
+    "bytes": 8771
+  },
+  "tool_terminal": {
+    "chunk": "7013d0",
+    "exit_code": 0,
+    "wall_seconds": 5.141655542
+  },
+  "author_terminal_trusted_root_handoff": {
+    "stage002_terminal_chunk": "49e768",
+    "stage004_session_id": 82511,
+    "stage004_terminal_chunk": "1249a2",
+    "exit_code": 0
+  },
+  "DB_full_hash_recomputed": false,
+  "SQL_product_days": 19,
+  "SQL_source_rows": 105,
+  "financial_ready": false,
+  "label_ready": false,
+  "model_ready": false,
+  "production_qualified": false,
+  "publication_pit_certified": false,
+  "limitations": [
+    "Complete fixed six-exchange source catalog, not independently certified all historical exchange listings.",
+    "Full panel identity/status/counters and finite SQL maxV/OI/epoch/fields; inherited Stage266 price/unit accuracy, not every current representative re-priced.",
+    "Observed long reference is neither an executable trade nor mature label or independent sample."
+  ],
+  "financial_runs": 0,
+  "native_runs": 0,
+  "model_fits": 0,
+  "provider_connections": 0,
+  "network_calls": 0,
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/actual_terminal.json",
+    "sha256": "0f83b8ea81a88ad963e00a5c1c5f7413b0df2c0c388391eb86538a5eb88f41e0",
+    "bytes": 1218
+  }
+}

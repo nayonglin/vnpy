@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage106_independent_off_account_review.py",
+    "--audit",
+    "--arm",
+    "A_OFF",
+    "--completion-evidence",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+    "--completion-evidence-sha256",
+    "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 7.568858916987665,
+  "stage106_full_audit_invocations": 1,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "source_sha256": "6688020ff61a6b14ae2cc0ce158c7f54cf2692d1696b53a525596c76ec4f4b49",
+  "independent_reader_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage107_date_reader_independent_review/review_receipt.json",
+    "sha256": "5987f37d8ca3320b65906081b51549d91394037c1837b4968e267ce67a1b1123"
+  }
+}

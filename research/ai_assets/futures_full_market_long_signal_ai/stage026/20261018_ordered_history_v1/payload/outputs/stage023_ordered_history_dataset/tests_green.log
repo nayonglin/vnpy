@@ -1,0 +1,11 @@
+test_build_only_reads_u_window_and_preserves_unknown_ready (__main__.SequenceTests.test_build_only_reads_u_window_and_preserves_unknown_ready) ... ok
+test_canonical_bag_moves_complete_tuples_after_storage_quantization (__main__.SequenceTests.test_canonical_bag_moves_complete_tuples_after_storage_quantization) ... ok
+test_formula_uses_previous_twenty_volume_and_flat_location (__main__.SequenceTests.test_formula_uses_previous_twenty_volume_and_flat_location) ... ok
+test_parent_summary_conflict_fails_instead_of_silently_changing_input (__main__.SequenceTests.test_parent_summary_conflict_fails_instead_of_silently_changing_input) ... ok
+test_storage_is_quantized_little_endian_ordered_only (__main__.SequenceTests.test_storage_is_quantized_little_endian_ordered_only) ... ok
+test_window_rejects_cross_epoch_short_and_source_calendar_gap (__main__.SequenceTests.test_window_rejects_cross_epoch_short_and_source_calendar_gap) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.022s
+
+OK

@@ -1,0 +1,9 @@
+{
+  "schema": "stage138_actual_terminal_v1",
+  "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage138_ema_daily_input_inventory/inventory.py",
+  "chunk_id": "25dc9b",
+  "wall_time_seconds": 1.7532922499999999,
+  "exit_code": 0,
+  "original_token_count": 155,
+  "output": "{\"status\": \"finite_inventory_complete_no_new_qualification\", \"database_sha256\": \"273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54\", \"aggregate\": {\"rows\": 116394, \"contracts\": 533, \"dates\": 1786, \"first\": \"2019-06-03 00:00:00\", \"last\": \"2026-10-14 00:00:00\", \"null_ohlcv\": 0, \"invalid_ohlc\": 0, \"negative_volume\": 0, \"zero_volume\": 1468, \"non_midnight\": 0}, \"duplicate_keys\": 0, \"metadata_contracts\": 806, \"exact_stage013_keys\": 4500, \"calendar_matches\": true, \"samples_equal\": true, \"carry_exclusions_absent\": true, \"inventory_sha256\": \"01d8c0bd0aae3a15326fca2173d193da36d471cd96e5d5af0415cbac210d42a4\"}\n"
+}

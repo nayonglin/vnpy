@@ -1,0 +1,18 @@
+{
+  "schema": "stage137_real_unchanged061_loader_acceptance_v1",
+  "completed_at": "2026-10-18T10:03:11.146607+08:00",
+  "loader_calls": 1,
+  "passed": true,
+  "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/manifest.json",
+  "manifest_sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a",
+  "review_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_receipt.json",
+  "review_sha256": "b3fbb16d219484bdac9329e6c4f12db18a3b762de3adbea7b79710c79f8dee68",
+  "rows": 36391,
+  "full_keys": 36345,
+  "anchor_keys": 36391,
+  "source_bindings_checked_by_unchanged_loader": 2789,
+  "financial_model_provider_network_guard_readiness_runs": 0,
+  "append_or_market_loader_called": false,
+  "frozen_numerical_runtime": true,
+  "runtime_OUTPUT_redirected_to_reviewer_temporary": true
+}

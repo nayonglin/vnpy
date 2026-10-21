@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "test_stage106_independent_off_account_review.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days",
+    "-v"
+  ],
+  "cwd": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools",
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days (test_stage106_independent_off_account_review.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days) ... FAIL\n\n======================================================================\nFAIL: test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days (test_stage106_independent_off_account_review.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage106_independent_off_account_review.py\", line 27, in test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days\n    self.assertEqual(int(candidates.date.eq(normalized.signal_date.iloc[0]).sum()),1)\nAssertionError: 0 != 1\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nFAILED (failures=1)\n",
+  "financial_replays": 0,
+  "account_loads": 0
+}

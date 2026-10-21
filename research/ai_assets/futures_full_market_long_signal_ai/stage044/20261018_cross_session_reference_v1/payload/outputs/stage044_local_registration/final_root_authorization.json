@@ -1,0 +1,19 @@
+{
+  "schema": "stage044_final_root_authorization_v1",
+  "recorded_at": "2026-10-18T13:50:17+08:00",
+  "authorized_by": "root",
+  "scope": "One Stage044 register_experiment_artifacts call and exact git add of new research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1 only",
+  "stage044_decision_sha256": "21bc9c04e9fd61e9843a0ddae072083bb6489bdc749979309ce57b8a3897e115",
+  "final_inventory042_sha256": "3122117255105d153d45eb6c801df2288ca73c88dcec8c6e74178aa6fb0db9a8",
+  "final_inventory043_sha256": "efd06e85feaa84cb58c9a6bc3529b149e25d494b186b41babce548fc91998f65",
+  "forbidden": [
+    "commit",
+    "push",
+    "reset unrelated index",
+    "production changes",
+    "raw audit copies",
+    "DB/OHLC/old raw004 copies"
+  ],
+  "retain_prepare_history_separately": true,
+  "source_and_tests_required_role": "feature_contract"
+}

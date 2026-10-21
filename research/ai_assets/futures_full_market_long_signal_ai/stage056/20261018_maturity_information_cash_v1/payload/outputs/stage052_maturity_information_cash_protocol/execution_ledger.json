@@ -1,0 +1,113 @@
+{
+  "schema": "stage052_execution_ledger_v1",
+  "head_at_plan_start": "4f42805c2c71f8492a44a6876a82672f410f44df",
+  "protocol_sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c",
+  "user_authorization": "autonomous full-market long research; no worktree/new branch; local-only scope",
+  "tasks": [
+    {
+      "id": "053",
+      "agent": "maturity_fit_impl",
+      "status": "actual_completed_27_fits",
+      "files": [
+        "tools/stage053_maturity_information_fit.py",
+        "tools/test_stage053_maturity_information_fit.py"
+      ],
+      "self_consistency": "26common+26missing+1q=53; 3cutoffs*3scopes*3arms=27 fit; tests cover maturity/family/weights/scalers/full prediction domain"
+    },
+    {
+      "id": "054",
+      "agent": "maturity_cash_impl",
+      "status": "actual_completed_12_accounts",
+      "files": [
+        "tools/stage054_maturity_cash_compare.py",
+        "tools/test_stage054_maturity_cash_compare.py"
+      ],
+      "self_consistency": "3arms*2starts*2cost=12; tests cover score-only intents, cash dates, shared CI and insolvency; 0fit"
+    },
+    {
+      "id": "055",
+      "agent": "maturity_experiment_review",
+      "status": "actual_independent_review_completed_once_no_remaining_findings",
+      "self_consistency": "no training/replay/nativeSQL; independent saved model predictions, weights/scalers and complete cash arithmetic/statistics"
+    }
+  ],
+  "interfaces": [
+    {
+      "pair": [
+        "053",
+        "054"
+      ],
+      "producer": "complete053 manifest with052 SHA, full2020+main and held predictions",
+      "consumer": "054 main scores only affect potential; full049reference persists; held only identified-domain diagnostic",
+      "finding": "consistent; actual054 begins only after053 complete manifest is root-bound"
+    },
+    {
+      "pair": [
+        "053",
+        "055"
+      ],
+      "producer": "fit IDs/intervals/weights/scalers/models/portable tree nodes/fullpreds",
+      "consumer": "independent mature split/weight/scaler reconstruction and vector node replay; no refit",
+      "finding": "consistent; learning_rate already represented in stored node values, fixture checks required"
+    },
+    {
+      "pair": [
+        "054",
+        "055"
+      ],
+      "producer": "12 full ledgers, all summary and common circular-bootstrap indices/distribution; bounded native cases",
+      "consumer": "independent finance/CI recomputation; no strategy replay or secondSQL",
+      "finding": "consistent; conditional held diagnosis explicitly not full-cohort value/cash"
+    }
+  ],
+  "counts": {
+    "actual_fit_tasks_started": 1,
+    "actual_fit_calls": 27,
+    "actual_fit_tasks_completed": 1,
+    "actual_cash_tasks_started": 1,
+    "new_cash_accounts": 12,
+    "native_SQL": 1,
+    "actual_cash_tasks_completed": 1,
+    "actual_independent_review_tasks_authorized": 1,
+    "actual_independent_review_tasks_completed": 1,
+    "cumulative_research_model_fits": 315,
+    "cumulative_research_cash_accounts": 30,
+    "fixture_model_fits_separate": 1
+  },
+  "current_phase": "053/054 actual once completed, 055 actual independent review accepted arithmetic and rejected information advantage; Stage056 local registration pending",
+  "commit": false,
+  "push": false,
+  "production": false,
+  "handles": {
+    "053": {
+      "session": 80656,
+      "initial_chunk": "9200bb",
+      "final_chunk": "b59176",
+      "exit_code": 0,
+      "manifest_sha256": "04268bb8c6f183139443b0e94d2eb51741c079d722c2987439fe37f81e085f8f"
+    },
+    "054": {
+      "session": 86733,
+      "initial_chunk": "a77ddd",
+      "terminal": true,
+      "final_chunk": "862021",
+      "exit_code": 0,
+      "manifest_sha256": "b3f07f6ecf931f11181a5c6e7bacabaa000f4ca9da081e71b0642320706e2b2d",
+      "terminal_sha256": "0590a30fac643638607f4efb844e1ecd2ed6a1ee00cc8e7f15af5359e67ea096"
+    },
+    "055": {
+      "session": 22602,
+      "exit_code": 0,
+      "elapsed_seconds": 84.91396316699684,
+      "review_receipt_sha256": "91764c7031eb3f910f95f8cde5da9bbc53112919910659ed0097a7e81175fc66",
+      "terminal_sha256": "0ae312686170f23e6bb41ff0acd877461a8c934a328d6cb08e1ad2cb55613805"
+    }
+  },
+  "root_decision": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1453_stage056_maturity_information_cash_decision.md",
+    "bytes": 14560,
+    "sha256": "d063ffaec2f71e93c430a4fa58f6cba76dc2bb12af696197242a18ae980c0ecf"
+  },
+  "goal_complete": false,
+  "production_qualified": false
+}

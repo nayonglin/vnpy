@@ -1,0 +1,30 @@
+{
+  "actual_fit_calls_completed": 6,
+  "actual_fit_calls_started": 6,
+  "elapsed_seconds": 21.63464266702067,
+  "error": null,
+  "exit_code": 0,
+  "goal_complete": false,
+  "mode": "actual",
+  "narrow_stop_or_increased_bet_qualified": false,
+  "native_source_queries": 0,
+  "new_cash_accounts": 0,
+  "production_qualified": false,
+  "source": {
+    "bytes": 29818,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "experiment_source",
+    "sha256": "7d61a8b5c309ad24881d9d36d0ffffe7f2ae39af4750b7d4130dbb316857503d"
+  },
+  "status": "completed",
+  "tests": {
+    "bytes": 11955,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "new_behavior_tests",
+    "sha256": "1ae5502ffaaf3f16b3c59ed563f49327fd65daa09727fc270bb7caf431974ae6"
+  }
+}

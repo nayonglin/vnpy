@@ -1,0 +1,33 @@
+{
+  "actual_model_fit_calls": 0,
+  "completed_research_cash_accounts": 12,
+  "computed_research_cash_accounts": 12,
+  "elapsed_seconds": 44.93054133298574,
+  "error": null,
+  "exit_code": 0,
+  "finished_at": "2026-10-18T07:52:52.078009+00:00",
+  "goal_complete": false,
+  "increased_bet_qualified": false,
+  "narrow_stop_qualified": false,
+  "native_source_queries": 1,
+  "production_qualified": false,
+  "source": {
+    "bytes": 34254,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage062_eia_event_cash_compare.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "experiment_source",
+    "sha256": "2885b980dac69e503c2f14c51d1f42c4a17e05b0c80cfd0d8af7a01dc5fec32a"
+  },
+  "started_at": "2026-10-18T07:52:07.147480+00:00",
+  "started_research_cash_accounts": 12,
+  "status": "completed",
+  "tests": {
+    "bytes": 7671,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage062_eia_event_cash_compare.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "new_behavior_contract_tests",
+    "sha256": "89a744ea4cce5afe225f0772dd36714c8bca87db024a295c94991856292f82e9"
+  }
+}

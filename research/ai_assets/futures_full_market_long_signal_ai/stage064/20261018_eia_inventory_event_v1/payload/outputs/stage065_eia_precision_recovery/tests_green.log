@@ -1,0 +1,10 @@
+test_only_original_arithmetic_rejections_restore_and_all_identities_survive (__main__.PrecisionRecoveryBehavior.test_only_original_arithmetic_rejections_restore_and_all_identities_survive) ... ok
+test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown (__main__.PrecisionRecoveryBehavior.test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown) ... ok
+test_raw_hash_drift_fails_before_recovery (__main__.PrecisionRecoveryBehavior.test_raw_hash_drift_fails_before_recovery) ... ok
+test_real_three_decimal_case_preserves_published_difference (__main__.PrecisionRecoveryBehavior.test_real_three_decimal_case_preserves_published_difference) ... ok
+test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered (__main__.PrecisionRecoveryBehavior.test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.003s
+
+OK

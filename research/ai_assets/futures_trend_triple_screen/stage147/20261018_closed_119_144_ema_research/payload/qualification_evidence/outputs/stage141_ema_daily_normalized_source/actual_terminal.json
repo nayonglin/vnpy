@@ -1,0 +1,9 @@
+{
+  "schema": "stage141_actual_terminal_v1",
+  "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage141_ema_daily_normalized_source/export_daily.py",
+  "chunk_id": "364151",
+  "wall_time_seconds": 1.611621875,
+  "exit_code": 0,
+  "original_token_count": 141,
+  "output": "{\"status\": \"pending_independent_source_review\", \"rows\": 116394, \"contracts\": 533, \"dates\": 1786, \"zero_volume_rows\": 1468, \"database_sha256\": \"273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54\", \"daily_sha256\": \"71dd740fb605e1ff8365fb6fc7236ab6d19f8d90a7f7be72c753d29733b7df5c\", \"exact_keys_sha256\": \"5e8493067d422c27ba7e4512dfbb30ea74de11193b46d0a71547940ed3f48317\", \"manifest_sha256\": \"96eea70a16b7a5715f697aaa06a4e34107e328109849ca573eba88be78cc8b90\", \"source_scalar_sha256\": \"60976debf28e9fd52d1ba596ce1590ca2a021b3507f99daeab62ae65d6fd52dd\"}\n"
+}

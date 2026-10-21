@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-18T10:11:42.442338+08:00",
+  "qualification": {
+    "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/review_and_build.py qualify",
+    "chunk_id": "c0a3e3",
+    "exit_code": 0,
+    "wall_time_seconds": 2.454928375,
+    "actual_attempts": 1,
+    "qualifier_sha256": "553b07a161a7b05cd1d161e541accbf8fcb489af0786af6a3bba2b02ce1ef592"
+  },
+  "feature_build": {
+    "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/review_and_build.py build",
+    "chunk_id": "8834c1",
+    "exit_code": 0,
+    "wall_time_seconds": 3.335035833,
+    "actual_attempts": 1,
+    "load_calls": 1,
+    "build_calls": 1,
+    "features_sha256": "d9d8fa958c5c52a329f977a5ee2fa6a146901608e6cc1fb53dd4d75d4d591245",
+    "feature_manifest_sha256": "3edc75693057d12cecffb5bddb7908d5e508f488dc18a08e36946488f3337c28"
+  },
+  "old_suite_author_unit_financial_native_training_provider_network_guard_runs": 0
+}

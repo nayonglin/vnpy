@@ -1,0 +1,82 @@
+[
+  {
+    "all_open_zero_ending_equity_difference": -7758.010000000009,
+    "contrast": "ALIGNED_minus_SHUFFLED",
+    "cumulative_log_growth_difference": -0.0075325784189956835,
+    "drawdown_percentage_point_difference": -0.02598517640992526,
+    "return_percentage_point_difference": -0.7758010000000093,
+    "scenario": "base",
+    "survival_failure": false,
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -7758.010000000009,
+    "contrast": "ALIGNED_minus_COMMON",
+    "cumulative_log_growth_difference": -0.0075325784189956835,
+    "drawdown_percentage_point_difference": -0.02598517640992526,
+    "return_percentage_point_difference": -0.7758010000000093,
+    "scenario": "base",
+    "survival_failure": false,
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -10563.50450000004,
+    "contrast": "ALIGNED_minus_SHUFFLED",
+    "cumulative_log_growth_difference": -0.011121197127511806,
+    "drawdown_percentage_point_difference": 0.03529774616578507,
+    "return_percentage_point_difference": -1.0563504499999983,
+    "scenario": "base",
+    "survival_failure": false,
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -10563.50450000004,
+    "contrast": "ALIGNED_minus_COMMON",
+    "cumulative_log_growth_difference": -0.011121197127511806,
+    "drawdown_percentage_point_difference": 0.03529774616578507,
+    "return_percentage_point_difference": -1.0563504499999983,
+    "scenario": "base",
+    "survival_failure": false,
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": 15072.342999999993,
+    "contrast": "ALIGNED_minus_SHUFFLED",
+    "cumulative_log_growth_difference": 0.015330843884692413,
+    "drawdown_percentage_point_difference": 0.9078783670817936,
+    "return_percentage_point_difference": 1.5072342999999933,
+    "scenario": "stress",
+    "survival_failure": false,
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": 15072.342999999993,
+    "contrast": "ALIGNED_minus_COMMON",
+    "cumulative_log_growth_difference": 0.015330843884692413,
+    "drawdown_percentage_point_difference": 0.9078783670817936,
+    "return_percentage_point_difference": 1.5072342999999933,
+    "scenario": "stress",
+    "survival_failure": false,
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -10492.01250000007,
+    "contrast": "ALIGNED_minus_SHUFFLED",
+    "cumulative_log_growth_difference": -0.011324983429235047,
+    "drawdown_percentage_point_difference": -0.13323145983486917,
+    "return_percentage_point_difference": -1.0492012500000092,
+    "scenario": "stress",
+    "survival_failure": false,
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -10492.01250000007,
+    "contrast": "ALIGNED_minus_COMMON",
+    "cumulative_log_growth_difference": -0.011324983429235047,
+    "drawdown_percentage_point_difference": -0.13323145983486917,
+    "return_percentage_point_difference": -1.0492012500000092,
+    "scenario": "stress",
+    "survival_failure": false,
+    "window_id": "cold_2023"
+  }
+]

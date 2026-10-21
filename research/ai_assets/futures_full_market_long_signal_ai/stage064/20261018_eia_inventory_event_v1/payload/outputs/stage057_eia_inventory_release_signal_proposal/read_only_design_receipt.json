@@ -1,0 +1,69 @@
+{
+  "actual_cash_backtests": 0,
+  "actual_model_fits": 0,
+  "code_implementation": false,
+  "continue_new_single_information_test": true,
+  "continue_old_q": false,
+  "created_at": "2026-10-18T06:58:48.759009+00:00",
+  "design_only_planned_cash_accounts": 12,
+  "design_only_planned_model_fits": 6,
+  "existing_ledger_small_attribution": {
+    "ALIGNED_primary_base": {
+      "account_any_stale_source_days": 936,
+      "dominant_stale_epoch": "SHFE.WR.202301",
+      "first_stale": "2023-01-03",
+      "last_stale": "2026-10-16",
+      "stale_position_days": 915
+    },
+    "ALIGNED_primary_stress": {
+      "account_any_stale_source_days": 994,
+      "dominant_stale_epoch": "SHFE.WR.202210",
+      "first_stale": "2022-10-10",
+      "last_stale": "2026-10-16",
+      "stale_position_days": 975
+    }
+  },
+  "existing_position_days_attribution_passes": 1,
+  "goal_complete": false,
+  "independent_design_challenge": "Incorporated report publication, vintage, past-only sham and report clustering. Root corrected final scope to all family trading; 4 oil families diagnostic only; acknowledge whole-package effects.",
+  "line_id": "futures_full_market_long_signal_ai",
+  "minute_downloads": 0,
+  "native_SQL": 0,
+  "negative_control": "strictly earlier known scalar selected by report hash from previous52release cohort; no future temporal permutation; no same-bag claim",
+  "night_session_clock": "Wednesday22:30CN news cannot use Wednesday21:00 open labeled Thursday; Thursdayclose decision -> Thursdaynight/Fridaynativeopen",
+  "overfitting_assessment": "no new outcome-driven parameter search; historical repeated topic-selection risk remains",
+  "production_qualified": false,
+  "proposal": {
+    "bytes": 19999,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1456_stage057_eia_inventory_release_signal_proposal.md",
+    "raw_ohlc": false,
+    "role": "decision_asset",
+    "sha256": "8ec1ef71ffc4bfee59dace77ebb10b6ed746cbd093a87cdf2cc8cdb5270cfbb2"
+  },
+  "public_primary_sources": [
+    "https://www.eia.gov/petroleum/supply/weekly/archive/",
+    "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/wpsr_2011_08_03.html",
+    "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_01_03/wpsr_2020_01_03.php",
+    "https://www.eia.gov/petroleum/supply/weekly/schedule.php",
+    "https://www.nber.org/papers/w13249",
+    "https://www.sciencedirect.com/science/article/pii/S0140988316302110",
+    "https://github.com/ropensci/eia",
+    "https://www.eia.gov/opendata/documentation.php",
+    "https://www.federalreserve.gov/releases/h10/",
+    "https://fred.stlouisfed.org/docs/api/fred/realtime_period.html",
+    "https://github.com/mortada/fredapi/blob/master/fredapi/fred.py"
+  ],
+  "schema": "stage057_read_only_research_design_v1",
+  "scope_correction": {
+    "action": "every then-available family eligible at same report event u with history_ready20 and score>0",
+    "new_SQL": 0,
+    "new_backtests": 0,
+    "new_fits": 0,
+    "nonoil": "may trade; shared parameter reestimation is whole-model-package effect, not pure oil causality",
+    "oil_group": "INE.SC INE.LU SHFE.FU SHFE.BU are diagnostic only, not trading pool",
+    "prediction": "all2020+ mother rows retained",
+    "training": "all family mature report events; same row identities and weights for all3 arms"
+  },
+  "selected_direction": "three_component_EIA_physical_inventory_release_innovation_at_conservative_China_daily_decision_clock",
+  "status": "completed"
+}

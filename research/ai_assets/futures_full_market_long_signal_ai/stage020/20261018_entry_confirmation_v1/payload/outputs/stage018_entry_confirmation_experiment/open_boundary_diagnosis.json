@@ -1,0 +1,128 @@
+{
+  "schema": "stage018_open_boundary_diagnosis_v1",
+  "identified_rows": 194168,
+  "comparisons": {
+    "pandas_to_numeric": {
+      "normalized_mismatches": 3,
+      "raw_barrier_mismatches": 0,
+      "max_raw_difference": 2.930988785010413e-14,
+      "samples": [
+        {
+          "event_id": "stage004_product_day_long_v1_d518d42ab94612d7e580dd5d4553c423d678804bb1baca0626c94e0854cd8d81",
+          "accepted_state": "stop_only",
+          "accepted_lower": -1.2,
+          "normalized_lower": 0.5000000000002145,
+          "raw_lower": -1.2,
+          "h": 1.0000000000002254,
+          "l": -0.9999999999999412,
+          "c": 0.7000000000002146,
+          "raw_stop": true,
+          "norm_stop": false,
+          "raw_profit": false,
+          "norm_profit": false,
+          "raw_low_equals_stop": true,
+          "raw_high_equals_profit": false
+        },
+        {
+          "event_id": "stage004_product_day_long_v1_f34f2005b5a2992ab11d633438852503bb8740f4dee6623f3d8dfa4278a929f1",
+          "accepted_state": "profit_only",
+          "accepted_lower": 3.8,
+          "normalized_lower": 2.799999999999545,
+          "raw_lower": 3.8,
+          "h": 3.9999999999997726,
+          "l": 0.0,
+          "c": 2.9999999999995453,
+          "raw_stop": false,
+          "norm_stop": false,
+          "raw_profit": true,
+          "norm_profit": false,
+          "raw_low_equals_stop": false,
+          "raw_high_equals_profit": true
+        },
+        {
+          "event_id": "stage004_product_day_long_v1_62bb6d9b9272b410b3ce099505b873ae5716a1c66eeb9964cc98fa38ccd865ea",
+          "accepted_state": "profit_only",
+          "accepted_lower": 3.8,
+          "normalized_lower": 3.5894736842107493,
+          "raw_lower": 3.8,
+          "h": 3.999999999999737,
+          "l": -0.4210526315794708,
+          "c": 3.7894736842107495,
+          "raw_stop": false,
+          "norm_stop": false,
+          "raw_profit": true,
+          "norm_profit": false,
+          "raw_low_equals_stop": false,
+          "raw_high_equals_profit": true
+        }
+      ]
+    },
+    "python_float_roundtrip": {
+      "normalized_mismatches": 3,
+      "raw_barrier_mismatches": 0,
+      "max_raw_difference": 0.0,
+      "samples": [
+        {
+          "event_id": "stage004_product_day_long_v1_d518d42ab94612d7e580dd5d4553c423d678804bb1baca0626c94e0854cd8d81",
+          "accepted_state": "stop_only",
+          "accepted_lower": -1.2,
+          "normalized_lower": 0.5000000000002136,
+          "raw_lower": -1.2,
+          "h": 1.0000000000002238,
+          "l": -0.9999999999999396,
+          "c": 0.7000000000002136,
+          "raw_stop": true,
+          "norm_stop": false,
+          "raw_profit": false,
+          "norm_profit": false,
+          "raw_low_equals_stop": true,
+          "raw_high_equals_profit": false
+        },
+        {
+          "event_id": "stage004_product_day_long_v1_f34f2005b5a2992ab11d633438852503bb8740f4dee6623f3d8dfa4278a929f1",
+          "accepted_state": "profit_only",
+          "accepted_lower": 3.8,
+          "normalized_lower": 2.799999999999545,
+          "raw_lower": 3.8,
+          "h": 3.9999999999997726,
+          "l": 0.0,
+          "c": 2.9999999999995453,
+          "raw_stop": false,
+          "norm_stop": false,
+          "raw_profit": true,
+          "norm_profit": false,
+          "raw_low_equals_stop": false,
+          "raw_high_equals_profit": true
+        },
+        {
+          "event_id": "stage004_product_day_long_v1_62bb6d9b9272b410b3ce099505b873ae5716a1c66eeb9964cc98fa38ccd865ea",
+          "accepted_state": "profit_only",
+          "accepted_lower": 3.8,
+          "normalized_lower": 3.5894736842107147,
+          "raw_lower": 3.8,
+          "h": 3.9999999999997007,
+          "l": -0.421052631579467,
+          "c": 3.789473684210715,
+          "raw_stop": false,
+          "norm_stop": false,
+          "raw_profit": true,
+          "norm_profit": false,
+          "raw_low_equals_stop": false,
+          "raw_high_equals_profit": true
+        }
+      ]
+    }
+  },
+  "role": "qualification_evidence",
+  "reproducibility_required": true,
+  "raw_OHLC_saved": false,
+  "both_endpoints_python_float_roundtrip": {
+    "lower_mismatch_rows": 3,
+    "upper_mismatch_rows": 3,
+    "either_endpoint_rows": 3,
+    "max_normalized_absolute_difference": 1.7000000000002136,
+    "raw_barrier_endpoint_mismatches": 0,
+    "max_raw_barrier_absolute_difference": 0.0,
+    "all_changed_rows_exact_raw_barrier_equality": true
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "alpha": 1.0,
+  "coef": [
+    -0.11679483156487455,
+    0.009105183579337416,
+    -0.00396258160187554,
+    0.0,
+    0.0,
+    -0.050290648794240854,
+    -0.008659377393367617,
+    -0.008848854184849908,
+    0.0007796097892408034,
+    -0.017646315085791092
+  ],
+  "feature_names": [
+    "cost_z",
+    "distance_z",
+    "r1_z",
+    "cost_missing",
+    "distance_missing",
+    "r1_missing",
+    "external_missing",
+    "s_z",
+    "s_z*r1_z",
+    "s_z*distance_z"
+  ],
+  "fit_intercept": true,
+  "intercept": -0.20328191210127677,
+  "prediction_formula": "X @ coef + intercept",
+  "schema": "stage061_portable_ridge_v1",
+  "solver": "cholesky"
+}

@@ -1,0 +1,10 @@
+test_all_families_event_eligible_non_event_reference_retained_future_labels_ignored (test_stage062_eia_event_cash_compare.EIACashBehavior.test_all_families_event_eligible_non_event_reference_retained_future_labels_ignored) ... ok
+test_all_family_year_attribution_retains_inactive_cells_zero_and_oil_only_groups (test_stage062_eia_event_cash_compare.EIACashBehavior.test_all_family_year_attribution_retains_inactive_cells_zero_and_oil_only_groups) ... ok
+test_inventory_two_CIs_use_one_index_array_initial_day_log_and_no_bankruptcy_repair (test_stage062_eia_event_cash_compare.EIACashBehavior.test_inventory_two_CIs_use_one_index_array_initial_day_log_and_no_bankruptcy_repair) ... ok
+test_twelve_independent_cells_use_actual_arm_names_and_shared_complete_signals (test_stage062_eia_event_cash_compare.EIACashBehavior.test_twelve_independent_cells_use_actual_arm_names_and_shared_complete_signals) ... ok
+test_unknown_differential_exposure_cannot_be_given_invented_finite_R_bound (test_stage062_eia_event_cash_compare.EIACashBehavior.test_unknown_differential_exposure_cannot_be_given_invented_finite_R_bound) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.048s
+
+OK

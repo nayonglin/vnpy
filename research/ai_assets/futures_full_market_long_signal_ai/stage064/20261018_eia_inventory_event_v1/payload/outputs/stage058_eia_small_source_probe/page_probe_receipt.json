@@ -1,0 +1,36 @@
+{
+  "schema": "stage058_eia_three_page_source_probe_v1",
+  "status": "completed",
+  "started_at": "2026-10-18T07:00:34.956761+00:00",
+  "finished_at": "2026-10-18T07:00:55.609695+00:00",
+  "elapsed_seconds": 20.65269283397356,
+  "requests": [
+    {
+      "name": "archive",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/",
+      "error_type": "TimeoutError",
+      "error": "The read operation timed out",
+      "elapsed_seconds": 20.43102162500145
+    },
+    {
+      "name": "issue_20110803",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/wpsr_2011_08_03.html",
+      "error_type": "TimeoutError",
+      "error": "The read operation timed out",
+      "elapsed_seconds": 20.65156950004166
+    },
+    {
+      "name": "issue_20200103",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_01_03/wpsr_2020_01_03.php",
+      "error_type": "TimeoutError",
+      "error": "The read operation timed out",
+      "elapsed_seconds": 20.650886874995194
+    }
+  ],
+  "downloads_attempted": 3,
+  "model_fits": 0,
+  "cash_accounts": 0,
+  "native_sql": 0,
+  "raw_sources_copied_to_git": false,
+  "goal_complete": false
+}

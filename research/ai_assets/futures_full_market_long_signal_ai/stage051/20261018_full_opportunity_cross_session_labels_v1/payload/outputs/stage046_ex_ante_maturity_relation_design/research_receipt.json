@@ -1,0 +1,113 @@
+{
+  "schema": "stage046_readonly_information_relation_design_v1",
+  "recorded_at_CST": "2026-10-18 14:01",
+  "line_id": "futures_full_market_long_signal_ai",
+  "status": "design_recommendation_only_pending_root_protocol",
+  "recommendation": "only_off_query_same_exact_product_maturity_return_alignment",
+  "rejected_candidate": "OI_share_or_maturity_migration_as_directional_alpha",
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1401_stage046_ex_ante_maturity_relation_design.md",
+    "bytes": 13663,
+    "sha256": "ae2450f31dfa6e32ad696172c128413af736b1287890399b8fc6034dbbe7edf1"
+  },
+  "local_read_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/registry.md",
+      "bytes": 23739,
+      "sha256": "5a108f97531c9aaed370105f7c99e67b7e89c3255923194285a6786a891a6918"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "bytes": 19163,
+      "sha256": "7a09fd92af11ef087051d16df3424dd10a850943d8066451f5f475547a9318c3"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1111_stage002_full_market_input_inventory.md",
+      "bytes": 12238,
+      "sha256": "646ab3538576c38a7cc03e6dd9ee48cdb5bf06a71f8a2a1306882fde0664f962"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1108_stage003_product_day_opportunity_contract.md",
+      "bytes": 6430,
+      "sha256": "664a3210b666880b58d27c9ea31b0cfcc535572a0536f5b957867f1b87157bdf"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1314_stage038_cross_session_policy_mother_design.md",
+      "bytes": 14880,
+      "sha256": "769fddd904963fc7befc860fe5934221f6a361b041b2734e6bcd8a6618cf7edf"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1346_stage042_cross_session_cash_reference.md",
+      "bytes": 16971,
+      "sha256": "c7cbfaaece3fe3083415a4ac956cadd6d476e99e13d7861cdf9c4e627afb5c14"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rebuilt_c9_15w_optimization/stages/20260702_0103_stage073_term_structure_pit_audit.md",
+      "bytes": 18911,
+      "sha256": "d7177c65af6422b294fc8f238c3391daa4329fe9a02487290e4158019dc6423d"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rebuilt_c9_15w_optimization/stages/20260701_2058_stage053_contract_oi_share_daily_probe.md",
+      "bytes": 12471,
+      "sha256": "0c34025bf98e62497d51bd184a910e356a8314e015c270dc3a6c54fb2da1b278"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rebuilt_c9_15w_v2_optimization/stages/20260702_0944_stage043_failure_spectrum.md",
+      "bytes": 24442,
+      "sha256": "ee18213a2455d81277bd396a583e519a2e7f278852d21b72e12a4b4cb6fc1e9e"
+    }
+  ],
+  "primary_sources": [
+    {
+      "title": "Boons and Prado: Basis-Momentum",
+      "url": "https://run.unl.pt/server/api/core/bitstreams/de137e85-54fe-4a88-a186-70a421554812/content",
+      "role": "original_author_formula_and_risk_boundary_not_profit_transfer"
+    },
+    {
+      "title": "Bianchi et al: Exploiting the dynamics of commodity futures curves",
+      "url": "https://arxiv.org/abs/2308.00383",
+      "role": "original_author_curve_dynamics_question_not_NS_reimplementation"
+    },
+    {
+      "title": "Hong and Yogo: What Does Futures Market Interest Tell Us about the Macroeconomy and Asset Prices?",
+      "url": "https://www.nber.org/system/files/working_papers/w16712/revisions/w16712.rev1.pdf",
+      "role": "original_author_OI_mechanism_not_signed_orderflow"
+    },
+    {
+      "title": "Martijn Boons author homepage",
+      "url": "https://sites.google.com/site/martijnboons/",
+      "role": "author_publication_and_replication_pointer"
+    }
+  ],
+  "github_search_review": {
+    "url": "https://github.com/ddxmy/commodity-factor-replication",
+    "status": "read_third_party_repository_description_not_used_as_original_author_evidence_no_code_or_results_adopted",
+    "original_author_github_implementation_verified": false
+  },
+  "source_documents_downloaded_or_byte_archived": false,
+  "remote_content_sha256_claimed": false,
+  "implementation_files": 0,
+  "native_SQL": 0,
+  "new_dataset_builds": 0,
+  "fits": 0,
+  "financial_backtests": 0,
+  "historical_market_downloads": 0,
+  "tests_or_compile": 0,
+  "orders": 0,
+  "fixed_design_boundaries": {
+    "input": "accepted full real epoch daily source; query excluded; exact product; F not mixed",
+    "one_feature": "OLS gradient of same-epoch synchronous log-return against immutable nominal tenor, normalized by own existing ATR20/close",
+    "minimum_off_query_peers": 3,
+    "not_original_BM_formula": true,
+    "not_static_front_next_level_or_20_day_difference": true,
+    "not_cross_family_rho": true,
+    "common_support_and_bag_summary": true,
+    "fixed_negative_control_key": "stage046_maturity_relation_v1|product_id|u|epoch",
+    "shared_q_scaler": "same train ALIGNED and SHUFFLED pooled half weights",
+    "no_truth_from_snapshot": "historical reconstruction only, not vintage publication proof"
+  },
+  "production_qualified": false,
+  "AI_increment_demonstrated": false,
+  "narrow_stop_or_larger_bet_qualified": false,
+  "goal_complete": false
+}

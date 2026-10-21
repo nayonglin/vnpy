@@ -1,0 +1,145 @@
+{
+  "stage": 131,
+  "line_id": "futures_trend_triple_screen",
+  "recorded_at": "2026-10-18T09:37:00+08:00",
+  "scope": "Stage127 Task2 and Task4; independent native EMA pricing/strategy and two native integration combinations",
+  "fixture_only": true,
+  "financial_replays": 0,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "network_calls": 0,
+  "production_qualified": false,
+  "commands": [
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_strategy.py -v",
+      "phase": "Task2_RED",
+      "start_chunk": "9ae29f",
+      "session_id": 96658,
+      "terminal_chunk": "a2e85d",
+      "exit_code": 1,
+      "tests": 1,
+      "failures": 1,
+      "reason": "Explicit assertion that the independent native EMA adapter is absent. Numeric imports succeeded; font cache and TqSdk import banner were not used as RED proof."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_strategy.py -v",
+      "phase": "Task2_GREEN",
+      "start_chunk": "b5109f",
+      "session_id": 76953,
+      "terminal_chunk": "100590",
+      "exit_code": 0,
+      "tests": 1,
+      "elapsed_seconds": 0.062
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_engine.py -k test_real_gap_invalid_side_mother_and_cost -v",
+      "phase": "Task4_gap_RED",
+      "start_chunk": "7f6528",
+      "session_id": 29969,
+      "terminal_chunk": "084b31",
+      "exit_code": 1,
+      "tests": 1,
+      "subtest_failures": 2,
+      "reason": "Both real long/short initial fills reached the forbidden Stage827 abs diagnostic."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_engine.py -k test_real_dual_consumer_retry_and_unfilled_resource -v",
+      "phase": "Task4_dual_consumer_RED",
+      "start_chunk": "0f41c0",
+      "session_id": 68368,
+      "terminal_chunk": "8ce5fc",
+      "exit_code": 1,
+      "tests": 1,
+      "failures": 1,
+      "reason": "The actual lifetime holding consumer read high105 rather than the private post-entry high100."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage127_ema_limit_*.py' -v",
+      "phase": "first_combined_validation_oracle_failure",
+      "start_chunk": "cd7382",
+      "session_id": 8079,
+      "terminal_chunk": "7110e4",
+      "exit_code": 1,
+      "tests": 6,
+      "failures": 1,
+      "reason": "Five passed. Dual test's oracle incorrectly counted100->98 and103->98 as minus5 total rather than minus2 minus5=minus7. Native net_pnl was-683.94; mistaken oracle was-563.94. This is disclosed as an oracle error, not implementation RED."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p 'test_stage127_ema_limit_*.py' -v",
+      "phase": "final_combined_GREEN",
+      "start_chunk": "cbded0",
+      "session_id": 81042,
+      "terminal_chunk": "cc88d0",
+      "exit_code": 0,
+      "tests": 6,
+      "elapsed_seconds": 0.289
+    },
+    {
+      "command": "PYTHONPYCACHEPREFIX=/private/tmp/stage127_ema_limit_pycache .py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/{stage127_ema_limit_model.py,stage127_ema_limit_strategy.py,stage127_ema_limit_engine.py,test_stage127_ema_limit_model.py,test_stage127_ema_limit_strategy.py,test_stage127_ema_limit_engine.py}",
+      "phase": "compile_all_six",
+      "terminal_chunk": "9670c0",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "finite_evidence": {
+    "real_pricing_and_planner": {
+      "raw_signal_close": 99,
+      "limit_price": 100,
+      "stop_price": 95,
+      "size": 10,
+      "risk_per_contract": 50,
+      "margin_per_contract": 100,
+      "admitted_before": [22, 22, 22],
+      "final_after": [22, 3, 0],
+      "gross_prefixes": [0, 2200, 4400],
+      "reserves": [["AP.CZCE", 22], ["au.SHFE", 3]],
+      "reserved_margin": 2500,
+      "nonflat_add_margin_per_contract": 99,
+      "off_settings": "Exactly the original eight-key projection; formal spec remains unchanged; joblib/model runtime guarded."
+    },
+    "wrong_side_gap": {
+      "long_prices": [90, 88],
+      "short_prices": [110, 112],
+      "signed_risk_price": -5,
+      "actual_risk_amount": null,
+      "risk_per_contract": null,
+      "setup_consumptions_per_case": 1,
+      "native_fills_per_case": 2,
+      "retry_events": 0,
+      "mother_identity": "Same new mechanism/run/intent/native-order economic mother on both real TradeData objects.",
+      "cost_check": "Native strategy trade_costs_total and calculate_result commission+slippage equal sum of cost for each actual fill once; settled cash equals initial cash plus native net_pnl."
+    },
+    "dual_consumer_and_retry": {
+      "raw_first_ohlc": [103, 105, 99, 104],
+      "private_first_ohlc": [100, 100, 99, 100],
+      "holding_bar_ohl": [100, 100, 99],
+      "raw_frames_restored": true,
+      "ordinary_roll_context_unchanged": true,
+      "retry_prices": [100, 98, 103, 98],
+      "initial_R": 4,
+      "half_R_stop": 98,
+      "quantity_each_fill": 6,
+      "cost_once": 263.94,
+      "native_net_pnl": -683.94,
+      "unfilled_candidates": 2,
+      "resource_reservation_released": false,
+      "D_close_and_equity_poison": "D daily close/high=1000000 and estimated_equity=1 do not change u-frozen q/L/S."
+    }
+  },
+  "source_fingerprints": {
+    "tools/stage127_ema_limit_model.py": {"sha256": "6568f87ec74bebdb9afa730b3347c5eb52cdf31bd8f3ca3cc9208b1c55c2f7d6", "bytes": 17347},
+    "tools/stage127_ema_limit_strategy.py": {"sha256": "3aa45d2dba1495dc443d232c58aee8954f5858361516a7a3818270d1a0205ed0", "bytes": 29208},
+    "tools/stage127_ema_limit_engine.py": {"sha256": "1a8bc7412e4fd954591890b2ce0c9b2efd9e823c8e2bdc7a0bd22862356414f6", "bytes": 19696},
+    "tools/test_stage127_ema_limit_model.py": {"sha256": "b801b79205fa23e6ab0aa8b5a2827c848a0c79bf6608ccfdea2819e865783bce", "bytes": 12650},
+    "tools/test_stage127_ema_limit_strategy.py": {"sha256": "21ec96b22dcf3593e2dde24cef58d53c76c56db73a2051d37077550c0fc55d9d", "bytes": 12057},
+    "tools/test_stage127_ema_limit_engine.py": {"sha256": "7ef58d22a4d16a4c723694720a6c9f4fd3f3985586f4f27765eba2c66ecee7a7", "bytes": 15129}
+  },
+  "interface_supplement": "Root explicitly accepted a narrow update_trade override to copy audit identity from pre-fill context to actual initial/CLOSE/retry TradeData, then call super exactly once without changing economics.",
+  "remaining_limits": [
+    "These are finite component fixtures, not an account replay, alpha result or real-data qualification.",
+    "A future caller must bind u-qualified execution_tick, source/qualification hashes and an independent real run_id; fixtures use fixture-only.",
+    "Initial limit volume remains an all-or-none total-volume approximation with no queue proof.",
+    "Root still owns one overall independent review and all financial decisions."
+  ]
+}

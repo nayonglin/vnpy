@@ -1,0 +1,63 @@
+{
+  "arm": "ALIGNED",
+  "cutoff": "2020-01-01",
+  "elapsed_seconds": 0.6001472920179367,
+  "fit_id": "2020_holdout_1_ALIGNED",
+  "head_dimension": 53,
+  "held_family_group": 1,
+  "max_label_known_date": "2019-12-31",
+  "max_u_date": "2019-12-26",
+  "model": {
+    "bytes": 46880,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2020_holdout_1_ALIGNED/model.joblib",
+    "sha256": "39e5b7fe3ada4ca45fe59743a42a5ff96bb04cc4668b6ba9a46070c237d30e45"
+  },
+  "next_cutoff_exclusive": "2023-01-01",
+  "portable_model": {
+    "bytes": 272075,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2020_holdout_1_ALIGNED/portable_model.json",
+    "sha256": "ad0eb7d5f33f55412161b114062098f1212c6fe653eb1a372ac6d69bcf47650d"
+  },
+  "prediction_rows": 42952,
+  "scaler": {
+    "bytes": 4788,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2020_holdout_1_ALIGNED/scaler.json",
+    "sha256": "78795533fa37161d89b6cbc7600e6757d8ccaae981e3ebc2725828463b433ea0"
+  },
+  "scope": "holdout_1",
+  "training_dates": 2409,
+  "training_family_ids": [
+    "CFFEX.IC",
+    "CFFEX.IH",
+    "CFFEX.TF",
+    "CZCE.ER",
+    "CZCE.FG",
+    "CZCE.LR",
+    "CZCE.MA",
+    "CZCE.RO",
+    "CZCE.RS",
+    "CZCE.WS",
+    "DCE.B",
+    "DCE.CS",
+    "DCE.EB",
+    "DCE.FB",
+    "DCE.I",
+    "DCE.JM",
+    "DCE.RR",
+    "DCE.V",
+    "SHFE.AG",
+    "SHFE.CU",
+    "SHFE.FU",
+    "SHFE.HC",
+    "SHFE.RU",
+    "SHFE.SN",
+    "SHFE.WR"
+  ],
+  "training_ids_sha256": "99e39e92bc1fc90bcabf790faa09c09f6dc6096d7f6c9b39f2404e76f541253d",
+  "training_rows": 26390,
+  "training_weights": {
+    "bytes": 2501249,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/fits/2020_holdout_1_ALIGNED/training_weights.csv.gz",
+    "sha256": "740f4448a1324c74ea01503e595ddb96ea8cfd24805c9545832ae7230e8cb335"
+  }
+}

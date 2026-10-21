@@ -1,0 +1,22 @@
+{
+  "all_inputs_unchanged": true,
+  "driver_pid": 46179,
+  "driver_source_sha256": "73c8957f577908b322387aa65a547bd3dc25c6d40e211718bba99fa3f176a3b1",
+  "exit_code": 0,
+  "financial_replays": 0,
+  "fixture_only": false,
+  "model_fits": 0,
+  "new_daily_provider_connections": 0,
+  "new_minute_provider_connections": 1,
+  "new_provider_connections": 1,
+  "orders": 0,
+  "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+  "parent_receipt_sha256": "c8a3e2ad70514d42a87bfb2b5501a53f114617b6ad20f0d6080a6bd593efe823",
+  "preflight_sha256": "e3b9eeaa7f8339204ca437c2fdc017ecdeca1f1e5296074389019f3445cf7d98",
+  "provider_source_sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+  "request_sha256": "08dc30017c54bdee9ab526a211a9aaff65eddc228092cf287837db61408be772",
+  "schema": "stage087_provider_actual_tool_terminal_v1",
+  "subprocess_pid": 46372,
+  "subprocess_returncode": 0,
+  "terminal_observed": true
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "stage043_finite_economic_action_coverage_v1",
+  "independent_review": true,
+  "status": "coverage_closed",
+  "observed_rows": 212852,
+  "exact_economic_observed_rows": 212852,
+  "ready55_rows": 174435,
+  "potential_rows": 6389,
+  "potential_economics_unresolved": 0,
+  "unresolved_native_epochs": 18,
+  "unresolved_epoch_current_reference_rows": 0,
+  "D_buy_action_closure": [
+    {
+      "account_id": "base__full_2010",
+      "new_allocations": 4303,
+      "positive_D_actions": 991,
+      "BUY_fills": 991
+    },
+    {
+      "account_id": "base__primary_2020",
+      "new_allocations": 2877,
+      "positive_D_actions": 475,
+      "BUY_fills": 475
+    },
+    {
+      "account_id": "base__year_2020",
+      "new_allocations": 411,
+      "positive_D_actions": 99,
+      "BUY_fills": 99
+    },
+    {
+      "account_id": "base__year_2021",
+      "new_allocations": 448,
+      "positive_D_actions": 55,
+      "BUY_fills": 55
+    },
+    {
+      "account_id": "base__year_2022",
+      "new_allocations": 395,
+      "positive_D_actions": 57,
+      "BUY_fills": 57
+    },
+    {
+      "account_id": "base__year_2023",
+      "new_allocations": 422,
+      "positive_D_actions": 73,
+      "BUY_fills": 73
+    },
+    {
+      "account_id": "base__year_2024",
+      "new_allocations": 391,
+      "positive_D_actions": 52,
+      "BUY_fills": 52
+    },
+    {
+      "account_id": "base__year_2025",
+      "new_allocations": 374,
+      "positive_D_actions": 77,
+      "BUY_fills": 77
+    },
+    {
+      "account_id": "base__year_2026",
+      "new_allocations": 505,
+      "positive_D_actions": 62,
+      "BUY_fills": 62
+    },
+    {
+      "account_id": "stress__full_2010",
+      "new_allocations": 4560,
+      "positive_D_actions": 875,
+      "BUY_fills": 875
+    },
+    {
+      "account_id": "stress__primary_2020",
+      "new_allocations": 2957,
+      "positive_D_actions": 422,
+      "BUY_fills": 422
+    },
+    {
+      "account_id": "stress__year_2020",
+      "new_allocations": 413,
+      "positive_D_actions": 94,
+      "BUY_fills": 94
+    },
+    {
+      "account_id": "stress__year_2021",
+      "new_allocations": 461,
+      "positive_D_actions": 52,
+      "BUY_fills": 52
+    },
+    {
+      "account_id": "stress__year_2022",
+      "new_allocations": 399,
+      "positive_D_actions": 55,
+      "BUY_fills": 55
+    },
+    {
+      "account_id": "stress__year_2023",
+      "new_allocations": 438,
+      "positive_D_actions": 67,
+      "BUY_fills": 67
+    },
+    {
+      "account_id": "stress__year_2024",
+      "new_allocations": 405,
+      "positive_D_actions": 45,
+      "BUY_fills": 45
+    },
+    {
+      "account_id": "stress__year_2025",
+      "new_allocations": 375,
+      "positive_D_actions": 73,
+      "BUY_fills": 73
+    },
+    {
+      "account_id": "stress__year_2026",
+      "new_allocations": 512,
+      "positive_D_actions": 53,
+      "BUY_fills": 53
+    }
+  ],
+  "sql_queries": 0,
+  "strategy_replays": 0,
+  "model_fit_calls": 0,
+  "source_sha256": "e6aa535ca0fc014f3f17476351a50509c6f324fb43a287c4391087cceab8d9bc",
+  "started_at": "2026-10-18T13:45:15+08:00",
+  "finished_at": "2026-10-18T13:45:16+08:00",
+  "elapsed_seconds": 0.9752615840407088,
+  "limitations": [
+    "Metadata exact epoch identity is not proof of historical broker economics; static snapshot/fallback assumptions remain.",
+    "55 breakout is a reference policy only; future AI universe remains the full product-day mother table."
+  ]
+}

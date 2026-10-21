@@ -1,0 +1,52 @@
+{
+  "schema": "stage108_readonly_runtime_metadata_probe_v1",
+  "observed_at": "2026-10-18T07:49:29.604935+08:00",
+  "guard_source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py",
+  "guard_line": 27,
+  "runtime_path_source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py",
+  "runtime_path_line": 366,
+  "expected_sdk_version": "3.10.2",
+  "default_metadata_identity": {
+    "version": "3.10.2",
+    "type": "str",
+    "distribution_metadata_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk-3.10.2.dist-info",
+    "package_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk",
+    "tqsdk_imported": false
+  },
+  "after_exact_frozen_path_prepend": {
+    "version": "3.9.4",
+    "type": "str",
+    "distribution_metadata_path": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/tqsdk-3.9.4.dist-info",
+    "package_path": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/tqsdk",
+    "tqsdk_imported": false
+  },
+  "endpoint_env_expected_all_nonempty_false": true,
+  "endpoint_env": {
+    "TQ_AUTH_URL": {
+      "present": false,
+      "type": "NoneType",
+      "nonempty": false
+    },
+    "TQ_MD_URL": {
+      "present": false,
+      "type": "NoneType",
+      "nonempty": false
+    },
+    "TQ_INS_URL": {
+      "present": false,
+      "type": "NoneType",
+      "nonempty": false
+    },
+    "TQ_TD_URL": {
+      "present": false,
+      "type": "NoneType",
+      "nonempty": false
+    }
+  },
+  "credentials_read": false,
+  "SDK_imported": false,
+  "network_calls": 0,
+  "source_edits": 0,
+  "scope_deps_invoked": false,
+  "probe_scope": "standalone metadata resolution, exact frozen prepend reproduced; no provider retry"
+}

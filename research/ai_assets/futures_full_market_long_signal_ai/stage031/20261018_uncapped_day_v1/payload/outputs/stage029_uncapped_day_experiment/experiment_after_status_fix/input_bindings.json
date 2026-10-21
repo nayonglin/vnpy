@@ -1,0 +1,68 @@
+{
+  "audit_input_only": {
+    "bytes": 14637634,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/audit_paths.csv.gz",
+    "scope": "price_diagnostics_only_not_trainer_input",
+    "sha256": "a0ed32d19c102767bb789cdb1bab2ab28da1b714fa426ca1a368947b87ee6fef"
+  },
+  "feature_label_csv": {
+    "bytes": 51830368,
+    "columns": [
+      "event_id",
+      "product_id",
+      "product",
+      "exchange",
+      "u_date",
+      "reference_epoch",
+      "planned_execution_date",
+      "status",
+      "direction",
+      "family_id",
+      "feature_ready",
+      "history_state",
+      "r1_atr",
+      "r5_atr",
+      "r20_atr",
+      "body_atr",
+      "range_atr",
+      "close_location",
+      "gap_atr",
+      "compression5_20",
+      "log_volume_ratio20",
+      "breakout20_atr",
+      "atr_pct",
+      "market_lag_median_r1",
+      "market_lag_breadth",
+      "market_lag_iqr_r1",
+      "market_lag_missing",
+      "atr20",
+      "label_identified",
+      "label_state",
+      "label_known_date",
+      "path_ambiguous",
+      "gross_lower",
+      "gross_upper",
+      "proxy_lower",
+      "proxy_upper"
+    ],
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/feature_labels.csv.gz",
+    "rows": 399252,
+    "sha256": "9b2452fa5fc8bb0c97d702d0caffa2a2b22e46e38ea52ab4842c13d25f120a48"
+  },
+  "parent_manifest": {
+    "bytes": 88826,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e"
+  },
+  "parent_review": {
+    "bytes": 4493,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a"
+  },
+  "protocol": {
+    "bytes": 2687,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage028_uncapped_day_protocol/protocol.json",
+    "sha256": "5c2ed793c64f74d503e7a474a93e4885905087b087e7925756c8395eb35100f2"
+  },
+  "raw_prices_exported": false
+}

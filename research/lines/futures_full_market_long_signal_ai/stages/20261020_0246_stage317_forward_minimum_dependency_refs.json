@@ -1,0 +1,406 @@
+{
+  "schema": "stage317_forward_minimum_dependency_inventory_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "recorded_at": "2026-10-20T02:46:17.499152+08:00",
+  "scope": "read-only inventory; not a freeze, generator, qualification or actual authorization",
+  "new_fit": 0,
+  "new_cash": 0,
+  "SQL": 0,
+  "large_data_reads": 0,
+  "large_hashes": 0,
+  "old_program_imports": 0,
+  "prior_refs": {
+    "279": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261020_0110_stage279_frozen_common52_offset_interface_refs.json",
+      "bytes": 63046,
+      "sha256": "16cebc0b2d8290fac43976aca9a19845bf93179b313e1e39268b383425df9e6c"
+    },
+    "263": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261020_0018_stage263_cash_interface_inventory_refs.json",
+      "bytes": 25630,
+      "sha256": "83c840ac37a91f552796ce1bfc6a7ddbabf733f8429fc6816157edfe70569875"
+    },
+    "316": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261020_0237_stage316_historical_search_value_no_go.md",
+      "bytes": 9298,
+      "sha256": "939cff731cd9cab332a6a5f6c956d5baeae3d6c1b20bbe726249553083d27ed8"
+    }
+  },
+  "exact_existing_state": {
+    "original130_manifest": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage130_contract_choice_fit/actual_run1/manifest.json",
+      "bytes": 21264,
+      "sha256": "7798d9a38698397c23f82d5f8b21fe6ade8b88f7853cc64d21d033222cd6e1fc"
+    },
+    "fit_records": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage130_contract_choice_fit/actual_run1/fit_records.json",
+      "bytes": 13952,
+      "sha256": "971d6ac01f519230b6429129f926466cfa10d332595b9dcad1636499a6c9c1a9"
+    },
+    "latest_main": {
+      "scope": "main",
+      "cutoff": "2023-01-01",
+      "portable_model": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage130_contract_choice_fit/actual_run1/folds/main/2023-01-01/portable_model.json",
+        "bytes": 2787,
+        "sha256": "a9d3e60d70d3b0d30be3bcee49074131ef1be0ae1660dff3bbaa1bb1217330a4",
+        "check": "small_file_sha256_verified_against_original130_manifest"
+      },
+      "scaler": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage130_contract_choice_fit/actual_run1/folds/main/2023-01-01/scaler.json",
+        "bytes": 4680,
+        "sha256": "130ddae5588b257097a0e91fa7bceba1c86ae049cbab5849140369443fd47932",
+        "check": "small_file_sha256_verified_against_original130_manifest"
+      },
+      "coef_count": 52,
+      "intercept": -1.1014442064238599,
+      "all_parameters_finite": true,
+      "scaler_scales_finite_positive": true,
+      "feature_order_matches": true,
+      "common26_columns": [
+        "r1_atr",
+        "r5_atr",
+        "r20_atr",
+        "body_atr",
+        "range_atr",
+        "close_location",
+        "gap_atr",
+        "compression5_20",
+        "log_volume_ratio20",
+        "breakout20_atr",
+        "atr_pct",
+        "normalizer",
+        "peer_count",
+        "tenor_span_years",
+        "return_mean",
+        "return_std",
+        "return_min",
+        "return_max",
+        "front_next_basis_u",
+        "front_next_basis_prev",
+        "front_next_tenor_span_years",
+        "q_missing",
+        "front_next_missing",
+        "normalizer_missing",
+        "stress_u_cost_R",
+        "low20_distance_R"
+      ],
+      "design52_order": [
+        "r1_atr",
+        "r5_atr",
+        "r20_atr",
+        "body_atr",
+        "range_atr",
+        "close_location",
+        "gap_atr",
+        "compression5_20",
+        "log_volume_ratio20",
+        "breakout20_atr",
+        "atr_pct",
+        "normalizer",
+        "peer_count",
+        "tenor_span_years",
+        "return_mean",
+        "return_std",
+        "return_min",
+        "return_max",
+        "front_next_basis_u",
+        "front_next_basis_prev",
+        "front_next_tenor_span_years",
+        "q_missing",
+        "front_next_missing",
+        "normalizer_missing",
+        "stress_u_cost_R",
+        "low20_distance_R",
+        "r1_atr_missing",
+        "r5_atr_missing",
+        "r20_atr_missing",
+        "body_atr_missing",
+        "range_atr_missing",
+        "close_location_missing",
+        "gap_atr_missing",
+        "compression5_20_missing",
+        "log_volume_ratio20_missing",
+        "breakout20_atr_missing",
+        "atr_pct_missing",
+        "normalizer_missing",
+        "peer_count_missing",
+        "tenor_span_years_missing",
+        "return_mean_missing",
+        "return_std_missing",
+        "return_min_missing",
+        "return_max_missing",
+        "front_next_basis_u_missing",
+        "front_next_basis_prev_missing",
+        "front_next_tenor_span_years_missing",
+        "q_missing_missing",
+        "front_next_missing_missing",
+        "normalizer_missing_missing",
+        "stress_u_cost_R_missing",
+        "low20_distance_R_missing"
+      ],
+      "raw_missing_rule": "raw nonfinite standardized0 plus missing flag",
+      "units": "COMMON unchanged original2N",
+      "formula": "z_j=(x_j-mean_j)/scale_j if raw finite else 0; append 26 raw-nonfinite flags; score=dot(z52,coef52)+intercept; no fitting/recentering",
+      "joblib_optional": {
+        "bytes": 739,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage130_contract_choice_fit/actual_run1/folds/main/2023-01-01/model.joblib",
+        "sha256": "d26732ed10399ec54ecc02ae43ff160c55855409124b3757e61ac0cd89ce0e48",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 739,
+        "size_matches": true,
+        "mtime_ns": 1792331220988415124
+      },
+      "new_prediction_or_bitwise_parity_run": false
+    },
+    "policy_bindings": {
+      "156": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage156_voluntary_choices/actual_run1/manifest.json",
+        "bytes": 5587,
+        "sha256": "131bdcfb9cce00fa9292bf389fdbe44d6209be6ea7550b0aaee8c374f0dbef12"
+      },
+      "157": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage157_voluntary_cash/actual_run1/manifest.json",
+        "bytes": 72159,
+        "sha256": "0c27edef98e636032404272dda9e067e2794d7b7cf49e4ca5401b8b3ea34c7a4"
+      },
+      "execution_protocol": {
+        "bytes": 23194,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage128_contract_choice_protocol/protocol.json",
+        "sha256": "bbd24a6e352fe0fbc77f710eeee18918cc1b4670749339e4f3ae67632095efe0"
+      },
+      "dataset_manifest": {
+        "bytes": 9137,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage129_contract_choice_dataset/actual_run1/manifest.json",
+        "sha256": "6e9e1866b35d3742f57fc05c1718ddd3b31e1e36a9be62147c19e8fe282ccab5"
+      },
+      "voluntary_protocol": {
+        "bytes": 17348,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage155_voluntary_calendar_protocol/protocol.json",
+        "sha256": "7ec4f92b31b46b04e0a17812878acb7f6305c9c476f9350d84bb7d873fe11e47"
+      }
+    },
+    "minimal_source_bindings_inherited": {
+      "stage129_contract_choice_dataset.py": {
+        "bytes": 29265,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage129_contract_choice_dataset.py",
+        "sha256": "9888c1321e2242f06bf461806141326b88e113884fcf655040746e48c5e78035",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 29265,
+        "size_matches": true,
+        "mtime_ns": 1792330838952325583
+      },
+      "stage070_policy_kernel.py": {
+        "bytes": 20615,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage070_policy_kernel.py",
+        "sha256": "ad000624bd9722b3f1c580d622df2fc190330bac9e3c04011856085d56abcffe",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 20615,
+        "size_matches": true,
+        "mtime_ns": 1792312830163548541
+      },
+      "stage042_cross_session_experiment.py": {
+        "bytes": 50405,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+        "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 50405,
+        "size_matches": true,
+        "mtime_ns": 1792301853152828708
+      },
+      "stage130_contract_choice_fit.py": {
+        "bytes": 22053,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage130_contract_choice_fit.py",
+        "sha256": "f10b79f1c1db14af7a314795eeced2611d4de0402e1f5cae53ebaf4a43bc5d35",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 22053,
+        "size_matches": true,
+        "mtime_ns": 1792330767323248791
+      },
+      "stage131_contract_choice_cash.py": {
+        "bytes": 24411,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage131_contract_choice_cash.py",
+        "sha256": "fe807d6be84eb239303beffa569d8d47de6b29310b80849da6f75249e0d64a93",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 24411,
+        "size_matches": true,
+        "mtime_ns": 1792330866753393958
+      },
+      "stage131_contract_choice_kernel.py": {
+        "bytes": 15527,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage131_contract_choice_kernel.py",
+        "sha256": "85205ef9bc309a34283fc0082ac09c53d1f156ca788b8efe6bbd9743f5f430b5",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 15527,
+        "size_matches": true,
+        "mtime_ns": 1792330647501075166
+      },
+      "stage157_voluntary_cash.py": {
+        "bytes": 28964,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage157_voluntary_cash.py",
+        "sha256": "367d8202040fd30eb05b0070895c9a03706645446bd102c6d5de04f22824ba9b",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 28964,
+        "size_matches": true,
+        "mtime_ns": 1792344905014205083
+      }
+    },
+    "historical_market_only": {
+      "native_cache_manifest": {
+        "bytes": 948,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage132_contract_choice_review/cash_only1/native_store_cache.json",
+        "sha256": "130e340e8c91daadda7a6d9c5dc275c21c222114cfa19ca484bd89dd0eca2685",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 948,
+        "size_matches": true,
+        "mtime_ns": 1792332676417927749
+      },
+      "native_cache": {
+        "bytes": 110273488,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage132_contract_choice_review/cash_only1/native_store_cache.npz",
+        "sha256": "d2976090f9353b071eb62e28eca843b96b4a33a33a4233a508049cfeab9360b7",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 110273488,
+        "size_matches": true,
+        "mtime_ns": 1792332676342516874
+      },
+      "economic_projection": {
+        "bytes": 8146494,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+        "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 8146494,
+        "size_matches": true,
+        "mtime_ns": 1792301144266172208
+      },
+      "calendar": {
+        "bytes": 44824,
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+        "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 44824,
+        "size_matches": true,
+        "mtime_ns": 1792232433866964291
+      },
+      "native_database": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+        "bytes": 378552320,
+        "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+        "check": "stat_only_inherited_sha_not_rehashed",
+        "exists": true,
+        "current_bytes": 378552320,
+        "size_matches": true,
+        "mtime_ns": 1792236170627661666
+      }
+    },
+    "roster": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/product_roster.csv",
+      "exists": true,
+      "bytes": 9503,
+      "check": "stat_only_no_content_read",
+      "accepted_historical_products": 98,
+      "accepted_historical_families": 95,
+      "not_perpetual_all_market": true
+    }
+  },
+  "source_interfaces": {
+    "causal_features": {
+      "own11": "stage129_contract_choice_dataset.py:88 own11; 21 same-epoch valid source-calendar-consecutive bars, SMA20 TR normalizer",
+      "maturity13": "stage129_contract_choice_dataset.py:117 maturity_pool and :132 maturity13; same product, true YYYYMM, as-of u/past prices, exclude query from peers",
+      "final2": "stage129_contract_choice_dataset.py:369 stress_u_cost_R and low20_distance_R, original 2N units",
+      "Wilder_state": "stage042_cross_session_experiment.py:41 EpochSeries; first20TR seed then Wilder N recurrence, reset on invalid/source gap; retain prior N/run/lastclose and low20/window state or causal historical recomputation later",
+      "mother_anchor": "stage004_product_day_opportunities.py:145; largest positive u volume, then close OI tie, then epoch; full98 including unavailable and ordinary/F identity",
+      "not_generator": "stage129 action_stream couples simulate_action and future labels; do not call it as a future signal generator"
+    },
+    "selection": {
+      "call": "stage156_voluntary_choices.select_full_pool(mothers,scores,calendar,sample_end,audit_sink=None,strict_cutoff=True)",
+      "scope_cutoff": "future main/2023-01-01, unchanged fixed52",
+      "universe": "complete contemporaneous true-month actions and full mother domain, not persisted4365 selected IDs",
+      "gates": "original u eligibility, finite score>0, D<K before argmax; fixed tie/family priority",
+      "K": "K_target=calendar month preceding delivery YYYYMM first calendar day; K=first confirmed source-session>=target, not target itself",
+      "pending_K": "original156 permits proof D_date<K_target if actual D confirmed even when exact K pending; otherwise original unknown/blocked state, no invented calendar",
+      "signal_conversion": "stage157_voluntary_cash.make_voluntary_signals joins historical identities+choices then apply_boundaries; historical signal cache is not future generator"
+    },
+    "cash": {
+      "entry": "stage131_contract_choice_kernel.run_cash_account(...,policy=NARROW), original070 dependency; no312 allocator",
+      "inherited_policy": {
+        "initial_reference_equity": 1000000,
+        "single_family_risk": 0.0025,
+        "total_risk": 0.02,
+        "margin_cap": 0.25,
+        "margin_buffer": 1.1,
+        "NARROW_stop_N": 0.25
+      },
+      "costs": "unchanged accepted base/stress fee/slippage/economic mapping via original execution protocol and070/131; own ledger state per scenario, not score ranking",
+      "continuous_gap": "historical bounded run constructs empty ledger and end-bounds D preparation; not an implemented continuous prospective state/receipt loop",
+      "next_contract_must_freeze": "initial account state, pending intents, own-state persistence and actual u/D decision timing;317 does not choose a new policy"
+    }
+  },
+  "derivable_not_executed": [
+    "Portable fixed52 arithmetic can be restored without training data, normal equations or joblib unpickle.",
+    "Existing frozen historical OHLCV/N/low20/run state may seed causal warmup; not extracted or recomputed here.",
+    "Pure u-only feature/eligibility/mother generator can be extracted from original helpers without future labels; no such new adapter implemented/verified by317.",
+    "Original156 selection and157 boundary/cash handoff can be adapted to newly received u identities, retaining complete domain and unknowns; no new-date generation verified."
+  ],
+  "real_missing_for_forward": [
+    "Immutable final policy/input-contract freeze T0, not the317 inventory timestamp.",
+    "Authorized future full accepted true-month bar delivery and complete-source-day receipt with actual trading_date, completed_at, received_at, source/version/revision identity; no downloader/CTP setup requested.",
+    "As-of calendar with confirmed next source session D and its real opening deadline; target-date K must not masquerade as confirmed source-session K.",
+    "As-of exact-epoch economics (multiplier,tick,lot,fees,margin), lifecycle/catalog and units/quality metadata for newly observed identities; retain unknown rather than adjacent-month proxy.",
+    "Label-free causal new-u identity/full-domain feature/scoring/selection adapter, including close-OI anchor tie input and Wilder state continuity.",
+    "Continuous paper ledger/pending-intent and scenario own-state receipt interface with frozen initialization; existing historical bounded cash function is not this service.",
+    "Catalog first_seen and supported/unsupported/economics_unknown records for future newly listed products; historical98 is a fixed accepted closure, not an eternal all-market claim."
+  ],
+  "not_needed_for_model_recovery": [
+    "training CSV/weights/Y/labels",
+    "common26 large NPZ",
+    "historical child scores/actions/mothers",
+    "held models",
+    "normal_equations NPZ",
+    "historical signal4365 cache as generator",
+    "bootstrap indices/reporting CI",
+    "official C9 production activation manifests, CTP, mail, scheduler"
+  ],
+  "runtime": {
+    "python_executable": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "python_version": "3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)]",
+    "distribution_metadata_only": {
+      "numpy": "2.2.3",
+      "pandas": "2.2.3",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.6.1",
+      "joblib": "1.6.0",
+      "threadpoolctl": "3.7.0"
+    },
+    "old_programs_or_model_joblib_loaded": false,
+    "runtime_prediction_verified": false
+  },
+  "forward_evidence_rule": {
+    "earliest": "u source trading day completes strictly after final immutable freeze T0; actual input version and decision must be available and sealed before real D open",
+    "October19": "late acquisition of already completed 2026-10-19 is historical backfill, never forward",
+    "October20": "only earliest possible if its true source trading day completes after T0 and a valid decision precedes confirmed D open; no calendar/data availability asserted here",
+    "late_receipt": "no_forward_decision, no retroactive order/decision; do not backdate revised input knowledge"
+  },
+  "external_refs": [
+    {
+      "url": "https://scikit-learn.org/stable/model_persistence.html",
+      "role": "official persistence/input/environment contract principles; do not upgrade local1.6.1 to current website version"
+    },
+    {
+      "url": "https://github.com/scikit-learn/scikit-learn/blob/main/doc/model_persistence.rst",
+      "role": "maintainer source identity checked; visible browser extraction did not supply full rst, no additional claim"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "actual_fit_calls_completed": 0,
+  "actual_fit_calls_started": 0,
+  "actual_run_authorized_for_root_only": true,
+  "command": [
+    ".py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage053_maturity_information_fit.py",
+    "-v"
+  ],
+  "completed_at": "2026-10-18T06:37:52.236354+00:00",
+  "continuation_value": "yes: implementation evidence before one actual information experiment",
+  "exit_code": 0,
+  "fixture_log": {
+    "bytes": 4211,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_fit_preflight/fixture_tests_v2_held_scope.log",
+    "raw_ohlc": false,
+    "role": "qualification_evidence",
+    "sha256": "c3d235fe64eaf0217c990e2af3f6d61997e2c8f50c280d207eb62abb19ff228d"
+  },
+  "held_scope_correction": {
+    "failures": 1,
+    "green_exit_code": 0,
+    "new_actual_fits": 0,
+    "new_real_fixture_fits": 0,
+    "reason": "combined CSV retains original held0/1 scope for both-group diagnostics",
+    "red_observed": true
+  },
+  "native_source_queries": 0,
+  "new_cash_accounts": 0,
+  "one_time_real_fixture_characterization": {
+    "features": 53,
+    "fixed052_estimator": true,
+    "leaf_values_already_include_learning_rate": true,
+    "model_fit_calls": 1,
+    "observation": "passed in first implementation test run; disabled in subsequent default tests to prevent extra fits",
+    "portable_predict_max_abs_error_at_most": 1e-12,
+    "rows": 240,
+    "sklearn": "1.6.1",
+    "target": "0 for first120;4 for last120"
+  },
+  "overfitting_new_parameter_search": false,
+  "previous_preflight_fixture_log": {
+    "bytes": 4211,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_fit_preflight/fixture_tests.log",
+    "raw_ohlc": false,
+    "role": "qualification_evidence",
+    "sha256": "e3f89ce30b617fc209bea2024330d9c553d75793197e35378cf1aff0044afde6"
+  },
+  "protocol_sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c",
+  "research_reference_judgment": "Parent052 already researched official sklearn docs/source and PBO. Fixed one learner and identical three arms; no parameter search or alpha claim.",
+  "schema": "stage053_fit_preflight_v1",
+  "source": {
+    "bytes": 28619,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage053_maturity_information_fit.py",
+    "raw_ohlc": false,
+    "role": "experiment_source",
+    "sha256": "045168b069bddef62777a010277a8e7409ea094dc2ac57db33f81cd5b63c7c9b"
+  },
+  "status": "completed",
+  "synthetic_estimator_stub_calls_per_orchestration_test": 27,
+  "tdd_red_observed": {
+    "assertion_failures": 7,
+    "before_implementation": true,
+    "implementation_absent": true
+  },
+  "tests": {
+    "passed": 6,
+    "run": 7,
+    "skipped_once_only_real_characterization": 1
+  },
+  "tests_source": {
+    "bytes": 8135,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage053_maturity_information_fit.py",
+    "raw_ohlc": false,
+    "role": "contract_tests",
+    "sha256": "fee2f2a9cb9404af6c0c4d53f2dce385e54d7b80f9b23eb0db14f1acdd3b0362"
+  }
+}

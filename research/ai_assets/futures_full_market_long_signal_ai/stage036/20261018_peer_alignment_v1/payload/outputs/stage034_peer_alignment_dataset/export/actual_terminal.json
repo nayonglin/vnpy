@@ -1,0 +1,88 @@
+{
+  "actual_build_invocations": 1,
+  "command": [
+    "research/lines/futures_full_market_long_signal_ai/tools/stage034_peer_alignment_dataset.py",
+    "--protocol",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage033_peer_alignment_protocol/protocol.json",
+    "--protocol-sha256",
+    "6328b2429106028531916050982bcf57f033285366a745f2f08a29a308a2556b",
+    "--output",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export"
+  ],
+  "context_npz": {
+    "bytes": 24275877,
+    "columns": [
+      "market_lag_median_r1",
+      "market_lag_breadth",
+      "market_lag_iqr_r1",
+      "market_lag_missing",
+      "peer_count",
+      "rho_abs_sum",
+      "relation_missing",
+      "q_aligned",
+      "q_shuffled"
+    ],
+    "dtype": "<f8",
+    "keys": [
+      "main",
+      "holdout_0",
+      "holdout_1"
+    ],
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/contexts.npz",
+    "sha256": "ba38c6386d56c290f5dbaf3770b9db21c754e8e4f9185e32a9328c0ce45ab272",
+    "shape": [
+      194709,
+      9
+    ]
+  },
+  "counts": {
+    "all_ready_rows_retained": true,
+    "clipped_rho_entries": 41064,
+    "context_rows": 194709,
+    "family_count": 95,
+    "feature_ready": 194709,
+    "hash_digest_calls": 8724581,
+    "main_market4_max_abs_error": 6.661338147750939e-16,
+    "main_market4_scalar_checks": 778836,
+    "max_rho_roundoff": 6.661338147750939e-16,
+    "parent_rows": 399252,
+    "ready_unknown_label": 541,
+    "scope_count": 3,
+    "scope_states": {
+      "holdout_0": {
+        "query_history_missing": 16018,
+        "relation_ready": 178691
+      },
+      "holdout_1": {
+        "query_history_missing": 16018,
+        "relation_ready": 178691
+      },
+      "main": {
+        "query_history_missing": 16018,
+        "relation_ready": 178691
+      }
+    },
+    "source_calendar_days": 5587,
+    "sql_queries": 0
+  },
+  "elapsed_seconds": 16.051261792017613,
+  "event_ids_csv": {
+    "bytes": 8193711,
+    "columns": [
+      "sequence_index",
+      "event_id"
+    ],
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/event_ids.csv.gz",
+    "rows": 194709,
+    "sha256": "b829623c1c1d716a7af3cdc21a0dc0cbab3adba9ae85dfc98fe7ada93e98963d"
+  },
+  "exit_code": 0,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T13:05:17+08:00",
+  "model_fits": 0,
+  "network_calls": 0,
+  "schema": "stage034_actual_terminal_v1",
+  "source_sha256": "9b3e7ac37cbe46e0124af9905e63d4d457d37f9853a3ca3d69e28650d7ba5f25",
+  "sql_queries": 0,
+  "started_at": "2026-10-18T13:05:01+08:00"
+}

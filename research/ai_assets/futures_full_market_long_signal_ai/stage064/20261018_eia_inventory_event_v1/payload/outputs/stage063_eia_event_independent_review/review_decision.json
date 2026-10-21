@@ -1,0 +1,64 @@
+{
+  "schema": "stage063_independent_final_decision_v1",
+  "recorded_at": "2026-10-18 16:01 CST",
+  "review_receipt": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/review_receipt.json",
+    "bytes": 108035,
+    "sha256": "44994ff68ef91b8b98fcc24f179dc7a67be5e7dfed752b67e3f439eadf516262",
+    "role": "independent_review_receipt",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_terminal.json",
+    "bytes": 1798,
+    "sha256": "148ce1fa43069534c0af71008cc8876cecad36c0fe567f7ed944be54219027b8",
+    "role": "qualification_evidence",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "review2_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/review2_terminal.json",
+    "bytes": 2079,
+    "sha256": "721345be86f450ad238b7dbb6f2399aa2e33a90aa8b958d35543b739066ee886",
+    "role": "qualification_evidence",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "first_failure_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_first_attempt_terminal.json",
+    "bytes": 1501,
+    "sha256": "2cce93058314ef59404922f3452338b644f58de983e42772ac6c76c4a23bd10d",
+    "role": "qualification_evidence",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1513_stage063_eia_event_independent_review.md",
+    "bytes": 13838,
+    "sha256": "3dcf1d9925411ab7324e84f559713bc627590ae35a9b79963024ef281d408673",
+    "role": "stage_record",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "review_starts_total": 2,
+  "complete_reviews_total": 1,
+  "first_failure": "reviewer metadata representation adapter, repaired under explicit root authorization; no author changes or financial rerun",
+  "source_calculation_accepted": true,
+  "research_cash_arithmetic_accepted": true,
+  "incremental_alpha_supported": false,
+  "predeclared_qualification": "unknown_due_to_differential_historical_stale_and_nominal_conditions_not_met",
+  "continue_same_package_tuning": false,
+  "production_qualified": false,
+  "narrow_stop_or_increased_bet_qualified": false,
+  "goal_complete": false,
+  "research_actual_fits": 6,
+  "research_actual_cash_accounts": 12,
+  "reviewer_fits": 0,
+  "reviewer_cash_strategy_replays": 0,
+  "reviewer_sql": 0,
+  "reviewer_network": 0
+}

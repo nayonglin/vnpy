@@ -1,0 +1,12 @@
+{
+  "profile_id": "monthly_ai_full_market_training_source_half_r_off_v1",
+  "scope": "research_training_source_only",
+  "user_authorization": "2026-10-20: 仅本次全市场AI训练源关闭0.5R止损",
+  "strategy_overrides": {
+    "enable_stage847_half_r_stop_retry": false
+  },
+  "coupled_effect": "The single flag disables both the initial half-R stop and its one-time retry.",
+  "other_stops": "Inherited settings are retained; Stage827 C2 remains a separate minute-path requirement.",
+  "production_change_authorized": false,
+  "phase": "raw_signal_matrix_before_economic_replay"
+}

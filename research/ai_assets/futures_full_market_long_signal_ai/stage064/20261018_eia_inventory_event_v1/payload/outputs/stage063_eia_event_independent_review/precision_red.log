@@ -1,0 +1,33 @@
+test_one_decimal_report_uses_its_own_printed_quantum (__main__.PrintedPrecision.test_one_decimal_report_uses_its_own_printed_quantum) ... FAIL
+test_outside_printed_bound_remains_rejected (__main__.PrintedPrecision.test_outside_printed_bound_remains_rejected) ... ok
+test_three_decimal_report_retains_official_difference (__main__.PrintedPrecision.test_three_decimal_report_retains_official_difference) ... FAIL
+test_wrong_statistics_week_remains_rejected (__main__.PrintedPrecision.test_wrong_statistics_week_remains_rejected) ... ok
+
+======================================================================
+FAIL: test_one_decimal_report_uses_its_own_printed_quantum (__main__.PrintedPrecision.test_one_decimal_report_uses_its_own_printed_quantum)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_printed_precision.py", line 19, in test_one_decimal_report_uses_its_own_printed_quantum
+    got=parse_saved_stock(raw,'2016-10-14')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py", line 66, in parse_saved_stock
+    assert v[0]-v[1]==v[2]
+           ^^^^^^^^^^^^^^^
+AssertionError
+
+======================================================================
+FAIL: test_three_decimal_report_retains_official_difference (__main__.PrintedPrecision.test_three_decimal_report_retains_official_difference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_printed_precision.py", line 12, in test_three_decimal_report_retains_official_difference
+    got=parse_saved_stock(raw,'2020-02-21')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py", line 66, in parse_saved_stock
+    assert v[0]-v[1]==v[2]
+           ^^^^^^^^^^^^^^^
+AssertionError
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+FAILED (failures=2)

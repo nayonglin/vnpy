@@ -1,0 +1,31 @@
+{
+  "accepted": true,
+  "targets": [
+    {
+      "accepted": true,
+      "actual_rows": 225,
+      "aggregate": {
+        "close": 1258.0,
+        "close_oi": 96274.0,
+        "high": 1270.5,
+        "low": 1249.5,
+        "open": 1250.5,
+        "open_oi": 104447.0,
+        "volume": 53421.0
+      },
+      "base_overlap_minutes": 0,
+      "completion_evidence_complete": true,
+      "daily_mismatch_fields": [],
+      "daily_open_oi_check": "checked",
+      "execution_trade_date": "2020-03-10",
+      "expected_minutes": 225,
+      "missing_minutes": 0,
+      "new_minutes": 225,
+      "qualification_kind": "completed_full_session_daily7",
+      "reason": "complete_daily_matched_base_preserved",
+      "requirement_kind": "full_session",
+      "status": "accepted",
+      "vt_symbol": "jm2005.DCE"
+    }
+  ]
+}

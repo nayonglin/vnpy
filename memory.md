@@ -12506,3 +12506,12 @@
 2026-08-30 07:10 CST：长期记忆更正：Stage065 m0001因生产cwd的live/material身份混用P0被否决，虽然不可变保留但不得安装；旧production已安全恢复。正式候选由后继m0002取代：source `c308631c9b802dd5800ab55a0214b8dd41ec7139`，release `m0002_20260830T070610+0800_c308631c9b80` / `634ebc49408d0ebe7b6b99f11712a84b838cad94`，manifest `2d4ccbc536b97e155a61d31a8a8b1286279ab94dc75f201645014a9fcd1500b0`，tree `8423befc3b568dfa9af0c971cd26720b18d267ea51b9524df970486253545239`，activation `738125f9fbaa7e9cc6c39565b1faa19a0bf72277`。新合同把live profile、material strategy、AI policy、Stage037 ruleset分层；历史Stage037只读m0016 Top8，新正式只读Top10+fu；AI summary不得保留构建机绝对路径；隔离测试进入41项production suite。自然研究门仍FAIL/operator override，完成声明仍必须等远端master、fresh clone、生产独立review、双CTP只读、Stage948与六身份一致。
 
 2026-08-30 07:35 CST：长期记忆再次更正：m0002虽修复历史Stage037配置本身，却漏把该配置加入Stage179关键物料清单，导致远端master顶层不能保证收到修复，故m0002也不得安装。最终候选改为source `f9e42b9ea2967e31aaa34f595c05c0798bbf5e0b`、release `m0003_20260830T072335+0800_f9e42b9ea296` / `ae7e8172561d5faef4f5d1a95a6beb43436b6e41`、manifest `3a2cad3d328cbaf8562f42863a142433da019aec3cde4f071749e3bb66e2effe`、tree `3716a6251f667f6d53af7cb9a157047e3c8a2e9cc83804165a3588b31a94fa85`、activation `9218188c8563f07de801b646aa093fac9d05f2e5`。m0003共260文件/9项AI资产，清单显式含历史Stage037 candidate及依赖闭包；41项suite `948 passed,697 subtests`，独立source review无P0/P1/P2，no-local clone哈希和模式一致。自然门仍FAIL/operator override；未完成master、production qualification、双CTP只读、Stage948和六身份前仍不得称在线。
+
+
+## 2026-10-18 11:21 全市场long-only研究线交接与观察母体接受
+
+用户明确研究版在全市场全品种寻找超高质量做多信号，不限正式AI月池；主动研究转 `research/lines/futures_full_market_long_signal_ai/`，不再以旧19产品多空/900事件或C9 long_case预筛母体。正式代码/AI池、生产、分支未变，无提交推送。
+
+新线Stage002—005：六所clean实读1552456合约日/9520有行epoch/97有行情历史代码；metadata98代码×4074日形成399252观察行，212852有参考、186400无观察。117995旧七字段flag0参考和702 F参考保留。一次导出24.858秒，四个针对性测试真实RED/GREEN；一次联合独立代码+实际数据审查C/I/M=0/0/0，receipt `4747240f4b7f508d056ee4eff98781169e5e07ac8bb899113ff3da13cd71d621`。仅接受观察母体，非可执行资格/成熟标签/独立样本或alpha；大库继承既有266资格，不重hash/重下。
+
+本次非策略收益突破。新增/修改/删除交易参数和回测结果0，权益/收益/最大回撤/Sharpe/滑点/交易次数/胜率均N/A，金融/训练/下载/订单API0。下一步固定可执行long-only目标和费用/时钟/歧义/删失，再检验简单基准与明确增量信息；极窄止损/加注分开，停止旧混合pilot和泛小probe。开始/结束新增选参过拟合否、继续价值是；完整更高收益更低回撤目标仍active。详见新线Stage006，根日志仅记跨线摘要。

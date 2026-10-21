@@ -1,0 +1,41 @@
+test_daily_participation_shared_gap_cost_cancellation_and_calendar_nan (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_daily_participation_shared_gap_cost_cancellation_and_calendar_nan) ... FAIL
+test_gap_is_same_path_even_when_both_barriers_touch (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_gap_is_same_path_even_when_both_barriers_touch) ... FAIL
+test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown) ... FAIL
+test_pre_entry_low_does_not_force_stop_and_close_can_force_it (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_pre_entry_low_does_not_force_stop_and_close_can_force_it) ... FAIL
+
+======================================================================
+FAIL: test_daily_participation_shared_gap_cost_cancellation_and_calendar_nan (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_daily_participation_shared_gap_cost_cancellation_and_calendar_nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 74, in test_daily_participation_shared_gap_cost_cancellation_and_calendar_nan
+    self.assertIsNotNone(a)
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_gap_is_same_path_even_when_both_barriers_touch (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_gap_is_same_path_even_when_both_barriers_touch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 13, in test_gap_is_same_path_even_when_both_barriers_touch
+    self.assertIsNotNone(got)
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 47, in test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown
+    self.assertIsNotNone(got)
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_pre_entry_low_does_not_force_stop_and_close_can_force_it (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_pre_entry_low_does_not_force_stop_and_close_can_force_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 62, in test_pre_entry_low_does_not_force_stop_and_close_can_force_it
+    self.assertIsNotNone(got)
+AssertionError: unexpectedly None
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+FAILED (failures=4)

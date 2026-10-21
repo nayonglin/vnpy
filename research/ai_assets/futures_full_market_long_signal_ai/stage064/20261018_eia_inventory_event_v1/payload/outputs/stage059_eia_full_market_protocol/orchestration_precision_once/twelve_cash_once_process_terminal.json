@@ -1,0 +1,25 @@
+{
+  "phase": "twelve_cash_once",
+  "started_at": "2026-10-18T07:52:06.867964+00:00",
+  "finished_at": "2026-10-18T07:52:52.301733+00:00",
+  "elapsed_seconds": 45.43379683396779,
+  "exit_code": 0,
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage062_eia_event_cash_compare.py",
+    "--protocol",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+    "--protocol-sha256",
+    "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158",
+    "--fit-manifest",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/experiment/manifest.json",
+    "--fit-manifest-sha256",
+    "646cc2f475c9f2060b22780b9e766ed2ed94d658ded5a85d7c9960e9651403cd",
+    "--authorization",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/orchestration_precision_once/authorization062.json",
+    "--authorization-sha256",
+    "75368416e2bff29a43aae772d59116695238d3669e02cc38665218c0a978d7d8",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_event_cash_compare/experiment"
+  ]
+}

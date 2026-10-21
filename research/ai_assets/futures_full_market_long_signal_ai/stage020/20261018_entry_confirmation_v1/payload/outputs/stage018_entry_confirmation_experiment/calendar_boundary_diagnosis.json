@@ -1,0 +1,30 @@
+{
+  "schema": "stage018_calendar_boundary_diagnosis_v1",
+  "rows_checked": 399252,
+  "full_calendar_rows": 5587,
+  "scope_rows": 4074,
+  "full_calendar_successor_mismatches": 0,
+  "scope_successor_difference_rows": 98,
+  "difference_groups": [
+    {
+      "u_date": "2026-10-16",
+      "planned_execution_date": "2026-10-19",
+      "rows": 98
+    }
+  ],
+  "samples": [
+    {
+      "event_id": "stage004_product_day_long_v1_6e47dd9b31c9b00b2f49f2d974593d1f07f2306c014f444164ac9e17f6467b95",
+      "u_date": "2026-10-16",
+      "planned_execution_date": "2026-10-19"
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4f7b98a6da9bf128b4e3c22d92ab08759789d2f259a9d56a3d28a9f24e8bd7c3",
+      "u_date": "2026-10-16",
+      "planned_execution_date": "2026-10-19"
+    }
+  ],
+  "conclusion": "exactly98 final-u rows have valid full-calendar D2026-10-19 outside report scope; no other successor mismatch",
+  "role": "qualification_evidence",
+  "reproducibility_required": true
+}

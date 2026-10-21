@@ -1,0 +1,15 @@
+{
+  "schema": "stage044_prepare_only_actual_terminal_v1",
+  "phase": "draft_prepare_only_before_final_assets",
+  "status": "completed",
+  "chunk_id": "90db28",
+  "exit_code": 0,
+  "wall_time_seconds": 7.625e-06,
+  "commands_summary": "Read known039—041 metadata and write draft request/prepare receipt; index equality read before/after. No registrar or git add.",
+  "register_calls": 0,
+  "git_add": false,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "sql_queries": 0,
+  "production": false
+}

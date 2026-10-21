@@ -1,0 +1,119 @@
+{
+  "feature_label_manifest": {
+    "bytes": 88826,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e"
+  },
+  "inherited_data_review": {
+    "bytes": 4493,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "reproducibility_required": true,
+    "role": "qualification_evidence",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a"
+  },
+  "inherited_result_review": {
+    "bytes": 4179,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_receipt.json",
+    "reproducibility_required": true,
+    "role": "qualification_evidence",
+    "sha256": "e6656decde31912f93fce6b5aaf910760a11971d4558f5e4bb0c39e5b169775f"
+  },
+  "opportunity_manifest": {
+    "bytes": 257576,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003"
+  },
+  "original_caches": [
+    {
+      "bytes": 24166354,
+      "external_ignored": true,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/product_day_opportunities.csv.gz",
+      "reproducibility_required": false,
+      "role": "cache_or_visualization",
+      "sha256": "8c6fc733cb14bb2ceb7573735d11f26e8885efd7cfce0d7be5232a3b3910a9ce"
+    },
+    {
+      "bytes": 51830368,
+      "columns": [
+        "event_id",
+        "product_id",
+        "product",
+        "exchange",
+        "u_date",
+        "reference_epoch",
+        "planned_execution_date",
+        "status",
+        "direction",
+        "family_id",
+        "feature_ready",
+        "history_state",
+        "r1_atr",
+        "r5_atr",
+        "r20_atr",
+        "body_atr",
+        "range_atr",
+        "close_location",
+        "gap_atr",
+        "compression5_20",
+        "log_volume_ratio20",
+        "breakout20_atr",
+        "atr_pct",
+        "market_lag_median_r1",
+        "market_lag_breadth",
+        "market_lag_iqr_r1",
+        "market_lag_missing",
+        "atr20",
+        "label_identified",
+        "label_state",
+        "label_known_date",
+        "path_ambiguous",
+        "gross_lower",
+        "gross_upper",
+        "proxy_lower",
+        "proxy_upper"
+      ],
+      "external_ignored": true,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/feature_labels.csv.gz",
+      "reproducibility_required": false,
+      "role": "cache_or_visualization",
+      "rows": 399252,
+      "sha256": "9b2452fa5fc8bb0c97d702d0caffa2a2b22e46e38ea52ab4842c13d25f120a48"
+    },
+    {
+      "bytes": 14637634,
+      "external_ignored": true,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/audit_paths.csv.gz",
+      "reproducibility_required": false,
+      "role": "cache_or_visualization",
+      "scope": "price_diagnostics_only_not_trainer_input",
+      "sha256": "a0ed32d19c102767bb789cdb1bab2ab28da1b714fa426ca1a368947b87ee6fef"
+    },
+    {
+      "bytes": 44824,
+      "external_ignored": true,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "reproducibility_required": false,
+      "role": "cache_or_visualization",
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+    }
+  ],
+  "protocol": {
+    "bytes": 3308,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage015_entry_confirmation_protocol/protocol.json",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "73c991c2ed2c4d4dbc77147705b6f09d834e63c05d7a8b0f614a902c1b6ec5e9"
+  },
+  "raw_database": "not read or rehashed; no raw OHLC included in new event table",
+  "spec": {
+    "bytes": 8222,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1202_stage015_fixed_entry_confirmation_protocol.md",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "fa51d49dbff0d4a323d4313c56493bc8316e071ee50de9e936797f7d06a7006f"
+  }
+}

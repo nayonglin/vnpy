@@ -1,0 +1,710 @@
+{
+  "batches": [
+    {
+      "batch": "batch004",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 0,
+      "events": 0
+    },
+    {
+      "batch": "batch005",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch006",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch007",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 2,
+      "events": 2
+    },
+    {
+      "batch": "batch008",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch009",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch010",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 2,
+      "events": 2
+    },
+    {
+      "batch": "batch011",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch012",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 3,
+      "events": 3
+    },
+    {
+      "batch": "batch013",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 0,
+      "events": 0
+    },
+    {
+      "batch": "batch014",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 0,
+      "events": 0
+    },
+    {
+      "batch": "batch015",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 0,
+      "events": 0
+    },
+    {
+      "batch": "batch016",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch017",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 2,
+      "events": 2
+    },
+    {
+      "batch": "batch018",
+      "exit": 1,
+      "status": "blocked",
+      "error": "ValueError:request_not_current_owner_wait",
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch019",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch020",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch021",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch022",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch023",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 2,
+      "events": 2
+    },
+    {
+      "batch": "batch024",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    },
+    {
+      "batch": "batch025",
+      "exit": 0,
+      "status": "stopped_no_current_wait",
+      "error": null,
+      "connections": 1,
+      "events": 1
+    }
+  ],
+  "scopes": [
+    {
+      "batch": "batch005",
+      "digest": "22c57b4ff8c173c7e67a235cc37c29729ba9dca61e9769850dd7b390ab49a222",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "hc2005.SHFE",
+          "day": "2020-03-26",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 50,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch006",
+      "digest": "594e0e258bca973d06e8d9c15f19018b20ad4a132977964eda23209fe3c70a27",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "FG005.CZCE",
+          "day": "2020-03-31",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 50,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch007",
+      "digest": "830c5e86ec465f1dc981e70e1ee8276446cd1ce4a6c643882ee9c5592ba165c0",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "FG009.CZCE",
+          "day": "2020-04-03",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 55,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch007",
+      "digest": "d13ec013669203496ad03174f609e24f08f63e5af8e6649250ba677a4005eeb4",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "hc2005.SHFE",
+          "day": "2020-04-07",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 50,
+      "existing_keys": 0,
+      "new_keys": 1,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch008",
+      "digest": "df7e05f132532ed318a5ac13b7661e2a78d15a75781e5a995fe406b1049a44a3",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "AP005.CZCE",
+          "day": "2020-04-15",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 51,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch009",
+      "digest": "2d1679bf86664b01df63abeb6de5cfefb68e0873365fd5d529b269a85e2fc8ee",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "FG009.CZCE",
+          "day": "2020-04-29",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 51,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch010",
+      "digest": "038e21397ee370b237e7926a47e3464804792446ff7b8bee10c3bc3245995fe9",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "hc2010.SHFE",
+          "day": "2020-05-06",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch010",
+      "digest": "4abff8db2a91bdd4359b2fa97be750489f3db392e58986e47f3aa36d299b6ea9",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "rb2010.SHFE",
+          "day": "2020-05-07",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch011",
+      "digest": "e2e0d5dcc366d60226267f107ba482566635fa4ac6249fbb36a2ab6e6fa62292",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "SM009.CZCE",
+          "day": "2020-06-01",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 65,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch012",
+      "digest": "e3c318b77123d266fa733559716d41864a1a63f653fd38bbd5ac9bab6445aa2f",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "SM009.CZCE",
+          "day": "2020-06-05",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 65,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch012",
+      "digest": "92a5053125ea20929cffa6bedb8ac8932500a28e18135cc85b5a3271d393302c",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "SM009.CZCE",
+          "day": "2020-06-08",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 65,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch012",
+      "digest": "d4e0b01e58e649f1fe414e1626cadcbdef9933bc34477ea9c707b7e074d9458e",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "SM009.CZCE",
+          "day": "2020-06-11",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 65,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch016",
+      "digest": "21120a5a9573ba042411c5ca011bfdb6a864eae99bf0a8ca01effa9096af6755",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "sp2009.SHFE",
+          "day": "2020-07-28",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch017",
+      "digest": "8f329df16a2440d2cb043d194491e4ef5bad8b7e715e8659fb89e8dd4be870c4",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "AP010.CZCE",
+          "day": "2020-08-18",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch017",
+      "digest": "e599a30e19e3488c6f62ca54d5df9db8199e281955ddce8130b75b5dc602e9bb",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "AP010.CZCE",
+          "day": "2020-08-19",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 1,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch018",
+      "digest": "8da10d9b29308eb40dc6d611091fab4a280ce5865c16f1a2de234eaea52fbf85",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "OI101.CZCE",
+          "day": "2020-08-25",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch019",
+      "digest": "440495c8e0005c1330f0967676c541e5916207ad7e88f0fb045ff8e12b9ac9ea",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "OI101.CZCE",
+          "day": "2020-08-27",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 1,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch020",
+      "digest": "1be52b026b0e9880f69875edc8ed6fb094ff5916356cea5072552c8355a5a442",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "AP010.CZCE",
+          "day": "2020-09-08",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 225,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch021",
+      "digest": "feaae15daeadec778c4c496f204ed9b2225474cb3686d5c3ee7a9af11a0c6aa9",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "AP010.CZCE",
+          "day": "2020-09-14",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 1,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch022",
+      "digest": "45229d6554ef9dd4b73c7ce1b8ef16ccdfa41be3900377abe6494a56b9618378",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "CF101.CZCE",
+          "day": "2020-11-27",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch023",
+      "digest": "ba4702581c1ad405fed2fc893b5e970dfd28e77f968bb336b1d0922eaaaad334",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "CF101.CZCE",
+          "day": "2020-12-03",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch023",
+      "digest": "ff307fb2b454d78da964ed564cfc7219efc192a15c243a644c8bc4227e6dd154",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "CF101.CZCE",
+          "day": "2020-12-04",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 1,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch024",
+      "digest": "5b60c5ba09d2def8b5cb0317d20acfffb6700dd60597c026cdf021795db5b964",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "CF105.CZCE",
+          "day": "2021-03-05",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 1,
+      "new_keys": 344,
+      "accepted_requirements_count": 1
+    },
+    {
+      "batch": "batch025",
+      "digest": "4086d30c623c2050eefb0235d824e9941053cb3b92e1f71fbd1dc64566dbcfa1",
+      "published": true,
+      "requirements": [
+        {
+          "symbol": "CF105.CZCE",
+          "day": "2021-03-09",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "packets": [
+        "minute_packet"
+      ],
+      "sources": 52,
+      "existing_keys": 0,
+      "new_keys": 345,
+      "accepted_requirements_count": 1
+    }
+  ]
+}

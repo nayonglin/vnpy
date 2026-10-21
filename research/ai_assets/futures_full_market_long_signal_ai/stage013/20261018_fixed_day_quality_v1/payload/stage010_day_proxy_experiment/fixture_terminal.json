@@ -1,0 +1,32 @@
+{
+  "actual_command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage010_day_proxy_experiment.py",
+    "-v"
+  ],
+  "started_at": "2026-10-18T11:37:41.148595",
+  "finished_at": "2026-10-18T11:37:42.411932",
+  "elapsed_seconds": 1.2634162500035018,
+  "exit_code": 0,
+  "compile_sources": 2,
+  "actual_test_methods": 4,
+  "fixture_fit_calls_per_test_run": 3,
+  "real_experiment_fit_calls": 0,
+  "red": {
+    "tool_chunk": "7d52bc",
+    "exit_code": 1,
+    "failures": 4,
+    "reason": "implementation absent; assertions not import error"
+  },
+  "source_sha256": {
+    "research/lines/futures_full_market_long_signal_ai/tools/stage010_day_proxy_experiment.py": "4b5dc765aee775a71b5dff25353e4e8a611d38521fcc88163723cd9ce279258b",
+    "research/lines/futures_full_market_long_signal_ai/tools/test_stage010_day_proxy_experiment.py": "f1197d1a4417965e376705da770f14412bb17b251a0fad9eac5a2f29be10b976"
+  },
+  "test_log_sha256": "e7148f0adaf0bdfc86ef114f30401056d08d534e5b2a0a1d06581a033b663fc8"
+}

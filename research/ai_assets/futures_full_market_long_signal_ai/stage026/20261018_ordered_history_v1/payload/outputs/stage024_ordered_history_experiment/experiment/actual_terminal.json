@@ -1,0 +1,30 @@
+{
+  "actual_financial_runs": 0,
+  "actual_ridge_fit_calls": 108,
+  "command": "fit",
+  "elapsed_seconds": 104.6989167080028,
+  "error": null,
+  "exit_code": 0,
+  "finished_at": "2026-10-18T04:33:55.727159+00:00",
+  "fixture": false,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "scipy": "1.17.1",
+  "sklearn": "1.6.1",
+  "sql_queries": 0,
+  "started_at": "2026-10-18T04:32:11.028251+00:00",
+  "status": "completed",
+  "threadpools": [
+    {
+      "filepath": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/sklearn/.dylibs/libomp.dylib",
+      "internal_api": "openmp",
+      "num_threads": 1,
+      "prefix": "libomp",
+      "user_api": "openmp",
+      "version": null
+    }
+  ]
+}

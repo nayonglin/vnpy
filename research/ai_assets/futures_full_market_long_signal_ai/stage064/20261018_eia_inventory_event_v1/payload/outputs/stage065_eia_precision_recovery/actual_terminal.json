@@ -1,0 +1,21 @@
+{
+  "schema": "stage065_offline_precision_terminal_v1",
+  "status": "completed",
+  "started_at": "2026-10-18T07:51:12.081584+00:00",
+  "normalization_actual_startups": 1,
+  "offline_normalization_actual_startups": 1,
+  "new_http_requests": 0,
+  "source_actual_startups": 0,
+  "model_fits": 0,
+  "cash_accounts": 0,
+  "sql_queries": 0,
+  "original_stage060_unchanged": true,
+  "goal_complete": false,
+  "original060_source_actual_startups": 1,
+  "finished_at": "2026-10-18T07:51:13.484665+00:00",
+  "elapsed_seconds": 1.4027472080197185,
+  "calendar_reports": 794,
+  "precision_recovered_reports": 193,
+  "known_reports": 789,
+  "unknown_reports": 5
+}

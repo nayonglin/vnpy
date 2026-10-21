@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-10-18T10:03:33.499615+08:00",
+  "commands": [
+    {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_actual_data.py audit",
+      "chunk_id": "8dd1ed",
+      "exit_code": 1,
+      "phase": "review-only upfront identity assertion before159 delivery loop",
+      "error": "AssertionError: new origin schema/source identity",
+      "cause": "Reviewer initially compared the entire134 upstream map with135 snapshot. The intended135 snapshot excludes source_bindings identity metadata, per135 design and builder line136. Corrected only reviewer assertion/whitelist; author code unchanged.",
+      "selected_delivery_parses": 0
+    },
+    {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_actual_data.py audit",
+      "chunk_id": "baa7b6",
+      "exit_code": 0,
+      "phase": "single completed independent159-delivery values/rights audit",
+      "completed_at": "2026-10-18T10:02:25.441382+08:00"
+    },
+    {
+      "command": "Reviewer signed research-only REVIEW_SCHEMA after static code and actual-data audit passed",
+      "chunk_id": "f0f0b5",
+      "exit_code": 0,
+      "review_sha256": "b3fbb16d219484bdac9329e6c4f12db18a3b762de3adbea7b79710c79f8dee68"
+    },
+    {
+      "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_actual_data.py load-once",
+      "chunk_id": "851d27",
+      "exit_code": 0,
+      "phase": "one unchanged061 actual loader after real independent receipt",
+      "completed_at": "2026-10-18T10:03:11.146607+08:00"
+    }
+  ],
+  "actual_completed_reconstruction_count": 1,
+  "actual_loader_calls": 1,
+  "author_test_methods_rerun": 0,
+  "old_suite_runs": 0,
+  "financial_model_provider_network_guard_readiness_runs": 0,
+  "review_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_actual_data.py",
+    "sha256": "902b8ab2912502ff2711f12766f0aff21c9eba431b2c54006ced112adc11f81c"
+  }
+}

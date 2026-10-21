@@ -1,0 +1,7 @@
+test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days (stage107_fresh_date_reader_test.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.024s
+
+OK
+

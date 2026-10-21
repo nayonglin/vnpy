@@ -1,0 +1,20 @@
+test_D_is_strict_source_successor_not_next_available_quote (__main__.FullOpportunityContracts.test_D_is_strict_source_successor_not_next_available_quote) ... ok
+test_F_and_plain_keep_independent_economic_identity_without_family_occupancy (__main__.FullOpportunityContracts.test_F_and_plain_keep_independent_economic_identity_without_family_occupancy) ... ok
+test_changed_reference_exits_old_epoch_at_next_open (__main__.FullOpportunityContracts.test_changed_reference_exits_old_epoch_at_next_open) ... ok
+test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot (__main__.FullOpportunityContracts.test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot) ... ok
+test_future_poison_cannot_change_earlier_completed_label (__main__.FullOpportunityContracts.test_future_poison_cannot_change_earlier_completed_label) ... ok
+test_gap_exit_loss_is_not_clamped_to_minus_one_R (__main__.FullOpportunityContracts.test_gap_exit_loss_is_not_clamped_to_minus_one_R) ... ok
+test_gap_resets_twenty_bar_history_without_deleting_no_observation (__main__.FullOpportunityContracts.test_gap_resets_twenty_bar_history_without_deleting_no_observation) ... ok
+test_history_ready_is_independent_of_unresolved_economics (__main__.FullOpportunityContracts.test_history_ready_is_independent_of_unresolved_economics) ... ok
+test_known_earlier_lifecycle_exits_and_cancels_next_intent (__main__.FullOpportunityContracts.test_known_earlier_lifecycle_exits_and_cancels_next_intent) ... ok
+test_missing_held_bar_is_absorbing_unknown_even_after_later_stop (__main__.FullOpportunityContracts.test_missing_held_bar_is_absorbing_unknown_even_after_later_stop) ... ok
+test_next_day_uses_prior_close_low_not_current_day_low (__main__.FullOpportunityContracts.test_next_day_uses_prior_close_low_not_current_day_low) ... ok
+test_output_refuses_overwrite_before_loading_any_native_input (__main__.FullOpportunityContracts.test_output_refuses_overwrite_before_loading_any_native_input) ... ok
+test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero (__main__.FullOpportunityContracts.test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero) ... ok
+test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed) ... ok
+test_twenty_bars_ready_without_55_trigger_or_occupancy (__main__.FullOpportunityContracts.test_twenty_bars_ready_without_55_trigger_or_occupancy) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.056s
+
+OK

@@ -1,0 +1,3983 @@
+{
+  "schema": "stage037_bounded_context_review_v1",
+  "independent_review": true,
+  "status": "accepted_context_contract_with_bounded_numeric_reconstruction",
+  "source_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/manifest.json",
+    "sha256": "2a3abe55eabf0fba5bb5d749fb4343d1bf341e3d217b93619554ab11bf98d990",
+    "bytes": 81972
+  },
+  "all_ready_rows": 194709,
+  "ready_unknown_rows": 541,
+  "full_scope_matrices": 3,
+  "full_main_market4_scalar_checks": 778836,
+  "main_market4_max_abs_error": 6.661338147750939e-16,
+  "bounded_query_rows": 164,
+  "bounded_scope_cells": 492,
+  "bounded_cells_max_abs_error": 2.1316282072803006e-14,
+  "bounded_cells": [
+    {
+      "event_id": "stage004_product_day_long_v1_417f0176c19421fd379102937b59d5e00ae160509954cd79279f2ea67d7a91cb",
+      "u_date": "2010-02-01",
+      "family_id": "CZCE.CF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_417f0176c19421fd379102937b59d5e00ae160509954cd79279f2ea67d7a91cb",
+      "u_date": "2010-02-01",
+      "family_id": "CZCE.CF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_417f0176c19421fd379102937b59d5e00ae160509954cd79279f2ea67d7a91cb",
+      "u_date": "2010-02-01",
+      "family_id": "CZCE.CF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48e8ff1cdf906993d8e72eb12479a9fe835c6c243bf227e466e091399cbf2f2a",
+      "u_date": "2010-02-01",
+      "family_id": "DCE.P",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48e8ff1cdf906993d8e72eb12479a9fe835c6c243bf227e466e091399cbf2f2a",
+      "u_date": "2010-02-01",
+      "family_id": "DCE.P",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48e8ff1cdf906993d8e72eb12479a9fe835c6c243bf227e466e091399cbf2f2a",
+      "u_date": "2010-02-01",
+      "family_id": "DCE.P",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d69726a009591df8c53f2e0adde747a2ec88bc2a05e86f974aec6657b70641f1",
+      "u_date": "2010-02-01",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d69726a009591df8c53f2e0adde747a2ec88bc2a05e86f974aec6657b70641f1",
+      "u_date": "2010-02-01",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d69726a009591df8c53f2e0adde747a2ec88bc2a05e86f974aec6657b70641f1",
+      "u_date": "2010-02-01",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6cfd17b9a864c4f02515d9368bba829e3fd0bb5087c2124cc467733e1ba4a3de",
+      "u_date": "2010-07-20",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6cfd17b9a864c4f02515d9368bba829e3fd0bb5087c2124cc467733e1ba4a3de",
+      "u_date": "2010-07-20",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6cfd17b9a864c4f02515d9368bba829e3fd0bb5087c2124cc467733e1ba4a3de",
+      "u_date": "2010-07-20",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b20bc35bef898a2a143c86b03b23da1e4522840ba21ad62cb9796f48547ec235",
+      "u_date": "2010-07-20",
+      "family_id": "DCE.P",
+      "scope": "main",
+      "peer_count": 19,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b20bc35bef898a2a143c86b03b23da1e4522840ba21ad62cb9796f48547ec235",
+      "u_date": "2010-07-20",
+      "family_id": "DCE.P",
+      "scope": "holdout_0",
+      "peer_count": 12,
+      "max_abs_error": 6.938893903907228e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b20bc35bef898a2a143c86b03b23da1e4522840ba21ad62cb9796f48547ec235",
+      "u_date": "2010-07-20",
+      "family_id": "DCE.P",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e4ea297d2178d562aac660b289e19e899a095d5826e197c9888e48e765882c9f",
+      "u_date": "2010-07-20",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 19,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e4ea297d2178d562aac660b289e19e899a095d5826e197c9888e48e765882c9f",
+      "u_date": "2010-07-20",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 12,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e4ea297d2178d562aac660b289e19e899a095d5826e197c9888e48e765882c9f",
+      "u_date": "2010-07-20",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_11958d0e9818902937a7e8a613fac969be3498759f36627d5192b48f7a3c281a",
+      "u_date": "2010-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_11958d0e9818902937a7e8a613fac969be3498759f36627d5192b48f7a3c281a",
+      "u_date": "2010-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_11958d0e9818902937a7e8a613fac969be3498759f36627d5192b48f7a3c281a",
+      "u_date": "2010-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae420622dbf4de529d8537999f89b15bef3185e51d7bacd0741051227ecd980d",
+      "u_date": "2010-12-31",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae420622dbf4de529d8537999f89b15bef3185e51d7bacd0741051227ecd980d",
+      "u_date": "2010-12-31",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 13,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae420622dbf4de529d8537999f89b15bef3185e51d7bacd0741051227ecd980d",
+      "u_date": "2010-12-31",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_caa2c7c078605fbfd31986a75c4f784f19c1b8ee59b099ac54dae9ee7ba6d3ea",
+      "u_date": "2010-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_caa2c7c078605fbfd31986a75c4f784f19c1b8ee59b099ac54dae9ee7ba6d3ea",
+      "u_date": "2010-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 13,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_caa2c7c078605fbfd31986a75c4f784f19c1b8ee59b099ac54dae9ee7ba6d3ea",
+      "u_date": "2010-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0f5f0541d633ab7a502fcf33fc485f982bc445f3f6e569d27c0f8037ae46caf",
+      "u_date": "2011-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0f5f0541d633ab7a502fcf33fc485f982bc445f3f6e569d27c0f8037ae46caf",
+      "u_date": "2011-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0f5f0541d633ab7a502fcf33fc485f982bc445f3f6e569d27c0f8037ae46caf",
+      "u_date": "2011-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_184c657054cbd19480430a06657910347fe75d714448c63cd3ead3371e36322a",
+      "u_date": "2011-01-04",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_184c657054cbd19480430a06657910347fe75d714448c63cd3ead3371e36322a",
+      "u_date": "2011-01-04",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 13,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_184c657054cbd19480430a06657910347fe75d714448c63cd3ead3371e36322a",
+      "u_date": "2011-01-04",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2f94be5fd57b97ae665496842cadf034941c37510c8b5c457d01585b104a8aa",
+      "u_date": "2011-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2f94be5fd57b97ae665496842cadf034941c37510c8b5c457d01585b104a8aa",
+      "u_date": "2011-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 13,
+      "max_abs_error": 2.6645352591003757e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2f94be5fd57b97ae665496842cadf034941c37510c8b5c457d01585b104a8aa",
+      "u_date": "2011-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_36fb213311c8aae0262c39daa6187e9aa809a865b95d5241eed990248e853996",
+      "u_date": "2011-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_36fb213311c8aae0262c39daa6187e9aa809a865b95d5241eed990248e853996",
+      "u_date": "2011-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_36fb213311c8aae0262c39daa6187e9aa809a865b95d5241eed990248e853996",
+      "u_date": "2011-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_359fd464f2d6154698957c8ef36ee5d4676142928fb24d39b7f465a09716b2b3",
+      "u_date": "2011-07-06",
+      "family_id": "DCE.M",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_359fd464f2d6154698957c8ef36ee5d4676142928fb24d39b7f465a09716b2b3",
+      "u_date": "2011-07-06",
+      "family_id": "DCE.M",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_359fd464f2d6154698957c8ef36ee5d4676142928fb24d39b7f465a09716b2b3",
+      "u_date": "2011-07-06",
+      "family_id": "DCE.M",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0f3da1244bd63e146f92b8c0d5e4c1b06db1c1bd456e5f21db5dcb4bf1393e16",
+      "u_date": "2011-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0f3da1244bd63e146f92b8c0d5e4c1b06db1c1bd456e5f21db5dcb4bf1393e16",
+      "u_date": "2011-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0f3da1244bd63e146f92b8c0d5e4c1b06db1c1bd456e5f21db5dcb4bf1393e16",
+      "u_date": "2011-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a88d117086a0261b30f185d3ed322ef3540194fb286c3dbce4199276ac239574",
+      "u_date": "2011-12-30",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a88d117086a0261b30f185d3ed322ef3540194fb286c3dbce4199276ac239574",
+      "u_date": "2011-12-30",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a88d117086a0261b30f185d3ed322ef3540194fb286c3dbce4199276ac239574",
+      "u_date": "2011-12-30",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9f33bf4dfe3499ce16b8b616be263302c63262844bb4c1ce09489fda489b9dee",
+      "u_date": "2011-12-30",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9f33bf4dfe3499ce16b8b616be263302c63262844bb4c1ce09489fda489b9dee",
+      "u_date": "2011-12-30",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9f33bf4dfe3499ce16b8b616be263302c63262844bb4c1ce09489fda489b9dee",
+      "u_date": "2011-12-30",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_446d309dc0ace377a6e9c5e62ff8f831a3ee04a5416181bf64890017edb56707",
+      "u_date": "2011-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_446d309dc0ace377a6e9c5e62ff8f831a3ee04a5416181bf64890017edb56707",
+      "u_date": "2011-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_446d309dc0ace377a6e9c5e62ff8f831a3ee04a5416181bf64890017edb56707",
+      "u_date": "2011-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fc2822d9d323ee1f6b118973fd472c1f273f8066632064927eb0ab2abdb1459e",
+      "u_date": "2012-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fc2822d9d323ee1f6b118973fd472c1f273f8066632064927eb0ab2abdb1459e",
+      "u_date": "2012-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fc2822d9d323ee1f6b118973fd472c1f273f8066632064927eb0ab2abdb1459e",
+      "u_date": "2012-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a934febf2481d8788223984fc6c159e555f2e3e762c12e5f1fa64f5a5a1dd01a",
+      "u_date": "2012-01-04",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a934febf2481d8788223984fc6c159e555f2e3e762c12e5f1fa64f5a5a1dd01a",
+      "u_date": "2012-01-04",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a934febf2481d8788223984fc6c159e555f2e3e762c12e5f1fa64f5a5a1dd01a",
+      "u_date": "2012-01-04",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9eca0ab43865da398a6061d87ed1dd3bad46e632686583c6b4db0749f58ff1d0",
+      "u_date": "2012-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 22,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9eca0ab43865da398a6061d87ed1dd3bad46e632686583c6b4db0749f58ff1d0",
+      "u_date": "2012-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9eca0ab43865da398a6061d87ed1dd3bad46e632686583c6b4db0749f58ff1d0",
+      "u_date": "2012-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49531f0f0cb7e0d05b5c6466aae2d7b4219814671595ac1e9ef536cd9cf33ffa",
+      "u_date": "2012-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49531f0f0cb7e0d05b5c6466aae2d7b4219814671595ac1e9ef536cd9cf33ffa",
+      "u_date": "2012-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49531f0f0cb7e0d05b5c6466aae2d7b4219814671595ac1e9ef536cd9cf33ffa",
+      "u_date": "2012-07-06",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bd934c4d9bca55902ff63c073ae1feab31157a1287e40fe0ee39560f2f13305f",
+      "u_date": "2012-07-06",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bd934c4d9bca55902ff63c073ae1feab31157a1287e40fe0ee39560f2f13305f",
+      "u_date": "2012-07-06",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bd934c4d9bca55902ff63c073ae1feab31157a1287e40fe0ee39560f2f13305f",
+      "u_date": "2012-07-06",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 6,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_01dfa3fe62b89b368bdde996d3c6fb141179fee1d144cfa69260b42a9c0d0a67",
+      "u_date": "2012-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 21,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_01dfa3fe62b89b368bdde996d3c6fb141179fee1d144cfa69260b42a9c0d0a67",
+      "u_date": "2012-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_01dfa3fe62b89b368bdde996d3c6fb141179fee1d144cfa69260b42a9c0d0a67",
+      "u_date": "2012-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 6,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7d2d5b5799c971b9c736e161e1373b70db232c195c5333839a5ed52abfbe082a",
+      "u_date": "2012-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7d2d5b5799c971b9c736e161e1373b70db232c195c5333839a5ed52abfbe082a",
+      "u_date": "2012-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7d2d5b5799c971b9c736e161e1373b70db232c195c5333839a5ed52abfbe082a",
+      "u_date": "2012-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1e6b55ced27c2834935dc1689c4578462cb5151efe870d1f5772ebdbcdca069",
+      "u_date": "2012-12-31",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1e6b55ced27c2834935dc1689c4578462cb5151efe870d1f5772ebdbcdca069",
+      "u_date": "2012-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1e6b55ced27c2834935dc1689c4578462cb5151efe870d1f5772ebdbcdca069",
+      "u_date": "2012-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_09076fadcb18e5e7ea975d51ca85904cfa0d96b4336edd2b4978740f8bb20ffc",
+      "u_date": "2012-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_09076fadcb18e5e7ea975d51ca85904cfa0d96b4336edd2b4978740f8bb20ffc",
+      "u_date": "2012-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_09076fadcb18e5e7ea975d51ca85904cfa0d96b4336edd2b4978740f8bb20ffc",
+      "u_date": "2012-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9bd035c824dfba97546cd613b5c8ab10671655dfc4180c1f5b5c357febbb5655",
+      "u_date": "2013-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9bd035c824dfba97546cd613b5c8ab10671655dfc4180c1f5b5c357febbb5655",
+      "u_date": "2013-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9bd035c824dfba97546cd613b5c8ab10671655dfc4180c1f5b5c357febbb5655",
+      "u_date": "2013-01-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e38a2faff1716cfdda02cfe0c0e339af40663a227f6e383555940438ffc303fa",
+      "u_date": "2013-01-04",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e38a2faff1716cfdda02cfe0c0e339af40663a227f6e383555940438ffc303fa",
+      "u_date": "2013-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e38a2faff1716cfdda02cfe0c0e339af40663a227f6e383555940438ffc303fa",
+      "u_date": "2013-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a585d2daf3aab8799f0ddb2369db95db7c8ad9e18d76a37f23918abedfa099",
+      "u_date": "2013-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 23,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a585d2daf3aab8799f0ddb2369db95db7c8ad9e18d76a37f23918abedfa099",
+      "u_date": "2013-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 16,
+      "max_abs_error": 1.6653345369377348e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a585d2daf3aab8799f0ddb2369db95db7c8ad9e18d76a37f23918abedfa099",
+      "u_date": "2013-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 1.3877787807814457e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89574a185508eb352c1c1ab1aae9dad89701620b773f2a884ac81142248faa73",
+      "u_date": "2013-07-09",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89574a185508eb352c1c1ab1aae9dad89701620b773f2a884ac81142248faa73",
+      "u_date": "2013-07-09",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89574a185508eb352c1c1ab1aae9dad89701620b773f2a884ac81142248faa73",
+      "u_date": "2013-07-09",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_22a1365249ae4e7414130e07395fa281bdce648d620ecbedb22ee55f21f4fc9a",
+      "u_date": "2013-07-09",
+      "family_id": "DCE.JM",
+      "scope": "main",
+      "peer_count": 26,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_22a1365249ae4e7414130e07395fa281bdce648d620ecbedb22ee55f21f4fc9a",
+      "u_date": "2013-07-09",
+      "family_id": "DCE.JM",
+      "scope": "holdout_0",
+      "peer_count": 20,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_22a1365249ae4e7414130e07395fa281bdce648d620ecbedb22ee55f21f4fc9a",
+      "u_date": "2013-07-09",
+      "family_id": "DCE.JM",
+      "scope": "holdout_1",
+      "peer_count": 6,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_12b712edcffea37bd119293391fd13c45f3832f9fda7fc0e5555e70cd5e4a677",
+      "u_date": "2013-07-09",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 26,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_12b712edcffea37bd119293391fd13c45f3832f9fda7fc0e5555e70cd5e4a677",
+      "u_date": "2013-07-09",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 19,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_12b712edcffea37bd119293391fd13c45f3832f9fda7fc0e5555e70cd5e4a677",
+      "u_date": "2013-07-09",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 7,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ae56574717832164f7ebe66e4f0050caf8fddc2053bcbd720a4672a895dec6e",
+      "u_date": "2013-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ae56574717832164f7ebe66e4f0050caf8fddc2053bcbd720a4672a895dec6e",
+      "u_date": "2013-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ae56574717832164f7ebe66e4f0050caf8fddc2053bcbd720a4672a895dec6e",
+      "u_date": "2013-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 7.632783294297951e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_af7977beafe341680c2f5c3fbb21b5e17f2af5f3e61b24d2817842f412f84a0a",
+      "u_date": "2013-12-31",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_af7977beafe341680c2f5c3fbb21b5e17f2af5f3e61b24d2817842f412f84a0a",
+      "u_date": "2013-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_af7977beafe341680c2f5c3fbb21b5e17f2af5f3e61b24d2817842f412f84a0a",
+      "u_date": "2013-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 1.3322676295501878e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7db56264c850a877b0e6514f83c486eb51fc91fb8b96e0c2625aea80c6001621",
+      "u_date": "2013-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7db56264c850a877b0e6514f83c486eb51fc91fb8b96e0c2625aea80c6001621",
+      "u_date": "2013-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7db56264c850a877b0e6514f83c486eb51fc91fb8b96e0c2625aea80c6001621",
+      "u_date": "2013-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_581e8134d99ce62c9620fadafc8a4a0ee96e36f4aa419ed82ec1f4d0eb994258",
+      "u_date": "2014-01-02",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_581e8134d99ce62c9620fadafc8a4a0ee96e36f4aa419ed82ec1f4d0eb994258",
+      "u_date": "2014-01-02",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 1.249000902703301e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_581e8134d99ce62c9620fadafc8a4a0ee96e36f4aa419ed82ec1f4d0eb994258",
+      "u_date": "2014-01-02",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b66c08da623078b4ca18108a7f3456a4665a01f41c8015dc76f3d6e707533a54",
+      "u_date": "2014-01-02",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b66c08da623078b4ca18108a7f3456a4665a01f41c8015dc76f3d6e707533a54",
+      "u_date": "2014-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b66c08da623078b4ca18108a7f3456a4665a01f41c8015dc76f3d6e707533a54",
+      "u_date": "2014-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fcc51928e55d7c29b2b7b1fda6163794999551caca0cb0848e4416ab4431d7b4",
+      "u_date": "2014-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 29,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fcc51928e55d7c29b2b7b1fda6163794999551caca0cb0848e4416ab4431d7b4",
+      "u_date": "2014-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 21,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fcc51928e55d7c29b2b7b1fda6163794999551caca0cb0848e4416ab4431d7b4",
+      "u_date": "2014-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 8,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e101b0b315107bb39a6abf5c5551acd3ac04d0e4b16c7006cc7699c8245b1de",
+      "u_date": "2014-07-04",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 36,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e101b0b315107bb39a6abf5c5551acd3ac04d0e4b16c7006cc7699c8245b1de",
+      "u_date": "2014-07-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e101b0b315107bb39a6abf5c5551acd3ac04d0e4b16c7006cc7699c8245b1de",
+      "u_date": "2014-07-04",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_db14a46f862df15fd0bc6bec08ea8dcc0dfe3cfbeffff2c6b2dd232cf089745c",
+      "u_date": "2014-07-04",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 36,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_db14a46f862df15fd0bc6bec08ea8dcc0dfe3cfbeffff2c6b2dd232cf089745c",
+      "u_date": "2014-07-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_db14a46f862df15fd0bc6bec08ea8dcc0dfe3cfbeffff2c6b2dd232cf089745c",
+      "u_date": "2014-07-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 3.122502256758253e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_919dc05e039ea16f65d6d9f1ca8ff06cc582cf3598e8071b5755dc9e1cae4ea6",
+      "u_date": "2014-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 36,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_919dc05e039ea16f65d6d9f1ca8ff06cc582cf3598e8071b5755dc9e1cae4ea6",
+      "u_date": "2014-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_919dc05e039ea16f65d6d9f1ca8ff06cc582cf3598e8071b5755dc9e1cae4ea6",
+      "u_date": "2014-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d000b619aa2baf03beaadab25fecae27fc635bd0f53e26562fd7f9ed8dafdb04",
+      "u_date": "2014-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d000b619aa2baf03beaadab25fecae27fc635bd0f53e26562fd7f9ed8dafdb04",
+      "u_date": "2014-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d000b619aa2baf03beaadab25fecae27fc635bd0f53e26562fd7f9ed8dafdb04",
+      "u_date": "2014-12-31",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1431b13327d51ef959660f00201dce21c3a641595a136286ac311b40397510c2",
+      "u_date": "2014-12-31",
+      "family_id": "CZCE.LR",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1431b13327d51ef959660f00201dce21c3a641595a136286ac311b40397510c2",
+      "u_date": "2014-12-31",
+      "family_id": "CZCE.LR",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1431b13327d51ef959660f00201dce21c3a641595a136286ac311b40397510c2",
+      "u_date": "2014-12-31",
+      "family_id": "CZCE.LR",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bfb1ddafe4293019566b52535374f453c9e414e16c835b2d06948e3e457d0358",
+      "u_date": "2014-12-31",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 34,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bfb1ddafe4293019566b52535374f453c9e414e16c835b2d06948e3e457d0358",
+      "u_date": "2014-12-31",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 24,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bfb1ddafe4293019566b52535374f453c9e414e16c835b2d06948e3e457d0358",
+      "u_date": "2014-12-31",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 10,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0571144e9db124ac7295f67c56ab3b225251d9a1a4f2c1a068713e494f09aeaa",
+      "u_date": "2014-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0571144e9db124ac7295f67c56ab3b225251d9a1a4f2c1a068713e494f09aeaa",
+      "u_date": "2014-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 23,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0571144e9db124ac7295f67c56ab3b225251d9a1a4f2c1a068713e494f09aeaa",
+      "u_date": "2014-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 1.3322676295501878e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35629c02cc3f6a125ef570a4b77057f39723bfc582635bd35b3de4c4e798fb17",
+      "u_date": "2015-01-05",
+      "family_id": "CFFEX.IF",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35629c02cc3f6a125ef570a4b77057f39723bfc582635bd35b3de4c4e798fb17",
+      "u_date": "2015-01-05",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35629c02cc3f6a125ef570a4b77057f39723bfc582635bd35b3de4c4e798fb17",
+      "u_date": "2015-01-05",
+      "family_id": "CFFEX.IF",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2655d290a35092ef63767af54974df5be29cd187db3ecfd31be2722e7aaa4f41",
+      "u_date": "2015-01-05",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2655d290a35092ef63767af54974df5be29cd187db3ecfd31be2722e7aaa4f41",
+      "u_date": "2015-01-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 23,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2655d290a35092ef63767af54974df5be29cd187db3ecfd31be2722e7aaa4f41",
+      "u_date": "2015-01-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2965b4f3282f1f353643d32d606a3684b1582227021ed1997d9a4a8c4198d242",
+      "u_date": "2015-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2965b4f3282f1f353643d32d606a3684b1582227021ed1997d9a4a8c4198d242",
+      "u_date": "2015-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 23,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2965b4f3282f1f353643d32d606a3684b1582227021ed1997d9a4a8c4198d242",
+      "u_date": "2015-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 11,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_908b3cc217a10de37df73a71b9a57b74747ac7104f1f4efb940307a45f8a149c",
+      "u_date": "2015-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 40,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_908b3cc217a10de37df73a71b9a57b74747ac7104f1f4efb940307a45f8a149c",
+      "u_date": "2015-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 26,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_908b3cc217a10de37df73a71b9a57b74747ac7104f1f4efb940307a45f8a149c",
+      "u_date": "2015-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 14,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1feb22e47bd631abc232371fef84a1bdaee7d369d1e0caf243e2e2d9f7983be6",
+      "u_date": "2015-07-06",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 40,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1feb22e47bd631abc232371fef84a1bdaee7d369d1e0caf243e2e2d9f7983be6",
+      "u_date": "2015-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1feb22e47bd631abc232371fef84a1bdaee7d369d1e0caf243e2e2d9f7983be6",
+      "u_date": "2015-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0b82c5dffc91da762aec6d852173b56115587b1dab8ba46bdf9169bf6dd70ba",
+      "u_date": "2015-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 40,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0b82c5dffc91da762aec6d852173b56115587b1dab8ba46bdf9169bf6dd70ba",
+      "u_date": "2015-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b0b82c5dffc91da762aec6d852173b56115587b1dab8ba46bdf9169bf6dd70ba",
+      "u_date": "2015-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_dded3ab8bb12e6ffc510d10eadf60960bce8e727a3bb3923231ab6f177b5958a",
+      "u_date": "2015-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_dded3ab8bb12e6ffc510d10eadf60960bce8e727a3bb3923231ab6f177b5958a",
+      "u_date": "2015-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_dded3ab8bb12e6ffc510d10eadf60960bce8e727a3bb3923231ab6f177b5958a",
+      "u_date": "2015-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32c81ea7900486b7083b2796f77457848f7c9341d0d82ce2edba58320d700143",
+      "u_date": "2015-12-31",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32c81ea7900486b7083b2796f77457848f7c9341d0d82ce2edba58320d700143",
+      "u_date": "2015-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32c81ea7900486b7083b2796f77457848f7c9341d0d82ce2edba58320d700143",
+      "u_date": "2015-12-31",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7f537b840921421c0d6a26ea2bf5927428df3c645d07165ee2a8a4b46128e888",
+      "u_date": "2015-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7f537b840921421c0d6a26ea2bf5927428df3c645d07165ee2a8a4b46128e888",
+      "u_date": "2015-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7f537b840921421c0d6a26ea2bf5927428df3c645d07165ee2a8a4b46128e888",
+      "u_date": "2015-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39755ec81ddd4418b46d8fe8977dbcc97aa9637771445e4f8758a7112444ac63",
+      "u_date": "2016-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39755ec81ddd4418b46d8fe8977dbcc97aa9637771445e4f8758a7112444ac63",
+      "u_date": "2016-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39755ec81ddd4418b46d8fe8977dbcc97aa9637771445e4f8758a7112444ac63",
+      "u_date": "2016-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0fc410a97eed761c96ed9b280cb0ff79ab7f37fe031b403b51f677335a822c6d",
+      "u_date": "2016-01-04",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0fc410a97eed761c96ed9b280cb0ff79ab7f37fe031b403b51f677335a822c6d",
+      "u_date": "2016-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 3.469446951953614e-18
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0fc410a97eed761c96ed9b280cb0ff79ab7f37fe031b403b51f677335a822c6d",
+      "u_date": "2016-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9656318f16512618b3698cfa047ecb9590c697ccc6e24f97b713e32186a7f8b7",
+      "u_date": "2016-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9656318f16512618b3698cfa047ecb9590c697ccc6e24f97b713e32186a7f8b7",
+      "u_date": "2016-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9656318f16512618b3698cfa047ecb9590c697ccc6e24f97b713e32186a7f8b7",
+      "u_date": "2016-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_150dcd8f18bf8c77ee2e1c9550544eb3de8e5a4af062ea959666f0cec124c986",
+      "u_date": "2016-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_150dcd8f18bf8c77ee2e1c9550544eb3de8e5a4af062ea959666f0cec124c986",
+      "u_date": "2016-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_150dcd8f18bf8c77ee2e1c9550544eb3de8e5a4af062ea959666f0cec124c986",
+      "u_date": "2016-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_777e3c961d83f18db2b572fc43c609cef71e88c6cb88f2c6125698c1dee6c5b2",
+      "u_date": "2016-07-05",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 36,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_777e3c961d83f18db2b572fc43c609cef71e88c6cb88f2c6125698c1dee6c5b2",
+      "u_date": "2016-07-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 24,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_777e3c961d83f18db2b572fc43c609cef71e88c6cb88f2c6125698c1dee6c5b2",
+      "u_date": "2016-07-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_979a390e70d441701a65d8acf527460ab9b0eced6f31e34c894d156195652b39",
+      "u_date": "2016-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 36,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_979a390e70d441701a65d8acf527460ab9b0eced6f31e34c894d156195652b39",
+      "u_date": "2016-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 24,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_979a390e70d441701a65d8acf527460ab9b0eced6f31e34c894d156195652b39",
+      "u_date": "2016-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_299f68c4c07e68b02356fc2ee1e41cbdc6ced584a9c4ff4c50818779a29413a2",
+      "u_date": "2016-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_299f68c4c07e68b02356fc2ee1e41cbdc6ced584a9c4ff4c50818779a29413a2",
+      "u_date": "2016-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_299f68c4c07e68b02356fc2ee1e41cbdc6ced584a9c4ff4c50818779a29413a2",
+      "u_date": "2016-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f0543788c68a8da30b6745cd379547314462edd4934dd739066aede17f3ec93c",
+      "u_date": "2016-12-30",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f0543788c68a8da30b6745cd379547314462edd4934dd739066aede17f3ec93c",
+      "u_date": "2016-12-30",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f0543788c68a8da30b6745cd379547314462edd4934dd739066aede17f3ec93c",
+      "u_date": "2016-12-30",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d9c2a2f7b4efd632c46b6e21bdf64e3e6a1e90d91a14ec2b4d4feb605b49fd4e",
+      "u_date": "2016-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 5.329070518200751e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d9c2a2f7b4efd632c46b6e21bdf64e3e6a1e90d91a14ec2b4d4feb605b49fd4e",
+      "u_date": "2016-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d9c2a2f7b4efd632c46b6e21bdf64e3e6a1e90d91a14ec2b4d4feb605b49fd4e",
+      "u_date": "2016-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 4.163336342344337e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e9b06fb5ff86c7a84ee8ea8ffd8ac015a341e218786603817c97fa91de259bbd",
+      "u_date": "2017-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e9b06fb5ff86c7a84ee8ea8ffd8ac015a341e218786603817c97fa91de259bbd",
+      "u_date": "2017-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e9b06fb5ff86c7a84ee8ea8ffd8ac015a341e218786603817c97fa91de259bbd",
+      "u_date": "2017-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_015132d848580ded2212dcd4b2d9001e4b9c9b96780fa6a130286a3b9fa73514",
+      "u_date": "2017-01-03",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_015132d848580ded2212dcd4b2d9001e4b9c9b96780fa6a130286a3b9fa73514",
+      "u_date": "2017-01-03",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_015132d848580ded2212dcd4b2d9001e4b9c9b96780fa6a130286a3b9fa73514",
+      "u_date": "2017-01-03",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1906fd8c3e4640daf96cfbffe02890315cb8af6ff16e0925b0910f0399f70b5",
+      "u_date": "2017-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1906fd8c3e4640daf96cfbffe02890315cb8af6ff16e0925b0910f0399f70b5",
+      "u_date": "2017-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c1906fd8c3e4640daf96cfbffe02890315cb8af6ff16e0925b0910f0399f70b5",
+      "u_date": "2017-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7b70a079dda5d28a47bf5196929823513afa0e12aa75f752c935ebad414712b6",
+      "u_date": "2017-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7b70a079dda5d28a47bf5196929823513afa0e12aa75f752c935ebad414712b6",
+      "u_date": "2017-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7b70a079dda5d28a47bf5196929823513afa0e12aa75f752c935ebad414712b6",
+      "u_date": "2017-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_644b44ae77c1fc49173c20f4712703c041866d66abfaeee2d21de50d5c8b3270",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_644b44ae77c1fc49173c20f4712703c041866d66abfaeee2d21de50d5c8b3270",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_644b44ae77c1fc49173c20f4712703c041866d66abfaeee2d21de50d5c8b3270",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1dd07c1fdd909e48e757c19b2e2b4048d255a4a79760eb33ed4e2ab195e1d31e",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.M",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1dd07c1fdd909e48e757c19b2e2b4048d255a4a79760eb33ed4e2ab195e1d31e",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.M",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1dd07c1fdd909e48e757c19b2e2b4048d255a4a79760eb33ed4e2ab195e1d31e",
+      "u_date": "2017-07-06",
+      "family_id": "DCE.M",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5454230f9a2593a64e3ad264de930b07d30316b3af3c1be3e2e73c532792bf34",
+      "u_date": "2017-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 37,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5454230f9a2593a64e3ad264de930b07d30316b3af3c1be3e2e73c532792bf34",
+      "u_date": "2017-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5454230f9a2593a64e3ad264de930b07d30316b3af3c1be3e2e73c532792bf34",
+      "u_date": "2017-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3a1c3689b19ff3e09bdce702bcdf8610014812066309b00095274b6690835ee0",
+      "u_date": "2017-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3a1c3689b19ff3e09bdce702bcdf8610014812066309b00095274b6690835ee0",
+      "u_date": "2017-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3a1c3689b19ff3e09bdce702bcdf8610014812066309b00095274b6690835ee0",
+      "u_date": "2017-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42240403d2d1b47c7f25016233e3cc7751a9b0058a6c023e05247047817ae421",
+      "u_date": "2017-12-29",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 38,
+      "max_abs_error": 1.0408340855860843e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42240403d2d1b47c7f25016233e3cc7751a9b0058a6c023e05247047817ae421",
+      "u_date": "2017-12-29",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 26,
+      "max_abs_error": 3.0682921481339775e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42240403d2d1b47c7f25016233e3cc7751a9b0058a6c023e05247047817ae421",
+      "u_date": "2017-12-29",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3e041ff6acf07ec530356a038ae1f582e9ef2f1ba320eed0b63e49f84f04b3ac",
+      "u_date": "2017-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 38,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3e041ff6acf07ec530356a038ae1f582e9ef2f1ba320eed0b63e49f84f04b3ac",
+      "u_date": "2017-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 5.898059818321144e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3e041ff6acf07ec530356a038ae1f582e9ef2f1ba320eed0b63e49f84f04b3ac",
+      "u_date": "2017-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 13,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bb6d02250dd8856d16bc441223843814731937f1b8a296000d67738802c936ff",
+      "u_date": "2018-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bb6d02250dd8856d16bc441223843814731937f1b8a296000d67738802c936ff",
+      "u_date": "2018-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bb6d02250dd8856d16bc441223843814731937f1b8a296000d67738802c936ff",
+      "u_date": "2018-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c8e399c9b264413ff47aaa4c80d6bb6be4d821466efda36e539eb1d4833445c6",
+      "u_date": "2018-01-02",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 38,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c8e399c9b264413ff47aaa4c80d6bb6be4d821466efda36e539eb1d4833445c6",
+      "u_date": "2018-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c8e399c9b264413ff47aaa4c80d6bb6be4d821466efda36e539eb1d4833445c6",
+      "u_date": "2018-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 13,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fdd9ef836c575a564d543a55ee8a413331e87503e726e6c42f1071571d9ad93e",
+      "u_date": "2018-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 38,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fdd9ef836c575a564d543a55ee8a413331e87503e726e6c42f1071571d9ad93e",
+      "u_date": "2018-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 2.6645352591003757e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fdd9ef836c575a564d543a55ee8a413331e87503e726e6c42f1071571d9ad93e",
+      "u_date": "2018-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 13,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b96a3961533e3d56d3fdcfa16402c605e913c5ed1120d66057d1a6364db6b487",
+      "u_date": "2018-07-04",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b96a3961533e3d56d3fdcfa16402c605e913c5ed1120d66057d1a6364db6b487",
+      "u_date": "2018-07-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b96a3961533e3d56d3fdcfa16402c605e913c5ed1120d66057d1a6364db6b487",
+      "u_date": "2018-07-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_848a88c3717acb3e8308aedd04ad02982dcca5c3e55b65ea7bc83169eee11fd3",
+      "u_date": "2018-07-04",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 40,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_848a88c3717acb3e8308aedd04ad02982dcca5c3e55b65ea7bc83169eee11fd3",
+      "u_date": "2018-07-04",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 28,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_848a88c3717acb3e8308aedd04ad02982dcca5c3e55b65ea7bc83169eee11fd3",
+      "u_date": "2018-07-04",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 12,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8ec2bd4d074f7d73d6d390af91a230fad896b396c88996b5b211856a3998f210",
+      "u_date": "2018-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 40,
+      "max_abs_error": 5.204170427930421e-18
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8ec2bd4d074f7d73d6d390af91a230fad896b396c88996b5b211856a3998f210",
+      "u_date": "2018-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 27,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8ec2bd4d074f7d73d6d390af91a230fad896b396c88996b5b211856a3998f210",
+      "u_date": "2018-07-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 13,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_955ca2caa23dea8283d674a03916adf64978d9c9dbc3bdceccf1ea4c8a9685b1",
+      "u_date": "2018-12-28",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 48,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_955ca2caa23dea8283d674a03916adf64978d9c9dbc3bdceccf1ea4c8a9685b1",
+      "u_date": "2018-12-28",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 6.938893903907228e-18
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_955ca2caa23dea8283d674a03916adf64978d9c9dbc3bdceccf1ea4c8a9685b1",
+      "u_date": "2018-12-28",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 18,
+      "max_abs_error": 4.163336342344337e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ee9ceeb90bbb3dadaf2f34677a90945eaa5fdd0208018d7b41f9d26b3b0325d",
+      "u_date": "2018-12-28",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 48,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ee9ceeb90bbb3dadaf2f34677a90945eaa5fdd0208018d7b41f9d26b3b0325d",
+      "u_date": "2018-12-28",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1ee9ceeb90bbb3dadaf2f34677a90945eaa5fdd0208018d7b41f9d26b3b0325d",
+      "u_date": "2018-12-28",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 18,
+      "max_abs_error": 3.268869550043796e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2855e8e938c588de77e47b0b7b99077db040d066be0c594ad530c8d352fd17c6",
+      "u_date": "2018-12-28",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 48,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2855e8e938c588de77e47b0b7b99077db040d066be0c594ad530c8d352fd17c6",
+      "u_date": "2018-12-28",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 29,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2855e8e938c588de77e47b0b7b99077db040d066be0c594ad530c8d352fd17c6",
+      "u_date": "2018-12-28",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 19,
+      "max_abs_error": 6.245004513516506e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d0ad04023999fe8ee52378a8a157e4b149634ad83c7f3c979786d41545e53347",
+      "u_date": "2019-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d0ad04023999fe8ee52378a8a157e4b149634ad83c7f3c979786d41545e53347",
+      "u_date": "2019-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 29,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d0ad04023999fe8ee52378a8a157e4b149634ad83c7f3c979786d41545e53347",
+      "u_date": "2019-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 18,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c5b721bd5f0d03cd51c6f5795881c532ec7738adc3873ce175fea1e912ccf988",
+      "u_date": "2019-01-02",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c5b721bd5f0d03cd51c6f5795881c532ec7738adc3873ce175fea1e912ccf988",
+      "u_date": "2019-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 28,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c5b721bd5f0d03cd51c6f5795881c532ec7738adc3873ce175fea1e912ccf988",
+      "u_date": "2019-01-02",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 19,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_83839ceb8148ab3badfe8025c42db15e95969c7f62ed96e0148bbcffb63133c8",
+      "u_date": "2019-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_83839ceb8148ab3badfe8025c42db15e95969c7f62ed96e0148bbcffb63133c8",
+      "u_date": "2019-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 28,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_83839ceb8148ab3badfe8025c42db15e95969c7f62ed96e0148bbcffb63133c8",
+      "u_date": "2019-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 19,
+      "max_abs_error": 9.71445146547012e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2a191d5640f17771e34363aaf9da6d0038a57683c6a273deb3b25064dc6a0f58",
+      "u_date": "2019-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2a191d5640f17771e34363aaf9da6d0038a57683c6a273deb3b25064dc6a0f58",
+      "u_date": "2019-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 31,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2a191d5640f17771e34363aaf9da6d0038a57683c6a273deb3b25064dc6a0f58",
+      "u_date": "2019-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6ed7eaaed80b8addeaa48b886ef652d1a21a4ef59dd150dd652dba2f94101f5",
+      "u_date": "2019-07-05",
+      "family_id": "DCE.EG",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6ed7eaaed80b8addeaa48b886ef652d1a21a4ef59dd150dd652dba2f94101f5",
+      "u_date": "2019-07-05",
+      "family_id": "DCE.EG",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 2.6645352591003757e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6ed7eaaed80b8addeaa48b886ef652d1a21a4ef59dd150dd652dba2f94101f5",
+      "u_date": "2019-07-05",
+      "family_id": "DCE.EG",
+      "scope": "holdout_1",
+      "peer_count": 17,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4efe0fb2a579a5f2c45c4f318835dc308b186cc61d9577792eafb04ad5eec398",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.RU",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4efe0fb2a579a5f2c45c4f318835dc308b186cc61d9577792eafb04ad5eec398",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.RU",
+      "scope": "holdout_0",
+      "peer_count": 31,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4efe0fb2a579a5f2c45c4f318835dc308b186cc61d9577792eafb04ad5eec398",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.RU",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9fee6bdd8ec37e2529a8664a07a4d07f4b5f508ecc256707b7e8ac1ff6f689de",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9fee6bdd8ec37e2529a8664a07a4d07f4b5f508ecc256707b7e8ac1ff6f689de",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9fee6bdd8ec37e2529a8664a07a4d07f4b5f508ecc256707b7e8ac1ff6f689de",
+      "u_date": "2019-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 17,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5ef4b5a308884b5646e20dc059daf8ae227de862df45fe9c1bf92b47fb877622",
+      "u_date": "2019-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5ef4b5a308884b5646e20dc059daf8ae227de862df45fe9c1bf92b47fb877622",
+      "u_date": "2019-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 32,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_5ef4b5a308884b5646e20dc059daf8ae227de862df45fe9c1bf92b47fb877622",
+      "u_date": "2019-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9903d52032caaf98d8d4d13d0eac50d523c8e259a363224253447685800d93f6",
+      "u_date": "2019-12-31",
+      "family_id": "DCE.FB",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9903d52032caaf98d8d4d13d0eac50d523c8e259a363224253447685800d93f6",
+      "u_date": "2019-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9903d52032caaf98d8d4d13d0eac50d523c8e259a363224253447685800d93f6",
+      "u_date": "2019-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6bffd16d0a2160441a4b210be44e7001bd80646d1b87f19d33c43c8a2dd5651e",
+      "u_date": "2019-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6bffd16d0a2160441a4b210be44e7001bd80646d1b87f19d33c43c8a2dd5651e",
+      "u_date": "2019-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 31,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6bffd16d0a2160441a4b210be44e7001bd80646d1b87f19d33c43c8a2dd5651e",
+      "u_date": "2019-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_cb2599abcfda71b664cc14902bf9943a0bc5611631b3577ea3a9c6647d841a86",
+      "u_date": "2020-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_cb2599abcfda71b664cc14902bf9943a0bc5611631b3577ea3a9c6647d841a86",
+      "u_date": "2020-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 32,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_cb2599abcfda71b664cc14902bf9943a0bc5611631b3577ea3a9c6647d841a86",
+      "u_date": "2020-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3913e9893815a7b57366964ff7af5733be6d0aa6e827116974b0b1c07388a671",
+      "u_date": "2020-01-02",
+      "family_id": "DCE.FB",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3913e9893815a7b57366964ff7af5733be6d0aa6e827116974b0b1c07388a671",
+      "u_date": "2020-01-02",
+      "family_id": "DCE.FB",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3913e9893815a7b57366964ff7af5733be6d0aa6e827116974b0b1c07388a671",
+      "u_date": "2020-01-02",
+      "family_id": "DCE.FB",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3c9fbaefdd2a0c3128fc1d86776a97a0af10a18748cc2e63ab4e694a5e189aaa",
+      "u_date": "2020-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3c9fbaefdd2a0c3128fc1d86776a97a0af10a18748cc2e63ab4e694a5e189aaa",
+      "u_date": "2020-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 31,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3c9fbaefdd2a0c3128fc1d86776a97a0af10a18748cc2e63ab4e694a5e189aaa",
+      "u_date": "2020-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae5b287bf5c024c335f0ad6a9886ff7f8b9539b0d8fa886963ed5384c20b3955",
+      "u_date": "2020-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 50,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae5b287bf5c024c335f0ad6a9886ff7f8b9539b0d8fa886963ed5384c20b3955",
+      "u_date": "2020-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 35,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ae5b287bf5c024c335f0ad6a9886ff7f8b9539b0d8fa886963ed5384c20b3955",
+      "u_date": "2020-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_92bcf7734b0410fb5afa62d6cbe89d275bad6204f4e2b4772cd1519992865aa4",
+      "u_date": "2020-07-07",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_92bcf7734b0410fb5afa62d6cbe89d275bad6204f4e2b4772cd1519992865aa4",
+      "u_date": "2020-07-07",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_92bcf7734b0410fb5afa62d6cbe89d275bad6204f4e2b4772cd1519992865aa4",
+      "u_date": "2020-07-07",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6e680bbb03f6c8ff9bf9c3b696c24aea9d7e12da57331790e7b3dd95d1798cd",
+      "u_date": "2020-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 50,
+      "max_abs_error": 3.3306690738754696e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6e680bbb03f6c8ff9bf9c3b696c24aea9d7e12da57331790e7b3dd95d1798cd",
+      "u_date": "2020-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c6e680bbb03f6c8ff9bf9c3b696c24aea9d7e12da57331790e7b3dd95d1798cd",
+      "u_date": "2020-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0118ebcfd356f5cd01977aa9ad0944ee315cef88b85f4cf0cd76647b638bb46f",
+      "u_date": "2020-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0118ebcfd356f5cd01977aa9ad0944ee315cef88b85f4cf0cd76647b638bb46f",
+      "u_date": "2020-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0118ebcfd356f5cd01977aa9ad0944ee315cef88b85f4cf0cd76647b638bb46f",
+      "u_date": "2020-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6d31a1d2f1947e48a0cb5047bae19073c7d2ed707be744fe4546efc5277bedb6",
+      "u_date": "2020-12-31",
+      "family_id": "DCE.FB",
+      "scope": "main",
+      "peer_count": 42,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6d31a1d2f1947e48a0cb5047bae19073c7d2ed707be744fe4546efc5277bedb6",
+      "u_date": "2020-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_0",
+      "peer_count": 28,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6d31a1d2f1947e48a0cb5047bae19073c7d2ed707be744fe4546efc5277bedb6",
+      "u_date": "2020-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_1",
+      "peer_count": 14,
+      "max_abs_error": 1.6653345369377348e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a502770a47459c85f2a7a11db6dd2886d47901d02a4ddf359f528c9a218516d1",
+      "u_date": "2020-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a502770a47459c85f2a7a11db6dd2886d47901d02a4ddf359f528c9a218516d1",
+      "u_date": "2020-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a502770a47459c85f2a7a11db6dd2886d47901d02a4ddf359f528c9a218516d1",
+      "u_date": "2020-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4daee82ec71201372b66204084516f63d6eed539b58dd5a3ac42aaefcf06d605",
+      "u_date": "2021-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4daee82ec71201372b66204084516f63d6eed539b58dd5a3ac42aaefcf06d605",
+      "u_date": "2021-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_4daee82ec71201372b66204084516f63d6eed539b58dd5a3ac42aaefcf06d605",
+      "u_date": "2021-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_012d4d6d11ee2b96f839246e0d9af3f2e7fb4985d32482a8a71d9d87dda80e94",
+      "u_date": "2021-01-04",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 43,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_012d4d6d11ee2b96f839246e0d9af3f2e7fb4985d32482a8a71d9d87dda80e94",
+      "u_date": "2021-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 27,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_012d4d6d11ee2b96f839246e0d9af3f2e7fb4985d32482a8a71d9d87dda80e94",
+      "u_date": "2021-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 16,
+      "max_abs_error": 6.591949208711867e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d091a35fdd4a09a28976809361948a23409b9c4ee0c3664182f816f18706b424",
+      "u_date": "2021-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d091a35fdd4a09a28976809361948a23409b9c4ee0c3664182f816f18706b424",
+      "u_date": "2021-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d091a35fdd4a09a28976809361948a23409b9c4ee0c3664182f816f18706b424",
+      "u_date": "2021-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_224b2982fe737ba10ac96f8a09140cf9a8d5bc4805d977aea3ef3df982a71e00",
+      "u_date": "2021-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_224b2982fe737ba10ac96f8a09140cf9a8d5bc4805d977aea3ef3df982a71e00",
+      "u_date": "2021-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_224b2982fe737ba10ac96f8a09140cf9a8d5bc4805d977aea3ef3df982a71e00",
+      "u_date": "2021-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_94888e9bbe50570fd85695fea70caa8d157a54acca437333e5211712588f0d31",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 58,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_94888e9bbe50570fd85695fea70caa8d157a54acca437333e5211712588f0d31",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 37,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_94888e9bbe50570fd85695fea70caa8d157a54acca437333e5211712588f0d31",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 21,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_889bca944c52d52e5483920bf30c72efe97359d6b9b233fb24d4d3c96bf71ba1",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.PG",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_889bca944c52d52e5483920bf30c72efe97359d6b9b233fb24d4d3c96bf71ba1",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.PG",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_889bca944c52d52e5483920bf30c72efe97359d6b9b233fb24d4d3c96bf71ba1",
+      "u_date": "2021-07-06",
+      "family_id": "DCE.PG",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2b9f62366b6ff68c078752ecc40b4dffc016180c37d281ff81b641c33e8ad12",
+      "u_date": "2021-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 58,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2b9f62366b6ff68c078752ecc40b4dffc016180c37d281ff81b641c33e8ad12",
+      "u_date": "2021-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 37,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e2b9f62366b6ff68c078752ecc40b4dffc016180c37d281ff81b641c33e8ad12",
+      "u_date": "2021-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 21,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d7bf5c56da60bab403fb4c44d46ac75aba04678e50b9660ce47b2bceae80565",
+      "u_date": "2021-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d7bf5c56da60bab403fb4c44d46ac75aba04678e50b9660ce47b2bceae80565",
+      "u_date": "2021-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d7bf5c56da60bab403fb4c44d46ac75aba04678e50b9660ce47b2bceae80565",
+      "u_date": "2021-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_325312fc983d8fdf3d235c76f2b1fc7e8d8ba58e1b3a2c1f9187d7b8bd0772bb",
+      "u_date": "2021-12-31",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 39,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_325312fc983d8fdf3d235c76f2b1fc7e8d8ba58e1b3a2c1f9187d7b8bd0772bb",
+      "u_date": "2021-12-31",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 25,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_325312fc983d8fdf3d235c76f2b1fc7e8d8ba58e1b3a2c1f9187d7b8bd0772bb",
+      "u_date": "2021-12-31",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 14,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e00bd51516bba4819557af59ed0f059204e0450cdbd078446de6bde0261f2c08",
+      "u_date": "2021-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e00bd51516bba4819557af59ed0f059204e0450cdbd078446de6bde0261f2c08",
+      "u_date": "2021-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_e00bd51516bba4819557af59ed0f059204e0450cdbd078446de6bde0261f2c08",
+      "u_date": "2021-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b8724a2c18705efdef7cba02f29a4dc4bef5ea6f8f85021d9f2d86c6bdb0d13d",
+      "u_date": "2022-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b8724a2c18705efdef7cba02f29a4dc4bef5ea6f8f85021d9f2d86c6bdb0d13d",
+      "u_date": "2022-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b8724a2c18705efdef7cba02f29a4dc4bef5ea6f8f85021d9f2d86c6bdb0d13d",
+      "u_date": "2022-01-04",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a0734aebe27dd634fe8d82137973ac34dae807aba1668c4c27b80bf1219e12",
+      "u_date": "2022-01-04",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 39,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a0734aebe27dd634fe8d82137973ac34dae807aba1668c4c27b80bf1219e12",
+      "u_date": "2022-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 24,
+      "max_abs_error": 6.938893903907228e-18
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_32a0734aebe27dd634fe8d82137973ac34dae807aba1668c4c27b80bf1219e12",
+      "u_date": "2022-01-04",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 15,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_69e2a70985220912568f225da54aae3097effb2a71112cebfd0947f0597a0ba4",
+      "u_date": "2022-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_69e2a70985220912568f225da54aae3097effb2a71112cebfd0947f0597a0ba4",
+      "u_date": "2022-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_69e2a70985220912568f225da54aae3097effb2a71112cebfd0947f0597a0ba4",
+      "u_date": "2022-01-04",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1b5df9c787ed13591cb0671c24da83494383362e3fe6bea5475f9299c494473c",
+      "u_date": "2022-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1b5df9c787ed13591cb0671c24da83494383362e3fe6bea5475f9299c494473c",
+      "u_date": "2022-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_1b5df9c787ed13591cb0671c24da83494383362e3fe6bea5475f9299c494473c",
+      "u_date": "2022-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9490654ff7b4f42443702fc52c1d8c78c23ba10c7cc56e2e98e65f30d812861d",
+      "u_date": "2022-07-07",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 56,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9490654ff7b4f42443702fc52c1d8c78c23ba10c7cc56e2e98e65f30d812861d",
+      "u_date": "2022-07-07",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9490654ff7b4f42443702fc52c1d8c78c23ba10c7cc56e2e98e65f30d812861d",
+      "u_date": "2022-07-07",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 22,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c368002aa11d987dc55ec218952e74faad6b2f5b843d6dbdc7ea7c505a6cdcea",
+      "u_date": "2022-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 56,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c368002aa11d987dc55ec218952e74faad6b2f5b843d6dbdc7ea7c505a6cdcea",
+      "u_date": "2022-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 34,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c368002aa11d987dc55ec218952e74faad6b2f5b843d6dbdc7ea7c505a6cdcea",
+      "u_date": "2022-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 22,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_30e0a600ca5aa5587cbcaab65d9ed857af637c381bc04edb6868f7c32c8e2adb",
+      "u_date": "2022-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_30e0a600ca5aa5587cbcaab65d9ed857af637c381bc04edb6868f7c32c8e2adb",
+      "u_date": "2022-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_30e0a600ca5aa5587cbcaab65d9ed857af637c381bc04edb6868f7c32c8e2adb",
+      "u_date": "2022-12-30",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_adb452e1ef72e80eb3e4f225e73e00d27fe91fdf4dd11af4249e6d071637559d",
+      "u_date": "2022-12-30",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 49,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_adb452e1ef72e80eb3e4f225e73e00d27fe91fdf4dd11af4249e6d071637559d",
+      "u_date": "2022-12-30",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 29,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_adb452e1ef72e80eb3e4f225e73e00d27fe91fdf4dd11af4249e6d071637559d",
+      "u_date": "2022-12-30",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 20,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a72fd61232c54019a4578e883d5c3b7513d8a62bf2ea1d2084ef3e0fa21472c9",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.WR",
+      "scope": "main",
+      "peer_count": 49,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a72fd61232c54019a4578e883d5c3b7513d8a62bf2ea1d2084ef3e0fa21472c9",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.WR",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a72fd61232c54019a4578e883d5c3b7513d8a62bf2ea1d2084ef3e0fa21472c9",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.WR",
+      "scope": "holdout_1",
+      "peer_count": 19,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_342081a5bd4e779d3427f04def1d0fae8245dc980ffaacab33040720f48612bb",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 49,
+      "max_abs_error": 1.0658141036401503e-14
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_342081a5bd4e779d3427f04def1d0fae8245dc980ffaacab33040720f48612bb",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 29,
+      "max_abs_error": 1.3877787807814457e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_342081a5bd4e779d3427f04def1d0fae8245dc980ffaacab33040720f48612bb",
+      "u_date": "2022-12-30",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 20,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b5c391e3b2480e4ac74bd84bf11f86ab949f402418f86e55fc30b22909cf2059",
+      "u_date": "2023-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b5c391e3b2480e4ac74bd84bf11f86ab949f402418f86e55fc30b22909cf2059",
+      "u_date": "2023-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b5c391e3b2480e4ac74bd84bf11f86ab949f402418f86e55fc30b22909cf2059",
+      "u_date": "2023-01-03",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d6df6100cb80fea30747cb2e74e5f3ed324d8248905b35ecc908a14f5413c350",
+      "u_date": "2023-01-03",
+      "family_id": "DCE.I",
+      "scope": "main",
+      "peer_count": 49,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d6df6100cb80fea30747cb2e74e5f3ed324d8248905b35ecc908a14f5413c350",
+      "u_date": "2023-01-03",
+      "family_id": "DCE.I",
+      "scope": "holdout_0",
+      "peer_count": 30,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d6df6100cb80fea30747cb2e74e5f3ed324d8248905b35ecc908a14f5413c350",
+      "u_date": "2023-01-03",
+      "family_id": "DCE.I",
+      "scope": "holdout_1",
+      "peer_count": 19,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7e65bd9b61d3fab3e7194f6b90452e4253752f49f200a1675d9c09259f0c6bfb",
+      "u_date": "2023-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 49,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7e65bd9b61d3fab3e7194f6b90452e4253752f49f200a1675d9c09259f0c6bfb",
+      "u_date": "2023-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 29,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_7e65bd9b61d3fab3e7194f6b90452e4253752f49f200a1675d9c09259f0c6bfb",
+      "u_date": "2023-01-03",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 20,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_03c23e1fddde4a8bd5e13f362fe546eb0d2b365efe7823e1e0580d8dc55effc2",
+      "u_date": "2023-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_03c23e1fddde4a8bd5e13f362fe546eb0d2b365efe7823e1e0580d8dc55effc2",
+      "u_date": "2023-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_03c23e1fddde4a8bd5e13f362fe546eb0d2b365efe7823e1e0580d8dc55effc2",
+      "u_date": "2023-07-06",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48428219b88c922e4a587fcdf3d30f10f9974b2aa7267b7ac9324d74bc6d0a3f",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.A",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48428219b88c922e4a587fcdf3d30f10f9974b2aa7267b7ac9324d74bc6d0a3f",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.A",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_48428219b88c922e4a587fcdf3d30f10f9974b2aa7267b7ac9324d74bc6d0a3f",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.A",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d2183bac340d51670b56504aaa75d9be814b64161fbf2ebd1acb3dfcf4ce5ee9",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 52,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d2183bac340d51670b56504aaa75d9be814b64161fbf2ebd1acb3dfcf4ce5ee9",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 35,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d2183bac340d51670b56504aaa75d9be814b64161fbf2ebd1acb3dfcf4ce5ee9",
+      "u_date": "2023-07-06",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 17,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89e717e757937e047b123e13d600227a1f2058937cfabf5931746581144982f7",
+      "u_date": "2023-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 52,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89e717e757937e047b123e13d600227a1f2058937cfabf5931746581144982f7",
+      "u_date": "2023-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 35,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_89e717e757937e047b123e13d600227a1f2058937cfabf5931746581144982f7",
+      "u_date": "2023-07-06",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 17,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f27ed43f7cf2881388dc78a410eec34e72718028aa7c16d134f8922c419d6e19",
+      "u_date": "2023-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f27ed43f7cf2881388dc78a410eec34e72718028aa7c16d134f8922c419d6e19",
+      "u_date": "2023-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f27ed43f7cf2881388dc78a410eec34e72718028aa7c16d134f8922c419d6e19",
+      "u_date": "2023-12-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65a21e8f395244841321884fd406bb84b14f0c7a4220d873607abc10a0b28e2e",
+      "u_date": "2023-12-29",
+      "family_id": "DCE.EG",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65a21e8f395244841321884fd406bb84b14f0c7a4220d873607abc10a0b28e2e",
+      "u_date": "2023-12-29",
+      "family_id": "DCE.EG",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 1.734723475976807e-18
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65a21e8f395244841321884fd406bb84b14f0c7a4220d873607abc10a0b28e2e",
+      "u_date": "2023-12-29",
+      "family_id": "DCE.EG",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a3ef40725b75a74dc63255bd1cea8a1a239718405e1f29e0ed106312ce674eb9",
+      "u_date": "2023-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a3ef40725b75a74dc63255bd1cea8a1a239718405e1f29e0ed106312ce674eb9",
+      "u_date": "2023-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 27,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_a3ef40725b75a74dc63255bd1cea8a1a239718405e1f29e0ed106312ce674eb9",
+      "u_date": "2023-12-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 20,
+      "max_abs_error": 3.469446951953614e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8a1fd8fdd6c0f8ce1b84b898cc8355f29f0752ea70a83f17c8132379e51dbb13",
+      "u_date": "2024-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8a1fd8fdd6c0f8ce1b84b898cc8355f29f0752ea70a83f17c8132379e51dbb13",
+      "u_date": "2024-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_8a1fd8fdd6c0f8ce1b84b898cc8355f29f0752ea70a83f17c8132379e51dbb13",
+      "u_date": "2024-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6ff94e351107a8d49e0e4a9f0fe35a471ae8b759749c41b93b298a07f90d7fae",
+      "u_date": "2024-01-02",
+      "family_id": "DCE.EB",
+      "scope": "main",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6ff94e351107a8d49e0e4a9f0fe35a471ae8b759749c41b93b298a07f90d7fae",
+      "u_date": "2024-01-02",
+      "family_id": "DCE.EB",
+      "scope": "holdout_0",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6ff94e351107a8d49e0e4a9f0fe35a471ae8b759749c41b93b298a07f90d7fae",
+      "u_date": "2024-01-02",
+      "family_id": "DCE.EB",
+      "scope": "holdout_1",
+      "peer_count": 0,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42945240c48b918bdd7946c2897193bab9b92d870805b3ce4b51806d0f1ca1fd",
+      "u_date": "2024-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 47,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42945240c48b918bdd7946c2897193bab9b92d870805b3ce4b51806d0f1ca1fd",
+      "u_date": "2024-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 27,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_42945240c48b918bdd7946c2897193bab9b92d870805b3ce4b51806d0f1ca1fd",
+      "u_date": "2024-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 20,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_893b0bc0d35070b0cb73025004228d4e9b2db65c17f7f9715e57f50a7c75d62a",
+      "u_date": "2024-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 65,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_893b0bc0d35070b0cb73025004228d4e9b2db65c17f7f9715e57f50a7c75d62a",
+      "u_date": "2024-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 3.469446951953614e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_893b0bc0d35070b0cb73025004228d4e9b2db65c17f7f9715e57f50a7c75d62a",
+      "u_date": "2024-07-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 24,
+      "max_abs_error": 4.163336342344337e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bc66ef41951ebbc5dcffec4dbd8b378c2e720c2c86e9f35a67ae9aefbe3464be",
+      "u_date": "2024-07-05",
+      "family_id": "DCE.J",
+      "scope": "main",
+      "peer_count": 65,
+      "max_abs_error": 2.1316282072803006e-14
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bc66ef41951ebbc5dcffec4dbd8b378c2e720c2c86e9f35a67ae9aefbe3464be",
+      "u_date": "2024-07-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_0",
+      "peer_count": 40,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_bc66ef41951ebbc5dcffec4dbd8b378c2e720c2c86e9f35a67ae9aefbe3464be",
+      "u_date": "2024-07-05",
+      "family_id": "DCE.J",
+      "scope": "holdout_1",
+      "peer_count": 25,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0c48f5c4ddc2eb0aee001bbde72bc695ddf449de20da9862480bc7342f1fe89e",
+      "u_date": "2024-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 65,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0c48f5c4ddc2eb0aee001bbde72bc695ddf449de20da9862480bc7342f1fe89e",
+      "u_date": "2024-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 40,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_0c48f5c4ddc2eb0aee001bbde72bc695ddf449de20da9862480bc7342f1fe89e",
+      "u_date": "2024-07-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 25,
+      "max_abs_error": 8.326672684688674e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_900481ec94c8de82a671dd4de65aa85c980410f2601940fa26767309eae02e84",
+      "u_date": "2024-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 5.329070518200751e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_900481ec94c8de82a671dd4de65aa85c980410f2601940fa26767309eae02e84",
+      "u_date": "2024-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_900481ec94c8de82a671dd4de65aa85c980410f2601940fa26767309eae02e84",
+      "u_date": "2024-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39b7c4d601a1f76dc6590bba076065853cf5e712d48ad5d7fbc634f4758b4ac9",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.FB",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39b7c4d601a1f76dc6590bba076065853cf5e712d48ad5d7fbc634f4758b4ac9",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_39b7c4d601a1f76dc6590bba076065853cf5e712d48ad5d7fbc634f4758b4ac9",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.FB",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49449920691fadd234663d3b2f7c70a7aec3f7b350094fc88ac24d091fbf94d5",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49449920691fadd234663d3b2f7c70a7aec3f7b350094fc88ac24d091fbf94d5",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_49449920691fadd234663d3b2f7c70a7aec3f7b350094fc88ac24d091fbf94d5",
+      "u_date": "2024-12-31",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_75b28bb202cf22a883faae10dcce165897a711095116f476e593413d18dc5ea3",
+      "u_date": "2024-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_75b28bb202cf22a883faae10dcce165897a711095116f476e593413d18dc5ea3",
+      "u_date": "2024-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_75b28bb202cf22a883faae10dcce165897a711095116f476e593413d18dc5ea3",
+      "u_date": "2024-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f6fa24e124b820b0c95bfb23ec52b3862e7fc2032d4cae053ccd5473194e4e3c",
+      "u_date": "2025-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f6fa24e124b820b0c95bfb23ec52b3862e7fc2032d4cae053ccd5473194e4e3c",
+      "u_date": "2025-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_f6fa24e124b820b0c95bfb23ec52b3862e7fc2032d4cae053ccd5473194e4e3c",
+      "u_date": "2025-01-02",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_780f19fe73ccc381cf9f06f76a5c01b3d572f46bec0bb9ba05cdf56e45874cef",
+      "u_date": "2025-01-02",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_780f19fe73ccc381cf9f06f76a5c01b3d572f46bec0bb9ba05cdf56e45874cef",
+      "u_date": "2025-01-02",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 4.85722573273506e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_780f19fe73ccc381cf9f06f76a5c01b3d572f46bec0bb9ba05cdf56e45874cef",
+      "u_date": "2025-01-02",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 4.440892098500626e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_99fdc4a57332846608d931a0773a74b17e8239acad92864855196de8aa80802e",
+      "u_date": "2025-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_99fdc4a57332846608d931a0773a74b17e8239acad92864855196de8aa80802e",
+      "u_date": "2025-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_99fdc4a57332846608d931a0773a74b17e8239acad92864855196de8aa80802e",
+      "u_date": "2025-01-02",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 2.6645352591003757e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c162c3185efedf3e5bb464f287eb3d4f4fea5d43f73ba4fc4c227c1bd5320fed",
+      "u_date": "2025-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c162c3185efedf3e5bb464f287eb3d4f4fea5d43f73ba4fc4c227c1bd5320fed",
+      "u_date": "2025-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 43,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_c162c3185efedf3e5bb464f287eb3d4f4fea5d43f73ba4fc4c227c1bd5320fed",
+      "u_date": "2025-07-07",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ac89f66dfd7fcf13ef28060ebb978ddcfc4bfea26941ad28bb4c72f0db5b54e4",
+      "u_date": "2025-07-07",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ac89f66dfd7fcf13ef28060ebb978ddcfc4bfea26941ad28bb4c72f0db5b54e4",
+      "u_date": "2025-07-07",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ac89f66dfd7fcf13ef28060ebb978ddcfc4bfea26941ad28bb4c72f0db5b54e4",
+      "u_date": "2025-07-07",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35b17335dfb60037001abaebc1d13f6ffabb018d78382ffa9004f28ce75a014b",
+      "u_date": "2025-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 2.0816681711721685e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35b17335dfb60037001abaebc1d13f6ffabb018d78382ffa9004f28ce75a014b",
+      "u_date": "2025-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 5.329070518200751e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_35b17335dfb60037001abaebc1d13f6ffabb018d78382ffa9004f28ce75a014b",
+      "u_date": "2025-07-07",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3567d3e7474f71f6e3fc3ec16bb22863e1b9f1a899f2b12dc3ea9bfce1930ad2",
+      "u_date": "2025-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 70,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3567d3e7474f71f6e3fc3ec16bb22863e1b9f1a899f2b12dc3ea9bfce1930ad2",
+      "u_date": "2025-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 43,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3567d3e7474f71f6e3fc3ec16bb22863e1b9f1a899f2b12dc3ea9bfce1930ad2",
+      "u_date": "2025-12-31",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 27,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65b940ec513d77d4eef5bff28f774e4fba4d28b8309e7d2074ca016d72b08d31",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 70,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65b940ec513d77d4eef5bff28f774e4fba4d28b8309e7d2074ca016d72b08d31",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_65b940ec513d77d4eef5bff28f774e4fba4d28b8309e7d2074ca016d72b08d31",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 28,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b3dd66973b8d2958fdede447cf4ee5abb97c1c1d58e1284d5e46d0f660f75540",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 70,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b3dd66973b8d2958fdede447cf4ee5abb97c1c1d58e1284d5e46d0f660f75540",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_b3dd66973b8d2958fdede447cf4ee5abb97c1c1d58e1284d5e46d0f660f75540",
+      "u_date": "2025-12-31",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 28,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_facbe773190eaaf6dfaae92f03aa655121026d1af45581054fc7ca04f6582919",
+      "u_date": "2025-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 70,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_facbe773190eaaf6dfaae92f03aa655121026d1af45581054fc7ca04f6582919",
+      "u_date": "2025-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_facbe773190eaaf6dfaae92f03aa655121026d1af45581054fc7ca04f6582919",
+      "u_date": "2025-12-31",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 28,
+      "max_abs_error": 8.881784197001252e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_018d9c45a6a566e2ea5c87178fe969c4bacf73ffe6a6732b84e78d923f03b6bc",
+      "u_date": "2026-01-05",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_018d9c45a6a566e2ea5c87178fe969c4bacf73ffe6a6732b84e78d923f03b6bc",
+      "u_date": "2026-01-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 43,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_018d9c45a6a566e2ea5c87178fe969c4bacf73ffe6a6732b84e78d923f03b6bc",
+      "u_date": "2026-01-05",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 28,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_aff806c0d979d5bec11bc88ab02b4a8f5e4b8f8534c8397fbb55a4496d4074fd",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.JD",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_aff806c0d979d5bec11bc88ab02b4a8f5e4b8f8534c8397fbb55a4496d4074fd",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.JD",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_aff806c0d979d5bec11bc88ab02b4a8f5e4b8f8534c8397fbb55a4496d4074fd",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.JD",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fe8f8e10633791ba99912e9fa3c3eaef2b269fe53ea617f6d8cd5c2851c7b611",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fe8f8e10633791ba99912e9fa3c3eaef2b269fe53ea617f6d8cd5c2851c7b611",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_fe8f8e10633791ba99912e9fa3c3eaef2b269fe53ea617f6d8cd5c2851c7b611",
+      "u_date": "2026-01-05",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3fd0a29d37c309a59d28cad75aef9a2f2efdba540ca3ecd610b49d3263e331c4",
+      "u_date": "2026-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 71,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3fd0a29d37c309a59d28cad75aef9a2f2efdba540ca3ecd610b49d3263e331c4",
+      "u_date": "2026-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_3fd0a29d37c309a59d28cad75aef9a2f2efdba540ca3ecd610b49d3263e331c4",
+      "u_date": "2026-01-05",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 29,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9357189ce8bf97891ddec5534dc4f1097ba82073769931e11fd3d7d9a2ec99bf",
+      "u_date": "2026-05-29",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9357189ce8bf97891ddec5534dc4f1097ba82073769931e11fd3d7d9a2ec99bf",
+      "u_date": "2026-05-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 6.938893903907228e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_9357189ce8bf97891ddec5534dc4f1097ba82073769931e11fd3d7d9a2ec99bf",
+      "u_date": "2026-05-29",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d5516c689d393f5862571f0e761687253107506208fa1194e8250ff830a43cce",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.JM",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d5516c689d393f5862571f0e761687253107506208fa1194e8250ff830a43cce",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.JM",
+      "scope": "holdout_0",
+      "peer_count": 42,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d5516c689d393f5862571f0e761687253107506208fa1194e8250ff830a43cce",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.JM",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 2.7755575615628914e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_acb2c2d86f9b63cee257f61772b23cc44d10620483b65cfe99ee41d01eceaafa",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 0.0
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_acb2c2d86f9b63cee257f61772b23cc44d10620483b65cfe99ee41d01eceaafa",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_acb2c2d86f9b63cee257f61772b23cc44d10620483b65cfe99ee41d01eceaafa",
+      "u_date": "2026-05-29",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 31,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ee149a15c5b69f81f4f297e173548fcce69137cd25790ff9de26c759c4e5fe9a",
+      "u_date": "2026-05-29",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 72,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ee149a15c5b69f81f4f297e173548fcce69137cd25790ff9de26c759c4e5fe9a",
+      "u_date": "2026-05-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 41,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_ee149a15c5b69f81f4f297e173548fcce69137cd25790ff9de26c759c4e5fe9a",
+      "u_date": "2026-05-29",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 31,
+      "max_abs_error": 5.551115123125783e-17
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e47dd9b31c9b00b2f49f2d974593d1f07f2306c014f444164ac9e17f6467b95",
+      "u_date": "2026-10-16",
+      "family_id": "CFFEX.IC",
+      "scope": "main",
+      "peer_count": 77,
+      "max_abs_error": 7.105427357601002e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e47dd9b31c9b00b2f49f2d974593d1f07f2306c014f444164ac9e17f6467b95",
+      "u_date": "2026-10-16",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_0",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6e47dd9b31c9b00b2f49f2d974593d1f07f2306c014f444164ac9e17f6467b95",
+      "u_date": "2026-10-16",
+      "family_id": "CFFEX.IC",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d71abb3915199178856bc8495d941e9d408998ab2515310ab9404c686499916",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.JM",
+      "scope": "main",
+      "peer_count": 77,
+      "max_abs_error": 2.220446049250313e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d71abb3915199178856bc8495d941e9d408998ab2515310ab9404c686499916",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.JM",
+      "scope": "holdout_0",
+      "peer_count": 47,
+      "max_abs_error": 1.7763568394002505e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_2d71abb3915199178856bc8495d941e9d408998ab2515310ab9404c686499916",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.JM",
+      "scope": "holdout_1",
+      "peer_count": 30,
+      "max_abs_error": 1.6653345369377348e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6c2b4a4b85dd9e4a4917a232593e1198c4e90efec352471dd78c6296ce8edbee",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.L",
+      "scope": "main",
+      "peer_count": 77,
+      "max_abs_error": 1.0658141036401503e-14
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6c2b4a4b85dd9e4a4917a232593e1198c4e90efec352471dd78c6296ce8edbee",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.L",
+      "scope": "holdout_0",
+      "peer_count": 46,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_6c2b4a4b85dd9e4a4917a232593e1198c4e90efec352471dd78c6296ce8edbee",
+      "u_date": "2026-10-16",
+      "family_id": "DCE.L",
+      "scope": "holdout_1",
+      "peer_count": 31,
+      "max_abs_error": 3.552713678800501e-15
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d8d68eb2dbceb2ef1e5301dd08b114c39de01a984be67b9e6739c866d0ee3bb4",
+      "u_date": "2026-10-16",
+      "family_id": "SHFE.ZN",
+      "scope": "main",
+      "peer_count": 77,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d8d68eb2dbceb2ef1e5301dd08b114c39de01a984be67b9e6739c866d0ee3bb4",
+      "u_date": "2026-10-16",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_0",
+      "peer_count": 46,
+      "max_abs_error": 1.1102230246251565e-16
+    },
+    {
+      "event_id": "stage004_product_day_long_v1_d8d68eb2dbceb2ef1e5301dd08b114c39de01a984be67b9e6739c866d0ee3bb4",
+      "u_date": "2026-10-16",
+      "family_id": "SHFE.ZN",
+      "scope": "holdout_1",
+      "peer_count": 31,
+      "max_abs_error": 1.7763568394002505e-15
+    }
+  ],
+  "F_duplicate_context_pairs_checked": 604,
+  "source_code_read": {
+    "bytes": 18558,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage034_peer_alignment_dataset.py",
+    "sha256": "9b3e7ac37cbe46e0124af9905e63d4d457d37f9853a3ca3d69e28650d7ba5f25"
+  },
+  "six_behavior_tests_read": {
+    "bytes": 7596,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py",
+    "sha256": "cde2cfc3062d054ddd12343e05ca7a1a8674d50e452bba49d0fd7e5fa6f8fb0d"
+  },
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "full_q_independent_recomputed": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_backtests": 0,
+  "downloads": 0,
+  "author_calculation_imports": 0,
+  "actual035_result_review_started": false,
+  "financial_ready": false,
+  "production_qualified": false,
+  "limitations": [
+    "Bounded q/held/null reconstruction plus code/behavior boundary review; not all-q independent recomputation.",
+    "q may reconstruct own u-1 shock omitted by COMMON S11; no proof beyond complete own history or causal propagation."
+  ]
+}

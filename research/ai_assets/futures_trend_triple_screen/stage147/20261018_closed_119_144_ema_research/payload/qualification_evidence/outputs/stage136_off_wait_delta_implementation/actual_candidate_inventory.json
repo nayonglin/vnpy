@@ -1,0 +1,60 @@
+{
+  "schema": "stage061_accepted_wait_delta_manifest_v1",
+  "status": "frozen_pending_independent_review",
+  "builder": "stage135_accepted_off_wait_delta.py",
+  "compatible_data_schema_only": true,
+  "fixture_only": false,
+  "arm": "B_OFF",
+  "run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+  "accepted_deliveries": 159,
+  "accepted_keys": 36391,
+  "qualified_full_keys": 36345,
+  "qualified_anchor_keys": 36391,
+  "explicit_anchor_only_keys": 46,
+  "new_layer_qualified_research_data": false,
+  "production_qualified": false,
+  "source_fingerprints_count": 2783,
+  "excluded": [
+    {
+      "request_sha256": "7422216c316b1eeea381af05e31318dfbea8903ffe77c31c6c9b6c7cf2c087eb",
+      "reason": "data_gate_failed"
+    }
+  ],
+  "files": {
+    "accepted_deliveries.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/accepted_deliveries.json",
+      "bytes": 3403323,
+      "sha256": "e045bd42b9a97e50b2413d1b1abfb7c41d379214faa62884a9c399107b15a8f0"
+    },
+    "manifest.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/manifest.json",
+      "bytes": 850092,
+      "sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a"
+    },
+    "overlay.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/overlay.csv",
+      "bytes": 2630128,
+      "sha256": "c0f979fa5abb8c84d239a01ab1617ccd6fd09def164e9ecf5e0b252b59467f8e"
+    },
+    "rights.csv": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/rights.csv",
+      "bytes": 3945752,
+      "sha256": "358c986819a505a8d2d276cd2b3f7d53a4350f0b03cec608a6cc4ea3a2ba3ad0"
+    },
+    "source_run_snapshot.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/source_run_snapshot.json",
+      "bytes": 6278,
+      "sha256": "3e070f4ca1c836b986e5e33fb06e37ca4c43c69f9512a32200bcd51ebef0d232"
+    }
+  },
+  "source_files": {
+    "stage135_accepted_off_wait_delta.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py",
+      "sha256": "e128a199deddf728b24a58ee4511bdb781121fe668945249351a1ed573cc5977"
+    },
+    "test_stage135_accepted_off_wait_delta.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage135_accepted_off_wait_delta.py",
+      "sha256": "4c990835b19ea6852d05e637d37fa3bfa4a854f0ca17130549045e02e4bca735"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "stage044_prepare_only_receipt_v1",
+  "status": "prepared_waiting_frozen_final_handoff",
+  "draft_request": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage044_local_registration/registration_request.draft.json",
+    "sha256": "25472915ed09570ef5fa8467a79f28d0c26ffe663af7c4c120dfd67aa709cbf8",
+    "bytes": 6766
+  },
+  "observed_known_assets": 7,
+  "known_asset_bytes": 8207281,
+  "pending_without_fabricated_sha": 5,
+  "destination_does_not_exist": true,
+  "git_index_unchanged": true,
+  "index_sha256": "147df6521f39722ebc59a1b7f1dc2a273204c14e06e0c4bcce56d4527b9796f2",
+  "git_add": false,
+  "register_calls": 0,
+  "native_SQL_queries": 0,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "commit": false,
+  "push": false,
+  "production": false
+}

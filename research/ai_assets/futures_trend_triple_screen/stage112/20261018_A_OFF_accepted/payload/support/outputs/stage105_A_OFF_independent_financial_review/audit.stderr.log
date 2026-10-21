@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py", line 553, in <module>
+    if __name__=='__main__': raise SystemExit(main())
+                                              ^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py", line 549, in main
+    result,dest=audit(evidence,path,args.completion_evidence_sha256,export)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py", line 435, in audit
+    cycles,episodes,active,retries,rolls,open_mtm,cycle_residual=a_mothers(t,candidates,rollover,p,d,params,pd)
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py", line 357, in a_mothers
+    return env['scalar'](t,candidates,rollover,p,d,parameters)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "frozen_A0_episode_block", line 29, in scalar
+AssertionError: ('rb2005.SHFE', 'BACKTESTING.1', 'unproven_rollover_open')

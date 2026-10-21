@@ -1,0 +1,100 @@
+{
+  "schema": "stage011_day_proxy_dataset_review_v1",
+  "issued_at": "2026-10-18T11:43:43.469053+08:00",
+  "independent_review": true,
+  "reviewer": "ai_label_validation",
+  "status": "accepted_for_fixed_stage007_proxy_experiment_only",
+  "qualified_for_fixed_proxy_experiment": true,
+  "data_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+    "bytes": 88826
+  },
+  "dataset": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/feature_labels.csv.gz",
+    "sha256": "9b2452fa5fc8bb0c97d702d0caffa2a2b22e46e38ea52ab4842c13d25f120a48",
+    "bytes": 51830368
+  },
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+    "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+    "bytes": 3306
+  },
+  "source_code_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py": {
+      "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+      "bytes": 22578
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage009_day_proxy_dataset.py": {
+      "sha256": "1ee59dd763fb1d54b2bb65b35f36b5690b5d6e8511c0393610f4092f7d79ac51",
+      "bytes": 8311
+    }
+  },
+  "source_actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/actual_terminal.json",
+    "sha256": "8c253db4603cb4027e58344feba601994b7289eacae018718065e51e1ba0ac69",
+    "bytes": 2885
+  },
+  "severity": {
+    "Critical": 0,
+    "Important": 0,
+    "Minor": 0
+  },
+  "counts": {
+    "rows": 399252,
+    "observed_rows": 212852,
+    "feature_ready": 194709,
+    "ready_context_missing": 22,
+    "label_identified": 194168,
+    "ambiguous_identified": 6000,
+    "ready_unknown_label": 541
+  },
+  "checks": {
+    "all_399252_identities_preserved": true,
+    "feature_ready_distinct_from_label_identified": true,
+    "unknown_labels_blank": true,
+    "all_11_ready_own_features_finite": true,
+    "all_4_context_features_independently_recomputed": true,
+    "lag_context_includes_unknown_D_ready_observations": true,
+    "family_mean_dedup_own_family_exclusion": true,
+    "all_identified_ideal_intervals_recomputed_from_diagnostic_prices": true,
+    "cost_budget_not_actual_fees": true,
+    "known_date_equals_D_close_date_not_midnight_PIT": true,
+    "SQL_20_same_epoch_21_calendar_bar_features_and_D_labels_match": true,
+    "protocol_and_source_closure_match": true,
+    "DB_readonly_stat_unchanged": true
+  },
+  "actual_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/actual_review_checks.json",
+    "sha256": "2c18302fdd74df278eb9cdf394e60ed6a5408e240b2f7e45ec5574d4f354729f",
+    "bytes": 17338
+  },
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/actual_terminal.json",
+    "sha256": "c0db3db6ab22f347830c3c86efb2de2d37c42e5560594545d388c2efaed93a64",
+    "bytes": 1160
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1142_stage011_day_proxy_dataset_review.md",
+    "sha256": "953710218cc14b3e41bdbbb84b4d42e26ff20cf739f2689ba8c7325042d383f0",
+    "bytes": 8649
+  },
+  "SQL_probe_count": 20,
+  "SQL_source_rows": 413,
+  "real_economic_labels_ready": false,
+  "financial_ready": false,
+  "production_ready": false,
+  "production_qualified": false,
+  "publication_pit_certified": false,
+  "limitations": [
+    "Fixed ideal DAY proxy intervals and 0.2R research budget, not actual executable returns or economic labels.",
+    "Full table identity/context/scalar audit plus 20 finite original-SQL probes; no full historical source repricing or DB hash.",
+    "Known date is D-close simulation contract, not exact historical publication PIT.",
+    "No model/holdout/metric result accepted by this dataset-only review."
+  ],
+  "model_fits": 0,
+  "financial_runs": 0,
+  "native_runs": 0,
+  "provider_connections": 0,
+  "network_calls": 0
+}

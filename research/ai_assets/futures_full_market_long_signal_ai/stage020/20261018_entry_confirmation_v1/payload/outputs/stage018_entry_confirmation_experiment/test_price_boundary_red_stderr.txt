@@ -1,0 +1,14 @@
+test_pre_entry_low_does_not_force_stop_and_close_can_force_it (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_pre_entry_low_does_not_force_stop_and_close_can_force_it) ... FAIL
+
+======================================================================
+FAIL: test_pre_entry_low_does_not_force_stop_and_close_can_force_it (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_pre_entry_low_does_not_force_stop_and_close_can_force_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 86, in test_pre_entry_low_does_not_force_stop_and_close_can_force_it
+    self.fail('missing original-price comparison adapter')
+AssertionError: missing original-price comparison adapter
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

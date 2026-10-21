@@ -1,0 +1,85 @@
+{
+  "schema": "stage025_representation_review_v1",
+  "independent_review": true,
+  "status": "accepted_stored_representation_only",
+  "source_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export/manifest.json",
+    "sha256": "3b8da3d7e94a9e3e3fc755b233d2bb93ef6ebf6813a66a0a0a913052eb8bf64a",
+    "bytes": 81847
+  },
+  "ready_rows": 194709,
+  "scalar_values": 15576720,
+  "parent_rows": 399252,
+  "known_rows": 194168,
+  "unknown_rows": 541,
+  "dtype": "<f4",
+  "shape": [
+    194709,
+    20,
+    4
+  ],
+  "full_id_order_equal": true,
+  "full_S_quantization_relations": {
+    "r1_atr": {
+      "rows": 194709,
+      "max_abs_error": 2.2462576865223127e-07,
+      "max_error_fraction_of_quantization_bound": 0.9997091867780606,
+      "violations": 0
+    },
+    "range_atr": {
+      "rows": 194709,
+      "max_abs_error": 4.5610510746030286e-07,
+      "max_error_fraction_of_quantization_bound": 0.9998248690359404,
+      "violations": 0
+    },
+    "close_location": {
+      "rows": 194709,
+      "max_abs_error": 2.977505764167887e-08,
+      "max_error_fraction_of_quantization_bound": 0.9990516243240011,
+      "violations": 0
+    },
+    "log_volume_ratio20": {
+      "rows": 194709,
+      "max_abs_error": 2.3514095470744678e-07,
+      "max_error_fraction_of_quantization_bound": 0.9999766323745186,
+      "violations": 0
+    },
+    "r5_atr": {
+      "rows": 194709,
+      "max_abs_error": 1.711289638883784e-07,
+      "max_error_fraction_of_quantization_bound": 0.991575442021614,
+      "violations": 0
+    },
+    "r20_atr": {
+      "rows": 194709,
+      "max_abs_error": 9.16904506209626e-08,
+      "max_error_fraction_of_quantization_bound": 0.7121096242756259,
+      "violations": 0
+    }
+  },
+  "source_code_read": {
+    "bytes": 16174,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage023_ordered_history_dataset.py",
+    "sha256": "0544681ca1396d1b0eb4bc219d30b0bcb008998513bb7ba238a2292c37cd6ae0"
+  },
+  "six_behavior_tests_read": {
+    "bytes": 6032,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py",
+    "sha256": "d707ab7914bf0184ff852acd51e36c465574f55d76eaebd8c1783ba172daf711"
+  },
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "actual_024_results_reviewed": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "database_full_hashes": 0,
+  "author_calculation_imports": 0,
+  "financial_backtests": 0,
+  "financial_ready": false,
+  "production_qualified": false,
+  "limitations": [
+    "This independently tests all saved rows against accepted S summaries; it does not re-read raw OHLC or claim full source requalification.",
+    "Remaining historical formulas reviewed from code; full 024 model/result review awaits root completion notice."
+  ]
+}

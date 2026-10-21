@@ -1,0 +1,22 @@
+{
+  "actual_model_fit_calls": 0,
+  "elapsed_seconds": 2.918258958030492,
+  "error": "ValueError: invalid readiness",
+  "exit_code": 1,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T04:50:12.669344+00:00",
+  "fixture": false,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "source": {
+    "bytes": 21347,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py",
+    "sha256": "37f5b485d4734bc36bdcabcc64db4ee3636e6f058f6e3a5102fb93347300e9c7"
+  },
+  "sql_queries": 0,
+  "started_at": "2026-10-18T04:50:09.750958+00:00",
+  "status": "failed"
+}

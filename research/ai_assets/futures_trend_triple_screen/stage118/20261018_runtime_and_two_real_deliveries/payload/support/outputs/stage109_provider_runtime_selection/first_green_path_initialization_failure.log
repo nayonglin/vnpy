@@ -1,0 +1,16 @@
+test_three_generations_real_identity_and_fail_closed_inputs (__main__.ProviderRuntimeSelectionTest.test_three_generations_real_identity_and_fail_closed_inputs) ... FAIL
+
+======================================================================
+FAIL: test_three_generations_real_identity_and_fail_closed_inputs (__main__.ProviderRuntimeSelectionTest.test_three_generations_real_identity_and_fail_closed_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage109_provider_runtime.py", line 46, in test_three_generations_real_identity_and_fail_closed_inputs
+    self.assertEqual(result.returncode,0,result.stderr)
+AssertionError: 78 != 0 : stage109_launcher_failed:ValueError:stage109_probe_failed:stage109_launcher_failed:ValueError:stage109_deps_reordered_runtime
+
+
+
+----------------------------------------------------------------------
+Ran 1 test in 1.522s
+
+FAILED (failures=1)

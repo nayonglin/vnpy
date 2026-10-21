@@ -1,0 +1,162 @@
+[
+  {
+    "all_open_zero_ending_equity_difference": 25396.944000000018,
+    "contrast": "INVENTORY_minus_COMMON_EVENT",
+    "cumulative_log_growth_difference": 0.025079800062652424,
+    "drawdown_percentage_point_difference": -1.9394531661605208,
+    "return_percentage_point_difference": 2.539694399999992,
+    "scenario": "base",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": true,
+      "finite_R_bound": null,
+      "judgment": "unknown",
+      "left_exposure_sha256": "05baba8f534408784dcc00e3c7c8b7f47d8f0a2282ae17ae546a14d12fd35f83",
+      "left_unresolved_records": 6,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": 27477.72999999998,
+    "contrast": "INVENTORY_minus_PAST_SHAM",
+    "cumulative_log_growth_difference": -0.01966334213996923,
+    "drawdown_percentage_point_difference": -0.9817359842955953,
+    "return_percentage_point_difference": -2.0362270000000127,
+    "scenario": "base",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": true,
+      "finite_R_bound": null,
+      "judgment": "unknown",
+      "left_exposure_sha256": "05baba8f534408784dcc00e3c7c8b7f47d8f0a2282ae17ae546a14d12fd35f83",
+      "left_unresolved_records": 6,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "aaf1a7d82074e72aa2b8d0237e9b0f515fa09e1f7af4d25e05774c0d6466206a",
+      "right_unresolved_records": 922
+    },
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -3015.8649999999907,
+    "contrast": "INVENTORY_minus_COMMON_EVENT",
+    "cumulative_log_growth_difference": -0.003020421885121749,
+    "drawdown_percentage_point_difference": -0.6479073291673298,
+    "return_percentage_point_difference": -0.3015864999999951,
+    "scenario": "base",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": false,
+      "finite_R_bound": null,
+      "judgment": "same_observed_unresolved_exposure",
+      "left_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "left_unresolved_records": 0,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -3015.8649999999907,
+    "contrast": "INVENTORY_minus_PAST_SHAM",
+    "cumulative_log_growth_difference": -0.003020421885121749,
+    "drawdown_percentage_point_difference": -0.6479073291673298,
+    "return_percentage_point_difference": -0.3015864999999951,
+    "scenario": "base",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": false,
+      "finite_R_bound": null,
+      "judgment": "same_observed_unresolved_exposure",
+      "left_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "left_unresolved_records": 0,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": 27697.85400000005,
+    "contrast": "INVENTORY_minus_COMMON_EVENT",
+    "cumulative_log_growth_difference": 0.02732120748868816,
+    "drawdown_percentage_point_difference": -1.9817818621631567,
+    "return_percentage_point_difference": 2.7697854000000133,
+    "scenario": "stress",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": true,
+      "finite_R_bound": null,
+      "judgment": "unknown",
+      "left_exposure_sha256": "07055c2b7850a0834812eba16e9d99fb558440b1583e19a4a28d7e05d98d2969",
+      "left_unresolved_records": 6,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": 28277.01000000001,
+    "contrast": "INVENTORY_minus_PAST_SHAM",
+    "cumulative_log_growth_difference": -0.018856828041311502,
+    "drawdown_percentage_point_difference": -1.2563986116622794,
+    "return_percentage_point_difference": -1.9562989999999836,
+    "scenario": "stress",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": true,
+      "finite_R_bound": null,
+      "judgment": "unknown",
+      "left_exposure_sha256": "07055c2b7850a0834812eba16e9d99fb558440b1583e19a4a28d7e05d98d2969",
+      "left_unresolved_records": 6,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "3f2369a1e3b7a3a4076c1f9d237714061a963bbccaf0bb2e330d4f5b9d49d3e4",
+      "right_unresolved_records": 922
+    },
+    "window_id": "primary_2020"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -3107.594999999972,
+    "contrast": "INVENTORY_minus_COMMON_EVENT",
+    "cumulative_log_growth_difference": -0.00311243360021507,
+    "drawdown_percentage_point_difference": -0.6542348660384945,
+    "return_percentage_point_difference": -0.31075950000000185,
+    "scenario": "stress",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": false,
+      "finite_R_bound": null,
+      "judgment": "same_observed_unresolved_exposure",
+      "left_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "left_unresolved_records": 0,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "cold_2023"
+  },
+  {
+    "all_open_zero_ending_equity_difference": -3107.594999999972,
+    "contrast": "INVENTORY_minus_PAST_SHAM",
+    "cumulative_log_growth_difference": -0.00311243360021507,
+    "drawdown_percentage_point_difference": -0.6542348660384945,
+    "return_percentage_point_difference": -0.31075950000000185,
+    "scenario": "stress",
+    "survival_failure": false,
+    "unresolved": {
+      "differential_unresolved_exposure": false,
+      "finite_R_bound": null,
+      "judgment": "same_observed_unresolved_exposure",
+      "left_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "left_unresolved_records": 0,
+      "reason": "Unresolved/open or historically stale differential exposure has no accepted finite payoff bound; zero-value scenarios are not universal bounds.",
+      "right_exposure_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "right_unresolved_records": 0
+    },
+    "window_id": "cold_2023"
+  }
+]

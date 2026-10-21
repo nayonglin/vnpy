@@ -1,0 +1,60 @@
+{
+  "schema": "stage055_source_preflight_v1",
+  "phase": "stable_source_preflight_only",
+  "recorded_at": "2026-10-18T14:43:37.927418+08:00",
+  "protocol_sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c",
+  "sources": {
+    "stage053_maturity_information_fit.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage053_maturity_information_fit.py",
+      "bytes": 28619,
+      "sha256": "045168b069bddef62777a010277a8e7409ea094dc2ac57db33f81cd5b63c7c9b"
+    },
+    "test_stage053_maturity_information_fit.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage053_maturity_information_fit.py",
+      "bytes": 8135,
+      "sha256": "fee2f2a9cb9404af6c0c4d53f2dce385e54d7b80f9b23eb0db14f1acdd3b0362"
+    },
+    "stage054_maturity_cash_compare.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage054_maturity_cash_compare.py",
+      "bytes": 35598,
+      "sha256": "f5f73732747b64b812e48c09202f5d52dcf3f59726e20e05e21ba616453884bd"
+    },
+    "test_stage054_maturity_cash_compare.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage054_maturity_cash_compare.py",
+      "bytes": 9222,
+      "sha256": "13e8bbbd98b91792f74f392806ad70f2a1e5c4165b7b706029769fc54893a8dd"
+    }
+  },
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "resolved_important": "combined held scope initially overwritten; final053 preserves holdout_0/1 and final054 strictly validates family hash without rewriting. No actual run was evaluated for this finding.",
+  "native_scope": "Finite first-cause cases only; final054 retains complete contiguous warmup from loaded arrays for independent N recursion. No additional SQL.",
+  "review_scripts": {
+    "independent_review.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/independent_review.py",
+      "bytes": 34304,
+      "sha256": "974834cda1ed399b2a6b565c1d18d3ead164e97c185f84d11128ad24c54b4637"
+    },
+    "cash_adapter.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/cash_adapter.py",
+      "bytes": 16092,
+      "sha256": "a79040c6b06da4703843bcd8294d45d351566c6758292adf32ed5acb9d6e58b7"
+    },
+    "cash_review_core.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/cash_review_core.py",
+      "bytes": 6195,
+      "sha256": "4310bdd81375e17406b1773658c582ccb570a25d09b8fa53d15461c76cbb3eaa"
+    }
+  },
+  "checks_run": "Reviewer scripts py_compile only; no author synthetic suite repeated.",
+  "actions": {
+    "native_sql": 0,
+    "fit": 0,
+    "cash_strategy_replay": 0,
+    "actual_result_review": 0
+  },
+  "scope_limit": "Actual complete fit/cash result review remains pending final root authorization."
+}

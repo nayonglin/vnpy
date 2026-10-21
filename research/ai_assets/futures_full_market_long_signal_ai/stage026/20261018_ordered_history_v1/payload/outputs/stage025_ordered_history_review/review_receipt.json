@@ -1,0 +1,126 @@
+{
+  "schema": "stage025_ordered_history_independent_review_v1",
+  "independent_review": true,
+  "status": "accepted_calculations_rejected_quality_screen",
+  "manifest": {
+    "path": "research/lines/futures_full_market_long_signal_ai/outputs/stage024_ordered_history_experiment/experiment/manifest.json",
+    "sha256": "51c28a267edce63fd19d1049d4a9458b6e21cf1a5c81a02be40ee45333948097",
+    "bytes": 65161
+  },
+  "source_code_read": {
+    "bytes": 30169,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage024_ordered_history_experiment.py",
+    "sha256": "f2bfc43d2b685df6f77a535bd6fb696f18bf54dac93b6ff39f5b60cb6e03fa46"
+  },
+  "fit_records_checked": 108,
+  "scalar_predictions_checked": 969654,
+  "normal_equations_checked": [
+    {
+      "fit_id": "2015_main_S",
+      "relative_normal_residual": 1.4736601985018517e-14,
+      "weighted_intercept_residual": 4.139292771376245e-16
+    },
+    {
+      "fit_id": "2015_main_ORDER",
+      "relative_normal_residual": 3.5440010303781498e-15,
+      "weighted_intercept_residual": 6.480015502798987e-16
+    },
+    {
+      "fit_id": "2015_main_BAG",
+      "relative_normal_residual": 5.071253803841567e-15,
+      "weighted_intercept_residual": 6.282086742421328e-16
+    },
+    {
+      "fit_id": "2026_holdout_0_S",
+      "relative_normal_residual": 3.591883210669014e-14,
+      "weighted_intercept_residual": 1.905716427419387e-15
+    },
+    {
+      "fit_id": "2026_holdout_0_ORDER",
+      "relative_normal_residual": 9.1458868993079e-15,
+      "weighted_intercept_residual": 4.687126479663932e-16
+    },
+    {
+      "fit_id": "2026_holdout_0_BAG",
+      "relative_normal_residual": 5.731941550477903e-15,
+      "weighted_intercept_residual": 6.634910053926824e-16
+    }
+  ],
+  "all_period_scope_reports_checked": 56,
+  "gates": {
+    "primary_ORDER_selected_identified_dates_ge60": true,
+    "primary_ORDER_selected_identified_families_ge8": true,
+    "primary_ORDER_lower_ci_positive": false,
+    "primary_ORDER_minus_S_lower_ci_positive": false,
+    "primary_ORDER_minus_BAG_lower_ci_positive": false,
+    "primary_participation_lower_ci_positive": false,
+    "same_mask_cost_1R_primary_ORDER_lower_positive": false,
+    "four_complete_years_ORDER_minus_S_lower_positive": false,
+    "four_complete_years_ORDER_minus_BAG_lower_positive": false,
+    "partial_2026_ORDER_lower_positive": false,
+    "all_2015_ORDER_lower_positive": false,
+    "all_2015_ORDER_minus_S_lower_positive": false,
+    "all_2015_ORDER_minus_BAG_lower_positive": false,
+    "all_2015_participation_lower_positive": false,
+    "holdout_0_primary_ORDER_lower_positive": false,
+    "holdout_0_primary_ORDER_minus_S_lower_positive": false,
+    "holdout_0_primary_ORDER_minus_BAG_lower_positive": false,
+    "holdout_1_primary_ORDER_lower_positive": false,
+    "holdout_1_primary_ORDER_minus_S_lower_positive": false,
+    "holdout_1_primary_ORDER_minus_BAG_lower_positive": false
+  },
+  "quality_information_screen_pass": false,
+  "max_abs_prediction_error": 2.220446049250313e-16,
+  "max_abs_daily_output_error": 3.552713678800501e-15,
+  "max_abs_numeric_error": 4.340972026284362e-14,
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "qualified_for_fixed_proxy_experiment": true,
+  "real_economic_labels_ready": false,
+  "financial_ready": false,
+  "production_qualified": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "author_calculation_imports": 0,
+  "financial_backtests": 0,
+  "downloads": 0,
+  "primary_2020_date_equal_means": {
+    "identified_rows": 65.43057247259439,
+    "S_lower": -0.0037273671696444804,
+    "S_upper": 0.0009228137428897537,
+    "stress_S_lower": -0.029249451390643305,
+    "stress_S_upper": -0.024599270478109066,
+    "S_selection_rate": 0.031902605276248525,
+    "S_mse_proxy_lower": 2.664344791458658,
+    "ORDER_lower": -0.00219267311278942,
+    "ORDER_upper": 0.0015155196593072855,
+    "stress_ORDER_lower": -0.023947720003307034,
+    "stress_ORDER_upper": -0.02023952723121033,
+    "ORDER_selection_rate": 0.027193808613147016,
+    "ORDER_mse_proxy_lower": 2.666072140705795,
+    "BAG_lower": -0.0007172333958476289,
+    "BAG_upper": 0.0017550973608226029,
+    "stress_BAG_lower": -0.012917288965338334,
+    "stress_BAG_upper": -0.010444958208668101,
+    "BAG_selection_rate": 0.015250069461863382,
+    "BAG_mse_proxy_lower": 2.663549855057811,
+    "ORDER_minus_S_lower": -0.0020275874868220323,
+    "ORDER_minus_S_upper": 0.004154987460094623,
+    "stress_ORDER_minus_S_lower": 0.0017394498436591748,
+    "stress_ORDER_minus_S_upper": 0.00792202479057583,
+    "ORDER_minus_BAG_lower": -0.0025562979156968564,
+    "ORDER_minus_BAG_upper": 0.000841280497239745,
+    "stress_ORDER_minus_BAG_lower": -0.012111289236723765,
+    "stress_ORDER_minus_BAG_upper": -0.008713710823787165,
+    "participation_lower": -0.0018021287796872519,
+    "participation_upper": 0.005022749300236188,
+    "stress_participation_lower": -0.0018021287796872519,
+    "stress_participation_upper": 0.0050227493002361874
+  },
+  "limitations": [
+    "Fixed learner/representation conditional proxy identification only; not cash return, true win rate, liquidity, capacity or deployability.",
+    "Fixed-prediction block CI excludes model retraining and repeated researcher selection.",
+    "No raw source SQL repeated; dataset review separately bounds full stored histories against accepted S summaries."
+  ]
+}

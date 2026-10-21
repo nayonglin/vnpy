@@ -1,0 +1,36 @@
+{
+  "schema": "stage035_fixture_receipt_v1",
+  "red": {
+    "tool_chunk": "0a80dd",
+    "exit_code": 1,
+    "tests": 4,
+    "failures": 4,
+    "fixture_fit_calls": 0
+  },
+  "green": {
+    "tool_chunk": "af4e31",
+    "exit_code": 0,
+    "tests": 4,
+    "failures": 0,
+    "fixture_fit_calls": 1
+  },
+  "real_data_fit_calls": 0,
+  "financial_runs": 0,
+  "old_suites_run": 0,
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage035_peer_alignment_experiment.py",
+    "sha256": "7141bb6e026fece3baa88d1a98db1d5cbe2a6ed8268d5e5ed9d116b7d4204292",
+    "bytes": 30616
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage035_peer_alignment_experiment.py",
+    "sha256": "dd884292b6d5053337c17fccf9442c475fea7d5736bd80427d71beb0bb54b9a4",
+    "bytes": 4391
+  },
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage033_peer_alignment_protocol/protocol.json",
+    "sha256": "6328b2429106028531916050982bcf57f033285366a745f2f08a29a308a2556b",
+    "bytes": 3273
+  },
+  "awaits_root_fresh034_run_authorization": true
+}

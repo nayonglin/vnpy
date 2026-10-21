@@ -1,0 +1,82 @@
+{
+  "schema": "stage012_day_proxy_experiment_review_v1",
+  "issued_at": "2026-10-18T11:49:45.054023+08:00",
+  "independent_review": true,
+  "reviewer": "ema_daily_input_inventory_independent_of_010_author",
+  "status": "accepted_fixed_proxy_result_arithmetic_identity_and_logic_only",
+  "severity": {
+    "Critical": 0,
+    "Important": 0,
+    "Minor": 0
+  },
+  "experiment_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/experiment/manifest.json",
+    "sha256": "fc1abeaffb5a15e9b782109fbbadedeab3fb56d4d40eb663d3ba3fb42f0a9b27",
+    "bytes": 7462
+  },
+  "experiment_actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/experiment/actual_terminal.json",
+    "sha256": "42ef5f676ac57a47b87d3e6e26663548d3e5499993747a0fceeab200cf8f7cec",
+    "bytes": 788
+  },
+  "experiment_source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage010_day_proxy_experiment.py",
+    "sha256": "c8ddce7c93184f793b9c42d2366ffd24b9f9651d5c4a96411bb0388098539ffa",
+    "bytes": 27158
+  },
+  "experiment_tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage010_day_proxy_experiment.py",
+    "sha256": "f1197d1a4417965e376705da770f14412bb17b251a0fad9eac5a2f29be10b976",
+    "bytes": 6401
+  },
+  "fit_records": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/experiment/fits.jsonl",
+    "sha256": "28e5c62700127fbf9d04245b6288b70c1b589d3ac3453ba917f0f365d1167b71",
+    "bytes": 6355793
+  },
+  "actual_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/actual_review_checks.json",
+    "sha256": "2915b744c1c5d5c8b858958cbcc43296021dd3940a64cb38e8a228f4e849b622",
+    "bytes": 445215
+  },
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/actual_terminal.json",
+    "sha256": "fcbb894975a284c893fb1c8801f4a3cfc13b51306d332a73ff925864f090268f",
+    "bytes": 1166
+  },
+  "review_source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_actual.py",
+    "sha256": "d8caf3318c9fc75a23df4c8d4290f2f4dd056b95b0c68f7215341b82c439e98a",
+    "bytes": 22035
+  },
+  "checks": {
+    "all72_training_keys_and_maturity": true,
+    "all72_weights_and_weighted_scalers": true,
+    "all72_saved_coefficients_satisfy_weighted_ridge_normal_equations": true,
+    "all_ready_test_cohorts_and_unknown_predictions_preserved": true,
+    "all_predictions_pure_coefficient_replay": true,
+    "all_masks_fixed_gt_zero": true,
+    "paired_intervals_common_mask_cancellation": true,
+    "participation_equal_rate_signed_interval": true,
+    "same_mask_1R_pressure": true,
+    "all_scope_year_period_metrics_and_saved_daily_tables": true,
+    "both_period_shared_60day_2000_seed_bootstraps": true,
+    "all_15_gates": true
+  },
+  "quality_information_screen_pass": false,
+  "result_conclusion": "fixed_cross_market_feature_package_and_DAY_proxy_policy_failed_information_quality_screen; arithmetic accepted, no cash/alpha approval",
+  "scope": "all72_saved_fit_records_and_full_prediction_coefficient_replay; independent_training_keys_weights_scalers_normal_equations_daily_metrics_shared_bootstrap_and_15_gates",
+  "source_dataset_review_inherited": true,
+  "real_economic_labels_ready": false,
+  "financial_ready": false,
+  "production_qualified": false,
+  "model_fits_by_reviewer": 0,
+  "SQL_queries": 0,
+  "financial_runs": 0,
+  "network_calls": 0,
+  "limitations": [
+    "Intervals/CI are conditional ideal DAY proxy results, not cash bounds or strategy returns.",
+    "Fixed-prediction bootstrap excludes researcher selection/model-refit uncertainty.",
+    "F sharing only controls declared family mapping; historical rename/sector dependence is not eliminated."
+  ]
+}

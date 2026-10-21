@@ -1,0 +1,12 @@
+{"event": "fit_started", "fit_id": "2020_COMMON_EVENT", "fit_calls_started": 1, "fit_calls_completed": 0}
+{"event": "fit_completed", "fit_id": "2020_COMMON_EVENT", "fit_calls_started": 1, "fit_calls_completed": 1}
+{"event": "fit_started", "fit_id": "2020_INVENTORY", "fit_calls_started": 2, "fit_calls_completed": 1}
+{"event": "fit_completed", "fit_id": "2020_INVENTORY", "fit_calls_started": 2, "fit_calls_completed": 2}
+{"event": "fit_started", "fit_id": "2020_PAST_SHAM", "fit_calls_started": 3, "fit_calls_completed": 2}
+{"event": "fit_completed", "fit_id": "2020_PAST_SHAM", "fit_calls_started": 3, "fit_calls_completed": 3}
+{"event": "fit_started", "fit_id": "2023_COMMON_EVENT", "fit_calls_started": 4, "fit_calls_completed": 3}
+{"event": "fit_completed", "fit_id": "2023_COMMON_EVENT", "fit_calls_started": 4, "fit_calls_completed": 4}
+{"event": "fit_started", "fit_id": "2023_INVENTORY", "fit_calls_started": 5, "fit_calls_completed": 4}
+{"event": "fit_completed", "fit_id": "2023_INVENTORY", "fit_calls_started": 5, "fit_calls_completed": 5}
+{"event": "fit_started", "fit_id": "2023_PAST_SHAM", "fit_calls_started": 6, "fit_calls_completed": 5}
+{"event": "fit_completed", "fit_id": "2023_PAST_SHAM", "fit_calls_started": 6, "fit_calls_completed": 6}

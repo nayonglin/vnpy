@@ -1,0 +1,231 @@
+{
+  "schema": "stage056_accepted_dependency_reference_plan_v1",
+  "archives": [
+    {
+      "manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "sha256": "072cc614e564b6e8db335f14eca3978c44f66889ac963e25e4346676c8268ff7",
+      "bytes": 32092,
+      "accepted_scope": "此前完成的精确登记实体；当前仅校验manifest和选定payload条目/size，不重复旧大实体hash"
+    },
+    {
+      "manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+      "sha256": "472936305c06d8fc4ff1dfc06c15ca38a039bb73a63d115e14de142668652e12",
+      "bytes": 102567,
+      "accepted_scope": "此前完成的精确登记实体；当前仅校验manifest和选定payload条目/size，不重复旧大实体hash"
+    }
+  ],
+  "dependencies": [
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/actual_started.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/actual_started.json",
+      "sha256": "8d986b63e91279ab0c9c7e4c9f60cfa011f1cddb016a64853541c277e852c85a",
+      "bytes": 758,
+      "role": "qualification_evidence",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/actual_terminal.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/actual_terminal.json",
+      "sha256": "61741661985c777a159312dfc24c335824d92ec9fd5d648f33366168f53e69db",
+      "bytes": 990,
+      "role": "qualification_evidence",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/dependency_intervals.csv.gz",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/dependency_intervals.csv.gz",
+      "sha256": "d64d115d2b7f234bd33223717020d20aadd1eff357696e326e03922d33d3e39f",
+      "bytes": 22202521,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/event_economic_labels.csv.gz",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/event_economic_labels.csv.gz",
+      "sha256": "adb37b2dbc05d8f201588402ca04343a7dfa34e8cb5ba9e487d39738346f197b",
+      "bytes": 53980842,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/feature_summary.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/feature_summary.json",
+      "sha256": "968f1cb2fb649763d8c483c8188ae2ff93e0674a4800bb0d53ac94203423f2f0",
+      "bytes": 781,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/features_all.csv.gz",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/features_all.csv.gz",
+      "sha256": "1661c46cec4d7b73ea5830a20668332654b4465384ecfc83d2709c2f94d3951c",
+      "bytes": 37056572,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/input_bindings.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/input_bindings.json",
+      "sha256": "4b7ad95a2cd81c086b7bc1d2a36d8975656d76931ed028e2a59dbb76cb3bdbe1",
+      "bytes": 3419,
+      "role": "feature_contract",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/label_state_summary.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/label_state_summary.json",
+      "sha256": "58fcc7ac83764188ecc1905a60a3577d65fb1472bdd7c839628c8d27f236c42c",
+      "bytes": 2138,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/manifest.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/manifest.json",
+      "sha256": "eff6b642d0727ddd7280589da8d9b61beba6f13ebf784faa96c37c3abe4d5145",
+      "bytes": 7268,
+      "role": "feature_contract",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/peer_mapping.csv.gz",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/peer_mapping.csv.gz",
+      "sha256": "2ef11a7c4de49f7098e081105a7bde97ab2d77982771241f95c449c86b7a83f7",
+      "bytes": 36019116,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/protocol.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/protocol.json",
+      "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413",
+      "bytes": 8720,
+      "role": "feature_contract",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/source_read_receipt.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/source_read_receipt.json",
+      "sha256": "e830d89429f2a16aaaf8d32774ef083b3f3f54d1b0f110c3a3d768b0243b47b3",
+      "bytes": 968,
+      "role": "qualification_evidence",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage049_full_opportunity_build/experiment/time_family_coverage.csv.gz",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/time_family_coverage.csv.gz",
+      "sha256": "0ad531e5a537af61f70c441c0b56555e9f7fc606e3c22f9febd3817125592435",
+      "bytes": 19633,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage050_full_opportunity_relation_review/review_receipt.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage050_full_opportunity_relation_review/review_receipt.json",
+      "sha256": "f6d5d514c4cfd5c0028dba2056b6215169a20ab2794b1e202e6e9471236bf6a4",
+      "bytes": 12633,
+      "role": "qualification_evidence",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1/manifest.json",
+      "archive_payload_relative_path": "payload/stages/20261018_1423_stage051_full_opportunity_data_acceptance.md",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1423_stage051_full_opportunity_data_acceptance.md",
+      "sha256": "485a9b3a942efe10fa8b4980763fdcde98b58644c7bee9cadf5fcdcd38c0d77e",
+      "bytes": 8947,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c",
+      "bytes": 8146494,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+      "archive_payload_relative_path": "payload/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "sha256": "6021a03f152f4316b069ed3d78df9f85fa240119b40fd9311dd4a0db0a62ba9a",
+      "bytes": 8941,
+      "role": "qualification_evidence",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+      "archive_payload_relative_path": "payload/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "sha256": "b546c81710e67f3a23eb6028c2a2b67f8ff3a0c87dc14a7e0e5a90463325ac63",
+      "bytes": 16560,
+      "role": "decision_asset",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    },
+    {
+      "archive_manifest_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+      "archive_payload_relative_path": "payload/tools/stage042_cross_session_experiment.py",
+      "original_source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+      "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+      "bytes": 50405,
+      "role": "feature_contract",
+      "copy_entity_this_run": false,
+      "entity_hash_validation": "inherited_accepted_registration_no_new_full_hash",
+      "raw_ohlc": false
+    }
+  ],
+  "full_old_normalized_hash_repeated": false,
+  "old_raw_sources_copied": false,
+  "external009_policy": "仅外部原source binding，不copy旧Y/atr；053prepared_common.npz与identity为本轮必要规范化共同X复现资产。"
+}

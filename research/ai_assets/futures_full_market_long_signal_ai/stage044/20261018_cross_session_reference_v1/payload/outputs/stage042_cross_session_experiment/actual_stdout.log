@@ -1,0 +1,21 @@
+{"phase": "native_loaded_once", "native_contract_days": 1552456, "native_epochs": 9520, "elapsed_seconds": 13.219550166046247}
+{"phase": "all_mother_signals_complete", "rows": 399252, "ready55": 174435, "potentials": 6389, "elapsed_seconds": 120.25750166602666}
+{"phase": "cash_window_complete", "account_id": "base__full_2010", "completed_cash_accounts": 1, "ending_equity": 1056315.179, "closed_trades": 991, "open_positions": 0, "elapsed_seconds": 121.73016387503594}
+{"phase": "cash_window_complete", "account_id": "base__primary_2020", "completed_cash_accounts": 2, "ending_equity": 1034489.0275, "closed_trades": 475, "open_positions": 0, "elapsed_seconds": 122.1534090830246}
+{"phase": "cash_window_complete", "account_id": "base__year_2020", "completed_cash_accounts": 3, "ending_equity": 1084756.247, "closed_trades": 90, "open_positions": 9, "elapsed_seconds": 122.23546749999514}
+{"phase": "cash_window_complete", "account_id": "base__year_2021", "completed_cash_accounts": 4, "ending_equity": 1009573.6765, "closed_trades": 53, "open_positions": 2, "elapsed_seconds": 122.29669633304002}
+{"phase": "cash_window_complete", "account_id": "base__year_2022", "completed_cash_accounts": 5, "ending_equity": 1000923.316, "closed_trades": 51, "open_positions": 6, "elapsed_seconds": 122.35395995801082}
+{"phase": "cash_window_complete", "account_id": "base__year_2023", "completed_cash_accounts": 6, "ending_equity": 984234.2285, "closed_trades": 70, "open_positions": 3, "elapsed_seconds": 122.41952170804143}
+{"phase": "cash_window_complete", "account_id": "base__year_2024", "completed_cash_accounts": 7, "ending_equity": 992793.5485, "closed_trades": 51, "open_positions": 1, "elapsed_seconds": 122.46794670802774}
+{"phase": "cash_window_complete", "account_id": "base__year_2025", "completed_cash_accounts": 8, "ending_equity": 922816.565, "closed_trades": 70, "open_positions": 7, "elapsed_seconds": 122.52121100004297}
+{"phase": "cash_window_complete", "account_id": "base__year_2026", "completed_cash_accounts": 9, "ending_equity": 996231.682, "closed_trades": 62, "open_positions": 0, "elapsed_seconds": 122.5817853329936}
+{"phase": "cash_window_complete", "account_id": "stress__full_2010", "completed_cash_accounts": 10, "ending_equity": 941119.233, "closed_trades": 875, "open_positions": 0, "elapsed_seconds": 123.34827862499515}
+{"phase": "cash_window_complete", "account_id": "stress__primary_2020", "completed_cash_accounts": 11, "ending_equity": 985852.3785, "closed_trades": 422, "open_positions": 0, "elapsed_seconds": 123.75141029100632}
+{"phase": "cash_window_complete", "account_id": "stress__year_2020", "completed_cash_accounts": 12, "ending_equity": 1065379.8185, "closed_trades": 85, "open_positions": 9, "elapsed_seconds": 123.83257937501185}
+{"phase": "cash_window_complete", "account_id": "stress__year_2021", "completed_cash_accounts": 13, "ending_equity": 1006390.7905, "closed_trades": 50, "open_positions": 2, "elapsed_seconds": 123.89377800002694}
+{"phase": "cash_window_complete", "account_id": "stress__year_2022", "completed_cash_accounts": 14, "ending_equity": 997801.0985, "closed_trades": 49, "open_positions": 6, "elapsed_seconds": 123.94833533302881}
+{"phase": "cash_window_complete", "account_id": "stress__year_2023", "completed_cash_accounts": 15, "ending_equity": 974796.8675, "closed_trades": 65, "open_positions": 2, "elapsed_seconds": 124.01037299999734}
+{"phase": "cash_window_complete", "account_id": "stress__year_2024", "completed_cash_accounts": 16, "ending_equity": 979136.328, "closed_trades": 44, "open_positions": 1, "elapsed_seconds": 124.0589422910125}
+{"phase": "cash_window_complete", "account_id": "stress__year_2025", "completed_cash_accounts": 17, "ending_equity": 924408.433, "closed_trades": 66, "open_positions": 7, "elapsed_seconds": 124.10954891599249}
+{"phase": "cash_window_complete", "account_id": "stress__year_2026", "completed_cash_accounts": 18, "ending_equity": 998690.1035, "closed_trades": 53, "open_positions": 0, "elapsed_seconds": 124.16845695802476}
+{"status": "completed", "output": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment", "completed_research_cash_accounts": 18, "native_source_queries": 1, "model_fits": 0}

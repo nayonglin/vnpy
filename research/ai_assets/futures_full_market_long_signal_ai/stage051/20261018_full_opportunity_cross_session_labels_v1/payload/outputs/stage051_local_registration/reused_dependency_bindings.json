@@ -1,0 +1,51 @@
+{
+  "schema": "stage051_reused_archived_dependencies_v1",
+  "archive_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/manifest.json",
+    "sha256": "472936305c06d8fc4ff1dfc06c15ca38a039bb73a63d115e14de142668652e12",
+    "bytes": 102567
+  },
+  "dependencies": [
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+      "archive_payload_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/payload/tools/stage042_cross_session_experiment.py",
+      "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+      "bytes": 50405,
+      "role": "feature_contract",
+      "raw_ohlc": false,
+      "repeat_payload_copy": false,
+      "binding_use": "复现049 imports042原语与041静态经济投影、来源合同和收据，复用Stage044已登记实体。"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "archive_payload_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/payload/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "sha256": "b546c81710e67f3a23eb6028c2a2b67f8ff3a0c87dc14a7e0e5a90463325ac63",
+      "bytes": 16560,
+      "role": "decision_asset",
+      "raw_ohlc": false,
+      "repeat_payload_copy": false,
+      "binding_use": "复现049 imports042原语与041静态经济投影、来源合同和收据，复用Stage044已登记实体。"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "archive_payload_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/payload/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "sha256": "6021a03f152f4316b069ed3d78df9f85fa240119b40fd9311dd4a0db0a62ba9a",
+      "bytes": 8941,
+      "role": "qualification_evidence",
+      "raw_ohlc": false,
+      "repeat_payload_copy": false,
+      "binding_use": "复现049 imports042原语与041静态经济投影、来源合同和收据，复用Stage044已登记实体。"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "archive_payload_path": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage044/20261018_cross_session_reference_v1/payload/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c",
+      "bytes": 8146494,
+      "role": "decision_asset",
+      "raw_ohlc": false,
+      "repeat_payload_copy": false,
+      "binding_use": "复现049 imports042原语与041静态经济投影、来源合同和收据，复用Stage044已登记实体。"
+    }
+  ],
+  "old_raw_panel_or_database_copied": false
+}

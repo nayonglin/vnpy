@@ -1,0 +1,147 @@
+test_D_is_strict_source_successor_not_next_available_quote (__main__.FullOpportunityContracts.test_D_is_strict_source_successor_not_next_available_quote) ... FAIL
+test_F_and_plain_keep_independent_economic_identity_without_family_occupancy (__main__.FullOpportunityContracts.test_F_and_plain_keep_independent_economic_identity_without_family_occupancy) ... FAIL
+test_changed_reference_exits_old_epoch_at_next_open (__main__.FullOpportunityContracts.test_changed_reference_exits_old_epoch_at_next_open) ... FAIL
+test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot (__main__.FullOpportunityContracts.test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot) ... FAIL
+test_future_poison_cannot_change_earlier_completed_label (__main__.FullOpportunityContracts.test_future_poison_cannot_change_earlier_completed_label) ... FAIL
+test_gap_exit_loss_is_not_clamped_to_minus_one_R (__main__.FullOpportunityContracts.test_gap_exit_loss_is_not_clamped_to_minus_one_R) ... FAIL
+test_gap_resets_twenty_bar_history_without_deleting_no_observation (__main__.FullOpportunityContracts.test_gap_resets_twenty_bar_history_without_deleting_no_observation) ... FAIL
+test_history_ready_is_independent_of_unresolved_economics (__main__.FullOpportunityContracts.test_history_ready_is_independent_of_unresolved_economics) ... FAIL
+test_known_earlier_lifecycle_exits_and_cancels_next_intent (__main__.FullOpportunityContracts.test_known_earlier_lifecycle_exits_and_cancels_next_intent) ... FAIL
+test_missing_held_bar_is_absorbing_unknown_even_after_later_stop (__main__.FullOpportunityContracts.test_missing_held_bar_is_absorbing_unknown_even_after_later_stop) ... FAIL
+test_next_day_uses_prior_close_low_not_current_day_low (__main__.FullOpportunityContracts.test_next_day_uses_prior_close_low_not_current_day_low) ... ERROR
+test_output_refuses_overwrite_before_loading_any_native_input (__main__.FullOpportunityContracts.test_output_refuses_overwrite_before_loading_any_native_input) ... ok
+test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero (__main__.FullOpportunityContracts.test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero) ... FAIL
+test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed) ... FAIL
+test_twenty_bars_ready_without_55_trigger_or_occupancy (__main__.FullOpportunityContracts.test_twenty_bars_ready_without_55_trigger_or_occupancy) ... FAIL
+
+======================================================================
+ERROR: test_next_day_uses_prior_close_low_not_current_day_low (__main__.FullOpportunityContracts.test_next_day_uses_prior_close_low_not_current_day_low)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 112, in test_next_day_uses_prior_close_low_not_current_day_low
+    self.assertAlmostEqual(row.N_u, 2.45)
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/case.py", line 904, in assertAlmostEqual
+    diff = abs(first - second)
+               ~~~~~~^~~~~~~~
+TypeError: unsupported operand type(s) for -: 'NoneType' and 'float'
+
+======================================================================
+FAIL: test_D_is_strict_source_successor_not_next_available_quote (__main__.FullOpportunityContracts.test_D_is_strict_source_successor_not_next_available_quote)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 75, in test_D_is_strict_source_successor_not_next_available_quote
+    self.assertEqual(row.label_history_ready20, 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_F_and_plain_keep_independent_economic_identity_without_family_occupancy (__main__.FullOpportunityContracts.test_F_and_plain_keep_independent_economic_identity_without_family_occupancy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 180, in test_F_and_plain_keep_independent_economic_identity_without_family_occupancy
+    self.assertEqual(frame.loc["e19", "filled"], 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_changed_reference_exits_old_epoch_at_next_open (__main__.FullOpportunityContracts.test_changed_reference_exits_old_epoch_at_next_open)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 128, in test_changed_reference_exits_old_epoch_at_next_open
+    self.assertEqual(row.exit_reason, "liquidity_reference_changed")
+AssertionError: None != 'liquidity_reference_changed'
+
+======================================================================
+FAIL: test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot (__main__.FullOpportunityContracts.test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 93, in test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot
+    self.assertEqual(row.label_state, "closed_complete_bar_model")
+AssertionError: 'not_history_ready' != 'closed_complete_bar_model'
+- not_history_ready
++ closed_complete_bar_model
+
+
+======================================================================
+FAIL: test_future_poison_cannot_change_earlier_completed_label (__main__.FullOpportunityContracts.test_future_poison_cannot_change_earlier_completed_label)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 163, in test_future_poison_cannot_change_earlier_completed_label
+    self.assertEqual(before.label_state, "closed_complete_bar_model")
+AssertionError: 'not_history_ready' != 'closed_complete_bar_model'
+- not_history_ready
++ closed_complete_bar_model
+
+
+======================================================================
+FAIL: test_gap_exit_loss_is_not_clamped_to_minus_one_R (__main__.FullOpportunityContracts.test_gap_exit_loss_is_not_clamped_to_minus_one_R)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 118, in test_gap_exit_loss_is_not_clamped_to_minus_one_R
+    self.assertEqual(row.exit_index, 21)
+AssertionError: None != 21
+
+======================================================================
+FAIL: test_gap_resets_twenty_bar_history_without_deleting_no_observation (__main__.FullOpportunityContracts.test_gap_resets_twenty_bar_history_without_deleting_no_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 67, in test_gap_resets_twenty_bar_history_without_deleting_no_observation
+    self.assertEqual(frame.loc["e38", "label_history_ready20"], 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_history_ready_is_independent_of_unresolved_economics (__main__.FullOpportunityContracts.test_history_ready_is_independent_of_unresolved_economics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 190, in test_history_ready_is_independent_of_unresolved_economics
+    self.assertEqual(row.label_history_ready20, 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_known_earlier_lifecycle_exits_and_cancels_next_intent (__main__.FullOpportunityContracts.test_known_earlier_lifecycle_exits_and_cancels_next_intent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 136, in test_known_earlier_lifecycle_exits_and_cancels_next_intent
+    self.assertEqual(frame.loc["e19", "exit_index"], 21)
+AssertionError: None != 21
+
+======================================================================
+FAIL: test_missing_held_bar_is_absorbing_unknown_even_after_later_stop (__main__.FullOpportunityContracts.test_missing_held_bar_is_absorbing_unknown_even_after_later_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 145, in test_missing_held_bar_is_absorbing_unknown_even_after_later_stop
+    self.assertEqual(row.filled, 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero (__main__.FullOpportunityContracts.test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 83, in test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero
+    self.assertEqual(row.participation_state, "known_nonparticipation")
+AssertionError: 'not_ready' != 'known_nonparticipation'
+- not_ready
++ known_nonparticipation
+
+
+======================================================================
+FAIL: test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 155, in test_terminal_open_and_last_intent_are_censored_not_artificially_closed
+    self.assertEqual(frame.loc["e19", "label_state"], "open_right_censored")
+AssertionError: 'not_history_ready' != 'open_right_censored'
+- not_history_ready
++ open_right_censored
+
+
+======================================================================
+FAIL: test_twenty_bars_ready_without_55_trigger_or_occupancy (__main__.FullOpportunityContracts.test_twenty_bars_ready_without_55_trigger_or_occupancy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 55, in test_twenty_bars_ready_without_55_trigger_or_occupancy
+    self.assertEqual(frame.loc["e19", "label_history_ready20"], 1)
+AssertionError: np.int64(0) != 1
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.035s
+
+FAILED (failures=13, errors=1)

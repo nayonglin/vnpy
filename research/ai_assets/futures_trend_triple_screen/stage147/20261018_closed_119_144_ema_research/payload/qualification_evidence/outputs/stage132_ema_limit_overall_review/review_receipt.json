@@ -1,0 +1,73 @@
+{
+  "stage": 132,
+  "line_id": "futures_trend_triple_screen",
+  "recorded_at": "2026-10-18T09:40:00+08:00",
+  "reviewer": "ema_limit_overall_review",
+  "base": "4f42805c2c71f8492a44a6876a82672f410f44df",
+  "head_before_and_after": "4f42805c2c71f8492a44a6876a82672f410f44df",
+  "scope": "Only the six explicitly named uncommitted Stage127 component/source test paths; existing native sources read only as interface evidence.",
+  "source_drift": false,
+  "findings": [],
+  "severity_counts": {"P0": 0, "P1": 0, "P2": 0},
+  "component_decision": "ready_without_fixes",
+  "financial_ready": false,
+  "production_qualified": false,
+  "fixture_only": true,
+  "financial_replays": 0,
+  "financial_attempts": 0,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "network_calls": 0,
+  "real_order_api_calls": 0,
+  "delegated_agents": 0,
+  "old_suites_run": 0,
+  "author_sources_modified": 0,
+  "author_evidence_read": {
+    "stage129": "receipt.json: final GREEN a500e1, 2 methods; compile76444f",
+    "stage130": "implementation_receipt.json: GREEN7e2ee9, 1 method; compilef572cc; original engine-test SHA correctly predates Task4 additions",
+    "stage131": "implementation_receipt.json: combined GREENcc88d0, 6 methods/0.289s; compile9670c0; oracle failure7110e4 disclosed separately",
+    "repeated_author_suite": false
+  },
+  "finite_independent_probe": {
+    "command": ".py311/bin/python research/lines/futures_trend_triple_screen/outputs/stage132_ema_limit_overall_review/finite_review_probe.py",
+    "start_chunk": "16f7ea",
+    "session_id": 40383,
+    "terminal_chunk": "81bad8",
+    "exit_code": 0,
+    "cases": 2,
+    "script_sha256": "5b1f0d4c2d8d20aa26fea3f5d853a7247dc10b544fb8a7577482a2518f56a262",
+    "evidence_sha256": "1d3c11ff02c635c951f05697dd595402d174ec2183c94557c2b03d1eec5b9210",
+    "purpose": [
+      "Exercise wrong-side L through the complete real native planner and snapshot schema, beyond the author's direct-sizing assertion.",
+      "Exercise the actual short holding dynamic-stop consumer after the private lifetime view, beyond a DataFrame-only mirror."
+    ],
+    "outcome": [
+      "L94/S95 rejects, q0, no intent/fill/reservation, existing setup retained.",
+      "Short F100, raw pre-fill low95; lifetime low100 and actual native layer.lowest_price100; raw unchanged, one native initial fill, no retry event."
+    ],
+    "stdout_note": "Matplotlib font-cache notice and TqSdk import disclaimer were import banners, not test failure or provider calls."
+  },
+  "source_fingerprints": {
+    "tools/stage127_ema_limit_model.py": "6568f87ec74bebdb9afa730b3347c5eb52cdf31bd8f3ca3cc9208b1c55c2f7d6",
+    "tools/test_stage127_ema_limit_model.py": "b801b79205fa23e6ab0aa8b5a2827c848a0c79bf6608ccfdea2819e865783bce",
+    "tools/stage127_ema_limit_strategy.py": "3aa45d2dba1495dc443d232c58aee8954f5858361516a7a3818270d1a0205ed0",
+    "tools/test_stage127_ema_limit_strategy.py": "21ec96b22dcf3593e2dde24cef58d53c76c56db73a2051d37077550c0fc55d9d",
+    "tools/stage127_ema_limit_engine.py": "1a8bc7412e4fd954591890b2ce0c9b2efd9e823c8e2bdc7a0bd22862356414f6",
+    "tools/test_stage127_ema_limit_engine.py": "7ef58d22a4d16a4c723694720a6c9f4fd3f3985586f4f27765eba2c66ecee7a7"
+  },
+  "declined_judgments": [
+    "Alpha, target achievement, financial returns/DD/Sharpe/survival: no real account replay was run or authorized by this component review.",
+    "Real source/minute volume/execution-tick qualification: supplied references and callbacks are deliberately external; no canonical real-data delivery was reviewed.",
+    "Queue allocation, exchange fill probability, immediate gap-close availability: unidentifiable from total-minute volume/OHLC; fixed approximations remain disclosed.",
+    "Exhaustive old holding/roll equivalence: static delegation, nonflat pricing and ordinary context were reviewed; no old suite was rerun and no universal proof is claimed.",
+    "Current B process progress, terminal state or PnL: its handle/output directory was not inspected.",
+    "New financial arm, runner, checkpoint, readiness or production qualification: no such delivery exists in the six-file scope."
+  ],
+  "research_judgment": "Inherit Stage121/123 fixed literature and GitHub conclusion: transparent independent EMA adaptation is defensible, not a unique Elder reproduction or alpha evidence. No repeat network research.",
+  "reflection": {
+    "added_overfitting_before_and_after": false,
+    "reason": "Only fixed-contract implementation and counterexamples were reviewed; no B PnL, parameter scan or financial result selected the semantics.",
+    "continue_value_before_and_after": true,
+    "scope": "One bounded component correctness review; any future financial work still needs independent data/identity/entry qualification."
+  }
+}

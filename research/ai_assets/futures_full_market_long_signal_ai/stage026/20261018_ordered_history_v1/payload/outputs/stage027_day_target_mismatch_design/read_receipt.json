@@ -1,0 +1,48 @@
+{
+  "critical_scope_limit": "DAY uncapping does not test multi-day right-tail or overnight/account goal",
+  "financial_ready": false,
+  "financial_runs": 0,
+  "horizon_search_authorized": false,
+  "implementation_created": false,
+  "issued_at": "2026-10-18T12:40:57+08:00",
+  "model_fits": 0,
+  "negative_result_scope": "reject only fixed full-ready DAY uncapping policy; not all AI or multi-day trends",
+  "network_data_downloads": 0,
+  "new_inventory_runs": 0,
+  "production_qualified": false,
+  "proposal_only": true,
+  "recommended_question": "full_ready_OPEN_DAY_same_stop_cost_remove_4R_cap_only",
+  "root_protocol_required_before_run": true,
+  "schema": "stage027_independent_target_design_receipt_v1",
+  "sql_queries": 0,
+  "stage": {
+    "bytes": 11912,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1240_stage027_day_target_mismatch_and_uncapping_design.md",
+    "sha256": "cb69cced032d414519395ac6d214cdb8a767ec9b8863eb188f1643de9dcdf863"
+  },
+  "stage024_models_masks_reused": false,
+  "stage024_or_025_read": false,
+  "unchanged_stage023_bindings": [
+    {
+      "bytes": 16174,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage023_ordered_history_dataset.py",
+      "sha256": "0544681ca1396d1b0eb4bc219d30b0bcb008998513bb7ba238a2292c37cd6ae0"
+    },
+    {
+      "bytes": 6032,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py",
+      "sha256": "d707ab7914bf0184ff852acd51e36c465574f55d76eaebd8c1783ba172daf711"
+    },
+    {
+      "bytes": 81847,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export/manifest.json",
+      "sha256": "3b8da3d7e94a9e3e3fc755b233d2bb93ef6ebf6813a66a0a0a913052eb8bf64a"
+    },
+    {
+      "bytes": 5359,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1229_stage023_ordered_history_dataset.md",
+      "sha256": "85ab485c378c9486bd525fd1290c5f52854a447e2380f590bce757dead511b57"
+    }
+  ],
+  "web_browsing_only": true
+}

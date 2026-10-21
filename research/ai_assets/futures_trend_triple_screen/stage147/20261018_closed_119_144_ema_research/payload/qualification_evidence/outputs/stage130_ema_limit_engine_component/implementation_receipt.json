@@ -1,0 +1,71 @@
+{
+  "stage": "stage130",
+  "line_id": "futures_trend_triple_screen",
+  "recorded_at": "2026-10-18T09:29:40+08:00",
+  "scope": "Task3 limit scanner, private entry-minute view and common native heap factory only",
+  "fixture_only": true,
+  "financial_replays": 0,
+  "financial_attempts": 0,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "network_calls": 0,
+  "real_order_api_calls": 0,
+  "red": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_engine.py -k test_limit_scan_volume_day_end_and_private_view -v",
+    "exit_code": 1,
+    "chunk_id": "ecd140",
+    "reason": "new limit_context absent; assertion Stage127 EMA limit scan is not implemented"
+  },
+  "green": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_engine.py -k test_limit_scan_volume_day_end_and_private_view -v",
+    "exit_code": 0,
+    "chunk_id": "7e2ee9",
+    "tests": 1
+  },
+  "compile": {
+    "command": "PYTHONPYCACHEPREFIX=/private/tmp/stage130_ema_limit_pycache .py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/stage127_ema_limit_engine.py research/lines/futures_trend_triple_screen/tools/test_stage127_ema_limit_engine.py",
+    "exit_code": 0,
+    "chunk_id": "f572cc"
+  },
+  "source_sha256": {
+    "tools/stage127_ema_limit_engine.py": "1a8bc7412e4fd954591890b2ce0c9b2efd9e823c8e2bdc7a0bd22862356414f6",
+    "tools/test_stage127_ema_limit_engine.py": "85576d74a4825bbee239707729cc3a1e1261cde203a4d140b61c0a4a4ce0202b"
+  },
+  "asserted_fixtures": {
+    "limit": 100,
+    "quantity": 2,
+    "execution_tick": 1,
+    "primary_execution": "2026-01-07T09:02:00",
+    "primary_fill": 100,
+    "primary_intrabar": true,
+    "primary_raw_close": 104,
+    "open_improvement_long": 99,
+    "open_improvement_short": 101,
+    "decimal_tick_limit": 100.3,
+    "pessimistic_execution": "2026-01-07T09:03:00",
+    "pessimistic_fill": 100,
+    "failed_confirmation_no_third_rescue": true,
+    "day_end_no_cross_day": true,
+    "private_long_ohlc": [
+      100,
+      100,
+      99,
+      100
+    ],
+    "private_short_ohlc": [
+      100,
+      101,
+      100,
+      100
+    ],
+    "raw_frame_unchanged": true
+  },
+  "not_verified": [
+    "Task4 real native accounting, wrong-side protective close, retry, dual-consumer integration",
+    "real volume single-sided source qualification",
+    "queue allocation or actual exchange fill probability",
+    "financial readiness or production qualification"
+  ],
+  "production_qualified": false
+}
+

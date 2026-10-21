@@ -1,0 +1,18 @@
+{
+  "schema": "stage013_explicit_asset_roles_v1",
+  "aliases": {
+    "model_reproduction_asset": "model_artifact",
+    "reproduction_asset": "feature_contract",
+    "source_protocol_binding": "feature_contract",
+    "decision_asset": "decision_asset",
+    "qualification_evidence": "qualification_evidence"
+  },
+  "normalized_input_projection": "All actual model features, targets and event states required for coefficient replay; absolute atr20 diagnostic removed; actual experiment input unchanged",
+  "excluded_raw_market": [
+    "clean_daily.sqlite",
+    "product_day_opportunities.csv.gz",
+    "audit_paths.csv.gz",
+    "original feature_labels.csv.gz with atr20 diagnostic"
+  ],
+  "no_commit_push": true
+}

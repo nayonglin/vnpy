@@ -1,0 +1,4 @@
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py:103: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  if features.loc[~known,['gross_lower','gross_upper','proxy_lower','proxy_upper']].replace('',np.nan).notna().any().any():raise ValueError('unknown original outcomes populated')
+{"phase": "all_events_built", "rows": 399252, "identified": 194168, "model_fits": 0}
+{"status": "completed", "output": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/experiment_after_status_fix", "uncapped_policy_screen_pass": false, "model_fits": 0, "financial_runs": 0}

@@ -1,0 +1,66 @@
+{
+  "schema": "stage133_B_OFF_actual_failure_terminal_v1",
+  "recorded_at": "2026-10-18T09:43:35.591043+08:00",
+  "actual_terminal_observed": true,
+  "tool_session_id": 47648,
+  "tool_terminal_chunk_id": "4e198d",
+  "last_poll_wall_time_seconds": 43.012675917,
+  "exit_code": 1,
+  "arm": "B_OFF",
+  "attempt": 1,
+  "global_arm_attempt": 1,
+  "financial_attempt_global": 11,
+  "accepted_complete_ledgers_total": 4,
+  "run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+  "owner_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF",
+  "engine_pid_at_start": 44392,
+  "source_commit": "4f42805c2c71f8492a44a6876a82672f410f44df",
+  "started_at": "2026-10-18 07:43:14.055881+08:00",
+  "actual_tool_error": "RuntimeError: backtest_bar_failed:{'datetime': '2025-04-11 00:00:00+08:00', 'error': \"TimeoutError('qualified_data_wait_budget_exceeded')\"}",
+  "failure": {
+    "arm": "B_OFF",
+    "error": "RuntimeError('backtest_bar_failed:{\\'datetime\\': \\'2025-04-11 00:00:00+08:00\\', \\'error\\': \"TimeoutError(\\'qualified_data_wait_budget_exceeded\\')\"}')",
+    "failure_capture_sha256": "c0047f6bf2d7dc2bcfd0175da58b4a836e9986fc96f5b570e6d4230725cfc260",
+    "partial": true,
+    "production_qualified": false,
+    "run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+    "status": "failed_partial_no_engine_seal"
+  },
+  "objects": {
+    "run_context.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/run_context.json",
+      "sha256": "81c35c8d0230ae2ef8a3ea96339c93ea3755a75dc8ff12a5eb4c3760f0d2e8a7",
+      "bytes": 252350
+    },
+    "preflight_used.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/preflight_used.json",
+      "sha256": "bb6b92db0e897f9ceec1700e364d0efec978db6b04aaefa7dadd05e18163b37f",
+      "bytes": 3258013
+    },
+    "run_failure.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/run_failure.json",
+      "sha256": "1308a516f0311d1354f8da0204ea575b2a48684400bc487345057d5bc6dfac0e",
+      "bytes": 436
+    },
+    "failure_capture.pkl.gz": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/failure_capture.pkl.gz",
+      "sha256": "c0047f6bf2d7dc2bcfd0175da58b4a836e9986fc96f5b570e6d4230725cfc260",
+      "bytes": 1686556
+    }
+  },
+  "no_complete_outputs": {
+    "checkpoint/raw_account.pkl.gz": true,
+    "checkpoint/validation_seal.json": true,
+    "summary.json": true,
+    "export_success.json": true
+  },
+  "complete_performance": "N/A_no_complete_account_checkpoint",
+  "original_limits": {
+    "wait_seconds": 1800,
+    "run_seconds": 7200,
+    "provider_start_reserve_seconds": 840
+  },
+  "financial_restarts_by_this_record": 0,
+  "model_fits": 0,
+  "production_qualified": false
+}

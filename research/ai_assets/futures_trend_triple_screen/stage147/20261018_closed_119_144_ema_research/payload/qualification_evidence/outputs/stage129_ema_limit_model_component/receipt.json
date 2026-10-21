@@ -1,0 +1,85 @@
+{
+  "stage": 129,
+  "line_id": "futures_trend_triple_screen",
+  "recorded_at": "2026-10-18T09:30:00+08:00",
+  "scope": "Stage127 Task1 only: source-bound EMA features and independent pure DAY state",
+  "fixture_only": true,
+  "financial_replays": 0,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "network_calls": 0,
+  "production_qualified": false,
+  "commands": [
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_model.py -v",
+      "phase": "RED",
+      "chunk_id": "925044",
+      "exit_code": 1,
+      "tests": 2,
+      "failures": 2,
+      "reason": "Both named tests asserted the independent component was absent; no numeric/native environment failure."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_model.py -v",
+      "phase": "GREEN_first",
+      "chunk_id": "bdb4aa",
+      "exit_code": 0,
+      "tests": 2,
+      "elapsed_seconds": 0.010
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_model.py -v",
+      "phase": "additional_boundary_observation",
+      "chunk_id": "c06463",
+      "exit_code": 1,
+      "tests": 2,
+      "errors": 1,
+      "reason": "Weekly-unknown input with an otherwise valid quote exposed quote_direction_mismatch. This error is disclosed and is not counted as the assertion-based RED proof."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_model.py -v",
+      "phase": "RED_boundary",
+      "chunk_id": "e5af7a",
+      "exit_code": 1,
+      "tests": 2,
+      "failures": 1,
+      "reason": "The state combination asserted that weekly unknown/neutral must clear preparation without quote-direction rejection."
+    },
+    {
+      "command": ".py311/bin/python -m unittest discover -s research/lines/futures_trend_triple_screen/tools -p test_stage127_ema_limit_model.py -v",
+      "phase": "GREEN_final",
+      "chunk_id": "a500e1",
+      "exit_code": 0,
+      "tests": 2,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "command": "PYTHONPYCACHEPREFIX=/private/tmp/stage129_ema_limit_pycache .py311/bin/python -m py_compile research/lines/futures_trend_triple_screen/tools/stage127_ema_limit_model.py research/lines/futures_trend_triple_screen/tools/test_stage127_ema_limit_model.py",
+      "phase": "compile",
+      "chunk_id": "76444f",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "test_methods": [
+    "test_formula_source_and_future_poison",
+    "test_state_epoch_unknown_and_identity"
+  ],
+  "six_key_evidence": {
+    "seed_and_window": "EMA13 seed first valid on bar13; hand-calculated closes1..13 seed7 and close14 EMA8; bar37 not ready/bar38 ready with26 valid EMA bars; gap/invalid row requires38 new valid bars.",
+    "positive_penetrations": {"down_count": 2, "mean_down": 3.0, "up_count": 2, "mean_up": 7.0, "long_limit_tick_0_4": 96.8, "short_limit_tick_0_4": 107.2},
+    "future_poison": "Full feature at u exactly equals the same feature after future OHLC poison; prefix-only output equals the original first38 features.",
+    "source_sha256": "a47419bb823dd35f6d8f4bfed581db3d1dedb1cdee2be4dd27a6085c9d706cf9",
+    "epoch_and_identity": "All public epoch/setup/intent IDs start stage124_ema_limit_v1; no B_TS owner escapes; new contract cancels prior preparation and stale-contract quote rejects.",
+    "consume_count": "One current matching DAY fill consumes once; expired, wrong-day, and second fills reject."
+  },
+  "source_fingerprints": {
+    "tools/stage127_ema_limit_model.py": {"sha256": "6568f87ec74bebdb9afa730b3347c5eb52cdf31bd8f3ca3cc9208b1c55c2f7d6", "bytes": 17347},
+    "tools/test_stage127_ema_limit_model.py": {"sha256": "b801b79205fa23e6ab0aa8b5a2827c848a0c79bf6608ccfdea2819e865783bce", "bytes": 12650}
+  },
+  "limits": [
+    "Exact qualified keys and qualifier SHA are caller-supplied references, not qualification granted by this component.",
+    "No real source export, full-history build, account factory, native execution or financial readiness was exercised.",
+    "Only the two named Task1 combinations ran; the root-frozen plan forbids the old suite and financial entry points."
+  ]
+}

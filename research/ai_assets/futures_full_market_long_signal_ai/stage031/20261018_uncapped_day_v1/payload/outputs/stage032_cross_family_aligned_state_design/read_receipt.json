@@ -1,0 +1,48 @@
+{
+  "financial_ready": false,
+  "financial_runs": 0,
+  "implementation_created": false,
+  "issued_at": "2026-10-18T12:52:10+08:00",
+  "learner": "fixed Ridge same effective capacity for ALIGNED and SHUFFLED",
+  "model_fits": 0,
+  "network_data_downloads": 0,
+  "new_external_source": false,
+  "new_input_beyond_S11_and_four_lag_distribution_summaries": true,
+  "new_inventory_runs": 0,
+  "production_qualified": false,
+  "proposal_only": true,
+  "question": "aligned_other_family_lag_shock_vs_same_values_shuffled_mapping",
+  "registry_read_scope": "line_id_and_directory_only",
+  "root_new_protocol_required": true,
+  "schema": "stage032_independent_cross_family_design_receipt_v1",
+  "source_bindings": [
+    {
+      "bytes": 27158,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage010_day_proxy_experiment.py",
+      "sha256": "c8ddce7c93184f793b9c42d2366ffd24b9f9651d5c4a96411bb0388098539ffa"
+    },
+    {
+      "bytes": 22578,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+      "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4"
+    },
+    {
+      "bytes": 88826,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+      "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e"
+    },
+    {
+      "bytes": 10148,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1129_stage007_fixed_day_quality_protocol.md",
+      "sha256": "393062ccb353e5d803927ad4fe1d7e4223d60edc4a070a710b7c0f2eb549e135"
+    }
+  ],
+  "sql_queries": 0,
+  "stage": {
+    "bytes": 13001,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1251_stage032_cross_family_aligned_state_design.md",
+    "sha256": "d396bb4f5717c1104f85469fb675ac3f3cfe8e20a5db51cf8865e17de5c21c9b"
+  },
+  "stage029_new_policy_results_read": false,
+  "web_browsing_only": true
+}

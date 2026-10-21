@@ -1,0 +1,34 @@
+{
+  "SQL_queries": 0,
+  "attempts": 2,
+  "command": [
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage018_entry_confirmation_experiment/experiment_after_calendar_boundary_fix"
+  ],
+  "completed_full_experiment": 0,
+  "downloads": 0,
+  "elapsed_seconds": 5.575670542020816,
+  "error": "ValueError: OPEN does not reproduce accepted009 proxy lower",
+  "exit_code": 1,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T12:09:57.501134+08:00",
+  "model_fits": 0,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "python_version": "3.11.5",
+  "reproducibility_required": true,
+  "role": "qualification_evidence",
+  "schema": "stage018_actual_terminal_v1",
+  "source": {
+    "bytes": 28817,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "7f1fc2b08d8cd9a830311b53853e1cde26cf07a9cdc3da09ca70e0eec320f89c"
+  },
+  "started_at": "2026-10-18T12:09:51.925608+08:00",
+  "status": "failed"
+}

@@ -1,0 +1,39 @@
+{
+  "SQL": 0,
+  "actual_clicks": 2,
+  "authorized_clicks": 2,
+  "cash_backtests": 0,
+  "created_at": "2026-10-18T07:03:31.805936+00:00",
+  "excluded_raw_source_payloads": [],
+  "interpretation": "Exact target URLs are now tool-observed. The web fetch path rejected application/octet-stream; CSV bytes/numeric fields/units were not delivered or verified. This is not successful CSV download or period coverage evidence.",
+  "model_fits": 0,
+  "new_searches": 0,
+  "observations": [
+    {
+      "csv_numeric_values_observed": false,
+      "csv_payload_saved": false,
+      "csv_units_observed": false,
+      "issue_date": "2011-08-03",
+      "observed_target_csv_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/csv/table1.csv",
+      "page_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/wpsr_2011_08_03.html",
+      "prior_link_id": 4,
+      "prior_web_ref": "turn513view0",
+      "tool_result": "Failed to fetch: (400) Unsupported content-type: application/octet-stream"
+    },
+    {
+      "csv_numeric_values_observed": false,
+      "csv_payload_saved": false,
+      "csv_units_observed": false,
+      "issue_date": "2020-01-03",
+      "observed_target_csv_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_01_03/csv/table1.csv",
+      "page_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_01_03/wpsr_2020_01_03.php",
+      "prior_link_id": 32,
+      "prior_web_ref": "turn513view2",
+      "tool_result": "Failed to fetch: (400) Unsupported content-type: application/octet-stream"
+    }
+  ],
+  "schema": "stage058_agent_two_observed_csv_links_v1",
+  "scope": "only two previously observed Table1 CSV link clicks; no inferred URL or HTTP retry",
+  "stage057_modified": false,
+  "status": "target_links_observed_payload_unread"
+}

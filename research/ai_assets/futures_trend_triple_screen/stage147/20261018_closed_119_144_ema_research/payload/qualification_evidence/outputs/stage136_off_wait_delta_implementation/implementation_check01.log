@@ -1,0 +1,19 @@
+test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened (test_stage135_accepted_off_wait_delta.OffDeltaTest.test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened) ... FAIL
+test_overlapping_rights_conflicts_and_readonly_original_container_compose (test_stage135_accepted_off_wait_delta.OffDeltaTest.test_overlapping_rights_conflicts_and_readonly_original_container_compose) ... ok
+
+======================================================================
+FAIL: test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened (test_stage135_accepted_off_wait_delta.OffDeltaTest.test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened)
+----------------------------------------------------------------------
+ValueError: source_hash_changed:/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/tmp1ks58jeq/snapshot.json
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage135_accepted_off_wait_delta.py", line 210, in test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened
+    with self.assertRaisesRegex(ValueError,'source_hash_changed_during_freeze'):f.freeze(builder)
+AssertionError: "source_hash_changed_during_freeze" does not match "source_hash_changed:/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/tmp1ks58jeq/snapshot.json"
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.173s
+
+FAILED (failures=1)

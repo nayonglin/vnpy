@@ -1,0 +1,9 @@
+test_one_decimal_report_uses_its_own_printed_quantum (__main__.PrintedPrecision.test_one_decimal_report_uses_its_own_printed_quantum) ... ok
+test_outside_printed_bound_remains_rejected (__main__.PrintedPrecision.test_outside_printed_bound_remains_rejected) ... ok
+test_three_decimal_report_retains_official_difference (__main__.PrintedPrecision.test_three_decimal_report_retains_official_difference) ... ok
+test_wrong_statistics_week_remains_rejected (__main__.PrintedPrecision.test_wrong_statistics_week_remains_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK

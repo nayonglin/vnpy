@@ -1,0 +1,66 @@
+{
+  "schema": "stage063_printed_precision_decision_preflight_v1",
+  "recorded_at": "2026-10-18T15:43:17.445351+08:00",
+  "amendment": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/precision_input_amendment.json",
+    "bytes": 3035,
+    "sha256": "46946878f76d2b0a134bf274898868e622c4bded4d021a1add62116f8af3e729"
+  },
+  "previous_source_preflight_preserved": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_preflight.json",
+    "bytes": 5703,
+    "sha256": "69e72117dfeef101582f046d5647d42d446fc6bb7852e9f242131ed2c128739e"
+  },
+  "bounded_probe": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_probe.json",
+    "bytes": 9144,
+    "sha256": "ab66050f9934f09c7326175e2077cc2c729ac2c826a7055c7d48b16b25414c66"
+  },
+  "independent_source_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py",
+    "bytes": 12518,
+    "sha256": "2ed52d9aa40af98e21e679f3865cbbaf91d9e480552a8a6f2cf39184a73b9153"
+  },
+  "behavior_tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_printed_precision.py",
+    "bytes": 1515,
+    "sha256": "839b730a6e6c8e1a5236494424f21143b4f332d4f9a4e2453376b070e3d51c56"
+  },
+  "red": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_red.log",
+    "bytes": 2398,
+    "sha256": "c41dfe62c09a1fc5357c0cb6ef56cefe5cef0b45525ba7cfb9aa1aa2d96d00d8"
+  },
+  "green": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_green.log",
+    "bytes": 628,
+    "sha256": "1a81dc8b720a9b01940566c4f53c41ff4e878c09a9bc6163e1503c4c81dffbd8"
+  },
+  "decision": "accept_derived_printed_quantum_compatibility_for_separate_offline065_not_mutation_of060",
+  "root_cause": "060 exact equality on independently printed values is an Important systematic false-missing rule, inconsistent with provider unrounded-difference semantics.",
+  "probe_scope": {
+    "reports": 5,
+    "target_stock_rows": 15,
+    "nonzero_compatible_residuals": 8,
+    "all15_compatible": true
+  },
+  "precision_rule": "For Decimal printed values x,y,d with their retained exponents, q_i=10**exponent_i; accept abs(x-y-d)<=0.5*(q_x+q_y+q_d), otherwise reject. Preserve official d, never replace it with x-y.",
+  "tests_result": "4 new targeted behaviors: initial2expectedFAIL/2pass at old equality; after minimal independent checker change4pass. No author/old suite executed.",
+  "remaining_gate": "065 final source/test SHA and immutable producer/parent060/amendment bindings still pending; then minimal implementation delta preflight. No new source manifest accepted or actual total review authorized.",
+  "constraints": [
+    "Original060 source/actual/source_preflight remain unchanged.",
+    "Only completed060 downloaded bytes may be reused by065, no requests.",
+    "Previously known values unchanged; recover only original arithmetic-only rejections whose three target rows all pass.",
+    "Date/header/duplicate/invalid/nonfinite/out-of-bound/network remain unknown.",
+    "Printed precision compatibility is not recovery of unrounded truth or contemporaneous byte-PIT proof."
+  ],
+  "actions": {
+    "fit": 0,
+    "cash_policy_replay": 0,
+    "sql": 0,
+    "network": 0,
+    "actual_total_result_review": 0
+  },
+  "overfitting": "No performance result exists in new experiment, so this precision rule change is input-correctness repair before first fit/cash, not outcome-based rescue.",
+  "continuation_value": "Yes for correctness repair and one fixed experiment; no alpha or goal completion claim."
+}

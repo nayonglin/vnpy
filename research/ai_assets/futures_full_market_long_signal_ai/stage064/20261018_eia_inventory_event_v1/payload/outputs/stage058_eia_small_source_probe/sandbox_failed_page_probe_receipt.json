@@ -1,0 +1,36 @@
+{
+  "schema": "stage058_eia_three_page_source_probe_v1",
+  "status": "completed",
+  "started_at": "2026-10-18T06:59:57.855560+00:00",
+  "finished_at": "2026-10-18T06:59:57.882457+00:00",
+  "elapsed_seconds": 0.02677999995648861,
+  "requests": [
+    {
+      "name": "archive",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/",
+      "error_type": "URLError",
+      "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "elapsed_seconds": 0.026143666997086257
+    },
+    {
+      "name": "issue_20110803",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/wpsr_2011_08_03.html",
+      "error_type": "URLError",
+      "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "elapsed_seconds": 0.02551891701295972
+    },
+    {
+      "name": "issue_20200103",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_01_03/wpsr_2020_01_03.php",
+      "error_type": "URLError",
+      "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "elapsed_seconds": 0.024692874983884394
+    }
+  ],
+  "downloads_attempted": 3,
+  "model_fits": 0,
+  "cash_accounts": 0,
+  "native_sql": 0,
+  "raw_sources_copied_to_git": false,
+  "goal_complete": false
+}

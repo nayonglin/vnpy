@@ -1,0 +1,19 @@
+{
+  "estimator_parameters": {
+    "alpha": 1.0,
+    "copy_X": true,
+    "fit_intercept": true,
+    "max_iter": null,
+    "positive": false,
+    "random_state": null,
+    "solver": "cholesky",
+    "tol": 0.0001
+  },
+  "joblib": "1.6.0",
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)]",
+  "scipy": "1.17.1",
+  "sklearn": "1.6.1"
+}

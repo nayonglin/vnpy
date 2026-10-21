@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py",
+    "--snapshot-path",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/audit_only_snapshot.json",
+    "--snapshot-sha256",
+    "f601f0f32eb258b6cde458754709d2451b433025dbe297619992c59beb42ea18",
+    "--review-path",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/review_receipt.json",
+    "--review-sha256",
+    "2d6f19e8fbb6f94976380ae114c7ca6cde8c70ea4ad5df3d2f9628aeaa9edd7a",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a"
+  ],
+  "started_at": "2026-10-18T09:55:37.094346+08:00",
+  "completed_at": "2026-10-18T09:55:39.897085+08:00",
+  "exit_code": 0,
+  "log_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/actual_freeze.log",
+  "log_sha256": "58f5357ab25e59a8be1a24bd84f32cce48d84ea45ac9f1f199360902211ff7a0",
+  "target": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a",
+  "financial_runs": 0,
+  "training_runs": 0,
+  "network_calls": 0,
+  "manifest_sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a"
+}

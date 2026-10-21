@@ -1,0 +1,67 @@
+{
+  "schema": "stage040_cross_session_cash_design_review_v1",
+  "recorded_at": "2026-10-18T13:19:57+08:00",
+  "line_id": "futures_full_market_long_signal_ai",
+  "independent_review": true,
+  "status": "accept_cross_session_reference_with_three_cash_protocol_clarifications",
+  "inputs_and_output": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "sha256": "b8423cadf149280dc24c034af9f6c54caeb1eb71be3f045f7644dc92d5da5cbb",
+      "bytes": 15382
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1314_stage038_cross_session_policy_mother_design.md",
+      "sha256": "769fddd904963fc7befc860fe5934221f6a361b041b2734e6bcd8a6618cf7edf",
+      "bytes": 14880
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1320_stage040_cross_session_minimum_cash_design_review.md",
+      "sha256": "075eb18f5c3aeb6f6f3e9dee5d7806b60f2b9e4837fcd92285bd289210d9d952",
+      "bytes": 10718
+    }
+  ],
+  "critical": 0,
+  "important": 3,
+  "minor": 0,
+  "price_mother_blocked": false,
+  "research_cash_possible_with_explicit_assumptions": true,
+  "production_qualification_required_for_research": false,
+  "important_items": [
+    "u_close_batch_reservations_no_full_D_open_reallocation_or_D_exit_cash_borrowing",
+    "versioned_economic_assumptions_and_base_stress_instead_of_all_production_precision_prerequisites",
+    "preserve_evidence_unknown_but_allow_declared_deferred_liquidation_stale_mark_research_path"
+  ],
+  "fixed_policy": "55/20/2N_no_PT_long_only_no_AI_no_pyramid",
+  "proposed_cash": {
+    "initial_CNY": 1000000,
+    "risk_per_family_fraction": 0.0025,
+    "total_initial_risk_budget_fraction": 0.02,
+    "new_margin_budget_fraction": 0.25,
+    "reservation_price_buffer": 0.1,
+    "base_margin_floor": 0.2,
+    "stress_margin_floor": 0.4,
+    "base_side_fee": {
+      "min_CNY_per_lot": 2,
+      "notional_fraction": 0.0001
+    },
+    "stress_side_fee": {
+      "min_CNY_per_lot": 6,
+      "notional_fraction": 0.0003
+    },
+    "base_adverse_slippage": "max(1 known tick,1bp reference price); missing tick flagged1bp",
+    "stress_adverse_slippage": "max(3 known ticks,3bp reference price); missing tick flagged3bp"
+  },
+  "web_primary_sources": [
+    "https://www.shfe.com.cn/services/calenderandholidays/tradinghours/",
+    "https://raw.githubusercontent.com/pst-group/pysystemtrade/master/systems/provided/rules/breakout.py"
+  ],
+  "implementation_calls": 0,
+  "sql_queries": 0,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "market_data_downloads": 0,
+  "new_account_results_read": false,
+  "financial_ready": false,
+  "production_qualified": false
+}

@@ -1,0 +1,53 @@
+{
+  "accepted_panel_manifest": {
+    "bytes": 257576,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json",
+    "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003"
+  },
+  "calendar": {
+    "bytes": 44824,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+    "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585"
+  },
+  "database": {
+    "bytes": 378552320,
+    "inode": 28078628,
+    "mtime_ns": 1792236170627661666,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "sha256_verification": "inherited_stage266_not_rehashed_this_stage",
+    "shm_present": false,
+    "wal_present": false
+  },
+  "design_document": {
+    "bytes": 12216,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage039_cross_session_reference_protocol.md",
+    "sha256": "09f4102162116f1ac844328455b7365f31e6f916345e8885ccb6129de953101d"
+  },
+  "design_review": {
+    "bytes": 2752,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage040_cross_session_cash_design_review/read_receipt.json",
+    "sha256": "3fc2e32c13610597cc7eea01b6570382583e1280ab88218f5d74f5e5b4588768"
+  },
+  "economic_projection": {
+    "bytes": 8146494,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+    "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c"
+  },
+  "economic_source_review": {
+    "bytes": 8941,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+    "sha256": "6021a03f152f4316b069ed3d78df9f85fa240119b40fd9311dd4a0db0a62ba9a"
+  },
+  "panel": {
+    "bytes": 24166354,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/product_day_opportunities.csv.gz",
+    "sha256": "8c6fc733cb14bb2ceb7573735d11f26e8885efd7cfce0d7be5232a3b3910a9ce",
+    "sha_policy": "inherited_accepted004; optional on actual first read, no repeat archive copy"
+  },
+  "source_bindings": {
+    "bytes": 5592,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json",
+    "sha256": "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb"
+  }
+}

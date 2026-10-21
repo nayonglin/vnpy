@@ -1,0 +1,30 @@
+{
+  "schema": "stage056_prepare_only_actual_terminal_v1",
+  "status": "prepared_wait_final_sources_and_authorization",
+  "commands": [
+    {
+      "phase": "prepare_helper_only",
+      "chunk_id": "9323ad",
+      "exit_code": 0,
+      "wall_time_seconds": 8.209e-06
+    },
+    {
+      "phase": "stable_contracts_and_accepted_dependency_metadata_plan",
+      "chunk_id": "bef0e0",
+      "exit_code": 0,
+      "wall_time_seconds": 8.333e-06
+    }
+  ],
+  "helper_prepare_or_register_called": false,
+  "register_calls": 0,
+  "git_add": false,
+  "archive_payload_copy_calls": 0,
+  "new_fit_calls": 0,
+  "new_cash_runs": 0,
+  "SQL_queries": 0,
+  "old_full_normalized_or_raw_hashes": 0,
+  "half_actual_outputs_read_as_complete": false,
+  "commit": false,
+  "push": false,
+  "production": false
+}

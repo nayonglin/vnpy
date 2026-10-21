@@ -1,0 +1,22 @@
+{
+  "authorized_cash_accounts": 12,
+  "authorized_native_SQL": 1,
+  "fit_manifest": {
+    "bytes": 145600,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/manifest.json",
+    "sha256": "04268bb8c6f183139443b0e94d2eb51741c079d722c2987439fe37f81e085f8f"
+  },
+  "fixture": false,
+  "new_model_fits": 0,
+  "protocol": {
+    "bytes": 11987,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage052_maturity_information_cash_protocol/protocol.json",
+    "sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c"
+  },
+  "source": {
+    "bytes": 35598,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage054_maturity_cash_compare.py",
+    "sha256": "f5f73732747b64b812e48c09202f5d52dcf3f59726e20e05e21ba616453884bd"
+  },
+  "started_at": "2026-10-18T06:43:16.691938+00:00"
+}

@@ -1,0 +1,430 @@
+{
+  "schema": "stage011_independent_day_proxy_checks_v1",
+  "started_at": "2026-10-18T11:42:04.913506+08:00",
+  "finished_at": "2026-10-18T11:42:27.220277+08:00",
+  "elapsed_seconds": 22.306772666983306,
+  "counts": {
+    "rows": 399252,
+    "observed_rows": 212852,
+    "feature_ready": 194709,
+    "ready_context_missing": 22,
+    "label_identified": 194168,
+    "ambiguous_identified": 6000,
+    "ready_unknown_label": 541
+  },
+  "history_states": {
+    "no_reference_observation": 186400,
+    "insufficient_same_epoch_history": 6201,
+    "ready": 194709,
+    "source_calendar_gap_rewarm": 11942
+  },
+  "label_states": {
+    "no_reference_observation": 186400,
+    "history_unready": 18139,
+    "day_close": 51292,
+    "double_touch_interval": 6000,
+    "profit_only": 15722,
+    "stop_only": 121154,
+    "missing_D": 460,
+    "right_censored": 85
+  },
+  "checks": {
+    "all_399252_identities_preserved": true,
+    "feature_ready_distinct_from_label_identified": true,
+    "unknown_labels_blank": true,
+    "all_11_ready_own_features_finite": true,
+    "all_4_context_features_independently_recomputed": true,
+    "lag_context_includes_unknown_D_ready_observations": true,
+    "family_mean_dedup_own_family_exclusion": true,
+    "all_identified_ideal_intervals_recomputed_from_diagnostic_prices": true,
+    "cost_budget_not_actual_fees": true,
+    "known_date_equals_D_close_date_not_midnight_PIT": true,
+    "SQL_20_same_epoch_21_calendar_bar_features_and_D_labels_match": true,
+    "protocol_and_source_closure_match": true,
+    "DB_readonly_stat_unchanged": true
+  },
+  "context_rows_checked": 399252,
+  "context_unknown_D_ready_inputs": 541,
+  "audit_observed_rows_checked": 212852,
+  "SQL_probes": [
+    {
+      "tag": "DCE.L_F",
+      "event_id": "stage004_product_day_long_v1_239e45dc178deb501cedce69b4420dcd869242ff8aaf041a56903f999704f109",
+      "epoch": "DCE.L_F.202602",
+      "u": "2025-11-26",
+      "D": "2025-11-27",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "DCE.PP_F",
+      "event_id": "stage004_product_day_long_v1_c8fe5f2370138e94969c02070c3c1cef4f9c5147999a513b27fc31fd62530742",
+      "epoch": "DCE.PP_F.202603",
+      "u": "2025-11-26",
+      "D": "2025-11-27",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "DCE.V_F",
+      "event_id": "stage004_product_day_long_v1_5395d895d745c61dcbed46528c5fd3a0cfe3f3125178c4a2ff43eb2eaf1211dc",
+      "epoch": "DCE.V_F.202602",
+      "u": "2025-11-26",
+      "D": "2025-11-27",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "double_touch",
+      "event_id": "stage004_product_day_long_v1_5c6200911bd0cb47963d760af6f78eb73291f4eb89f5105a94caa0a24e848681",
+      "epoch": "CFFEX.IC.201506",
+      "u": "2015-05-18",
+      "D": "2015-05-19",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "double_touch_interval",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_CFFEX",
+      "event_id": "stage004_product_day_long_v1_5af5dca4e2fe1f106d296f1f81596605d4b004a9bb2724d70634dc388fb8f454",
+      "epoch": "CFFEX.IC.201506",
+      "u": "2015-05-15",
+      "D": "2015-05-18",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_CZCE",
+      "event_id": "stage004_product_day_long_v1_35ba8dee19ac4e9503bc62b7853d7c25795dd62ec329f61335fe1882951dccbe",
+      "epoch": "CZCE.AP.201805",
+      "u": "2018-01-22",
+      "D": "2018-01-23",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "stop_only",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_DCE",
+      "event_id": "stage004_product_day_long_v1_ebba34a473d42dc16a318be4d4692bed67fa0aa31767ce75bc7d9da4ab0df2b6",
+      "epoch": "DCE.A.201009",
+      "u": "2010-02-01",
+      "D": "2010-02-02",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "stop_only",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_GFEX",
+      "event_id": "stage004_product_day_long_v1_2e919ef1d0ce33f0c4c95603f04574e6f61d8e1af6d0becb914fa398e3f04a70",
+      "epoch": "GFEX.LC.202401",
+      "u": "2023-08-18",
+      "D": "2023-08-21",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_INE",
+      "event_id": "stage004_product_day_long_v1_8a1774e9bdb33d7318d6fbf8c70379488bdf413ebafd50cf39b56eec27e5850e",
+      "epoch": "INE.BC.202103",
+      "u": "2020-12-17",
+      "D": "2020-12-18",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "day_close",
+      "source_rows": 22
+    },
+    {
+      "tag": "first_SHFE",
+      "event_id": "stage004_product_day_long_v1_7a10b6eab3e02c5f6d4d5c83f16a9a6cde5da24c3a42ac0c94d1a68fcf063841",
+      "epoch": "SHFE.AD.202511",
+      "u": "2025-07-08",
+      "D": "2025-07-09",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "stop_only",
+      "source_rows": 22
+    },
+    {
+      "tag": "gap",
+      "event_id": "stage004_product_day_long_v1_bff5a4471542a1d7d2853e345e930f2e02970b0a726f5f55ee56ad079c19c5ec",
+      "epoch": "CFFEX.IC.202005",
+      "u": "2020-04-22",
+      "D": "2020-04-23",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "source_calendar_gap_rewarm",
+      "label_state": "history_unready",
+      "source_rows": 22
+    },
+    {
+      "tag": "insufficient",
+      "event_id": "stage004_product_day_long_v1_412c13067f89e56af9d6f920ee4f70a72ecbcf10ea37f1b3834b8cacabbe4f93",
+      "epoch": "CFFEX.IC.201505",
+      "u": "2015-04-16",
+      "D": "2015-04-17",
+      "history_rows": 1,
+      "D_found": true,
+      "history_state": "insufficient_same_epoch_history",
+      "label_state": "history_unready",
+      "source_rows": 2
+    },
+    {
+      "tag": "last_CFFEX",
+      "event_id": "stage004_product_day_long_v1_a23ede2e7049b2cb0004f7b97b4c9b712ffa8cea2688e6cb7dd037ad6943150d",
+      "epoch": "CFFEX.TS.202612",
+      "u": "2026-10-16",
+      "D": "2026-10-19",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "right_censored",
+      "source_rows": 21
+    },
+    {
+      "tag": "last_CZCE",
+      "event_id": "stage004_product_day_long_v1_744df9a00596020c636d1acd5cb8fe177a719f937c16a26a594fb88ce2388ce3",
+      "epoch": "CZCE.ZC.202209",
+      "u": "2022-06-15",
+      "D": "2022-06-16",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "missing_D",
+      "source_rows": 21
+    },
+    {
+      "tag": "last_DCE",
+      "event_id": "stage004_product_day_long_v1_7cdfdd4e02b1b51fb0e70edd59a0f26654ac769cdc16eeddcb7f3b5ea480c26f",
+      "epoch": "DCE.Y.202701",
+      "u": "2026-10-16",
+      "D": "2026-10-19",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "right_censored",
+      "source_rows": 21
+    },
+    {
+      "tag": "last_GFEX",
+      "event_id": "stage004_product_day_long_v1_2d5d46caf0024d7b8ee16390ea03421aab32747510b81188e88366450ee50aa7",
+      "epoch": "GFEX.SI.202611",
+      "u": "2026-10-16",
+      "D": "2026-10-19",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "right_censored",
+      "source_rows": 21
+    },
+    {
+      "tag": "last_INE",
+      "event_id": "stage004_product_day_long_v1_0491a0991a4b88fa70a63224fa63da3f84e5913dd6c2616ee45923f1b2ff8976",
+      "epoch": "INE.SC.202612",
+      "u": "2026-10-16",
+      "D": "2026-10-19",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "right_censored",
+      "source_rows": 21
+    },
+    {
+      "tag": "last_SHFE",
+      "event_id": "stage004_product_day_long_v1_d8d68eb2dbceb2ef1e5301dd08b114c39de01a984be67b9e6739c866d0ee3bb4",
+      "epoch": "SHFE.ZN.202611",
+      "u": "2026-10-16",
+      "D": "2026-10-19",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "right_censored",
+      "source_rows": 21
+    },
+    {
+      "tag": "missing_D",
+      "event_id": "stage004_product_day_long_v1_1d43797bdefc6860bbc50b53fc8507a86e6fd36db01ca233bf3b581ce95835e3",
+      "epoch": "CFFEX.IC.201709",
+      "u": "2017-09-14",
+      "D": "2017-09-15",
+      "history_rows": 21,
+      "D_found": false,
+      "history_state": "ready",
+      "label_state": "missing_D",
+      "source_rows": 21
+    },
+    {
+      "tag": "profit_only",
+      "event_id": "stage004_product_day_long_v1_f25a01f7e555b0868e19e9bd163927d34a79be473e33ac9e5068aa64702da2d9",
+      "epoch": "CFFEX.IC.201506",
+      "u": "2015-05-19",
+      "D": "2015-05-20",
+      "history_rows": 21,
+      "D_found": true,
+      "history_state": "ready",
+      "label_state": "profit_only",
+      "source_rows": 22
+    }
+  ],
+  "SQL_probe_count": 20,
+  "SQL_source_rows": 413,
+  "input_output_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json": {
+      "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+      "bytes": 88826
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/actual_terminal.json": {
+      "sha256": "8c253db4603cb4027e58344feba601994b7289eacae018718065e51e1ba0ac69",
+      "bytes": 2885
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py": {
+      "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+      "bytes": 22578
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage009_day_proxy_dataset.py": {
+      "sha256": "1ee59dd763fb1d54b2bb65b35f36b5690b5d6e8511c0393610f4092f7d79ac51",
+      "bytes": 8311
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_contract_metadata.csv": {
+      "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a",
+      "bytes": 11173
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/actual_terminal.json": {
+      "sha256": "a2eddab4f1e0fbfac9417e046389fa95ace89382fdc42696ec7209a81b492bf5",
+      "bytes": 423
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/handoff_manifest.json": {
+      "sha256": "855ea6ba469a9c91b947e8fb3084adf97f766bb1fedd87cf08afd738b3182caf",
+      "bytes": 2981
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/input_inventory.json": {
+      "sha256": "5d3b65aa5058911f6a0cc4a4895736109a68c5c1c90201bcbd8e7bf402eb3f6f",
+      "bytes": 21444
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json": {
+      "sha256": "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb",
+      "bytes": 5592
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json": {
+      "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003",
+      "bytes": 257576
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/product_day_opportunities.csv.gz": {
+      "sha256": "8c6fc733cb14bb2ceb7573735d11f26e8885efd7cfce0d7be5232a3b3910a9ce",
+      "bytes": 24166354
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/review_receipt.json": {
+      "sha256": "4747240f4b7f508d056ee4eff98781169e5e07ac8bb899113ff3da13cd71d621",
+      "bytes": 4270
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json": {
+      "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+      "bytes": 3306
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1108_stage003_product_day_opportunity_contract.md": {
+      "sha256": "664a3210b666880b58d27c9ea31b0cfcc535572a0536f5b957867f1b87157bdf",
+      "bytes": 6430
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1111_stage002_full_market_input_inventory.md": {
+      "sha256": "646ab3538576c38a7cc03e6dd9ee48cdb5bf06a71f8a2a1306882fde0664f962",
+      "bytes": 12238
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1129_stage007_fixed_day_quality_protocol.md": {
+      "sha256": "393062ccb353e5d803927ad4fe1d7e4223d60edc4a070a710b7c0f2eb549e135",
+      "bytes": 10148
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/futures_metadata.json": {
+      "sha256": "7feb3e6a98b9f6c054b329fb74a2044be2700ae83f7f11c8de07632cd9f2ae89",
+      "bytes": 7112153
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy": {
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+      "bytes": 44824
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/cleaning_summary.json": {
+      "sha256": "8d66a7a550b7f07b0699def5690d359da4b131d29d1b6dc1b047aa64e80f3bcf",
+      "bytes": 628902
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/contract.json": {
+      "sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149",
+      "bytes": 3548
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/dataset_manifest.json": {
+      "sha256": "d77145c2b17fa115e3aa5f4a9689955447c09139dfb734f6fdde7376cc7c3ebd",
+      "bytes": 4965
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/reader_semantics_erratum.json": {
+      "sha256": "14efd68b550cff97e6da331068f538aa2e0e0c600e77749f5addc549f4a266f3",
+      "bytes": 3703
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/unit_contract.json": {
+      "sha256": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c",
+      "bytes": 6280
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/final_monotonic_delta_review.json": {
+      "sha256": "9c9f2b715deaf78f7150f3f6ecd79d05c0a225dd386e550e16f1a8fc13d4c0e0",
+      "bytes": 13605
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/independent_review_summary.json": {
+      "sha256": "c8067bfad40db0f1817f5e81be9b7c0e4b024a09356d097ed0f5a7aa0b904576",
+      "bytes": 11171
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage266_training_reader.py": {
+      "sha256": "eaa0b51a4e76ab139c4b9b64af005304a19c895b20529f7366b8b88b6ad86c2c",
+      "bytes": 30932
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/feature_labels.csv.gz": {
+      "sha256": "9b2452fa5fc8bb0c97d702d0caffa2a2b22e46e38ea52ab4842c13d25f120a48",
+      "bytes": 51830368
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/audit_paths.csv.gz": {
+      "sha256": "a0ed32d19c102767bb789cdb1bab2ab28da1b714fa426ca1a368947b87ee6fef",
+      "bytes": 14637634
+    }
+  },
+  "DB_before": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "bytes": 378552320,
+    "mtime_ns": 1792236170627661666,
+    "inode": 28078628,
+    "wal_present": false,
+    "shm_present": false
+  },
+  "DB_after": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "bytes": 378552320,
+    "mtime_ns": 1792236170627661666,
+    "inode": 28078628,
+    "wal_present": false,
+    "shm_present": false
+  },
+  "DB_full_hash_recomputed": false,
+  "producer_imported": false,
+  "producer_dataset_rebuilds": 0,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "native_runs": 0,
+  "network_calls": 0
+}

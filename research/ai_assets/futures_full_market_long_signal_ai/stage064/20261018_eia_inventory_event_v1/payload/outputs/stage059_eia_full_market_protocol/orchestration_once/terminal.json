@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "exit_code": 1,
+  "started_at": "2026-10-18T07:26:02.060590+00:00",
+  "finished_at": "2026-10-18T07:39:16.422167+00:00",
+  "error": "KeyboardInterrupt: ",
+  "source_manifest": null,
+  "fit_manifest": null,
+  "cash_manifest": null,
+  "independent_result_review_required": true,
+  "goal_complete": false,
+  "production_qualified": false,
+  "no_commit_push_production": true
+}

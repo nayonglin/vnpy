@@ -1,0 +1,8 @@
+{
+  "automatic_retry": false,
+  "hard_seconds": 600,
+  "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+  "provider_attempts_max": 1,
+  "request_sha256": "d3877eb65bfc7f8ac2304141da971ae8012a0fb61cbe1b32722debeece2080be",
+  "soft_seconds": 570
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "stage021_readonly_information_design_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "recorded_at": "2026-10-18T12:15:00+08:00",
+  "recommendation": "one_fixed_summary_vs_ordered_vs_canonical_bag_information_experiment_conditionally_worthwhile",
+  "implementation_authorized_by_this_receipt": false,
+  "new_alpha_evidence": false,
+  "read_stage018_results": false,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "sql_queries": 0,
+  "provider_calls": 0,
+  "external_code_downloaded_or_executed": false,
+  "local_schema_read": "research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+  "prior_negative_read": "research/lines/futures_trend_signal_quality_ai/stages/20260511_1059_stage236_signal_quality_path_aware.md",
+  "primary_sources_actually_read": [
+    {
+      "url": "https://www.mit.edu/~alo/Papers/1705-1765.pdf",
+      "title": "Lo, Mamaysky, Wang 2000 Foundations of Technical Analysis",
+      "relevant_sections": "I.C smoothing/noise and ad hoc bandwidth; III p1725 informativeness versus profitability",
+      "scope": "author-hosted original research; US stocks, not China futures alpha evidence"
+    },
+    {
+      "url": "https://www.mit.edu/~alo/Papers/techanal.html",
+      "title": "Lo author abstract"
+    },
+    {
+      "url": "https://github.com/angus924/minirocket",
+      "title": "MiniRocket original-author project",
+      "scope": "sequence transform reference, not selected implementation or financial evidence"
+    },
+    {
+      "url": "https://github.com/angus924/minirocket/blob/main/code/minirocket.py",
+      "observed": "fit default num_features=10000; learned biases from training examples; transform uses temporal convolution"
+    },
+    {
+      "url": "https://arxiv.org/abs/2012.08791",
+      "title": "Dempster, Schmidt, Webb MiniRocket paper"
+    }
+  ],
+  "source_limitation": "NBER w7613 entry returned Internal Error; no claim of reading its body; MIT original author PDF was actually read",
+  "identification_limit": "fixed learner can exploit representation of bar values and age/order beyond summary; not a causal permutation test or model-independent proof of path information",
+  "primary_comparison": "ordered versus canonical bag: same 91 dimensions, shared W/b/gamma, exact per-row norm equality after shared channel scaling",
+  "summary_bandwidth_correction": "S-only with zero80 and gamma91 is confounded; use S as secondary reference with mechanical gamma=1/(2*d_active), d_S=11 and d_ordered_bag=91; this does not eliminate all representation geometry dependence",
+  "production_ready": false,
+  "financial_ready": false
+}

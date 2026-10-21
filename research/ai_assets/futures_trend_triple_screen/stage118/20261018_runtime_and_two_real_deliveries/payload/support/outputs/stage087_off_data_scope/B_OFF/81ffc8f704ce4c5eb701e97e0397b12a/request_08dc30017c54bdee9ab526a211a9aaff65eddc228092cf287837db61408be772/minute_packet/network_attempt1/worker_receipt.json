@@ -1,0 +1,21 @@
+{
+  "TqSim_created": true,
+  "accepted": true,
+  "automatic_retry": false,
+  "broker_or_ctp_connections": 0,
+  "cancels": 0,
+  "completed_minutes": 225,
+  "credential_values_saved": false,
+  "financial_replays": 0,
+  "independent_review_signed": false,
+  "model_fits": 0,
+  "old_CSV_or_DB_written": false,
+  "orders": 0,
+  "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+  "production_qualified": false,
+  "provider_connections_attempted": 1,
+  "request_sha256": "08dc30017c54bdee9ab526a211a9aaff65eddc228092cf287837db61408be772",
+  "response_written": false,
+  "status": "all_target_minutes_completed",
+  "target_minutes": 225
+}

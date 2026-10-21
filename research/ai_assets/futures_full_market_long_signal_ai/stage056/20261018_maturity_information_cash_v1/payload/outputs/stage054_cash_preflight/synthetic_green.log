@@ -1,0 +1,11 @@
+test_action_retains_all_rows_and_does_not_read_future_outcomes (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_action_retains_all_rows_and_does_not_read_future_outcomes) ... ok
+test_family_year_attribution_reconciles_continuous_equity_and_entry_exit_fees (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_family_year_attribution_reconciles_continuous_equity_and_entry_exit_fees) ... ok
+test_first_2023_open_uses_existing_2022_score_but_2020_has_no_2019_prediction (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_first_2023_open_uses_existing_2022_score_but_2020_has_no_2019_prediction) ... ok
+test_held_condition_uses_identified_common_domain_cancel_zero_unknown_excluded (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_held_condition_uses_identified_common_domain_cancel_zero_unknown_excluded) ... ok
+test_held_scope_preserves_two_groups_and_rejects_combined_or_wrong_family_group (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_held_scope_preserves_two_groups_and_rejects_combined_or_wrong_family_group) ... ok
+test_log_first_day_shared_circular_blocks_and_bankruptcy_fail_closed (test_stage054_maturity_cash_compare.CashAdapterAndStatistics.test_log_first_day_shared_circular_blocks_and_bankruptcy_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.092s
+
+OK

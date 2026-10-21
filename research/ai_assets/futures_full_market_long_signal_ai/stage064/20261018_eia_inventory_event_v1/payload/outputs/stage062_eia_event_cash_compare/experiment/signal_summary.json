@@ -1,0 +1,18 @@
+{
+  "arms": [
+    "COMMON_EVENT",
+    "INVENTORY",
+    "PAST_SHAM"
+  ],
+  "eligibility": "all families; same report event+ready20+finite score>0",
+  "mother_rows_per_arm": 399252,
+  "non_event_reference_rows_retained": true,
+  "oil_group_is_not_trading_filter": true,
+  "old053_models_or_scores_read": false,
+  "predictions_per_arm": 161014,
+  "selected": {
+    "COMMON_EVENT": 1,
+    "INVENTORY": 401,
+    "PAST_SHAM": 75
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "episodes": 1696,
+  "exit_reasons": {
+    "gap_stop": 98,
+    "lifecycle_exit": 37,
+    "liquidity_reference_changed": 547,
+    "stop_boundary": 978,
+    "unresolved_or_open": 36
+  },
+  "financial_runs": 0,
+  "price_R_not_account_cash": true,
+  "states": {
+    "closed_known_ideal": 1660,
+    "open_right_censored": 6,
+    "path_or_execution_unknown": 30
+  }
+}

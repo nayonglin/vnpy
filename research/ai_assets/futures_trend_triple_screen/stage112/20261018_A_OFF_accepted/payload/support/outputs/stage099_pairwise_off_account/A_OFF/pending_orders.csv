@@ -1,0 +1,2 @@
+﻿vt_orderid,orderid,vt_symbol,direction,offset,price,volume,traded,datetime,status,profile,start_month,variant,account_capital,c3_capital,research_arm,production_qualified
+BACKTESTING.562,562,cu2611.SHFE,Short,Close,111080.0,8,0,2026-10-14 00:00:00+08:00,Submitting,stage847_c9_15w_stage819_05r_stop_retry_live,2020-01,stage847_c9_15w_stage819_05r_stop_retry_live,150000.0,150000.0,A_OFF,False

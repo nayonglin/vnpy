@@ -1,0 +1,27 @@
+{
+  "schema": "stage011_actual_review_terminal_v1",
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_actual.py",
+  "started_at": "2026-10-18T11:42:04.913506+08:00",
+  "finished_at": "2026-10-18T11:42:27.220277+08:00",
+  "elapsed_seconds": 22.306772666983306,
+  "tool_session_id": 21421,
+  "initial_chunk": "c5272b",
+  "completion_chunk": "14bc9b",
+  "exit_code": 0,
+  "actual_review_invocations": 1,
+  "review_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_actual.py",
+    "sha256": "3b4562e2ef5c0a13e3e17ddd92904427479b9e84847307ebfde5c568e8e5fd01",
+    "bytes": 14758
+  },
+  "actual_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/actual_review_checks.json",
+    "sha256": "2c18302fdd74df278eb9cdf394e60ed6a5408e240b2f7e45ec5574d4f354729f",
+    "bytes": 17338
+  },
+  "producer_dataset_rebuilds": 0,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "native_runs": 0,
+  "network_calls": 0
+}

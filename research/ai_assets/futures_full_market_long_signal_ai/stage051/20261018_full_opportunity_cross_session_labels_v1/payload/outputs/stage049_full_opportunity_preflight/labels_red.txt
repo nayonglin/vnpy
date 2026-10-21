@@ -1,0 +1,228 @@
+test_D_is_strict_source_successor_not_next_available_quote (__main__.FullOpportunityContracts.test_D_is_strict_source_successor_not_next_available_quote) ... FAIL
+test_F_and_plain_keep_independent_economic_identity_without_family_occupancy (__main__.FullOpportunityContracts.test_F_and_plain_keep_independent_economic_identity_without_family_occupancy) ... ERROR
+test_changed_reference_exits_old_epoch_at_next_open (__main__.FullOpportunityContracts.test_changed_reference_exits_old_epoch_at_next_open) ... ERROR
+test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot (__main__.FullOpportunityContracts.test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot) ... FAIL
+test_future_poison_cannot_change_earlier_completed_label (__main__.FullOpportunityContracts.test_future_poison_cannot_change_earlier_completed_label) ... ERROR
+test_gap_exit_loss_is_not_clamped_to_minus_one_R (__main__.FullOpportunityContracts.test_gap_exit_loss_is_not_clamped_to_minus_one_R) ... ERROR
+test_gap_resets_twenty_bar_history_without_deleting_no_observation (__main__.FullOpportunityContracts.test_gap_resets_twenty_bar_history_without_deleting_no_observation) ... FAIL
+test_history_ready_is_independent_of_unresolved_economics (__main__.FullOpportunityContracts.test_history_ready_is_independent_of_unresolved_economics) ... FAIL
+test_known_earlier_lifecycle_exits_and_cancels_next_intent (__main__.FullOpportunityContracts.test_known_earlier_lifecycle_exits_and_cancels_next_intent) ... ERROR
+test_missing_held_bar_is_absorbing_unknown_even_after_later_stop (__main__.FullOpportunityContracts.test_missing_held_bar_is_absorbing_unknown_even_after_later_stop) ... ERROR
+test_next_day_uses_prior_close_low_not_current_day_low (__main__.FullOpportunityContracts.test_next_day_uses_prior_close_low_not_current_day_low) ... ERROR
+test_output_refuses_overwrite_before_loading_any_native_input (__main__.FullOpportunityContracts.test_output_refuses_overwrite_before_loading_any_native_input) ... ok
+test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero (__main__.FullOpportunityContracts.test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero) ... FAIL
+test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed) ... FAIL
+test_twenty_bars_ready_without_55_trigger_or_occupancy (__main__.FullOpportunityContracts.test_twenty_bars_ready_without_55_trigger_or_occupancy) ... FAIL
+
+======================================================================
+ERROR: test_F_and_plain_keep_independent_economic_identity_without_family_occupancy (__main__.FullOpportunityContracts.test_F_and_plain_keep_independent_economic_identity_without_family_occupancy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'family_id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 178, in test_F_and_plain_keep_independent_economic_identity_without_family_occupancy
+    self.assertEqual(frame.loc["e19", "family_id"], frame.loc["e19f", "family_id"])
+                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1183, in __getitem__
+    return self.obj._get_value(*key, takeable=self._takeable)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/frame.py", line 4214, in _get_value
+    series = self._get_item_cache(col)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/frame.py", line 4638, in _get_item_cache
+    loc = self.columns.get_loc(item)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'family_id'
+
+======================================================================
+ERROR: test_changed_reference_exits_old_epoch_at_next_open (__main__.FullOpportunityContracts.test_changed_reference_exits_old_epoch_at_next_open)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 128, in test_changed_reference_exits_old_epoch_at_next_open
+    self.assertEqual(row.exit_reason, "liquidity_reference_changed")
+                     ^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'exit_reason'
+
+======================================================================
+ERROR: test_future_poison_cannot_change_earlier_completed_label (__main__.FullOpportunityContracts.test_future_poison_cannot_change_earlier_completed_label)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 168, in test_future_poison_cannot_change_earlier_completed_label
+    self.assertEqual(before[keys].to_dict(), after[keys].to_dict())
+                     ~~~~~~^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/series.py", line 1153, in __getitem__
+    return self._get_with(key)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/series.py", line 1194, in _get_with
+    return self.loc[key]
+           ~~~~~~~~^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1191, in __getitem__
+    return self._getitem_axis(maybe_callable, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1420, in _getitem_axis
+    return self._getitem_iterable(key, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1360, in _getitem_iterable
+    keyarr, indexer = self._get_listlike_indexer(key, axis)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1558, in _get_listlike_indexer
+    keyarr, indexer = ax._get_indexer_strict(key, axis_name)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6200, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6252, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['N_u', 'low20_u', 'u_close', 'entry_index', 'exit_index', 'exit_reference', 'net_R_base', 'net_R_stress', 'label_known_date'] not in index"
+
+======================================================================
+ERROR: test_gap_exit_loss_is_not_clamped_to_minus_one_R (__main__.FullOpportunityContracts.test_gap_exit_loss_is_not_clamped_to_minus_one_R)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 118, in test_gap_exit_loss_is_not_clamped_to_minus_one_R
+    self.assertEqual(row.exit_index, 21)
+                     ^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'exit_index'
+
+======================================================================
+ERROR: test_known_earlier_lifecycle_exits_and_cancels_next_intent (__main__.FullOpportunityContracts.test_known_earlier_lifecycle_exits_and_cancels_next_intent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'exit_index'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 136, in test_known_earlier_lifecycle_exits_and_cancels_next_intent
+    self.assertEqual(frame.loc["e19", "exit_index"], 21)
+                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexing.py", line 1183, in __getitem__
+    return self.obj._get_value(*key, takeable=self._takeable)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/frame.py", line 4214, in _get_value
+    series = self._get_item_cache(col)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/frame.py", line 4638, in _get_item_cache
+    loc = self.columns.get_loc(item)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'exit_index'
+
+======================================================================
+ERROR: test_missing_held_bar_is_absorbing_unknown_even_after_later_stop (__main__.FullOpportunityContracts.test_missing_held_bar_is_absorbing_unknown_even_after_later_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 145, in test_missing_held_bar_is_absorbing_unknown_even_after_later_stop
+    self.assertEqual(row.filled, 1)
+                     ^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'filled'
+
+======================================================================
+ERROR: test_next_day_uses_prior_close_low_not_current_day_low (__main__.FullOpportunityContracts.test_next_day_uses_prior_close_low_not_current_day_low)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 112, in test_next_day_uses_prior_close_low_not_current_day_low
+    self.assertAlmostEqual(row.N_u, 2.45)
+                           ^^^^^^^
+  File "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/pandas/core/generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'N_u'
+
+======================================================================
+FAIL: test_D_is_strict_source_successor_not_next_available_quote (__main__.FullOpportunityContracts.test_D_is_strict_source_successor_not_next_available_quote)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 75, in test_D_is_strict_source_successor_not_next_available_quote
+    self.assertEqual(row.label_history_ready20, 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot (__main__.FullOpportunityContracts.test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 93, in test_entry_same_bar_uses_u_boundary_and_complete_costs_per_lot
+    self.assertEqual(row.label_state, "closed_complete_bar_model")
+AssertionError: 'not_history_ready' != 'closed_complete_bar_model'
+- not_history_ready
++ closed_complete_bar_model
+
+
+======================================================================
+FAIL: test_gap_resets_twenty_bar_history_without_deleting_no_observation (__main__.FullOpportunityContracts.test_gap_resets_twenty_bar_history_without_deleting_no_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 67, in test_gap_resets_twenty_bar_history_without_deleting_no_observation
+    self.assertEqual(frame.loc["e38", "label_history_ready20"], 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_history_ready_is_independent_of_unresolved_economics (__main__.FullOpportunityContracts.test_history_ready_is_independent_of_unresolved_economics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 189, in test_history_ready_is_independent_of_unresolved_economics
+    self.assertEqual(row.label_history_ready20, 1)
+AssertionError: np.int64(0) != 1
+
+======================================================================
+FAIL: test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero (__main__.FullOpportunityContracts.test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 83, in test_stale_quote_cancels_preserving_null_trade_target_and_diagnostic_zero
+    self.assertEqual(row.participation_state, "known_nonparticipation")
+AssertionError: 'not_ready' != 'known_nonparticipation'
+- not_ready
++ known_nonparticipation
+
+
+======================================================================
+FAIL: test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 155, in test_terminal_open_and_last_intent_are_censored_not_artificially_closed
+    self.assertEqual(frame.loc["e19", "label_state"], "open_right_censored")
+AssertionError: 'not_history_ready' != 'open_right_censored'
+- not_history_ready
++ open_right_censored
+
+
+======================================================================
+FAIL: test_twenty_bars_ready_without_55_trigger_or_occupancy (__main__.FullOpportunityContracts.test_twenty_bars_ready_without_55_trigger_or_occupancy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 55, in test_twenty_bars_ready_without_55_trigger_or_occupancy
+    self.assertEqual(frame.loc["e19", "label_history_ready20"], 1)
+AssertionError: np.int64(0) != 1
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.027s
+
+FAILED (failures=7, errors=7)

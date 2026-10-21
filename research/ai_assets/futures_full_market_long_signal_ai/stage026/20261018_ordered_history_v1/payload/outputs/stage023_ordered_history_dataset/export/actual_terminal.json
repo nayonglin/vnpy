@@ -1,0 +1,64 @@
+{
+  "actual_build_invocations": 1,
+  "command": [
+    "research/lines/futures_full_market_long_signal_ai/tools/stage023_ordered_history_dataset.py",
+    "--protocol",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage022_ordered_history_protocol/protocol.json",
+    "--protocol-sha256",
+    "ae0708cb9eb232d5c5d7936fc705f77b2f361e4b039442e707b82c828b27f99a",
+    "--output",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export"
+  ],
+  "counts": {
+    "all_ready_rows_retained": true,
+    "feature_ready": 194709,
+    "label_identified": 194168,
+    "parent_S11_max_abs_error": 1.7763568394002505e-15,
+    "parent_atr_max_abs_error": 1.1368683772161603e-13,
+    "parent_rows": 399252,
+    "ready_unknown_label": 541,
+    "sequence_rows": 194709,
+    "sequence_scalar_values": 15576720,
+    "source_contract_day_rows": 1552456,
+    "source_epochs": 9520,
+    "sql_queries": 1
+  },
+  "elapsed_seconds": 27.60775145801017,
+  "event_ids_csv": {
+    "bytes": 8193711,
+    "columns": [
+      "sequence_index",
+      "event_id"
+    ],
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export/event_ids.csv.gz",
+    "rows": 194709,
+    "sha256": "b829623c1c1d716a7af3cdc21a0dc0cbab3adba9ae85dfc98fe7ada93e98963d"
+  },
+  "exit_code": 0,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T12:29:03+08:00",
+  "model_fits": 0,
+  "network_calls": 0,
+  "schema": "stage023_actual_terminal_v1",
+  "sequence_npz": {
+    "bytes": 43546129,
+    "channels": [
+      "delta_close_atr",
+      "range_atr",
+      "close_location",
+      "log_relative_volume"
+    ],
+    "dtype": "<f4",
+    "key": "ordered",
+    "order": "oldest_to_newest",
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage023_ordered_history_dataset/export/ordered_history.npz",
+    "sha256": "7f8994108482597e66e7e4cb379f46a86a89976dff035e7d68cb8616bdca3ea3",
+    "shape": [
+      194709,
+      20,
+      4
+    ]
+  },
+  "source_sha256": "0544681ca1396d1b0eb4bc219d30b0bcb008998513bb7ba238a2292c37cd6ae0",
+  "started_at": "2026-10-18T12:28:36+08:00"
+}

@@ -1,0 +1,26 @@
+{
+  "all_rows_preserved": true,
+  "cached_observable_pairs": 1401143,
+  "cached_observable_product_days": 209811,
+  "feature_rows": 399252,
+  "financial_backtests": 0,
+  "min_distinct_nonquery_months": 3,
+  "model_fit_calls": 0,
+  "module_native_queries": 0,
+  "mother_rows": 399252,
+  "normalizer": "Stage042 causal seeded_recursive_N(u)/C(u)",
+  "normalizer_uses_D": false,
+  "peer_rows": 1197457,
+  "production_qualified": false,
+  "q_missing": 242207,
+  "q_ready": 157045,
+  "q_state_counts": {
+    "insufficient_peer_months": 38283,
+    "normalizer_missing": 17524,
+    "query_missing": 186400,
+    "ready": 157045
+  },
+  "schema": "stage049_maturity_features_v1",
+  "shuffle_key": "stage046_maturity_relation_v1|product_id|u|epoch",
+  "static_lifecycle_peer_filter": false
+}

@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "condition": 1,
+      "nominal_pass": false,
+      "reason": "both main2020 base paired log CI lower>0 plus return up and DD not worse; unresolved-zero scenario disclosed",
+      "status": "unsupported"
+    },
+    {
+      "condition": 2,
+      "nominal_pass": false,
+      "reason": "ALIGNED primary stress self-positive/survives; both cold2023 costs positive increments and DD not worse; zero-value sensitivity disclosed",
+      "status": "unsupported"
+    },
+    {
+      "condition": 3,
+      "reason": "both family-held identified common-domain daily mask*stressR positive; differential selected unknown has no finite R bound; conditional diagnostic only",
+      "status": "unknown"
+    }
+  ],
+  "goal_complete": false,
+  "information_candidate_only": true,
+  "narrow_stop_or_increased_bet_qualified": false,
+  "production_qualified": false
+}

@@ -1,0 +1,19 @@
+{
+  "audit_rows": 212852,
+  "economic_branch": "original009 label_state only",
+  "feature_ready_rows": 194709,
+  "identified_rows": 194168,
+  "max_abs_day_close_gross_consistency_error": 0.0,
+  "max_abs_profit_mismatch_price_distance": 0.0,
+  "max_abs_stop_mismatch_price_distance": 0.0,
+  "observed_rows": 212852,
+  "outer_rows": 399252,
+  "price_tolerance_for_numeric_consistency_only": {
+    "atol": 1e-09,
+    "rtol": 1e-12
+  },
+  "raw_prices_exported": false,
+  "raw_profit_predicate_disagreements": 0,
+  "raw_stop_predicate_disagreements": 0,
+  "ready_unknown_rows": 541
+}

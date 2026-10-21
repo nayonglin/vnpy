@@ -1,0 +1,22 @@
+test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown) ... FAIL
+
+======================================================================
+FAIL: test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown (test_stage018_entry_confirmation_experiment.EntryConfirmationTests.test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 61, in test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown
+    future=subject.build_events(future_opportunities,future_features,audit,days,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: build_events() got an unexpected keyword argument 'successor_calendar'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py", line 64, in test_known_no_fill_is_zero_but_missing_and_unready_stay_unknown
+    self.fail('valid out-of-scope source-calendar successor was rejected: '+str(exc))
+AssertionError: valid out-of-scope source-calendar successor was rejected: build_events() got an unexpected keyword argument 'successor_calendar'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+FAILED (failures=1)

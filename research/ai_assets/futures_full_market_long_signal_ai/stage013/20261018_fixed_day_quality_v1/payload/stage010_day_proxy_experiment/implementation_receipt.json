@@ -1,0 +1,45 @@
+{
+  "schema": "stage010_implementation_ready_v1",
+  "recorded_at": "2026-10-18T11:38:45.345342",
+  "status": "code_fixture_green_waiting_accepted_data",
+  "sources": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage010_day_proxy_experiment.py",
+      "sha256": "c8ddce7c93184f793b9c42d2366ffd24b9f9651d5c4a96411bb0388098539ffa",
+      "bytes": 27158
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage010_day_proxy_experiment.py",
+      "sha256": "f1197d1a4417965e376705da770f14412bb17b251a0fad9eac5a2f29be10b976",
+      "bytes": 6401
+    }
+  ],
+  "compile_count": 2,
+  "four_fixture_tests_green": true,
+  "fixture_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/fixture_terminal.json",
+    "sha256": "c3f1ff324ff50a5d89bf82ec0a043aba0947a5bfc34a96dbadafe356adb7d623",
+    "bytes": 1132
+  },
+  "green_actual_completion_chunk": "168c89",
+  "fixture_fit_calls_per_green_run": 3,
+  "fixture_green_runs": 2,
+  "fixture_fit_calls_total": 6,
+  "real_experiment_fit_calls": 0,
+  "last_change_after_fixture_green": "Only require explicit qualified_for_fixed_proxy_experiment=true and exact Stage011 data_manifest SHA, as root requested; compiled after change; no repeated suite per root instruction.",
+  "required_handoff": {
+    "data_manifest": {
+      "path": "root supplied",
+      "sha256": "root supplied"
+    },
+    "data_review": {
+      "path": "root supplied",
+      "sha256": "root supplied"
+    }
+  },
+  "actual_command_template": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/tools/stage010_day_proxy_experiment.py fit --bindings research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/accepted_inputs.json --output research/lines/futures_full_market_long_signal_ai/outputs/stage010_day_proxy_experiment/experiment",
+  "protocol_sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+  "financial_ready": false,
+  "real_economic_labels_ready": false,
+  "production_qualified": false
+}

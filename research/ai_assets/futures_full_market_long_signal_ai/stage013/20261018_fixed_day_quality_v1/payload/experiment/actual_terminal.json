@@ -1,0 +1,29 @@
+{
+  "command": "fit",
+  "status": "completed",
+  "started_at": "2026-10-18T03:44:14.098235+00:00",
+  "finished_at": "2026-10-18T03:44:59.762574+00:00",
+  "elapsed_seconds": 45.66433912498178,
+  "actual_ridge_fit_calls": 72,
+  "fixture": false,
+  "exit_code": 0,
+  "error": null,
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "sklearn": "1.6.1",
+  "scipy": "1.17.1",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "threadpools": [
+    {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 1,
+      "prefix": "libomp",
+      "filepath": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/sklearn/.dylibs/libomp.dylib",
+      "version": null
+    }
+  ],
+  "financial_runs": 0,
+  "network_calls": 0
+}

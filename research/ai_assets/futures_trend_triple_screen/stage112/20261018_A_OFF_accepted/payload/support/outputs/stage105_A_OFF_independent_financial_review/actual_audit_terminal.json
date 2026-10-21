@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "--audit",
+    "--arm",
+    "A_OFF",
+    "--completion-evidence",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+    "--completion-evidence-sha256",
+    "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 7.202041624987032,
+  "audit_invocations": 1,
+  "financial_replays": 0,
+  "model_fits": 0,
+  "source_sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f"
+}

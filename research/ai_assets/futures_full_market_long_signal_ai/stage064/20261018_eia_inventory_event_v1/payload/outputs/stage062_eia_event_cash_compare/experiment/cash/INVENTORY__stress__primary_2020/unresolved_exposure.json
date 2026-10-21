@@ -1,0 +1,63 @@
+{
+  "alternative_zero_is_not_universal_bound": true,
+  "finite_R_bound": null,
+  "records": [
+    {
+      "date": "2020-07-14",
+      "entry_fill": 6351.0,
+      "epoch": "DCE.PP.202009",
+      "event_id": "stage004_product_day_long_v1_314efa5328ea8e92c0d08968c14658da9c21eeeba241b71b0e803528e1e3d126",
+      "kind": "historical_stale",
+      "mark": 7683.0,
+      "qty": 1
+    },
+    {
+      "date": "2022-03-07",
+      "entry_fill": 3788.0,
+      "epoch": "DCE.M.202205",
+      "event_id": "stage004_product_day_long_v1_524aa3824e26d7015621a1da926331f462ca2a4e693a868ea4c5b9c32c57a0fb",
+      "kind": "historical_stale",
+      "mark": 3902.0,
+      "qty": 1
+    },
+    {
+      "date": "2022-12-07",
+      "entry_fill": 6003.0,
+      "epoch": "DCE.V.202301",
+      "event_id": "stage004_product_day_long_v1_8012febc9f79ffeb60bebc9ef165830ba4f0e0951df1d8378e5965c5624eb5bf",
+      "kind": "historical_stale",
+      "mark": 6112.0,
+      "qty": 1
+    },
+    {
+      "entry_date": "2020-04-03",
+      "entry_fill": 6351.0,
+      "epoch": "DCE.PP.202009",
+      "event_id": "stage004_product_day_long_v1_314efa5328ea8e92c0d08968c14658da9c21eeeba241b71b0e803528e1e3d126",
+      "exit_date": "2020-07-15",
+      "initial_qty": 1,
+      "kind": "closed_after_unknown_path",
+      "net_pnl": 6533.9805
+    },
+    {
+      "entry_date": "2022-02-18",
+      "entry_fill": 3788.0,
+      "epoch": "DCE.M.202205",
+      "event_id": "stage004_product_day_long_v1_524aa3824e26d7015621a1da926331f462ca2a4e693a868ea4c5b9c32c57a0fb",
+      "exit_date": "2022-03-08",
+      "initial_qty": 1,
+      "kind": "closed_after_unknown_path",
+      "net_pnl": 2816.42
+    },
+    {
+      "entry_date": "2022-11-25",
+      "entry_fill": 6003.0,
+      "epoch": "DCE.V.202301",
+      "event_id": "stage004_product_day_long_v1_8012febc9f79ffeb60bebc9ef165830ba4f0e0951df1d8378e5965c5624eb5bf",
+      "exit_date": "2022-12-08",
+      "initial_qty": 1,
+      "kind": "closed_after_unknown_path",
+      "net_pnl": 321.889
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "actual_fit_calls_completed": 0,
+  "actual_fit_calls_started": 0,
+  "actual_start_count": 1,
+  "native_source_queries": 0,
+  "new_cash_accounts": 0,
+  "protocol": {
+    "bytes": 11987,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage052_maturity_information_cash_protocol/protocol.json",
+    "sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c"
+  },
+  "source": {
+    "bytes": 28619,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage053_maturity_information_fit.py",
+    "sha256": "045168b069bddef62777a010277a8e7409ea094dc2ac57db33f81cd5b63c7c9b"
+  },
+  "started_at_utc": "2026-10-18T06:40:47.859833+00:00",
+  "status": "started"
+}

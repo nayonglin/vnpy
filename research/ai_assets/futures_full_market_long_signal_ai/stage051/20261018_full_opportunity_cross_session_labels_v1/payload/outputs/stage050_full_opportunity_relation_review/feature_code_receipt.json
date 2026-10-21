@@ -1,0 +1,47 @@
+{
+  "schema": "stage050_feature_source_review_v1",
+  "recorded_at": "2026-10-18T14:12:39.634340+08:00",
+  "review_mode": "read_only_source_and_existing_synthetic_cases_no_execution",
+  "bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+      "bytes": 10066,
+      "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_maturity_features.py",
+      "bytes": 7014,
+      "sha256": "f4682f4e4f2898ef2d0482db396dd4c7ad9428cf4b50e4f2ac5f504aedfb2046"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_maturity_features_preflight/preflight_receipt.json",
+      "bytes": 4492,
+      "sha256": "28edbc33b58ef2f74bb615255296c03bc3b90e4575fe9b425c72a4121c03fc63"
+    }
+  ],
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "checks": [
+    "Market accepted positive OHLCV and strict adjacent source pair",
+    "same complete product and query exclusion; ordinary/F isolation",
+    "nominal month first greater than u; no lifecycle snapshot peer cut",
+    "Stage042 seeded recursive N(u)/C(u) normalization",
+    "at least three distinct nonquery months",
+    "fixed SHA256 same return bag assignment, no forced derangement",
+    "front-next same legal pool includes query",
+    "prefix poison fixture covers future price/volume/new epoch"
+  ],
+  "actual_data_qualified": false,
+  "main_label_source_review": "pending_stable_handoff",
+  "actual_audit": "pending_root_complete_terminal_authorization",
+  "operations": {
+    "SQL": 0,
+    "model_fits": 0,
+    "strategy_replays": 0,
+    "cash_accounts": 0,
+    "new_test_executions": 0
+  }
+}

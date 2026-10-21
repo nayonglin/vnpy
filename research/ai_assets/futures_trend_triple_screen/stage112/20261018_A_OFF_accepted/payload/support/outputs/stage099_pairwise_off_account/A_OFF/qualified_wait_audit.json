@@ -1,0 +1,3673 @@
+{
+  "gate": [],
+  "initial_qualification": {
+    "accepted_wait_delta_sha256": "48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f",
+    "accepted_wait_full_keys": 44565,
+    "exact_anchor_keys": 2,
+    "extra_anchor_only859_keys": 0,
+    "loaded_rows": 7676387,
+    "qualified_full_keys": 7676387,
+    "remaining_source859_rows": 1,
+    "scope": "inherited_accepted_baseline_plus_usage_limited859_not_global_price_recertification",
+    "source859_isolation": [
+      {
+        "by_symbol": {
+          "AP001.CZCE": {
+            "input_rows": 225,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "AP005.CZCE": {
+            "input_rows": 4727,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 4502,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "AP010.CZCE": {
+            "input_rows": 5404,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5404,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP101.CZCE": {
+            "input_rows": 13275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP105.CZCE": {
+            "input_rows": 14850,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14850,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP110.CZCE": {
+            "input_rows": 15976,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15976,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP201.CZCE": {
+            "input_rows": 7876,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7876,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP205.CZCE": {
+            "input_rows": 9000,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9000,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP210.CZCE": {
+            "input_rows": 20925,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20925,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP301.CZCE": {
+            "input_rows": 14400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP305.CZCE": {
+            "input_rows": 11025,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11025,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP310.CZCE": {
+            "input_rows": 21376,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21376,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP401.CZCE": {
+            "input_rows": 13050,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13050,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP405.CZCE": {
+            "input_rows": 18450,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18450,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP410.CZCE": {
+            "input_rows": 23175,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23175,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP501.CZCE": {
+            "input_rows": 6975,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6975,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP505.CZCE": {
+            "input_rows": 18901,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18901,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP510.CZCE": {
+            "input_rows": 3151,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3151,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP601.CZCE": {
+            "input_rows": 12150,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12150,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP605.CZCE": {
+            "input_rows": 18452,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18452,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP610.CZCE": {
+            "input_rows": 2700,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2700,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP701.CZCE": {
+            "input_rows": 4050,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4050,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "AP805.CZCE": {
+            "input_rows": 225,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "AP810.CZCE": {
+            "input_rows": 225,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "AP901.CZCE": {
+            "input_rows": 225,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "AP905.CZCE": {
+            "input_rows": 450,
+            "removed_source859_rows": 450,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 450
+          },
+          "CF005.CZCE": {
+            "input_rows": 2821,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 2476,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "CF009.CZCE": {
+            "input_rows": 8176,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8176,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF101.CZCE": {
+            "input_rows": 17357,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17357,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF105.CZCE": {
+            "input_rows": 20686,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20686,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF109.CZCE": {
+            "input_rows": 19547,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19547,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF201.CZCE": {
+            "input_rows": 14026,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14026,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF205.CZCE": {
+            "input_rows": 30345,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30345,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF209.CZCE": {
+            "input_rows": 24945,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24945,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF301.CZCE": {
+            "input_rows": 27585,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27585,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF305.CZCE": {
+            "input_rows": 28740,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28740,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF309.CZCE": {
+            "input_rows": 11145,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11145,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF401.CZCE": {
+            "input_rows": 30930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF405.CZCE": {
+            "input_rows": 28965,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28965,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF409.CZCE": {
+            "input_rows": 29310,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29310,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF501.CZCE": {
+            "input_rows": 25860,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25860,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF505.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF509.CZCE": {
+            "input_rows": 27015,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27015,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF601.CZCE": {
+            "input_rows": 28515,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28515,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF605.CZCE": {
+            "input_rows": 24360,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24360,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF609.CZCE": {
+            "input_rows": 5400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF701.CZCE": {
+            "input_rows": 8385,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8385,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "CF905.CZCE": {
+            "input_rows": 1125,
+            "removed_source859_rows": 1125,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 1125
+          },
+          "CF909.CZCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "FG001.CZCE": {
+            "input_rows": 750,
+            "removed_source859_rows": 750,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 750
+          },
+          "FG005.CZCE": {
+            "input_rows": 8476,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8476,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG009.CZCE": {
+            "input_rows": 5149,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5149,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG101.CZCE": {
+            "input_rows": 28170,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28170,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG105.CZCE": {
+            "input_rows": 26204,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26204,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG109.CZCE": {
+            "input_rows": 24481,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24481,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG201.CZCE": {
+            "input_rows": 31966,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 31966,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG205.CZCE": {
+            "input_rows": 24254,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24254,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG209.CZCE": {
+            "input_rows": 31036,
+            "removed_source859_rows": 570,
+            "retained_non859_rows": 30466,
+            "retained_source859_rows": 0,
+            "source859_rows": 570
+          },
+          "FG301.CZCE": {
+            "input_rows": 27930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG305.CZCE": {
+            "input_rows": 22410,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 22410,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG309.CZCE": {
+            "input_rows": 5297,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5297,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG401.CZCE": {
+            "input_rows": 5866,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5866,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG405.CZCE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG409.CZCE": {
+            "input_rows": 11957,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11957,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG501.CZCE": {
+            "input_rows": 24841,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24841,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG505.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG509.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG601.CZCE": {
+            "input_rows": 12645,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12645,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG605.CZCE": {
+            "input_rows": 26430,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26430,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG609.CZCE": {
+            "input_rows": 4260,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4260,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "FG809.CZCE": {
+            "input_rows": 750,
+            "removed_source859_rows": 750,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 750
+          },
+          "MA005.CZCE": {
+            "input_rows": 10997,
+            "removed_source859_rows": 255,
+            "retained_non859_rows": 10742,
+            "retained_source859_rows": 0,
+            "source859_rows": 255
+          },
+          "MA009.CZCE": {
+            "input_rows": 26835,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26835,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA101.CZCE": {
+            "input_rows": 27256,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27256,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA105.CZCE": {
+            "input_rows": 27930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA109.CZCE": {
+            "input_rows": 23220,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23220,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA201.CZCE": {
+            "input_rows": 26670,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26670,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA205.CZCE": {
+            "input_rows": 22637,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 22637,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA209.CZCE": {
+            "input_rows": 12991,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12991,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA301.CZCE": {
+            "input_rows": 27930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA305.CZCE": {
+            "input_rows": 8730,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8730,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA309.CZCE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA401.CZCE": {
+            "input_rows": 27256,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27256,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA405.CZCE": {
+            "input_rows": 25861,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25861,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA409.CZCE": {
+            "input_rows": 29775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA501.CZCE": {
+            "input_rows": 26100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA505.CZCE": {
+            "input_rows": 27930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA509.CZCE": {
+            "input_rows": 27136,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27136,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA601.CZCE": {
+            "input_rows": 28170,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28170,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA605.CZCE": {
+            "input_rows": 11040,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11040,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA609.CZCE": {
+            "input_rows": 3916,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3916,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA610.CZCE": {
+            "input_rows": 466,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 466,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "MA809.CZCE": {
+            "input_rows": 750,
+            "removed_source859_rows": 750,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 750
+          },
+          "MA905.CZCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "MA909.CZCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "OI001.CZCE": {
+            "input_rows": 750,
+            "removed_source859_rows": 750,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 750
+          },
+          "OI005.CZCE": {
+            "input_rows": 7696,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7696,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI009.CZCE": {
+            "input_rows": 3558,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3558,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI101.CZCE": {
+            "input_rows": 8747,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8747,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI105.CZCE": {
+            "input_rows": 17582,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17582,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI109.CZCE": {
+            "input_rows": 28395,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28395,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI201.CZCE": {
+            "input_rows": 17821,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17821,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI205.CZCE": {
+            "input_rows": 25170,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25170,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI209.CZCE": {
+            "input_rows": 30345,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30345,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI301.CZCE": {
+            "input_rows": 26670,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26670,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI305.CZCE": {
+            "input_rows": 9075,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9075,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI309.CZCE": {
+            "input_rows": 12525,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12525,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI401.CZCE": {
+            "input_rows": 27480,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27480,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI405.CZCE": {
+            "input_rows": 24480,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24480,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI409.CZCE": {
+            "input_rows": 29655,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29655,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI501.CZCE": {
+            "input_rows": 24255,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24255,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI505.CZCE": {
+            "input_rows": 29310,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29310,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI509.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI601.CZCE": {
+            "input_rows": 27705,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27705,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI605.CZCE": {
+            "input_rows": 26670,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26670,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI609.CZCE": {
+            "input_rows": 5296,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5296,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "OI805.CZCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "OI901.CZCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "OI905.CZCE": {
+            "input_rows": 1125,
+            "removed_source859_rows": 1125,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 1125
+          },
+          "OI909.CZCE": {
+            "input_rows": 750,
+            "removed_source859_rows": 750,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 750
+          },
+          "SA005.CZCE": {
+            "input_rows": 8250,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8250,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA009.CZCE": {
+            "input_rows": 4140,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4140,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA101.CZCE": {
+            "input_rows": 7354,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7354,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA105.CZCE": {
+            "input_rows": 24481,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24481,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA109.CZCE": {
+            "input_rows": 18511,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18511,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA201.CZCE": {
+            "input_rows": 10696,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10696,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA205.CZCE": {
+            "input_rows": 28500,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28500,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA209.CZCE": {
+            "input_rows": 28740,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28740,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA301.CZCE": {
+            "input_rows": 16545,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 16545,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA305.CZCE": {
+            "input_rows": 24600,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24600,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA309.CZCE": {
+            "input_rows": 29086,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29086,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA401.CZCE": {
+            "input_rows": 28860,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28860,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA405.CZCE": {
+            "input_rows": 23565,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23565,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA409.CZCE": {
+            "input_rows": 33225,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 33225,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA501.CZCE": {
+            "input_rows": 27015,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27015,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA505.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA509.CZCE": {
+            "input_rows": 24946,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24946,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA601.CZCE": {
+            "input_rows": 30120,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30120,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA605.CZCE": {
+            "input_rows": 25860,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25860,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA609.CZCE": {
+            "input_rows": 4140,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4140,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SA701.CZCE": {
+            "input_rows": 466,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 466,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH405.CZCE": {
+            "input_rows": 18855,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18855,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH409.CZCE": {
+            "input_rows": 27481,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27481,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH501.CZCE": {
+            "input_rows": 24255,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24255,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH505.CZCE": {
+            "input_rows": 28155,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28155,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH509.CZCE": {
+            "input_rows": 27240,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27240,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH601.CZCE": {
+            "input_rows": 25412,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25412,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH603.CZCE": {
+            "input_rows": 15750,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15750,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH605.CZCE": {
+            "input_rows": 11611,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11611,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH607.CZCE": {
+            "input_rows": 4485,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4485,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SH611.CZCE": {
+            "input_rows": 1155,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 1155,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM001.CZCE": {
+            "input_rows": 225,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "SM005.CZCE": {
+            "input_rows": 3152,
+            "removed_source859_rows": 225,
+            "retained_non859_rows": 2927,
+            "retained_source859_rows": 0,
+            "source859_rows": 225
+          },
+          "SM009.CZCE": {
+            "input_rows": 2025,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2025,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM101.CZCE": {
+            "input_rows": 17325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM105.CZCE": {
+            "input_rows": 18450,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18450,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM109.CZCE": {
+            "input_rows": 17550,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17550,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM201.CZCE": {
+            "input_rows": 17778,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17778,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM205.CZCE": {
+            "input_rows": 13953,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13953,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM209.CZCE": {
+            "input_rows": 19575,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19575,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM301.CZCE": {
+            "input_rows": 17775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM305.CZCE": {
+            "input_rows": 17100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM306.CZCE": {
+            "input_rows": 3376,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3376,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM307.CZCE": {
+            "input_rows": 675,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 675,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM309.CZCE": {
+            "input_rows": 9677,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9677,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM310.CZCE": {
+            "input_rows": 7200,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7200,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM311.CZCE": {
+            "input_rows": 5175,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5175,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM312.CZCE": {
+            "input_rows": 4050,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4050,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM402.CZCE": {
+            "input_rows": 8775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM403.CZCE": {
+            "input_rows": 4951,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4951,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM405.CZCE": {
+            "input_rows": 9675,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9675,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM409.CZCE": {
+            "input_rows": 12602,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12602,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM501.CZCE": {
+            "input_rows": 24300,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24300,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM505.CZCE": {
+            "input_rows": 14627,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14627,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM509.CZCE": {
+            "input_rows": 19125,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19125,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM601.CZCE": {
+            "input_rows": 15750,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15750,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM603.CZCE": {
+            "input_rows": 7200,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7200,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM605.CZCE": {
+            "input_rows": 12150,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12150,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM607.CZCE": {
+            "input_rows": 2700,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2700,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM611.CZCE": {
+            "input_rows": 8100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "SM809.CZCE": {
+            "input_rows": 450,
+            "removed_source859_rows": 450,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 450
+          },
+          "au1806.SHFE": {
+            "input_rows": 1516,
+            "removed_source859_rows": 1516,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 1516
+          },
+          "au1812.SHFE": {
+            "input_rows": 406,
+            "removed_source859_rows": 406,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 406
+          },
+          "au1906.SHFE": {
+            "input_rows": 555,
+            "removed_source859_rows": 555,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 555
+          },
+          "au2006.SHFE": {
+            "input_rows": 4907,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4907,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2012.SHFE": {
+            "input_rows": 55950,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 55950,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2102.SHFE": {
+            "input_rows": 17611,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17611,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2106.SHFE": {
+            "input_rows": 47296,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 47296,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2112.SHFE": {
+            "input_rows": 64861,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 64861,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2202.SHFE": {
+            "input_rows": 20761,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20761,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2206.SHFE": {
+            "input_rows": 24723,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24723,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2208.SHFE": {
+            "input_rows": 13545,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13545,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2212.SHFE": {
+            "input_rows": 46921,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 46921,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2302.SHFE": {
+            "input_rows": 17610,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17610,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2304.SHFE": {
+            "input_rows": 23205,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23205,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2306.SHFE": {
+            "input_rows": 17100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2308.SHFE": {
+            "input_rows": 21540,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21540,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2310.SHFE": {
+            "input_rows": 24090,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24090,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2312.SHFE": {
+            "input_rows": 18765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2402.SHFE": {
+            "input_rows": 23865,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23865,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2404.SHFE": {
+            "input_rows": 19875,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19875,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2406.SHFE": {
+            "input_rows": 19875,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19875,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2408.SHFE": {
+            "input_rows": 24540,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24540,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2410.SHFE": {
+            "input_rows": 28380,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28380,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2412.SHFE": {
+            "input_rows": 22095,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 22095,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2502.SHFE": {
+            "input_rows": 19650,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19650,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2504.SHFE": {
+            "input_rows": 22649,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 22649,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2506.SHFE": {
+            "input_rows": 15765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2508.SHFE": {
+            "input_rows": 19320,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19320,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2510.SHFE": {
+            "input_rows": 31081,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 31081,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2512.SHFE": {
+            "input_rows": 21315,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21315,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2602.SHFE": {
+            "input_rows": 20387,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20387,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2604.SHFE": {
+            "input_rows": 20985,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20985,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2606.SHFE": {
+            "input_rows": 13770,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13770,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "au2610.SHFE": {
+            "input_rows": 736,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 736,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2002.SHFE": {
+            "input_rows": 1155,
+            "removed_source859_rows": 465,
+            "retained_non859_rows": 690,
+            "retained_source859_rows": 0,
+            "source859_rows": 465
+          },
+          "cu2003.SHFE": {
+            "input_rows": 4351,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4351,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2004.SHFE": {
+            "input_rows": 4275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2005.SHFE": {
+            "input_rows": 3600,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3600,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2006.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 690,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2007.SHFE": {
+            "input_rows": 10172,
+            "removed_source859_rows": 1,
+            "retained_non859_rows": 10171,
+            "retained_source859_rows": 0,
+            "source859_rows": 1
+          },
+          "cu2008.SHFE": {
+            "input_rows": 8777,
+            "removed_source859_rows": 406,
+            "retained_non859_rows": 8371,
+            "retained_source859_rows": 0,
+            "source859_rows": 406
+          },
+          "cu2009.SHFE": {
+            "input_rows": 9060,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9060,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2010.SHFE": {
+            "input_rows": 10636,
+            "removed_source859_rows": 181,
+            "retained_non859_rows": 10454,
+            "retained_source859_rows": 1,
+            "source859_rows": 182
+          },
+          "cu2011.SHFE": {
+            "input_rows": 6495,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6495,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2012.SHFE": {
+            "input_rows": 9765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2101.SHFE": {
+            "input_rows": 11160,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11160,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2102.SHFE": {
+            "input_rows": 6495,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6495,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2103.SHFE": {
+            "input_rows": 10230,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10230,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2104.SHFE": {
+            "input_rows": 5100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2105.SHFE": {
+            "input_rows": 11610,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11610,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2106.SHFE": {
+            "input_rows": 11385,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11385,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2107.SHFE": {
+            "input_rows": 10455,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10455,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2108.SHFE": {
+            "input_rows": 9765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2109.SHFE": {
+            "input_rows": 9765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2110.SHFE": {
+            "input_rows": 11385,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11385,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2111.SHFE": {
+            "input_rows": 4816,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4816,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2112.SHFE": {
+            "input_rows": 9766,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9766,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2201.SHFE": {
+            "input_rows": 10229,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10229,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2202.SHFE": {
+            "input_rows": 7890,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7890,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2203.SHFE": {
+            "input_rows": 8821,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8821,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2204.SHFE": {
+            "input_rows": 9990,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9990,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2205.SHFE": {
+            "input_rows": 9750,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9750,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2206.SHFE": {
+            "input_rows": 7890,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7890,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2207.SHFE": {
+            "input_rows": 9060,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9060,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2208.SHFE": {
+            "input_rows": 10230,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10230,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2209.SHFE": {
+            "input_rows": 9525,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9525,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2210.SHFE": {
+            "input_rows": 9990,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9990,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2211.SHFE": {
+            "input_rows": 5565,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5565,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2212.SHFE": {
+            "input_rows": 10411,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10411,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2301.SHFE": {
+            "input_rows": 10695,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10695,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2302.SHFE": {
+            "input_rows": 2775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2303.SHFE": {
+            "input_rows": 4877,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4877,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2304.SHFE": {
+            "input_rows": 8130,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8130,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2305.SHFE": {
+            "input_rows": 10215,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10215,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2306.SHFE": {
+            "input_rows": 6495,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6495,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2307.SHFE": {
+            "input_rows": 11101,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11101,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2308.SHFE": {
+            "input_rows": 8595,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8595,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2309.SHFE": {
+            "input_rows": 9300,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9300,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2310.SHFE": {
+            "input_rows": 10410,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10410,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2311.SHFE": {
+            "input_rows": 5340,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5340,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2312.SHFE": {
+            "input_rows": 9764,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9764,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2401.SHFE": {
+            "input_rows": 9765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2402.SHFE": {
+            "input_rows": 7665,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7665,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2403.SHFE": {
+            "input_rows": 8820,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8820,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2404.SHFE": {
+            "input_rows": 6226,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6226,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2405.SHFE": {
+            "input_rows": 7666,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7666,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2406.SHFE": {
+            "input_rows": 10215,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10215,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2407.SHFE": {
+            "input_rows": 10921,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10921,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2408.SHFE": {
+            "input_rows": 10230,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10230,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2409.SHFE": {
+            "input_rows": 9765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2410.SHFE": {
+            "input_rows": 10919,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10919,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2411.SHFE": {
+            "input_rows": 5805,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5805,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2412.SHFE": {
+            "input_rows": 9990,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9990,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2501.SHFE": {
+            "input_rows": 10231,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10231,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2502.SHFE": {
+            "input_rows": 5281,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5281,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2503.SHFE": {
+            "input_rows": 10680,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10680,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2504.SHFE": {
+            "input_rows": 5340,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5340,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2505.SHFE": {
+            "input_rows": 9990,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9990,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2506.SHFE": {
+            "input_rows": 12075,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12075,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2507.SHFE": {
+            "input_rows": 8356,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8356,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2508.SHFE": {
+            "input_rows": 8835,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8835,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2509.SHFE": {
+            "input_rows": 10920,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10920,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2510.SHFE": {
+            "input_rows": 8130,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8130,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2511.SHFE": {
+            "input_rows": 5340,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5340,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2512.SHFE": {
+            "input_rows": 11625,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11625,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2601.SHFE": {
+            "input_rows": 8370,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8370,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2602.SHFE": {
+            "input_rows": 7890,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7890,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2603.SHFE": {
+            "input_rows": 11145,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11145,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2604.SHFE": {
+            "input_rows": 6735,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6735,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2605.SHFE": {
+            "input_rows": 9525,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9525,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2606.SHFE": {
+            "input_rows": 3720,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3720,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2609.SHFE": {
+            "input_rows": 646,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 646,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "cu2611.SHFE": {
+            "input_rows": 645,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 645,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu1905.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "fu1909.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "fu2001.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "fu2005.SHFE": {
+            "input_rows": 6900,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6900,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2009.SHFE": {
+            "input_rows": 26355,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26355,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2101.SHFE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2105.SHFE": {
+            "input_rows": 28275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2109.SHFE": {
+            "input_rows": 27930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2201.SHFE": {
+            "input_rows": 24255,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24255,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2205.SHFE": {
+            "input_rows": 10575,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 10230,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "fu2209.SHFE": {
+            "input_rows": 23792,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 23447,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "fu2301.SHFE": {
+            "input_rows": 28275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2305.SHFE": {
+            "input_rows": 15060,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15060,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2309.SHFE": {
+            "input_rows": 28173,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28173,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2310.SHFE": {
+            "input_rows": 3571,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3571,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2311.SHFE": {
+            "input_rows": 6900,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6900,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2401.SHFE": {
+            "input_rows": 14957,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14957,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2403.SHFE": {
+            "input_rows": 11041,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11041,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2405.SHFE": {
+            "input_rows": 7470,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7470,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2409.SHFE": {
+            "input_rows": 28396,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28396,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2411.SHFE": {
+            "input_rows": 11836,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11836,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2501.SHFE": {
+            "input_rows": 12645,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12645,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2503.SHFE": {
+            "input_rows": 14941,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14941,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2505.SHFE": {
+            "input_rows": 12990,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12990,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2507.SHFE": {
+            "input_rows": 13785,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13785,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2509.SHFE": {
+            "input_rows": 17940,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17940,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2510.SHFE": {
+            "input_rows": 2760,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2760,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2601.SHFE": {
+            "input_rows": 6780,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6780,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2603.SHFE": {
+            "input_rows": 11730,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11730,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2605.SHFE": {
+            "input_rows": 18045,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18045,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2609.SHFE": {
+            "input_rows": 466,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 466,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "fu2611.SHFE": {
+            "input_rows": 930,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 930,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc1805.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "hc1810.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "hc1901.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "hc1905.SHFE": {
+            "input_rows": 570,
+            "removed_source859_rows": 570,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 570
+          },
+          "hc1910.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "hc2001.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "hc2005.SHFE": {
+            "input_rows": 5012,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5012,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2010.SHFE": {
+            "input_rows": 28831,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28831,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2101.SHFE": {
+            "input_rows": 21496,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 21151,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "hc2105.SHFE": {
+            "input_rows": 27121,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27121,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2110.SHFE": {
+            "input_rows": 28396,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28396,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2201.SHFE": {
+            "input_rows": 23790,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23790,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2205.SHFE": {
+            "input_rows": 12994,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12994,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2210.SHFE": {
+            "input_rows": 35640,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 35640,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2301.SHFE": {
+            "input_rows": 20357,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20357,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2305.SHFE": {
+            "input_rows": 26326,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26326,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2310.SHFE": {
+            "input_rows": 32432,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 32432,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2401.SHFE": {
+            "input_rows": 20925,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20925,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2405.SHFE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2410.SHFE": {
+            "input_rows": 34140,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 34140,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2501.SHFE": {
+            "input_rows": 22185,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 22185,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2505.SHFE": {
+            "input_rows": 25635,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25635,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2510.SHFE": {
+            "input_rows": 34485,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 34485,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2601.SHFE": {
+            "input_rows": 21961,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21961,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2605.SHFE": {
+            "input_rows": 26670,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26670,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2610.SHFE": {
+            "input_rows": 6435,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6435,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "hc2701.SHFE": {
+            "input_rows": 6315,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6315,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm1809.DCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "jm1901.DCE": {
+            "input_rows": 375,
+            "removed_source859_rows": 375,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 375
+          },
+          "jm2005.DCE": {
+            "input_rows": 4220,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4220,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2009.DCE": {
+            "input_rows": 30015,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30015,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2101.DCE": {
+            "input_rows": 12077,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12077,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2105.DCE": {
+            "input_rows": 28620,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28620,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2109.DCE": {
+            "input_rows": 25292,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25292,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2201.DCE": {
+            "input_rows": 14251,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14251,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2205.DCE": {
+            "input_rows": 27810,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27810,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2209.DCE": {
+            "input_rows": 19996,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19996,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2301.DCE": {
+            "input_rows": 24945,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24945,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2305.DCE": {
+            "input_rows": 28276,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28276,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2309.DCE": {
+            "input_rows": 27135,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27135,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2401.DCE": {
+            "input_rows": 26566,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26566,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2405.DCE": {
+            "input_rows": 26222,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26222,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2409.DCE": {
+            "input_rows": 31034,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 31034,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2501.DCE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2505.DCE": {
+            "input_rows": 26550,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26550,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2509.DCE": {
+            "input_rows": 5745,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5745,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2601.DCE": {
+            "input_rows": 28291,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28291,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2605.DCE": {
+            "input_rows": 29310,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29310,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "jm2609.DCE": {
+            "input_rows": 5190,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5190,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2401.GFEX": {
+            "input_rows": 5850,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5850,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2407.GFEX": {
+            "input_rows": 29476,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29476,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2411.GFEX": {
+            "input_rows": 16875,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 16875,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2501.GFEX": {
+            "input_rows": 9226,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9226,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2505.GFEX": {
+            "input_rows": 17999,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17999,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2507.GFEX": {
+            "input_rows": 8325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2509.GFEX": {
+            "input_rows": 7425,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7425,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2511.GFEX": {
+            "input_rows": 10800,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10800,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2601.GFEX": {
+            "input_rows": 5625,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5625,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2605.GFEX": {
+            "input_rows": 1351,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 1351,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2609.GFEX": {
+            "input_rows": 2925,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2925,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lc2701.GFEX": {
+            "input_rows": 6751,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6751,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2109.DCE": {
+            "input_rows": 20699,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20699,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2201.DCE": {
+            "input_rows": 6976,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6976,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2203.DCE": {
+            "input_rows": 8324,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8324,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2205.DCE": {
+            "input_rows": 6751,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6751,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2209.DCE": {
+            "input_rows": 9676,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9676,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2301.DCE": {
+            "input_rows": 20025,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20025,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2303.DCE": {
+            "input_rows": 8100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2305.DCE": {
+            "input_rows": 9675,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9675,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2307.DCE": {
+            "input_rows": 7200,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7200,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2309.DCE": {
+            "input_rows": 9451,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9451,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2311.DCE": {
+            "input_rows": 9675,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9675,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2401.DCE": {
+            "input_rows": 5176,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5176,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2403.DCE": {
+            "input_rows": 10125,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10125,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2405.DCE": {
+            "input_rows": 6750,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6750,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2409.DCE": {
+            "input_rows": 19350,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 19350,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2411.DCE": {
+            "input_rows": 8775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2501.DCE": {
+            "input_rows": 10350,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10350,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2503.DCE": {
+            "input_rows": 7874,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7874,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2505.DCE": {
+            "input_rows": 5175,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5175,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2509.DCE": {
+            "input_rows": 18226,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 18226,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2511.DCE": {
+            "input_rows": 9900,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9900,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2601.DCE": {
+            "input_rows": 8325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2603.DCE": {
+            "input_rows": 9000,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9000,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2605.DCE": {
+            "input_rows": 10124,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 10124,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2607.DCE": {
+            "input_rows": 2700,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2700,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "lh2611.DCE": {
+            "input_rows": 8775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb1805.SHFE": {
+            "input_rows": 1035,
+            "removed_source859_rows": 1035,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 1035
+          },
+          "rb1905.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "rb1910.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "rb2001.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "rb2005.SHFE": {
+            "input_rows": 14070,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14070,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2010.SHFE": {
+            "input_rows": 27316,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27316,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2101.SHFE": {
+            "input_rows": 21962,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21962,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2105.SHFE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2110.SHFE": {
+            "input_rows": 24481,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24481,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2201.SHFE": {
+            "input_rows": 23790,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23790,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2205.SHFE": {
+            "input_rows": 15062,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15062,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2210.SHFE": {
+            "input_rows": 34830,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 34830,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2301.SHFE": {
+            "input_rows": 21374,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 21374,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2305.SHFE": {
+            "input_rows": 27706,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27706,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2310.SHFE": {
+            "input_rows": 35400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 35400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2401.SHFE": {
+            "input_rows": 20460,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20460,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2405.SHFE": {
+            "input_rows": 26326,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26326,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2410.SHFE": {
+            "input_rows": 34710,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 34710,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2501.SHFE": {
+            "input_rows": 20805,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20805,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2505.SHFE": {
+            "input_rows": 28395,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28395,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2510.SHFE": {
+            "input_rows": 34140,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 34140,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2601.SHFE": {
+            "input_rows": 20580,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20580,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2605.SHFE": {
+            "input_rows": 27362,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27362,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2610.SHFE": {
+            "input_rows": 6330,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6330,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "rb2701.SHFE": {
+            "input_rows": 7695,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7695,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru1905.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "ru1909.SHFE": {
+            "input_rows": 345,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "ru2001.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "ru2005.SHFE": {
+            "input_rows": 12481,
+            "removed_source859_rows": 345,
+            "retained_non859_rows": 12136,
+            "retained_source859_rows": 0,
+            "source859_rows": 345
+          },
+          "ru2009.SHFE": {
+            "input_rows": 27570,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27570,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2101.SHFE": {
+            "input_rows": 27825,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27825,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2105.SHFE": {
+            "input_rows": 27705,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27705,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2109.SHFE": {
+            "input_rows": 28741,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28741,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2201.SHFE": {
+            "input_rows": 24255,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24255,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2205.SHFE": {
+            "input_rows": 29085,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29085,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2209.SHFE": {
+            "input_rows": 29085,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29085,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2301.SHFE": {
+            "input_rows": 26550,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26550,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2305.SHFE": {
+            "input_rows": 26325,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26325,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2309.SHFE": {
+            "input_rows": 28155,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28155,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2401.SHFE": {
+            "input_rows": 26670,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26670,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2405.SHFE": {
+            "input_rows": 24825,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24825,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2409.SHFE": {
+            "input_rows": 29431,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 29431,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2501.SHFE": {
+            "input_rows": 23807,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 23807,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2505.SHFE": {
+            "input_rows": 28291,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28291,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2509.SHFE": {
+            "input_rows": 28275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2601.SHFE": {
+            "input_rows": 27480,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27480,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2605.SHFE": {
+            "input_rows": 6452,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6452,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "ru2609.SHFE": {
+            "input_rows": 5400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2308.GFEX": {
+            "input_rows": 8999,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8999,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2309.GFEX": {
+            "input_rows": 5175,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5175,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2310.GFEX": {
+            "input_rows": 4277,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4277,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2311.GFEX": {
+            "input_rows": 4500,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4500,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2312.GFEX": {
+            "input_rows": 3150,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3150,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2401.GFEX": {
+            "input_rows": 5625,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5625,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2402.GFEX": {
+            "input_rows": 5400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2403.GFEX": {
+            "input_rows": 4275,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4275,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2404.GFEX": {
+            "input_rows": 3375,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3375,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2405.GFEX": {
+            "input_rows": 4500,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4500,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2406.GFEX": {
+            "input_rows": 4726,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4726,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2407.GFEX": {
+            "input_rows": 2476,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2476,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2409.GFEX": {
+            "input_rows": 11250,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11250,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2411.GFEX": {
+            "input_rows": 9450,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 9450,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2412.GFEX": {
+            "input_rows": 3826,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3826,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2501.GFEX": {
+            "input_rows": 5401,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5401,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2502.GFEX": {
+            "input_rows": 4050,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4050,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2503.GFEX": {
+            "input_rows": 2250,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2250,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2505.GFEX": {
+            "input_rows": 11700,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11700,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2506.GFEX": {
+            "input_rows": 3375,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3375,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2507.GFEX": {
+            "input_rows": 3825,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 3825,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2509.GFEX": {
+            "input_rows": 4500,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 4500,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2511.GFEX": {
+            "input_rows": 11475,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11475,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2601.GFEX": {
+            "input_rows": 8100,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8100,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2605.GFEX": {
+            "input_rows": 17775,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 17775,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2609.GFEX": {
+            "input_rows": 1800,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 1800,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "si2611.GFEX": {
+            "input_rows": 7427,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7427,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp1906.SHFE": {
+            "input_rows": 690,
+            "removed_source859_rows": 690,
+            "retained_non859_rows": 0,
+            "retained_source859_rows": 0,
+            "source859_rows": 690
+          },
+          "sp2005.SHFE": {
+            "input_rows": 15645,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15645,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2009.SHFE": {
+            "input_rows": 24722,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 24722,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2012.SHFE": {
+            "input_rows": 7818,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7818,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2101.SHFE": {
+            "input_rows": 6090,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6090,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2103.SHFE": {
+            "input_rows": 13801,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13801,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2105.SHFE": {
+            "input_rows": 13905,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 13905,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2106.SHFE": {
+            "input_rows": 7815,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 7815,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2107.SHFE": {
+            "input_rows": 6436,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6436,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2109.SHFE": {
+            "input_rows": 15751,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 15751,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2110.SHFE": {
+            "input_rows": 8850,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 8850,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2111.SHFE": {
+            "input_rows": 5400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2112.SHFE": {
+            "input_rows": 5400,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 5400,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2201.SHFE": {
+            "input_rows": 6330,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 6330,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2205.SHFE": {
+            "input_rows": 20341,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 20341,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2209.SHFE": {
+            "input_rows": 30345,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30345,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2301.SHFE": {
+            "input_rows": 27705,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27705,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2305.SHFE": {
+            "input_rows": 26550,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26550,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2309.SHFE": {
+            "input_rows": 26550,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 26550,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2401.SHFE": {
+            "input_rows": 27825,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 27825,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2405.SHFE": {
+            "input_rows": 25515,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25515,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2409.SHFE": {
+            "input_rows": 30465,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 30465,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2501.SHFE": {
+            "input_rows": 25291,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 25291,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2503.SHFE": {
+            "input_rows": 11145,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 11145,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2505.SHFE": {
+            "input_rows": 14595,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14595,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2507.SHFE": {
+            "input_rows": 14130,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14130,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2509.SHFE": {
+            "input_rows": 12765,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12765,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2511.SHFE": {
+            "input_rows": 14025,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 14025,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2601.SHFE": {
+            "input_rows": 12541,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 12541,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2605.SHFE": {
+            "input_rows": 28621,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 28621,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2609.SHFE": {
+            "input_rows": 2760,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 2760,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          },
+          "sp2611.SHFE": {
+            "input_rows": 466,
+            "removed_source859_rows": 0,
+            "retained_non859_rows": 466,
+            "retained_source859_rows": 0,
+            "source859_rows": 0
+          }
+        },
+        "completed_value_proof_keys": 46116,
+        "input_rows": 7702417,
+        "output_rows": 7676387,
+        "policy": "remove_only_source859_without_exact_completed_value_proof",
+        "policy_source": "stage859_tqsdk_backtest",
+        "qualification_rights_granted": false,
+        "removed_source859_rows": 26030,
+        "retained_non859_rows": 7676386,
+        "retained_source859_rows": 1,
+        "schema": "stage071_source859_preload_isolation_v1",
+        "source859_rows": 26031
+      }
+    ],
+    "stage016_scope_keys": 1500,
+    "stage016_scope_keys_actually_present": 1500
+  },
+  "resolver": []
+}

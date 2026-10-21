@@ -1,0 +1,10 @@
+{
+  "initial_expected_failures": 4,
+  "initial_new_tests": 4,
+  "kind": "tool-executed test output summary; not fabricated full stderr",
+  "observed": true,
+  "reason": "new062 module must exist; actual tool returned exit1",
+  "second_red_failures": 1,
+  "second_red_new_behavior": "all-family yearly attribution needs explicit zero-activity cells",
+  "source_code_written_only_after_initial_RED": true
+}

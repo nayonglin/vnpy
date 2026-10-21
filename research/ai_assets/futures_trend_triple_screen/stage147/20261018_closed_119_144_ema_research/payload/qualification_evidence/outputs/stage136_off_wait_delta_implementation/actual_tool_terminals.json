@@ -1,0 +1,22 @@
+{
+  "red": {
+    "chunk_id": "956cf6",
+    "exit_code": 1
+  },
+  "implementation_check01": {
+    "chunk_id": "b91c7e",
+    "exit_code": 1
+  },
+  "green": {
+    "chunk_id": "f4b5b3",
+    "exit_code": 0
+  },
+  "actual_freeze": {
+    "session_id": 64940,
+    "initial_chunk_id": "eaf675",
+    "terminal_chunk_id": "963f0d",
+    "exit_code": 0
+  },
+  "actual_freeze_count": 1,
+  "dataset_independent_review_signed_by_author": false
+}

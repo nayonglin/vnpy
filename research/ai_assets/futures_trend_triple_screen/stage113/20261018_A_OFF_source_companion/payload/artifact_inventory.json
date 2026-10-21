@@ -1,0 +1,2402 @@
+{
+  "schema": "stage113_A_OFF_actual_source_snapshot_companion_v1",
+  "created_at": "2026-10-18T07:55:12.240274+08:00",
+  "source_snapshots": [
+    {
+      "source_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/api.py",
+      "bytes": 232077,
+      "sha256": "264fff3e3979a156294d8bca745c8aa6c26136c8cbe58ef2bc7ceffd8b811c96",
+      "snapshot": "sources/source_000.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/auth.py",
+      "bytes": 10524,
+      "sha256": "1252fd43b7991046148863edf834068fea53216ccf0c5a511e8002e482a01c49",
+      "snapshot": "sources/source_001.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/backtest/backtest.py",
+      "bytes": 44841,
+      "sha256": "6f3f3eb9980ea10b45a964316a1a34cc1346c99ca537bb28b98c04de264f0447",
+      "snapshot": "sources/source_002.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tools/downloader.py",
+      "bytes": 19394,
+      "sha256": "12bd121175f943b0e895c8f5e771dc8d149e8aafa6d8c221d6dc47f38973d675",
+      "snapshot": "sources/source_003.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tradeable/sim/tqsim.py",
+      "bytes": 11274,
+      "sha256": "00a0c478f11c9c92dc402a2168c621fcd04c04c5f992b357459e8b0a228f3977",
+      "snapshot": "sources/source_004.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage324_true_combo_capital_margin.py",
+      "bytes": 23677,
+      "sha256": "653cf6149fd1503b05e11ebfb58e70b4d13c786156126e7f82741198c605fc02",
+      "snapshot": "sources/source_005.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage345_cross_sectional_momentum_satellite.py",
+      "bytes": 24326,
+      "sha256": "2571854ef57ce960d9a0554d9e5d47e3816acfa64eba033622ab3bfdc2b98d2e",
+      "snapshot": "sources/source_006.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage346_xsmom_integer_feasibility.py",
+      "bytes": 15759,
+      "sha256": "e4850f9d8fba0cc15d7898c8bbae8b49dd2403d28c8a74ce5d8fe2d1f303f8d6",
+      "snapshot": "sources/source_007.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage387_stage079_short_holding_candidates.py",
+      "bytes": 29614,
+      "sha256": "9e075ee3756a4413ee728b3b3f0df9473714cf7ef6bb32f93745f0f4ad331c4f",
+      "snapshot": "sources/source_008.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage402_stage079_xsmom_volmanaged_true_integer.py",
+      "bytes": 30858,
+      "sha256": "8d8aed508111e74ffbb8db1fe28c606797ffdd888c28d7efd4fc8714b06f32b0",
+      "snapshot": "sources/source_009.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage403_stage079_xsmom_execution_margin_audit.py",
+      "bytes": 34551,
+      "sha256": "a9d16f0f9a34fa3c943d4380ea04e8bed61726a202d9917611aca436f8ab32fd",
+      "snapshot": "sources/source_010.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage450_minute_execution_equity_rebuild.py",
+      "bytes": 39516,
+      "sha256": "cb9b77458ef6c26d36691aaa02c236f1b073b6d32baf0c4c079a4dac15c7dfe5",
+      "snapshot": "sources/source_011.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage451_true_path_1455_vwap_replay.py",
+      "bytes": 25742,
+      "sha256": "0aeb4b2866a79ccf4a2518aa32b44f4526861d358cff0bfd1e9814550b53641e",
+      "snapshot": "sources/source_012.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage452_iterative_1455_proxy_backfill.py",
+      "bytes": 32026,
+      "sha256": "7f9900e2921c113e360b43496c196cda9c891b7318035bd32e47c1a33241a126",
+      "snapshot": "sources/source_013.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage501_asymmetric_entry_exit_execution.py",
+      "bytes": 29437,
+      "sha256": "2f7b2ffdb0310f19e11292687f17a1c0163bd3c821518d7eb8cfa61818ec9995",
+      "snapshot": "sources/source_014.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py",
+      "bytes": 21604,
+      "sha256": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+      "snapshot": "sources/source_015.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage503_next_real_open_risk_frontier.py",
+      "bytes": 16968,
+      "sha256": "a63dd782c1563ce2ab242f103e6206701d229b5fac273b1fe58698ce3e030c23",
+      "snapshot": "sources/source_016.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage504_next_real_open_fallback_backfill.py",
+      "bytes": 24778,
+      "sha256": "a521862ca99fc77ffef59b126dee27ac8aed0ffb945e7c8e063903eb2e3a9a25",
+      "snapshot": "sources/source_017.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage506_next_real_forward_risk_signal_frontier.py",
+      "bytes": 23539,
+      "sha256": "917875629945cd374b9787e8b97a5adba9f29112db4b5f764921a73a036892c0",
+      "snapshot": "sources/source_018.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage513_stage208_exact_position_margin_audit.py",
+      "bytes": 37805,
+      "sha256": "bdda0bf09ebfaddfa9cb5cd08f858336df210df1cd95b879bfd0cca0a85fd515",
+      "snapshot": "sources/source_019.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage516_margin_aware_sizing_frontier.py",
+      "bytes": 40470,
+      "sha256": "1433b188b07444da7d064f5e4ca547e02ad582315c53c06bbbb857ee9fa159d6",
+      "snapshot": "sources/source_020.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage517_portfolio_margin_deleverage_frontier.py",
+      "bytes": 29525,
+      "sha256": "07884d46228b1e28a06ed3ed5420b2632e00fd5a3fd1e80903790a1aace4352f",
+      "snapshot": "sources/source_021.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage519_product_margin_cap_frontier.py",
+      "bytes": 16293,
+      "sha256": "9a97cd6df4ed23e37b210dfcbccf87b542e20c70afd339144db75cb386eff9ba",
+      "snapshot": "sources/source_022.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage650_stage526_200k_capital_reality_check.py",
+      "bytes": 26014,
+      "sha256": "b5ab107a6679c8cb99ad4fce4de085cb590fd0de3792f46b2fee29419626fd10",
+      "snapshot": "sources/source_023.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage.py",
+      "bytes": 23634,
+      "sha256": "4766181a85d5105f6fa3fc340c77d73b5d694cd37b07e1017f68494fbf4ada82",
+      "snapshot": "sources/source_024.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage658_stage653_2026_ytd_shadow.py",
+      "bytes": 14551,
+      "sha256": "6be0319b404f87f67605282f27ac2b4afbd5cbd12ae06466b2482405d4054f14",
+      "snapshot": "sources/source_025.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage660_stage653_multiperiod_live_audit.py",
+      "bytes": 37174,
+      "sha256": "bbc61418abb611edcb04e44692020499d1841af1b7ea78287d60ecd50c3716ed",
+      "snapshot": "sources/source_026.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage707_recovery_all_cases_multiperiod.py",
+      "bytes": 26571,
+      "sha256": "d3d76b7fbe44b38a0b95d92109b16268f22f04d48eed8d148351f972edf9049e",
+      "snapshot": "sources/source_027.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage719_official_winner_trade_forensics.py",
+      "bytes": 34641,
+      "sha256": "24e6f7ff58086a36fb7ce5aea15e3965051c326b67089125e6a63b3979227954",
+      "snapshot": "sources/source_028.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage745_quarter_risk_no_streak_multiperiod.py",
+      "bytes": 13195,
+      "sha256": "14ea082e3c180d0cc8ea381926b22f79bcf1164caca3f84c236626b12dea0a78",
+      "snapshot": "sources/source_029.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage746_half_risk_no_streak_multiperiod.py",
+      "bytes": 13051,
+      "sha256": "8cb379b1cb8b2cd82b577ae154fd64bfb44fdbe50d2996c9700eccdb44dd628d",
+      "snapshot": "sources/source_030.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage748_half_risk_no_streak_500k.py",
+      "bytes": 22891,
+      "sha256": "ad781b018c18ff60606147d040a5fbf5bf4a93d8fd2f4ca8699083102370a560",
+      "snapshot": "sources/source_031.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage752_theoretical_winner_kline_atlas.py",
+      "bytes": 14856,
+      "sha256": "49901e9a192b4795278437d9eb770377b6fea01aa8d2976b26949d78bd2f2985",
+      "snapshot": "sources/source_032.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage754_entry_oi_change_winner_loser.py",
+      "bytes": 17548,
+      "sha256": "70e357d66b62af41c60ea6699e8fee8200a46f1d9e429c8babd7528b8c901b93",
+      "snapshot": "sources/source_033.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage757_c50_oi_confirm_risk_restore.py",
+      "bytes": 19095,
+      "sha256": "aa9c9c0529cc955b9a4b83369f09affcfac3049cf69d272114abcffda7ebabaf",
+      "snapshot": "sources/source_034.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py",
+      "bytes": 32998,
+      "sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+      "snapshot": "sources/source_035.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage777_am41_oi08_monthly.py",
+      "bytes": 22386,
+      "sha256": "9866109dcfcfc6d0e17b1dcfd79cb4c8e80795856d63d4c77230613a2e0acb7e",
+      "snapshot": "sources/source_036.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage778_stage777_2022_drawdown_forensics.py",
+      "bytes": 27587,
+      "sha256": "77d65d65343df02f9317747ef5f2f30c1f8471424ba4220b61f7f3bd3c81e2fc",
+      "snapshot": "sources/source_037.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage799_stage777_long_lower_high_block_2020.py",
+      "bytes": 15574,
+      "sha256": "3fc39c49006cbee85503adea5dce9436556fab0184d2e1698c2789e20123d18f",
+      "snapshot": "sources/source_038.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage800_stage777_long_lower_high_block_yearly.py",
+      "bytes": 20149,
+      "sha256": "45de71cc040bd9df089c1397071fe71a9314df7b92a665576f76aae67f267a2e",
+      "snapshot": "sources/source_039.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py",
+      "bytes": 19355,
+      "sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57",
+      "snapshot": "sources/source_040.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage813_stage804_rsi_partial_exit_ablation_yearly.py",
+      "bytes": 13863,
+      "sha256": "7aa31e325a3dcd47c17f8cd95d84d470f6ee6513b148b0d668d61134b9efbda8",
+      "snapshot": "sources/source_041.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage825_stage819_intraday_rule_forensics.py",
+      "bytes": 36245,
+      "sha256": "400fb94ff25b54c31c4c2f8204c1ee60d1788e24ee93a6be8a37c8a4d6e3f0fa",
+      "snapshot": "sources/source_042.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage826_stage819_intraday_ac_overlay.py",
+      "bytes": 53372,
+      "sha256": "bde3391b28b520f832ffac60528a1ad18c7a415f4431ad45edd0dbe63bea17b2",
+      "snapshot": "sources/source_043.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py",
+      "bytes": 44621,
+      "sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+      "snapshot": "sources/source_044.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py",
+      "bytes": 28868,
+      "sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647",
+      "snapshot": "sources/source_045.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py",
+      "bytes": 34475,
+      "sha256": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+      "snapshot": "sources/source_046.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py",
+      "bytes": 50824,
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "snapshot": "sources/source_047.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage861_stage860_full_visual_atlas.py",
+      "bytes": 28442,
+      "sha256": "276a40a417740c1d0417e76b5e34d566db6cd371b4f2dfc0d2f9b6423be1bc11",
+      "snapshot": "sources/source_048.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+      "bytes": 56165,
+      "sha256": "9ba78df489079967f8281c7667ad6ae3bc15099047564942424200f42a644105",
+      "snapshot": "sources/source_049.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py",
+      "bytes": 13999,
+      "sha256": "0b13e6797606a9f0206168493cb0a2c26dc924818c1a2f9a420036db8797b5d1",
+      "snapshot": "sources/source_050.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py",
+      "bytes": 8685,
+      "sha256": "22d18f920303279756c79748e518073eba2837511be7b8b0a177ddfa0c87f868",
+      "snapshot": "sources/source_051.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py",
+      "bytes": 25283,
+      "sha256": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4",
+      "snapshot": "sources/source_052.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "bytes": 29587,
+      "sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a",
+      "snapshot": "sources/source_053.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/contract_metadata.py",
+      "bytes": 3905,
+      "sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70",
+      "snapshot": "sources/source_054.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/download_tqsdk_all_futures_daily_csv.py",
+      "bytes": 8596,
+      "sha256": "51ecc292b6f8753c9822558282edb5e40eef38ebb93441ca81dd7e306150dca8",
+      "snapshot": "sources/source_055.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/import_tqsdk_all_futures_daily_to_db.py",
+      "bytes": 7155,
+      "sha256": "0fd37e73b40a7c104eacc9acf9b2e456559cf1ebdcef0c8ce9acc2fd578255cb",
+      "snapshot": "sources/source_056.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/main_contract_mapping.py",
+      "bytes": 6948,
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503",
+      "snapshot": "sources/source_057.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_alignment_portfolio_strategy.py",
+      "bytes": 52303,
+      "sha256": "70370c8ea1a3fa0b27d3ee7c64331e32a62aeddb91872d171129c6307694b8ed",
+      "snapshot": "sources/source_058.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_backtest_runtime_guard.py",
+      "bytes": 2857,
+      "sha256": "d0153d9fee1e1b91b8be553966b73c1713748e546c82a4206da612d78b1cf7eb",
+      "snapshot": "sources/source_059.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py",
+      "bytes": 15783,
+      "sha256": "828a7da2082837a9d493764de34d8f8e0eaac5c0d45ddd3689459f2f5fb24ac5",
+      "snapshot": "sources/source_060.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py",
+      "bytes": 7879,
+      "sha256": "a28cbdb7ecaeae5318dcf6ae5aabdd8cd29e1226ab1312cae9855c246fbe309f",
+      "snapshot": "sources/source_061.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py",
+      "bytes": 26081,
+      "sha256": "2c4782637c7fc977a5168e6e7e4aa0b4fa772779f55bded5635d952c753f510c",
+      "snapshot": "sources/source_062.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py",
+      "bytes": 4039,
+      "sha256": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975",
+      "snapshot": "sources/source_063.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_path_damage_runtime.py",
+      "bytes": 4316,
+      "sha256": "441e84b463a25111f659c7c5ab71794fef68cf8e32552af9b6601dac5453d2cc",
+      "snapshot": "sources/source_064.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+      "bytes": 7670,
+      "sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494",
+      "snapshot": "sources/source_065.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py",
+      "bytes": 8638,
+      "sha256": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+      "snapshot": "sources/source_066.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_ai_pool_policy.py",
+      "bytes": 6370,
+      "sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5",
+      "snapshot": "sources/source_067.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_baseline_identity.py",
+      "bytes": 4991,
+      "sha256": "1821c098c92997e0785c7592d00e6379aa9620aa721bf37442df300d9fe0c152",
+      "snapshot": "sources/source_068.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_candidate_stage777_config.py",
+      "bytes": 9957,
+      "sha256": "b7934ab7a54b033bb1b9a979f55c056571dad4c96aa95f229e51e6f6c93ae7e7",
+      "snapshot": "sources/source_069.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py",
+      "bytes": 10186,
+      "sha256": "25c1e9cdf3ee79c49c7772ffdac58317e83afabced36c145780d7cf0bdb5854d",
+      "snapshot": "sources/source_070.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py",
+      "bytes": 8864,
+      "sha256": "ef3e10f57eca5fd8e7f1d5dc9e01d8b392d2799c16c4f4d17f1b530e90ab36bd",
+      "snapshot": "sources/source_071.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
+      "bytes": 9344,
+      "sha256": "588e97e899f2291617fd935e474133a974da4088972e50a634ad0281e6edf83c",
+      "snapshot": "sources/source_072.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+      "bytes": 7093,
+      "sha256": "0d94f89a64a60162b465892e16acf564da74c9f03cfee047dcf455ae966f1f84",
+      "snapshot": "sources/source_073.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+      "bytes": 21558,
+      "sha256": "82faa02ebf4f782d6e2e2c531eafac0f95b6f8d10c62253dcc16b8922db74ac5",
+      "snapshot": "sources/source_074.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py",
+      "bytes": 128886,
+      "sha256": "7a25e979ac5c984450849e5d7aa2c942af789d5e19dbc45a071fa4c7ee9aed19",
+      "snapshot": "sources/source_075.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py",
+      "bytes": 3663,
+      "sha256": "79ec9cf3ca4c4421bd797a3811fa98762179f10f1a68cba4a2b9ce4b4b09b0a4",
+      "snapshot": "sources/source_076.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
+      "bytes": 5826,
+      "sha256": "f6574a39173e5e8185895c0ebceee1f0a8ce79f44e95463f16d066491ef0a064",
+      "snapshot": "sources/source_077.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
+      "bytes": 14424,
+      "sha256": "8166444ac7f8768f6b4a418fd01fa822230ddebb4bed19fd0e88e1660cb2e06b",
+      "snapshot": "sources/source_078.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_stage021_q_ruleset_config.py",
+      "bytes": 1670,
+      "sha256": "167bb5ef3bbf49bf032f2d140d23df39ea286e1662d10fa74f30e051580df18e",
+      "snapshot": "sources/source_079.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_stage037_ruleset_config.py",
+      "bytes": 1383,
+      "sha256": "e98ec5d0a07ae4d2e4a114e377554568fa094e14d3f67c9aaaa2bb825f0cd5a4",
+      "snapshot": "sources/source_080.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_stage78_config.py",
+      "bytes": 6901,
+      "sha256": "465b66263fe5f72988dbd4b026f8d2375118a274b8bfdd079a1eeb03e9c6ae91",
+      "snapshot": "sources/source_081.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
+      "bytes": 9805,
+      "sha256": "8dc173b93f48657f3d825d816353c350e39457cec8fcc1af8a4202878646aeff",
+      "snapshot": "sources/source_082.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "bytes": 492864,
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+      "snapshot": "sources/source_083.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_strategy_material_manifest.py",
+      "bytes": 10789,
+      "sha256": "6268fcdcda7adaa02b2fed13ce4ed0823e92e97080be61e4b11c08971c401646",
+      "snapshot": "sources/source_084.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_universe.py",
+      "bytes": 4781,
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f",
+      "snapshot": "sources/source_085.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+      "bytes": 61731,
+      "sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55",
+      "snapshot": "sources/source_086.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py",
+      "bytes": 6243,
+      "sha256": "826c7ac4e4da22cccd0fd1a4eddc4ae46326d6fbdd440ab94604bd311b9d6693",
+      "snapshot": "sources/source_087.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_backtest.py",
+      "bytes": 18496,
+      "sha256": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd",
+      "snapshot": "sources/source_088.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py",
+      "bytes": 25143,
+      "sha256": "07f2fc29747d18da8818178a5f41e9b92c3fce7504f0f8610077c6bce83368dc",
+      "snapshot": "sources/source_089.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py",
+      "bytes": 6157,
+      "sha256": "6a1b5080e1d62772aaea2460b31f73bd0afd24e5528ece08ae82bb64de280003",
+      "snapshot": "sources/source_090.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_stage298_stage78_1_risk_cluster_cap.py",
+      "bytes": 13014,
+      "sha256": "19c3df9b9e12daaa31552c9bfca1e85248290bd63ce824194c2d3656a97df124",
+      "snapshot": "sources/source_091.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation.py",
+      "bytes": 13836,
+      "sha256": "bd5f3e58b25ac00485644384a68c7693e79df85dd536be1072ccdcb1b3101fc4",
+      "snapshot": "sources/source_092.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/run_qmt_roll_stage318_supply_demand_headwind_engine_validation.py",
+      "bytes": 14419,
+      "sha256": "899d24a96d5f796742a781a3053163c19834c4abb02c88942bab4f9a463b35fc",
+      "snapshot": "sources/source_093.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_ai_product_suitability_walkforward.py",
+      "bytes": 35366,
+      "sha256": "7734d1768728a4e591b80e98da2b5bac90636904dad82e0fed5f331a6eb45de4",
+      "snapshot": "sources/source_094.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage324_true_combo_capital_margin.py",
+      "bytes": 23677,
+      "sha256": "653cf6149fd1503b05e11ebfb58e70b4d13c786156126e7f82741198c605fc02",
+      "snapshot": "sources/source_095.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage345_cross_sectional_momentum_satellite.py",
+      "bytes": 24326,
+      "sha256": "2571854ef57ce960d9a0554d9e5d47e3816acfa64eba033622ab3bfdc2b98d2e",
+      "snapshot": "sources/source_096.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage346_xsmom_integer_feasibility.py",
+      "bytes": 15759,
+      "sha256": "e4850f9d8fba0cc15d7898c8bbae8b49dd2403d28c8a74ce5d8fe2d1f303f8d6",
+      "snapshot": "sources/source_097.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage402_stage079_xsmom_volmanaged_true_integer.py",
+      "bytes": 30858,
+      "sha256": "8d8aed508111e74ffbb8db1fe28c606797ffdd888c28d7efd4fc8714b06f32b0",
+      "snapshot": "sources/source_098.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage403_stage079_xsmom_execution_margin_audit.py",
+      "bytes": 34551,
+      "sha256": "a9d16f0f9a34fa3c943d4380ea04e8bed61726a202d9917611aca436f8ab32fd",
+      "snapshot": "sources/source_099.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage450_minute_execution_equity_rebuild.py",
+      "bytes": 39516,
+      "sha256": "cb9b77458ef6c26d36691aaa02c236f1b073b6d32baf0c4c079a4dac15c7dfe5",
+      "snapshot": "sources/source_100.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage451_true_path_1455_vwap_replay.py",
+      "bytes": 25742,
+      "sha256": "0aeb4b2866a79ccf4a2518aa32b44f4526861d358cff0bfd1e9814550b53641e",
+      "snapshot": "sources/source_101.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage452_iterative_1455_proxy_backfill.py",
+      "bytes": 32026,
+      "sha256": "7f9900e2921c113e360b43496c196cda9c891b7318035bd32e47c1a33241a126",
+      "snapshot": "sources/source_102.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage501_asymmetric_entry_exit_execution.py",
+      "bytes": 29437,
+      "sha256": "2f7b2ffdb0310f19e11292687f17a1c0163bd3c821518d7eb8cfa61818ec9995",
+      "snapshot": "sources/source_103.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py",
+      "bytes": 21604,
+      "sha256": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+      "snapshot": "sources/source_104.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage503_next_real_open_risk_frontier.py",
+      "bytes": 16968,
+      "sha256": "a63dd782c1563ce2ab242f103e6206701d229b5fac273b1fe58698ce3e030c23",
+      "snapshot": "sources/source_105.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage504_next_real_open_fallback_backfill.py",
+      "bytes": 24778,
+      "sha256": "a521862ca99fc77ffef59b126dee27ac8aed0ffb945e7c8e063903eb2e3a9a25",
+      "snapshot": "sources/source_106.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage506_next_real_forward_risk_signal_frontier.py",
+      "bytes": 23539,
+      "sha256": "917875629945cd374b9787e8b97a5adba9f29112db4b5f764921a73a036892c0",
+      "snapshot": "sources/source_107.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage513_stage208_exact_position_margin_audit.py",
+      "bytes": 37805,
+      "sha256": "bdda0bf09ebfaddfa9cb5cd08f858336df210df1cd95b879bfd0cca0a85fd515",
+      "snapshot": "sources/source_108.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage516_margin_aware_sizing_frontier.py",
+      "bytes": 40470,
+      "sha256": "1433b188b07444da7d064f5e4ca547e02ad582315c53c06bbbb857ee9fa159d6",
+      "snapshot": "sources/source_109.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage517_portfolio_margin_deleverage_frontier.py",
+      "bytes": 29525,
+      "sha256": "07884d46228b1e28a06ed3ed5420b2632e00fd5a3fd1e80903790a1aace4352f",
+      "snapshot": "sources/source_110.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage519_product_margin_cap_frontier.py",
+      "bytes": 16293,
+      "sha256": "9a97cd6df4ed23e37b210dfcbccf87b542e20c70afd339144db75cb386eff9ba",
+      "snapshot": "sources/source_111.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage650_stage526_200k_capital_reality_check.py",
+      "bytes": 26014,
+      "sha256": "b5ab107a6679c8cb99ad4fce4de085cb590fd0de3792f46b2fee29419626fd10",
+      "snapshot": "sources/source_112.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage.py",
+      "bytes": 23634,
+      "sha256": "4766181a85d5105f6fa3fc340c77d73b5d694cd37b07e1017f68494fbf4ada82",
+      "snapshot": "sources/source_113.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage658_stage653_2026_ytd_shadow.py",
+      "bytes": 14551,
+      "sha256": "6be0319b404f87f67605282f27ac2b4afbd5cbd12ae06466b2482405d4054f14",
+      "snapshot": "sources/source_114.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage659_stage653_2026_ytd_latest_ai_shadow.py",
+      "bytes": 26541,
+      "sha256": "0512b3f848e99270f4fc135e24191c6de505746b5a55dbb15630759f6ab16e9c",
+      "snapshot": "sources/source_115.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage660_stage653_multiperiod_live_audit.py",
+      "bytes": 37174,
+      "sha256": "bbc61418abb611edcb04e44692020499d1841af1b7ea78287d60ecd50c3716ed",
+      "snapshot": "sources/source_116.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage707_recovery_all_cases_multiperiod.py",
+      "bytes": 26571,
+      "sha256": "d3d76b7fbe44b38a0b95d92109b16268f22f04d48eed8d148351f972edf9049e",
+      "snapshot": "sources/source_117.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage719_official_winner_trade_forensics.py",
+      "bytes": 34641,
+      "sha256": "24e6f7ff58086a36fb7ce5aea15e3965051c326b67089125e6a63b3979227954",
+      "snapshot": "sources/source_118.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage745_quarter_risk_no_streak_multiperiod.py",
+      "bytes": 13195,
+      "sha256": "14ea082e3c180d0cc8ea381926b22f79bcf1164caca3f84c236626b12dea0a78",
+      "snapshot": "sources/source_119.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage746_half_risk_no_streak_multiperiod.py",
+      "bytes": 13051,
+      "sha256": "8cb379b1cb8b2cd82b577ae154fd64bfb44fdbe50d2996c9700eccdb44dd628d",
+      "snapshot": "sources/source_120.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage748_half_risk_no_streak_500k.py",
+      "bytes": 22891,
+      "sha256": "ad781b018c18ff60606147d040a5fbf5bf4a93d8fd2f4ca8699083102370a560",
+      "snapshot": "sources/source_121.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage752_theoretical_winner_kline_atlas.py",
+      "bytes": 14856,
+      "sha256": "49901e9a192b4795278437d9eb770377b6fea01aa8d2976b26949d78bd2f2985",
+      "snapshot": "sources/source_122.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage754_entry_oi_change_winner_loser.py",
+      "bytes": 17548,
+      "sha256": "70e357d66b62af41c60ea6699e8fee8200a46f1d9e429c8babd7528b8c901b93",
+      "snapshot": "sources/source_123.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage757_c50_oi_confirm_risk_restore.py",
+      "bytes": 19095,
+      "sha256": "aa9c9c0529cc955b9a4b83369f09affcfac3049cf69d272114abcffda7ebabaf",
+      "snapshot": "sources/source_124.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py",
+      "bytes": 32998,
+      "sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+      "snapshot": "sources/source_125.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage777_am41_oi08_monthly.py",
+      "bytes": 22386,
+      "sha256": "9866109dcfcfc6d0e17b1dcfd79cb4c8e80795856d63d4c77230613a2e0acb7e",
+      "snapshot": "sources/source_126.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage778_stage777_2022_drawdown_forensics.py",
+      "bytes": 27587,
+      "sha256": "77d65d65343df02f9317747ef5f2f30c1f8471424ba4220b61f7f3bd3c81e2fc",
+      "snapshot": "sources/source_127.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage799_stage777_long_lower_high_block_2020.py",
+      "bytes": 15574,
+      "sha256": "3fc39c49006cbee85503adea5dce9436556fab0184d2e1698c2789e20123d18f",
+      "snapshot": "sources/source_128.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage800_stage777_long_lower_high_block_yearly.py",
+      "bytes": 20149,
+      "sha256": "45de71cc040bd9df089c1397071fe71a9314df7b92a665576f76aae67f267a2e",
+      "snapshot": "sources/source_129.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py",
+      "bytes": 19355,
+      "sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57",
+      "snapshot": "sources/source_130.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage813_stage804_rsi_partial_exit_ablation_yearly.py",
+      "bytes": 13863,
+      "sha256": "7aa31e325a3dcd47c17f8cd95d84d470f6ee6513b148b0d668d61134b9efbda8",
+      "snapshot": "sources/source_131.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage825_stage819_intraday_rule_forensics.py",
+      "bytes": 36245,
+      "sha256": "400fb94ff25b54c31c4c2f8204c1ee60d1788e24ee93a6be8a37c8a4d6e3f0fa",
+      "snapshot": "sources/source_132.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage826_stage819_intraday_ac_overlay.py",
+      "bytes": 53372,
+      "sha256": "bde3391b28b520f832ffac60528a1ad18c7a415f4431ad45edd0dbe63bea17b2",
+      "snapshot": "sources/source_133.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py",
+      "bytes": 27036,
+      "sha256": "9a63510355854349385c2309654101eb99432ddddf81c13636bc3dbbbde136f0",
+      "snapshot": "sources/source_134.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py",
+      "bytes": 28868,
+      "sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647",
+      "snapshot": "sources/source_135.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py",
+      "bytes": 34475,
+      "sha256": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+      "snapshot": "sources/source_136.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py",
+      "bytes": 53091,
+      "sha256": "05e774227a4d19eb7bdffc532a2e9a6c4d87c688f480e2bd0dabccf366c35f50",
+      "snapshot": "sources/source_137.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage861_stage860_full_visual_atlas.py",
+      "bytes": 28442,
+      "sha256": "276a40a417740c1d0417e76b5e34d566db6cd371b4f2dfc0d2f9b6423be1bc11",
+      "snapshot": "sources/source_138.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+      "bytes": 56165,
+      "sha256": "9ba78df489079967f8281c7667ad6ae3bc15099047564942424200f42a644105",
+      "snapshot": "sources/source_139.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/audit_qmt_roll_official_promotion_closure.py",
+      "bytes": 16791,
+      "sha256": "b560eea4dea2638d3ef4f1295f4950795227822354188fee08a229f9052018cf",
+      "snapshot": "sources/source_140.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/audit_qmt_roll_stage179_readonly_canary_qualification.py",
+      "bytes": 39637,
+      "sha256": "2f2aa818997ca9867fa00cdd379deab41e523555a3114f59670adbeca660c55a",
+      "snapshot": "sources/source_141.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py",
+      "bytes": 13999,
+      "sha256": "0b13e6797606a9f0206168493cb0a2c26dc924818c1a2f9a420036db8797b5d1",
+      "snapshot": "sources/source_142.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py",
+      "bytes": 8685,
+      "sha256": "22d18f920303279756c79748e518073eba2837511be7b8b0a177ddfa0c87f868",
+      "snapshot": "sources/source_143.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py",
+      "bytes": 25283,
+      "sha256": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4",
+      "snapshot": "sources/source_144.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "bytes": 29587,
+      "sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a",
+      "snapshot": "sources/source_145.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_official_strategy_material_release.py",
+      "bytes": 62597,
+      "sha256": "f8a4be765beac3802cc7a6a556969634444e15a9421c74c254f1aa580eb966c5",
+      "snapshot": "sources/source_146.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage065_top10_fu_formal_ai_bundle.py",
+      "bytes": 18658,
+      "sha256": "22e0ad793550a44051c73381ce5e4f2362101c3826360a0df8fdd68a591f096d",
+      "snapshot": "sources/source_147.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py",
+      "bytes": 19646,
+      "sha256": "4584e1e290138a10c9f5c3d0130f0070534e7ae831d55c45e4874f973dbfbedb",
+      "snapshot": "sources/source_148.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage179_activation_receipt.py",
+      "bytes": 8308,
+      "sha256": "215b7f934a570997f1542245efd97f4aefec763fed4556e7943fb2d8a99990fe",
+      "snapshot": "sources/source_149.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage179_production_qualification_bundle.py",
+      "bytes": 52291,
+      "sha256": "69ddbcff83542324f47b6fd075a93057738e22166388587d52ce8f7c65a86da7",
+      "snapshot": "sources/source_150.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
+      "bytes": 109166,
+      "sha256": "00e838d26e454173e75f58378887284715607b39e5c7f830511e3ca15b763096",
+      "snapshot": "sources/source_151.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage179_rollback_guard.py",
+      "bytes": 4919,
+      "sha256": "e0c105df8b9543c9e4ef34eee49cdf9d5ee5d43fc0433207f50fa2838908bf1f",
+      "snapshot": "sources/source_152.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage182_ai_product_pool_live_inference_runner.py",
+      "bytes": 22784,
+      "sha256": "ca15504e946e39fe6c5b0180e5bdf07bf38749973ceedd2085ba77480e3c9edc",
+      "snapshot": "sources/source_153.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/build_qmt_roll_stage183_ai_product_pool_source_refresh.py",
+      "bytes": 7427,
+      "sha256": "79fd8099ea7981b5c9757e390d2d320e3457bd3d482ef59b49ddc5164e5ac9a7",
+      "snapshot": "sources/source_154.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/contract_metadata.py",
+      "bytes": 3905,
+      "sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70",
+      "snapshot": "sources/source_155.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/ctp_execution_safety.py",
+      "bytes": 7019,
+      "sha256": "175efedcda135602261806587f818b569a243a29506b0090007d6e0537ec0951",
+      "snapshot": "sources/source_156.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/export_qmt_roll_stage372_official_shadow_events.py",
+      "bytes": 14229,
+      "sha256": "57ea03e9d71a679fdcee6004b208e79029363423f6c9c21f353aaffdda50c099",
+      "snapshot": "sources/source_157.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/install_qmt_roll_stage948_official_live_production.py",
+      "bytes": 115692,
+      "sha256": "99ff20a359db8ab45e6b8a08a81108fabe61dad2cce9f07590274b6293bccb24",
+      "snapshot": "sources/source_158.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/main_contract_mapping.py",
+      "bytes": 6948,
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503",
+      "snapshot": "sources/source_159.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/provision_qmt_roll_c9_launchd_directories.py",
+      "bytes": 7036,
+      "sha256": "6107eb42b5b547f49700e3fcfc4ede7d7b47bd958f4bd2e4d77a53803f6e6704",
+      "snapshot": "sources/source_160.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_alignment_portfolio_strategy.py",
+      "bytes": 52303,
+      "sha256": "70370c8ea1a3fa0b27d3ee7c64331e32a62aeddb91872d171129c6307694b8ed",
+      "snapshot": "sources/source_161.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_backtest_runtime_guard.py",
+      "bytes": 2857,
+      "sha256": "d0153d9fee1e1b91b8be553966b73c1713748e546c82a4206da612d78b1cf7eb",
+      "snapshot": "sources/source_162.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py",
+      "bytes": 15783,
+      "sha256": "828a7da2082837a9d493764de34d8f8e0eaac5c0d45ddd3689459f2f5fb24ac5",
+      "snapshot": "sources/source_163.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py",
+      "bytes": 7879,
+      "sha256": "a28cbdb7ecaeae5318dcf6ae5aabdd8cd29e1226ab1312cae9855c246fbe309f",
+      "snapshot": "sources/source_164.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py",
+      "bytes": 26081,
+      "sha256": "2c4782637c7fc977a5168e6e7e4aa0b4fa772779f55bded5635d952c753f510c",
+      "snapshot": "sources/source_165.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_ai_artifact_registry.py",
+      "bytes": 9818,
+      "sha256": "5850292a317aa940c7d47fba086e45b2a622df5ee92426d89429b3626a22a8d7",
+      "snapshot": "sources/source_166.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py",
+      "bytes": 4039,
+      "sha256": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975",
+      "snapshot": "sources/source_167.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_ai_path_damage_runtime.py",
+      "bytes": 4316,
+      "sha256": "441e84b463a25111f659c7c5ab71794fef68cf8e32552af9b6601dac5453d2cc",
+      "snapshot": "sources/source_168.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+      "bytes": 7670,
+      "sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494",
+      "snapshot": "sources/source_169.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage027_target_contract_history_config.py",
+      "bytes": 1317,
+      "sha256": "89eeb23235b606db62714935121e503f9f75fb6745dbd21d775569c134f028be",
+      "snapshot": "sources/source_170.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage028_delayed_rollover_config.py",
+      "bytes": 963,
+      "sha256": "955bdd0b0e8797cccde92f7133b5343a9ab2f8487b8d7a84669ecba9f6ad48f7",
+      "snapshot": "sources/source_171.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage032_long_range_stall_filter_config.py",
+      "bytes": 2124,
+      "sha256": "5aef597168891899ad367559671b403f2bcf02d13978c9e212c709b1eaa279f8",
+      "snapshot": "sources/source_172.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage033_ordered_drawdown_or_filter_config.py",
+      "bytes": 1004,
+      "sha256": "e7aae6f2d3d890834fa31136ed691a56e98d3a1ee00840b1f3f41ad2e0d4457c",
+      "snapshot": "sources/source_173.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage034_ordered_drawdown_4atr_config.py",
+      "bytes": 1027,
+      "sha256": "e77ddef5f664eb9d1a09e8fdea819a9659488f5e7ba850a05185bf4dd7e7be53",
+      "snapshot": "sources/source_174.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_candidate_stage037_short_mirror_block_config.py",
+      "bytes": 1692,
+      "sha256": "9f9ce7f782b4d299f68bbca7fc373e019798c980010d7d3d370297994a8489ae",
+      "snapshot": "sources/source_175.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_live_context_adapter.py",
+      "bytes": 25689,
+      "sha256": "38faae80cb196d04b9ea1232145b5b198d820a89c6fb796c700f73dc6ee38476",
+      "snapshot": "sources/source_176.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_ai_pool_policy.py",
+      "bytes": 6370,
+      "sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5",
+      "snapshot": "sources/source_177.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_baseline_identity.py",
+      "bytes": 4991,
+      "sha256": "1821c098c92997e0785c7592d00e6379aa9620aa721bf37442df300d9fe0c152",
+      "snapshot": "sources/source_178.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_candidate_stage777_config.py",
+      "bytes": 9957,
+      "sha256": "b7934ab7a54b033bb1b9a979f55c056571dad4c96aa95f229e51e6f6c93ae7e7",
+      "snapshot": "sources/source_179.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py",
+      "bytes": 10186,
+      "sha256": "25c1e9cdf3ee79c49c7772ffdac58317e83afabced36c145780d7cf0bdb5854d",
+      "snapshot": "sources/source_180.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py",
+      "bytes": 8864,
+      "sha256": "ef3e10f57eca5fd8e7f1d5dc9e01d8b392d2799c16c4f4d17f1b530e90ab36bd",
+      "snapshot": "sources/source_181.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py",
+      "bytes": 9344,
+      "sha256": "588e97e899f2291617fd935e474133a974da4088972e50a634ad0281e6edf83c",
+      "snapshot": "sources/source_182.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+      "bytes": 7093,
+      "sha256": "0d94f89a64a60162b465892e16acf564da74c9f03cfee047dcf455ae966f1f84",
+      "snapshot": "sources/source_183.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_authorization_lock.py",
+      "bytes": 3160,
+      "sha256": "591f685622a362607a102fab3dae675fe1cb8ca19cb63abbfff4bfc3ff8478b3",
+      "snapshot": "sources/source_184.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_account_snapshot.py",
+      "bytes": 16190,
+      "sha256": "df64c22d38a0dbf5a6478e4e9708137138317312d52ecb6a2f92ac0e84bf351f",
+      "snapshot": "sources/source_185.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_close_sizing.py",
+      "bytes": 16690,
+      "sha256": "2881d1208d937f8c13c651973db079ee8ce7116912f9a511bc80f4a451f29c6b",
+      "snapshot": "sources/source_186.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_open_date_seal.py",
+      "bytes": 37148,
+      "sha256": "7eb73490dbdbb588ce8bddec5a27a6d8dec99f8e5ee98ac47654db77d014e92f",
+      "snapshot": "sources/source_187.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_open_queue.py",
+      "bytes": 14329,
+      "sha256": "82f4b424413ff5bc6c473bfc814ff3bb1e1e9469b6254c3f6d23de968f08669f",
+      "snapshot": "sources/source_188.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_position_ownership.py",
+      "bytes": 28307,
+      "sha256": "1a4b6e3c1c6681791bd72f7c54d1b76e4ff9edc95dfaa55e8d47bfe2fd4c36c7",
+      "snapshot": "sources/source_189.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_broker_sizing.py",
+      "bytes": 9759,
+      "sha256": "48592b5ae67de6dd3d954b9f6230f9df309fcd3826d2d358a32fbce9b6accc59",
+      "snapshot": "sources/source_190.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_c9_intraday_state.py",
+      "bytes": 54596,
+      "sha256": "e7beedbc8a7ec1b7ca68838c200314907aeed5da65020181d236b1efb2561a85",
+      "snapshot": "sources/source_191.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+      "bytes": 21558,
+      "sha256": "82faa02ebf4f782d6e2e2c531eafac0f95b6f8d10c62253dcc16b8922db74ac5",
+      "snapshot": "sources/source_192.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_daily_data_receipt.py",
+      "bytes": 30335,
+      "sha256": "5d292f985e12a5114346e960d849962fb8df97e135419c76caa6a7ff1bd0a26d",
+      "snapshot": "sources/source_193.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_email_notify.py",
+      "bytes": 11125,
+      "sha256": "06a613c096b80ff6dd82ad6a96ee0695a952715875efb0f28db90a5c6ed2f355",
+      "snapshot": "sources/source_194.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py",
+      "bytes": 128886,
+      "sha256": "7a25e979ac5c984450849e5d7aa2c942af789d5e19dbc45a071fa4c7ee9aed19",
+      "snapshot": "sources/source_195.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py",
+      "bytes": 34721,
+      "sha256": "b04204a72b7c793ee971800b389bf3b1e263d09cdf17793b03e9303994ab9ed1",
+      "snapshot": "sources/source_196.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_failure_notify.py",
+      "bytes": 18027,
+      "sha256": "00d566d9c88e3a18095b92113c7ce07ab30598084b55724617e7c019ff9e6b3a",
+      "snapshot": "sources/source_197.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
+      "bytes": 117788,
+      "sha256": "d3d4d25b8080124279a178fd6f8b73e558ac00205651ce9accde1d2753508758",
+      "snapshot": "sources/source_198.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py",
+      "bytes": 36829,
+      "sha256": "77cd1057977fb6ac8e5d912bd1bb59d4bba1dcf6e10bad76f28988b69a40fd26",
+      "snapshot": "sources/source_199.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_launchd_surface.py",
+      "bytes": 24151,
+      "sha256": "7904f7c1590d287d0293b67f5b3beb3ec982269d83ce18105226a153600f3307",
+      "snapshot": "sources/source_200.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py",
+      "bytes": 3663,
+      "sha256": "79ec9cf3ca4c4421bd797a3811fa98762179f10f1a68cba4a2b9ce4b4b09b0a4",
+      "snapshot": "sources/source_201.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py",
+      "bytes": 5826,
+      "sha256": "f6574a39173e5e8185895c0ebceee1f0a8ce79f44e95463f16d066491ef0a064",
+      "snapshot": "sources/source_202.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_postclose_pipeline.py",
+      "bytes": 15292,
+      "sha256": "e7e88b67f935e0dbd89d60ea3641ba5597e4c82ba4ab8164b1c63739a5e8a490",
+      "snapshot": "sources/source_203.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_production_assets.py",
+      "bytes": 24031,
+      "sha256": "c160bed2bd307afb119d2e1e1a8eb079ce732479dce25ee3fed17425df9691ee",
+      "snapshot": "sources/source_204.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py",
+      "bytes": 19417,
+      "sha256": "b0be08db6b930f723c2606d1e7e8f2ef25ae977bd73e59da296f92c3ba8ada92",
+      "snapshot": "sources/source_205.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_runtime_profile.py",
+      "bytes": 6981,
+      "sha256": "8c5eec22c377d250511822b27721c15f3c3ca23e0c4a3b0adb092f2086f65a7b",
+      "snapshot": "sources/source_206.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py",
+      "bytes": 42986,
+      "sha256": "eddecc94f97ee0b848f72b4af76332f36bf6f64ac5ab8c5eaaf7ec089bd3c550",
+      "snapshot": "sources/source_207.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py",
+      "bytes": 13975,
+      "sha256": "972ed74f31b0343131f47345fdb5380eeaf37e06aa06a0af0d860f8204833ab9",
+      "snapshot": "sources/source_208.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py",
+      "bytes": 33322,
+      "sha256": "a0d9fa21af1cf5761b5ddba9b2813dc684c04251e1d61229843122bc5e035e7c",
+      "snapshot": "sources/source_209.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_tick_recovery.py",
+      "bytes": 69781,
+      "sha256": "4816aeb322fe7e9c98c9c60129de611c2c868597df6d4f6d3d93e2d6f15677ec",
+      "snapshot": "sources/source_210.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py",
+      "bytes": 32439,
+      "sha256": "7bf2ca5d90fd01445253f494bdf30d7d435125bdaa59955a3e8dfcd45534ac1d",
+      "snapshot": "sources/source_211.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_tick_types.py",
+      "bytes": 3883,
+      "sha256": "aa7143b86fd62ae69a57749848d1e104337f75569a635f826039ef179ca67345",
+      "snapshot": "sources/source_212.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_time.py",
+      "bytes": 4029,
+      "sha256": "ce66363cbc1838a0c7fb684d97e157ee66b652b007e617ac6a442d8fbc55a711",
+      "snapshot": "sources/source_213.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_live_trace.py",
+      "bytes": 33546,
+      "sha256": "6b17a1965d7afbf9116d2db20237ea88539ccce4f3aa762a1a4d8afc35146e5b",
+      "snapshot": "sources/source_214.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_pending_artifact.py",
+      "bytes": 14424,
+      "sha256": "8166444ac7f8768f6b4a418fd01fa822230ddebb4bed19fd0e88e1660cb2e06b",
+      "snapshot": "sources/source_215.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_stage021_q_ruleset_config.py",
+      "bytes": 1670,
+      "sha256": "167bb5ef3bbf49bf032f2d140d23df39ea286e1662d10fa74f30e051580df18e",
+      "snapshot": "sources/source_216.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_stage037_ruleset_config.py",
+      "bytes": 1383,
+      "sha256": "e98ec5d0a07ae4d2e4a114e377554568fa094e14d3f67c9aaaa2bb825f0cd5a4",
+      "snapshot": "sources/source_217.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_stage372_shadow_config.py",
+      "bytes": 2010,
+      "sha256": "7aa70be593304f08426160bf138af2bdc3379c10f81ad1c404ee66d16b432597",
+      "snapshot": "sources/source_218.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_stage78_config.py",
+      "bytes": 6901,
+      "sha256": "465b66263fe5f72988dbd4b026f8d2375118a274b8bfdd079a1eeb03e9c6ae91",
+      "snapshot": "sources/source_219.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
+      "bytes": 9805,
+      "sha256": "8dc173b93f48657f3d825d816353c350e39457cec8fcc1af8a4202878646aeff",
+      "snapshot": "sources/source_220.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "bytes": 491163,
+      "sha256": "982977374be58ece5c5ee351a0bf60d0d1e8e213b7c480cc47d46c84ab90b45c",
+      "snapshot": "sources/source_221.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_strategy_material_discovery.py",
+      "bytes": 10697,
+      "sha256": "03d4105fa59a561b7fded5bad3c35c88c905f8540047841ffd31a21e974349d3",
+      "snapshot": "sources/source_222.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_roll_strategy_material_manifest.py",
+      "bytes": 10789,
+      "sha256": "6268fcdcda7adaa02b2fed13ce4ed0823e92e97080be61e4b11c08971c401646",
+      "snapshot": "sources/source_223.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/qmt_universe.py",
+      "bytes": 4781,
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f",
+      "snapshot": "sources/source_224.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
+      "bytes": 97657,
+      "sha256": "8e0c3ad605c82b62d791e88388e88d8c6477f45c75ee20c4f8e7b8df34df0b2c",
+      "snapshot": "sources/source_225.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_ctp_stage608_readonly_tick_snapshot_probe.py",
+      "bytes": 127068,
+      "sha256": "7b3e54194aa6121f4311e066dfad94e2f8d77bf53019d7e16eebd9bc110ee0b2",
+      "snapshot": "sources/source_226.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+      "bytes": 61731,
+      "sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55",
+      "snapshot": "sources/source_227.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py",
+      "bytes": 6243,
+      "sha256": "826c7ac4e4da22cccd0fd1a4eddc4ae46326d6fbdd440ab94604bd311b9d6693",
+      "snapshot": "sources/source_228.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_backtest.py",
+      "bytes": 18496,
+      "sha256": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd",
+      "snapshot": "sources/source_229.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py",
+      "bytes": 25143,
+      "sha256": "07f2fc29747d18da8818178a5f41e9b92c3fce7504f0f8610077c6bce83368dc",
+      "snapshot": "sources/source_230.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py",
+      "bytes": 6157,
+      "sha256": "6a1b5080e1d62772aaea2460b31f73bd0afd24e5528ece08ae82bb64de280003",
+      "snapshot": "sources/source_231.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage260_stage78_1_simnow_daily_execution_gate.py",
+      "bytes": 30348,
+      "sha256": "f1aee69803652112ecdea438debb9612174983bc51dbce53d59fbae38ad86925",
+      "snapshot": "sources/source_232.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage298_stage78_1_risk_cluster_cap.py",
+      "bytes": 13014,
+      "sha256": "19c3df9b9e12daaa31552c9bfca1e85248290bd63ce824194c2d3656a97df124",
+      "snapshot": "sources/source_233.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation.py",
+      "bytes": 13836,
+      "sha256": "bd5f3e58b25ac00485644384a68c7693e79df85dd536be1072ccdcb1b3101fc4",
+      "snapshot": "sources/source_234.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage318_supply_demand_headwind_engine_validation.py",
+      "bytes": 14419,
+      "sha256": "899d24a96d5f796742a781a3053163c19834c4abb02c88942bab4f9a463b35fc",
+      "snapshot": "sources/source_235.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage902_official_live_phase_d_readiness_gate.py",
+      "bytes": 29089,
+      "sha256": "331bc19365ccd79b9e9abf37cf42d9ee9319b718b861fdab34749045cd8fc32a",
+      "snapshot": "sources/source_236.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage903_official_live_phase_d_controller.py",
+      "bytes": 85284,
+      "sha256": "7f5486bf41050e91a21cace6fb19feafa50327ef6bf2a107cf87bc1278d337df",
+      "snapshot": "sources/source_237.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py",
+      "bytes": 235324,
+      "sha256": "665dc68d26abf75bd53215cb46c2f19e6a9964b8e11276b27e3c34b5ced24b80",
+      "snapshot": "sources/source_238.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py",
+      "bytes": 92848,
+      "sha256": "e1fc40f00c0ed84f6e1e72dd2065681d87e9bcc25210184c9236df56b818f512",
+      "snapshot": "sources/source_239.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py",
+      "bytes": 24685,
+      "sha256": "81777056e8ad8980aeec2b3f524875ed2488d9f90ebb9b51dd895ba3e456b1f2",
+      "snapshot": "sources/source_240.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage909_official_live_shadow_refresh_gate.py",
+      "bytes": 19332,
+      "sha256": "bb461cef1038eb7f16df4483c14bc75c5ce8a5a4e470fd310f97799068495ff1",
+      "snapshot": "sources/source_241.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage911_official_live_kill_switch_manager.py",
+      "bytes": 6896,
+      "sha256": "6b78fe6c500960119edf7533d7bbd478a3a568bc181a52027efa8ea9e1328485",
+      "snapshot": "sources/source_242.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py",
+      "bytes": 27276,
+      "sha256": "d33b214a78b8a6f9c1bb809312da4708162cfe05a1626f02c0de6b6e4c8f4fea",
+      "snapshot": "sources/source_243.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage922_official_live_target_date_resolver.py",
+      "bytes": 15843,
+      "sha256": "a31fb3b1a5ca745ff0ff917a57643a77af51d4a0d51c13a2add8f43d92c01b14",
+      "snapshot": "sources/source_244.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage927_official_live_real_submit_arming_gate.py",
+      "bytes": 50195,
+      "sha256": "134c6cea5a43a335f079d5fe06980c780c99b61ee2b57cafda19c66c155626ac",
+      "snapshot": "sources/source_245.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage929_official_live_15w_timed_cycle.py",
+      "bytes": 79507,
+      "sha256": "083538839e99664f6ccd105ab5f01f3920c09a68c938e0d47a60a6b65f950b93",
+      "snapshot": "sources/source_246.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py",
+      "bytes": 244503,
+      "sha256": "bc56e80f0934595c9e440faae72ce9a01066d8a64ee6f9b4b79e17771cf7b6ea",
+      "snapshot": "sources/source_247.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage930_owned_child_guard.py",
+      "bytes": 5614,
+      "sha256": "ca23c61e8aebdf70015abe1cab61df8775576ed8d4593b4f1faa82eac1ceefb9",
+      "snapshot": "sources/source_248.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage930_supervisor_child.py",
+      "bytes": 389,
+      "sha256": "6b6ab170a861d9d01f42a5de0c12b943ba8aa8ad58f1c65883a5078ec8ecff59",
+      "snapshot": "sources/source_249.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+      "bytes": 646073,
+      "sha256": "48cb0caf188fd373afb713709a1a1115901d98e2040bff374fb55d913515fe55",
+      "snapshot": "sources/source_250.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage934_official_live_automation_health_check.py",
+      "bytes": 31599,
+      "sha256": "bb91c73465e015ed5f09cfea2dc2681a61e3c09cf62b7931b08dc23f45e3a528",
+      "snapshot": "sources/source_251.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py",
+      "bytes": 68073,
+      "sha256": "64b73b32291fba6afe9d461cd2a9e3f3ce4b11f739d981c31ce1599f9e4029f2",
+      "snapshot": "sources/source_252.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage941_official_live_c9_detector.py",
+      "bytes": 60246,
+      "sha256": "dc2be8b9d467bda96c4436eb2d9fe465a80ef60ef3411fd546e52c5a13d7a92e",
+      "snapshot": "sources/source_253.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py",
+      "bytes": 46204,
+      "sha256": "461c75afbfbbba038670d0c72e13a7fd0f39e9994f0434d7ec475ce2cc48c564",
+      "snapshot": "sources/source_254.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage946_official_live_production_health_check.py",
+      "bytes": 37244,
+      "sha256": "109970eac3cccd178129866d7797da581f6fdfb315f05fc5504a70de74fb4de1",
+      "snapshot": "sources/source_255.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/examples/portfolio_backtesting/run_qmt_roll_stage947_official_live_production_support_launcher.py",
+      "bytes": 48031,
+      "sha256": "40b9f1532341ff50f50111811bfde52d36d1e5c884fb745cdcb2b9aaafc4dd3d",
+      "snapshot": "sources/source_256.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/stage179_performance_gate.py",
+      "bytes": 34519,
+      "sha256": "83f769ec167238a05d641c9e3c70c99d51fcd59e635ce9804ac01571cff24ed7",
+      "snapshot": "sources/source_257.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_ai_artifact_registry.py",
+      "bytes": 3390,
+      "sha256": "c702e52d6ee49a578a151b854430e54b493f387bc981a5149597492aa5103406",
+      "snapshot": "sources/source_258.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_baseline_identity.py",
+      "bytes": 5440,
+      "sha256": "c6e089aabd7dd30012f8a1100913cc57cf9616e9afea6b6232ef99819bab252c",
+      "snapshot": "sources/source_259.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_account_snapshot.py",
+      "bytes": 21654,
+      "sha256": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec",
+      "snapshot": "sources/source_260.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_close_sizing.py",
+      "bytes": 15579,
+      "sha256": "935de2a0a016d82a3beb6f6604fbf9149986810e9d67aa5dfe49aebc1d7ab96e",
+      "snapshot": "sources/source_261.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_open_date_seal.py",
+      "bytes": 34451,
+      "sha256": "2b5ed54d2ae0edfb484c0636de18e33db3bd8aa4c14dbfd0b8072e4491df2acc",
+      "snapshot": "sources/source_262.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_open_queue.py",
+      "bytes": 8629,
+      "sha256": "02ddcdc3590e00e65e7c7015a760d3009bfa8e69b160ae883b291c4ac08898b6",
+      "snapshot": "sources/source_263.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_position_ownership.py",
+      "bytes": 46370,
+      "sha256": "38b221203cc7b5c2ace5bb88a75e5cf86e62406cb7ef7e28c5ed087a06e7c531",
+      "snapshot": "sources/source_264.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_broker_sizing.py",
+      "bytes": 6271,
+      "sha256": "f46907ee6f00543b32a61429e8684198420f2ba2d15ebf80c44e9185ed5e3160",
+      "snapshot": "sources/source_265.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_c9_detector.py",
+      "bytes": 57424,
+      "sha256": "7c5c62d82aa109f6c95c272d50e7fbe736a2287d77118cc4b130d1f4bd7b6600",
+      "snapshot": "sources/source_266.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_c9_intraday_state.py",
+      "bytes": 27915,
+      "sha256": "4547a71e6a7a20376792b67b65febcfcc177da44b8939e7dc71a7eced02b0012",
+      "snapshot": "sources/source_267.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_config_import.py",
+      "bytes": 18523,
+      "sha256": "82e430ffd858c0d491d745a0bda9d97004bc8c2c40aba95982af7b6dedd00ffd",
+      "snapshot": "sources/source_268.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_execution_ledger_cycles.py",
+      "bytes": 121513,
+      "sha256": "4df39dae32faad853548d6ee38437650333a1069059d9ac4bfc07d8b1c06cd6f",
+      "snapshot": "sources/source_269.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_failure_notify.py",
+      "bytes": 21804,
+      "sha256": "4fe5294f8bf57c8f38f55baf2c7dc5f4bf2e52d42a9a19b561a6c3b217a7cabc",
+      "snapshot": "sources/source_270.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_intent_spool.py",
+      "bytes": 77311,
+      "sha256": "4b7e2373506a1ad192e97bdf96521de4ba566bfcdaf08681e1007168a8569d45",
+      "snapshot": "sources/source_271.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_late_retry_fill.py",
+      "bytes": 24561,
+      "sha256": "23fc14738e5a3b6dccb318c84cd58dbc19157f7b7ba9949b0d11c5d50f811b82",
+      "snapshot": "sources/source_272.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_live_postclose_pipeline.py",
+      "bytes": 11575,
+      "sha256": "f0cdd3cfd469ab7399a737df3aa58d454af2e61286be2b0269c961d9cf8bb15f",
+      "snapshot": "sources/source_273.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_promotion_closure.py",
+      "bytes": 11175,
+      "sha256": "eeae0c43e052b08b19c170fcdb6272e5cfdd027e55d2223789ea56856e62fc83",
+      "snapshot": "sources/source_274.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_stage037_ruleset.py",
+      "bytes": 2717,
+      "sha256": "60861e55195e1ed3fb5dca123dba7464555fe050dcac36d4266c3235340ab5e5",
+      "snapshot": "sources/source_275.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_strategy_material_release.py",
+      "bytes": 27182,
+      "sha256": "4aabcaf6d90c46d2647b8f6b65ac1dde7f8924ed57409709d1c1d28e0adaebbe",
+      "snapshot": "sources/source_276.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_official_strategy_material_resolver.py",
+      "bytes": 5561,
+      "sha256": "ed4103994f688d26b7cb284883248cbd1129a2f89f8b266a0c271ed7292fc30b",
+      "snapshot": "sources/source_277.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_sent_open_reconciliation.py",
+      "bytes": 18056,
+      "sha256": "5ca0e6f37c483509303c07b5b925dd3d7187b33028b50d5be36c7445746e5a71",
+      "snapshot": "sources/source_278.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage065_top10_fu_formal_ai_bundle.py",
+      "bytes": 9812,
+      "sha256": "dee321b1c3f1100497bea785d4555c2aba757ed797744037d13724c33fbc264e",
+      "snapshot": "sources/source_279.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage174_query_bundle.py",
+      "bytes": 35611,
+      "sha256": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+      "snapshot": "sources/source_280.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_activation_receipt_builder.py",
+      "bytes": 9608,
+      "sha256": "81d726eeec0b243fda10a841d42822f6da460f06787fe4ce904754b0cebceb5d",
+      "snapshot": "sources/source_281.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_c9_launchd_directories.py",
+      "bytes": 2148,
+      "sha256": "f9c374ab34ac21f024a5d528a97b76266da4508cbb70daa710c1115487102469",
+      "snapshot": "sources/source_282.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_executor_serve.py",
+      "bytes": 100774,
+      "sha256": "9a81ab1a26d39f2a6e36632964a3e5997159e1cc78808dab5e59b647d38003d8",
+      "snapshot": "sources/source_283.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_fault_matrix.py",
+      "bytes": 12914,
+      "sha256": "c568bdda840dc801e9f6fa4f80945f04ecf8a051403392f9bed6deec6e0bbe5b",
+      "snapshot": "sources/source_284.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_launchd_lifecycle.py",
+      "bytes": 26955,
+      "sha256": "a24fd81b08bbd0fa78e7ee8c1579f31783df4990f5091bd1224b802232333990",
+      "snapshot": "sources/source_285.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_official_execution_profile.py",
+      "bytes": 5064,
+      "sha256": "a57e127aaf066cf8cb6e2ac2800387894cb23d5ddb3a40e6ca827e266bf36ef5",
+      "snapshot": "sources/source_286.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_performance_gate_diagnostics.py",
+      "bytes": 13223,
+      "sha256": "1c8d68a355fde05c8ebde1dc80d68da6a676ff60dd8dd089651876782c269d4e",
+      "snapshot": "sources/source_287.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_production_assets.py",
+      "bytes": 51777,
+      "sha256": "ef9b27d7152e1e7cf618781848496ec498e8e5178bfb471aaa6cf5ef85de4ab2",
+      "snapshot": "sources/source_288.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_production_performance_gate.py",
+      "bytes": 2225,
+      "sha256": "7050af86feee9f7128da66df18749d769e302fcf3f002fbf10fd57d920cc5348",
+      "snapshot": "sources/source_289.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_readonly_canary_qualification.py",
+      "bytes": 29274,
+      "sha256": "a186238c43dcfc16b3e55480a02ccb7717f400e33785aba4a14b9249c77fb469",
+      "snapshot": "sources/source_290.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_release_manifest.py",
+      "bytes": 97842,
+      "sha256": "884893c2a6b8a065b5b082dd8f6c706fdafed3fbc50f4663a1602cf736b0b58c",
+      "snapshot": "sources/source_291.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_stage260_execution_profile.py",
+      "bytes": 16300,
+      "sha256": "8dad1a6454c5c0c54991fb186e3e0c79be04403f617c0a4d366e37d53a1d5645",
+      "snapshot": "sources/source_292.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_stage372_daemon_boundary.py",
+      "bytes": 15015,
+      "sha256": "956e913bd0f3c6093fdf67e16aaf5883f32541609146468eef80bde51b2cb29b",
+      "snapshot": "sources/source_293.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_stage372_daily_intents.py",
+      "bytes": 6267,
+      "sha256": "4b44d33814292838f3c408b6cfc81dde3146d8b1d2306b31743b07b42f6cac55",
+      "snapshot": "sources/source_294.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_stage372_shadow_precompute.py",
+      "bytes": 11325,
+      "sha256": "6a2212ac81247d58737358f21fefd847397cf4b99ddeab80781ebbf77dd0c1e2",
+      "snapshot": "sources/source_295.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_stage372_submit_boundary.py",
+      "bytes": 2467,
+      "sha256": "7d9389b576e2a7dd71ca6091bbba5d9eb70abe17c9676704834e04cecba03a71",
+      "snapshot": "sources/source_296.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_submit_authorization.py",
+      "bytes": 31365,
+      "sha256": "31175d7e40f4cdfc8ee28fad7e3aa74de3750d3c1cec3c9312352adf47f3d33e",
+      "snapshot": "sources/source_297.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage179_two_executor_process_race.py",
+      "bytes": 15687,
+      "sha256": "510a4430c2ae7c98e616562809f3b6b866a348ce60bc98212aaa5c75d71a4bca",
+      "snapshot": "sources/source_298.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage608_continuous_tick_stream.py",
+      "bytes": 370672,
+      "sha256": "098b238f2a586df0f9e2e1c377a0adfcf2cd2701a82848538efc8aef4cb0532d",
+      "snapshot": "sources/source_299.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage901_broker_whole_epoch_alignment.py",
+      "bytes": 6711,
+      "sha256": "7acfcf12b660a288242c3f794557182ef0e106958912d58ca74c398d38fd63fc",
+      "snapshot": "sources/source_300.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage901_official_ai_pool_policy.py",
+      "bytes": 11797,
+      "sha256": "f7f93f425936a836f65dfe52261ac28f23f0a64ccee33af7fdf5c55ec55196a4",
+      "snapshot": "sources/source_301.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage904_durable_state_integration.py",
+      "bytes": 207872,
+      "sha256": "906c163ce9420400123a623cb0cf388b8ba6b9ef1a91f0ed72703d3688c51510",
+      "snapshot": "sources/source_302.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage905_broker_sizing.py",
+      "bytes": 13699,
+      "sha256": "20a2a01b7ddea812e39cbc188dc6a662e81ddb13df68ed4e7db56484ef403866",
+      "snapshot": "sources/source_303.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage905_c9_cycle_intents.py",
+      "bytes": 70970,
+      "sha256": "fc8f7bbcdbfe0f84c53ff4e39acc6c295be842c55f676a80b2872268f20b0fd8",
+      "snapshot": "sources/source_304.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage907_readonly_refresh_gate.py",
+      "bytes": 6011,
+      "sha256": "9f882749cc724ec091b342009d2e0ee0157533972a7f96c5e2f86425aae0771e",
+      "snapshot": "sources/source_305.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage927_scope_permits.py",
+      "bytes": 17873,
+      "sha256": "9c99fb6046af2d3b17e10df677277935b0c8a6431057e6d25b7da788f19be7d9",
+      "snapshot": "sources/source_306.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage929_official_ai_pool_policy.py",
+      "bytes": 4201,
+      "sha256": "cd97d81d8a4804d327f06b528601c4e9266844c59802e617cd185ee23535d6bc",
+      "snapshot": "sources/source_307.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage930_fast_lane.py",
+      "bytes": 173926,
+      "sha256": "b15c396d7a65d383030d24aac76a5c7d36bc0cf8c5e4cfcdbc8a390791838fad",
+      "snapshot": "sources/source_308.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage930_persistent_authorization.py",
+      "bytes": 16050,
+      "sha256": "79732ef1fefaf6e038ed9d80e492883b577f1a846acdb636de1e13ef78b1d1a8",
+      "snapshot": "sources/source_309.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_authorization_guard.py",
+      "bytes": 18324,
+      "sha256": "700cc799edde61b481096f991ed911c71788d0162980bbff730b6e38934c93cd",
+      "snapshot": "sources/source_310.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_broker_open_date_seal.py",
+      "bytes": 70504,
+      "sha256": "f13f9d80e1df7f9196f3319039613953277bea03d741724afbaf544e9909947a",
+      "snapshot": "sources/source_311.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_broker_sizing_gate.py",
+      "bytes": 53861,
+      "sha256": "0d85b016418f568a896b7e69b6aa06bb07494616774889bb6d040a6e96c233be",
+      "snapshot": "sources/source_312.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_ctp_readiness.py",
+      "bytes": 82335,
+      "sha256": "0c815467234281b8dab96851a003892e6a572797a7191b8f8c1ad091726df6c1",
+      "snapshot": "sources/source_313.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_post_reprice_final_gate.py",
+      "bytes": 55984,
+      "sha256": "3ee71fbc95494fc09f0208c6c763833e76f731840f5a86b3a15c7fe9fe453906",
+      "snapshot": "sources/source_314.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage931_trade_fill_accounting.py",
+      "bytes": 115951,
+      "sha256": "2bb10d4d84bf4ac7d7476715ad9330a4f54c1a1643564a3d7baa5405f912d0c1",
+      "snapshot": "sources/source_315.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage934_readonly_health_check.py",
+      "bytes": 14551,
+      "sha256": "1a6669fece862e7d308a128f0b62d9416502dc1a838fb1c591c39e4080efea3b",
+      "snapshot": "sources/source_316.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage935_ai_pool_path_consistency.py",
+      "bytes": 61278,
+      "sha256": "98b6edfe527c2df0a6813da0fd96fbdd70029fb1fb74e24ee1ea27008653e6a8",
+      "snapshot": "sources/source_317.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage941_broker_sizing_queue.py",
+      "bytes": 2636,
+      "sha256": "3d210fe822249f552d88f3456536f6b3d3c462c9950929accbb231c212b70771",
+      "snapshot": "sources/source_318.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage945_production_launcher.py",
+      "bytes": 53138,
+      "sha256": "41b8b0aa64f47c26039719b5e848c79316a1b020eea4f7b29d7bf23068985c09",
+      "snapshot": "sources/source_319.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage946_production_health_check.py",
+      "bytes": 15004,
+      "sha256": "e127422b44c8f5dc860dd66fdd7dc73747de3a3b88456744c47f3b0b9c3b5116",
+      "snapshot": "sources/source_320.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage947_production_support_launcher.py",
+      "bytes": 80848,
+      "sha256": "4999e5bff785369d14d46962286943addca2f24f4704a2f3824d9775c1d7bddb",
+      "snapshot": "sources/source_321.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_stage948_production_installer.py",
+      "bytes": 47741,
+      "sha256": "c6edab942b3cb48cf5c3e0d565b38602439cfda4693a49220979f392ac799662",
+      "snapshot": "sources/source_322.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_strategy_material_discovery.py",
+      "bytes": 3859,
+      "sha256": "ef23c879a816db6a702abf49e5fa6e07fa994a7ea8792863c14663bcf7a189bb",
+      "snapshot": "sources/source_323.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/tests/test_strategy_material_manifest.py",
+      "bytes": 3764,
+      "sha256": "bcc5649af7d569007d27007c3d58fd96fbfb876aac8530091ce476bf055696d5",
+      "snapshot": "sources/source_324.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/event/__init__.py",
+      "bytes": 119,
+      "sha256": "81752eb9db5a9e9bdf7024f9a8821cf569c5994eceff9194a6ecd725dc8ed365",
+      "snapshot": "sources/source_325.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/event/engine.py",
+      "bytes": 4239,
+      "sha256": "079c76f3c99ed4dc1e28dd0ba9a30991f41bfd613c9ab30b1fa0ea6f1da6b76b",
+      "snapshot": "sources/source_326.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/app.py",
+      "bytes": 711,
+      "sha256": "53d6b0a85b76500edc303a04e6570ba3f70c8f81ccf49ef1a170e64b510e08cb",
+      "snapshot": "sources/source_327.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/constant.py",
+      "bytes": 4425,
+      "sha256": "1361eb485eda9fd97bee3e68324d9b08a96fe927c37a99f8b74de981141e7a0f",
+      "snapshot": "sources/source_328.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/converter.py",
+      "bytes": 14119,
+      "sha256": "781945b204d7d2c7463ea08c990ec8f9cdba46b5ec924fa7d11b5e2f428c14d9",
+      "snapshot": "sources/source_329.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/database.py",
+      "bytes": 3566,
+      "sha256": "3b4f9308ed5580784f887bc6d761a16074c15f98eae422bc67a026024206201f",
+      "snapshot": "sources/source_330.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/engine.py",
+      "bytes": 20859,
+      "sha256": "4f07d926c14cf9f76f94c1b7460cf72632567e9238989289ec99c0d5642a5391",
+      "snapshot": "sources/source_331.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/event.py",
+      "bytes": 302,
+      "sha256": "44e1b191103d8973e8b4973369d48c4a62cabcbb8b11a4a7f26dd2c73809dc2f",
+      "snapshot": "sources/source_332.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/gateway.py",
+      "bytes": 7678,
+      "sha256": "a0b21be7d4661b47fac96a5d04fc827833c54b9b735b86331ca56e7e6d983cf7",
+      "snapshot": "sources/source_333.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/locale/__init__.py",
+      "bytes": 240,
+      "sha256": "3138d59a9d7bf99cdcc683778e402f0dd7fabcf9698c3ec2820e44508ac0661c",
+      "snapshot": "sources/source_334.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/logger.py",
+      "bytes": 1117,
+      "sha256": "5577305c5b301e279c616d94ffa40e427d522665e6767107eeb9caa252d21f73",
+      "snapshot": "sources/source_335.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/object.py",
+      "bytes": 10512,
+      "sha256": "bd360fc224ce22a3f7521bef67ea61125d43c410fa880b9667030ee254546a69",
+      "snapshot": "sources/source_336.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/setting.py",
+      "bytes": 912,
+      "sha256": "a8a364ba894c0f9cfc277dc07986664803db1c0935455ba57d6dca951537f5f1",
+      "snapshot": "sources/source_337.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/vnpy/trader/utility.py",
+      "bytes": 40866,
+      "sha256": "1eb6b82a90663581eab092b3b371cec63e539c33db4ca67b02f905d837480f7b",
+      "snapshot": "sources/source_338.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage012_independent_review/review_actual_batch.py",
+      "bytes": 9013,
+      "sha256": "32749a341b866bb6afad4cc479563be3955f94cd326de8900910c0e334a8ec9e",
+      "snapshot": "sources/source_339.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage022_qualified_wait/source_stage001_original.py",
+      "bytes": 40885,
+      "sha256": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+      "snapshot": "sources/source_340.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage029_independent_delivery/request_d9bd8bda7ffa8f9e11560ed7ceccdf58fb49fb1dd8c23a00bb448474708f79ff/review_delivery.py",
+      "bytes": 13440,
+      "sha256": "a4ae0ed8406654a57ec3ff3e10a84baf2677319d048edb84cd51f3e908de7aee",
+      "snapshot": "sources/source_341.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage036_b_ts_account/B_TS/runner_used.py",
+      "bytes": 57506,
+      "sha256": "34563257e25e49b19c9631e06cd9107fc26cfd954713739e01a1bf67d574ff43",
+      "snapshot": "sources/source_342.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage039_independent_delivery/review_local_delivery.py",
+      "bytes": 18287,
+      "sha256": "695eaa41b5b8e7b45b5d0677ecc7e33d6727a0199669628d24b11cb7d7e727bb",
+      "snapshot": "sources/source_343.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage042_exact_daily_review/review_exact_daily.py",
+      "bytes": 10096,
+      "sha256": "69225d3e8114e455b04eade5ca443bc2880a7f7341e145d3f6f04849624e5ad3",
+      "snapshot": "sources/source_344.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage043_exact_request_delivery/review_provider_delivery.py",
+      "bytes": 14833,
+      "sha256": "373493d9eb50647063044e53c2c669584f237345cf2a8edf8f5d0d282c1b1d54",
+      "snapshot": "sources/source_345.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage001_run_first_screen.py",
+      "bytes": 40885,
+      "sha256": "928df4baae38548ba54126efc157d04174cec1bbe641cdb5e7be38cfd26969d4",
+      "snapshot": "sources/source_346.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage002_local_minute_overlay.py",
+      "bytes": 19689,
+      "sha256": "33a30bc1e8f4f970532382da46c2bda790dfb6baac8beeca65abd759a6af50a3",
+      "snapshot": "sources/source_347.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage007_tqsdk_stream_probe.py",
+      "bytes": 15912,
+      "sha256": "a4b869b69da9b6580a5a291499cb829d2dd7407467db11eea5c2c93baa3486dc",
+      "snapshot": "sources/source_348.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage011_needed_local_completed.py",
+      "bytes": 22708,
+      "sha256": "e65f3696505f31490913af16909cc9d1f5fd74308b05a7a1e3dd242e37ee3488",
+      "snapshot": "sources/source_349.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage012_provider_batch.py",
+      "bytes": 18088,
+      "sha256": "6c2d949f2c38baded87fea4904af1bf7a01d1a4050b16ecb15d8d97c66c8e155",
+      "snapshot": "sources/source_350.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage013_missing_daily_recovery.py",
+      "bytes": 19494,
+      "sha256": "2b8ad6b843ada5c214c447429f8ae01a7eb3d0f4e9abedc9195e9bb8549dcb17",
+      "snapshot": "sources/source_351.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage015_daily_recovered_minute_delta.py",
+      "bytes": 18042,
+      "sha256": "4f31ccb1ecf26ea83a21c073abff3e50afbea168d4af694451068122471a0bc4",
+      "snapshot": "sources/source_352.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage016_source859_qualification.py",
+      "bytes": 24729,
+      "sha256": "a80ddf355ed9f0ea1f44eb56d7a2dfe16e60f4a509cff49162a2beb3bd20cd3f",
+      "snapshot": "sources/source_353.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage017_required_ap210_batch.py",
+      "bytes": 16707,
+      "sha256": "0e3da2f00677f4d6d9f722f44e92a86d404383d6e7b8de05c66b7ab4c5192f14",
+      "snapshot": "sources/source_354.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage018_provider_wait_budget.py",
+      "bytes": 13833,
+      "sha256": "f48d2d0d5754451b19700a8e7038a0bf5f756006fcb630f3b576eda16e49c16c",
+      "snapshot": "sources/source_355.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage019_normal_latest_batch.py",
+      "bytes": 20895,
+      "sha256": "5d8c6e5ca9d381ad68ab744ca21bde48b75651eb44cf425e2205303c24bc1ad4",
+      "snapshot": "sources/source_356.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage020_reviewed_provider_overlay.py",
+      "bytes": 17119,
+      "sha256": "bfdbf762a279ad581e566b49cd2714696a18623d7f5c4efd814cf915b4057ee4",
+      "snapshot": "sources/source_357.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage021_blocking_data_gate.py",
+      "bytes": 13115,
+      "sha256": "150dd70a264f360046f6d633829a4dff9a81c371c34bad6288e41a081bbb498b",
+      "snapshot": "sources/source_358.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py",
+      "bytes": 60111,
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c",
+      "snapshot": "sources/source_359.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage023_request_provider.py",
+      "bytes": 21146,
+      "sha256": "6d056953e6e200435b3c75a02ca7922883db9402b2bbb1c72b242f296adeff34",
+      "snapshot": "sources/source_360.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_engine.py",
+      "bytes": 13613,
+      "sha256": "f7d7450495bb09407dc85ce6fe73fd700b2732a2e57dc8f6185abf199967af23",
+      "snapshot": "sources/source_361.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage028_ordered_strategy.py",
+      "bytes": 14012,
+      "sha256": "d4f870355796c98625031f233dfba31f97db10422c894076acf436279f141c48",
+      "snapshot": "sources/source_362.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage029_ordered_request_provider.py",
+      "bytes": 21155,
+      "sha256": "8330c62ce8de9ea4704d255faffa231177c80a9b8a47d14e0e97504b1b236c99",
+      "snapshot": "sources/source_363.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage031_run_ordered_checkpoint.py",
+      "bytes": 56966,
+      "sha256": "3af932bdbde9ae607c507ff8630dde0a0b03f190ca88be94fa43ce5910b0b860",
+      "snapshot": "sources/source_364.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_pricing.py",
+      "bytes": 25106,
+      "sha256": "d45e8a5b4b7503a33c137df7decbd56947c2d1df77b7c73c5e7524326ae1018f",
+      "snapshot": "sources/source_365.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage035_b_ts_strategy.py",
+      "bytes": 11298,
+      "sha256": "fc357eb4a44a384d816acaff5fadaa99d91dfc7f8ec8fbd22954c9ca3837b09e",
+      "snapshot": "sources/source_366.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage036_run_b_ts_checkpoint.py",
+      "bytes": 57506,
+      "sha256": "34563257e25e49b19c9631e06cd9107fc26cfd954713739e01a1bf67d574ff43",
+      "snapshot": "sources/source_367.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage037_b_ts_request_provider.py",
+      "bytes": 21144,
+      "sha256": "19c9a83e83f2d69b70446cd49a8c84201c44e65a4f20380b0aaa8698ca2786d1",
+      "snapshot": "sources/source_368.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage040_exact_request_daily_recovery.py",
+      "bytes": 16866,
+      "sha256": "32ddecd055d7bb52b8d7f68ab8f1c5d3023ce0943f47045620b254d4e09cc820",
+      "snapshot": "sources/source_369.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage041_exact_daily_request_provider.py",
+      "bytes": 28238,
+      "sha256": "e4320208cc70d25959db7f66b80518ac0f6ceaaf3e6a61a97bdfc23f008bfa0d",
+      "snapshot": "sources/source_370.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage045_exact_request_resolver.py",
+      "bytes": 26109,
+      "sha256": "597551c51a021f763318086e4e3084bd5a54aa03abb8d4b038f63d131f8d02df",
+      "snapshot": "sources/source_371.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage046_original_provider_delivery.py",
+      "bytes": 15020,
+      "sha256": "d0c1fb55b681ad3113a215cba1964e84eaff7c617875ef71ec27f9db018fe65b",
+      "snapshot": "sources/source_372.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage047_multi_exact_request_resolver.py",
+      "bytes": 16801,
+      "sha256": "84f9ca450ec8854a3ae75d64f2eb152f0fb396d1ff1c2232cfe223084801b950",
+      "snapshot": "sources/source_373.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage048_general_provider_delivery.py",
+      "bytes": 16954,
+      "sha256": "3b220aadeb1e8091a35d84624b643c3a0b276c6e3f4be9874293a9abaecd785a",
+      "snapshot": "sources/source_374.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage051_generic_exact_daily_recovery.py",
+      "bytes": 20606,
+      "sha256": "89a2de7464f4b30eb3b3887ac265ca5433c7288fafcb117802072360c6a6228a",
+      "snapshot": "sources/source_375.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage052_generic_daily_source_resolver.py",
+      "bytes": 34167,
+      "sha256": "5b2772c700f0ddabb5536df4be1bfe1f70e07d8fea43400abfa74c66ae727b78",
+      "snapshot": "sources/source_376.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage061_accepted_wait_delta.py",
+      "bytes": 30535,
+      "sha256": "3570427b8d1543a7fc7dc14e3fb17978f394fb4864b809e85d75fa6609b5a73a",
+      "snapshot": "sources/source_377.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_account_checkpoint.py",
+      "bytes": 28541,
+      "sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99",
+      "snapshot": "sources/source_378.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_pairwise_off_policy.py",
+      "bytes": 6964,
+      "sha256": "edaa018cebe288245197dcb8b4bfba76e2a1c1691cf24c7de369a91bc62a639f",
+      "snapshot": "sources/source_379.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+      "bytes": 35215,
+      "sha256": "1717f2ef30d098f4e503906c032f9b6ddac7aa9b968ae072b60b32b86b0725fb",
+      "snapshot": "sources/source_380.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage071_source859_isolation.py",
+      "bytes": 6012,
+      "sha256": "12580b91d0e264ac4f63807679742cbbc67c8cb03e66dd42343cf9b72c26fe27",
+      "snapshot": "sources/source_381.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py",
+      "bytes": 16901,
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46",
+      "snapshot": "sources/source_382.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py",
+      "bytes": 52684,
+      "sha256": "73c8957f577908b322387aa65a547bd3dc25c6d40e211718bba99fa3f176a3b1",
+      "snapshot": "sources/source_383.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+      "bytes": 40131,
+      "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f",
+      "snapshot": "sources/source_384.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage021_blocking_data_gate.py",
+      "bytes": 9238,
+      "sha256": "224f734e691383a8b3ecf5c153f4f2d9dc3893b583b989cd330c02c53c885f48",
+      "snapshot": "sources/source_385.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage065_pairwise_off_integration.py",
+      "bytes": 49449,
+      "sha256": "ffba7e347075cc966a71f3177e5f853eb4ea13062963ff74b2b37f93639d0719",
+      "snapshot": "sources/source_386.bin"
+    },
+    {
+      "source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage098_checkpoint_metadata_fix.py",
+      "bytes": 11022,
+      "sha256": "e581f47c4a1c5008487a99d080e7c2c4a8481c1c9a652930808510894e3b67d9",
+      "snapshot": "sources/source_387.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/__init__.py",
+      "bytes": 2237,
+      "sha256": "e4853e277786e8c359942f74c62d7eac81355b54a31ae8f06a0be812301fe04b",
+      "snapshot": "sources/source_388.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/backtesting.py",
+      "bytes": 34265,
+      "sha256": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2",
+      "snapshot": "sources/source_389.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/base.py",
+      "bytes": 256,
+      "sha256": "e2cebc5a8648143a5492c07283b96286f13cbc788386f4f41bcfffe31c1466ca",
+      "snapshot": "sources/source_390.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/engine.py",
+      "bytes": 22310,
+      "sha256": "5e5ee5584198e199c254fcb583c8eeb6875d52016b008195bee5d5c3b11c39eb",
+      "snapshot": "sources/source_391.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/locale/__init__.py",
+      "bytes": 205,
+      "sha256": "7f6cdcff1f557d8957af54a5d62c13b5f9dfe7e8eaed5d74d75701c3e6ade6e2",
+      "snapshot": "sources/source_392.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/template.py",
+      "bytes": 10402,
+      "sha256": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a",
+      "snapshot": "sources/source_393.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_sqlite/__init__.py",
+      "bytes": 1382,
+      "sha256": "907e064ce7ee1eb026671546b32f266bd39bdbc14767e2345708a37a0140af20",
+      "snapshot": "sources/source_394.bin"
+    },
+    {
+      "source_path": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_sqlite/sqlite_database.py",
+      "bytes": 16129,
+      "sha256": "a9a0cc09422c67150260c8d7d6a3976b61b72d403fca160c97472fba11c72ae7",
+      "snapshot": "sources/source_395.bin"
+    }
+  ],
+  "snapshot_count": 396,
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "run_context_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF/run_context.json",
+  "run_context_sha256": "c7e861612f4635bb40ff79ed278822ee369dd5caa581fc02b8e7e122f38153d6",
+  "archive_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage113_A_OFF_source_snapshot_companion/actual_source_snapshots.tar.gz",
+  "archive_sha256": "22828045835bd74a700ad2dace6871ae5e34e0b3aa8a0782f4058820bfce1c38",
+  "all396_snapshots_verified_against_context_and_roundtrip": true,
+  "corrects_stage112_inventory_claim": {
+    "prior_manifest_internal_sha256": "e885ac240a7005dc5d439abd5d3965e6c48b5d03c8b4b86081488ed498e331a2",
+    "prior_full_source_snapshots_included_was_incorrect": true,
+    "actual_source_snapshots_in_prior_archive": 0,
+    "cause": "source snapshots use .bin extension and were excluded by suffix selection; full checkpoint and economic evidence were included",
+    "prior_archive_preserved_unchanged": true
+  },
+  "raw_market_or_private_files_included": false,
+  "snapshot_bytes_are_bound_python_code": true,
+  "new_financial_replays": 0,
+  "model_fits": 0,
+  "pushes": 0,
+  "production_qualified": false
+}

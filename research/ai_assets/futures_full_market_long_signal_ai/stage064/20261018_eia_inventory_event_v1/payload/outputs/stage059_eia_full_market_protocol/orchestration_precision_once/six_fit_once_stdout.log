@@ -1,0 +1,13 @@
+fit 1/6 START 2020_COMMON_EVENT train=15643 test=71344
+fit 1/6 DONE 2020_COMMON_EVENT
+fit 2/6 START 2020_INVENTORY train=15643 test=71344
+fit 2/6 DONE 2020_INVENTORY
+fit 3/6 START 2020_PAST_SHAM train=15643 test=71344
+fit 3/6 DONE 2020_PAST_SHAM
+fit 4/6 START 2023_COMMON_EVENT train=23602 test=89670
+fit 4/6 DONE 2023_COMMON_EVENT
+fit 5/6 START 2023_INVENTORY train=23602 test=89670
+fit 5/6 DONE 2023_INVENTORY
+fit 6/6 START 2023_PAST_SHAM train=23602 test=89670
+fit 6/6 DONE 2023_PAST_SHAM
+{"status": "completed", "mode": "actual", "manifest": {"path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/experiment/manifest.json", "bytes": 46322, "sha256": "646cc2f475c9f2060b22780b9e766ed2ed94d658ded5a85d7c9960e9651403cd"}, "fit_calls_started": 6, "fit_calls_completed": 6}

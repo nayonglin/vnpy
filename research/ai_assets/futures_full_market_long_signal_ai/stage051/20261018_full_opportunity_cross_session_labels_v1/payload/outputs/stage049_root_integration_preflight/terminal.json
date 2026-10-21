@@ -1,0 +1,53 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage049*.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.42887437500758097,
+  "stable_sources": true,
+  "sources": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_full_opportunity_builder.py",
+      "bytes": 30955,
+      "sha256": "27bdd8c8905520e75d32297e69f67d6b560dd635d07946a6b030c2c1f3388bf0"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+      "bytes": 10066,
+      "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py",
+      "bytes": 12024,
+      "sha256": "8b184120a9d7da870e0dd07e43f11b5c904351d8b89e7d6e94b216f04e3d0d9d"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_maturity_features.py",
+      "bytes": 7014,
+      "sha256": "f4682f4e4f2898ef2d0482db396dd4c7ad9428cf4b50e4f2ac5f504aedfb2046"
+    }
+  ],
+  "stdout": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_root_integration_preflight/stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_root_integration_preflight/stderr.txt",
+    "bytes": 3772,
+    "sha256": "1969f081f99668c7f43484d55a21108eee577485e3886909f2461160cb967304"
+  },
+  "native_SQL": 0,
+  "actual_builds": 0,
+  "model_fits": 0,
+  "new_cash_accounts": 0,
+  "scope": "new049 two-module final integration; no old suite"
+}

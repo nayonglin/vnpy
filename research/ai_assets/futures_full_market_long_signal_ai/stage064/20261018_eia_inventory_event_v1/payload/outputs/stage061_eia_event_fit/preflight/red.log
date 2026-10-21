@@ -1,0 +1,61 @@
+FFFFFFF
+======================================================================
+FAIL: test_event_join_neutralizes_shared_missing_without_deleting_mother (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_event_join_neutralizes_shared_missing_without_deleting_mother)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_family_inclusive_uniqueness_then_report_cohort_equal_weight (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_family_inclusive_uniqueness_then_report_cohort_equal_weight)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_past_sham_rejects_future_or_outside_last52_calendar_ordinals (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_past_sham_rejects_future_or_outside_last52_calendar_ordinals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_prediction_keeps_non_event_unknown_and_all_families (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_prediction_keeps_non_event_unknown_and_all_families)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_scaler_half_pools_only_mature_shared_observed_scalars (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_scaler_half_pools_only_mature_shared_observed_scalars)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_six_cells_full_forward_mother_persisted_without_research_fit (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_six_cells_full_forward_mother_persisted_without_research_fit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+======================================================================
+FAIL: test_strict_event_maturity_keeps_non_oil_and_F_family (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_strict_event_maturity_keeps_non_oil_and_F_family)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 47, in setUp
+    self.assertIsNotNone(m, 'Stage061 implementation missing')
+AssertionError: unexpectedly None : Stage061 implementation missing
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (failures=7)

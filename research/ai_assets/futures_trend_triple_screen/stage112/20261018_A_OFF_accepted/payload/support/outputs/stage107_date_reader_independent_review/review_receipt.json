@@ -1,0 +1,115 @@
+{
+  "schema": "stage107_date_reader_independent_review_v1",
+  "reviewed_at": "2026-10-18T07:49:45+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "accepted_single_strict_usage_signal_day_reader_boundary",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage106_independent_off_account_review.py": {
+      "sha256": "6688020ff61a6b14ae2cc0ce158c7f54cf2692d1696b53a525596c76ec4f4b49",
+      "bytes": 6194
+    }
+  },
+  "test_binding": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage106_independent_off_account_review.py",
+    "sha256": "e793ab33d71efff6df757d1e5f43965f9c393c0ab9ee4bfcd794e50f2b0780eb",
+    "bytes": 2480
+  },
+  "frozen095": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f",
+    "bytes": 40131,
+    "mathematics_unchanged": true
+  },
+  "fixed_parent_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage095_off_financial_audit/A_OFF/7cf2c2bffdc34d8cbd926693aa75dd10/audit_failure.json": {
+      "sha256": "2771b9f5edfd77ed1e25ffc4fd9fdaacbfaea48ce7bfc3dd1a44f361be0cc09c",
+      "bytes": 602
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/review_receipt.json": {
+      "sha256": "8ecee989eb9a4acbe751e7abd7fefed14ff327c42ad141ee842445e900274f6a",
+      "bytes": 5922
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json": {
+      "sha256": "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944",
+      "bytes": 1977
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0742_stage106_A_mother_date_reader_contract.md": {
+      "sha256": "d7e00776a317c6b350cbec24b007be4429b06150d42561eef0690de2d78064d9",
+      "bytes": 3187
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "remaining_blocking_findings": [],
+  "independent_reader_review_accepted": true,
+  "independent_integration_accepted": true,
+  "reader_boundary": "Private frozen095.raw_exports only; call original raw/export/identity checks first, then copy usage.signal_date only to strict ISO day. No audit/a_mothers/roll/retry/numerical replacement.",
+  "approved_day_inputs": [
+    "calendar-valid strict YYYY-MM-DD string",
+    "naive exact-midnight pandas.Timestamp"
+  ],
+  "reject_non_midnight_timezone_NaT_and_invalid": true,
+  "old_usage_and_four_other_objects_preserved": true,
+  "both_same_day_joins_share_single_normalized_column": true,
+  "output_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage106_off_financial_audit",
+  "original105_failure_preserved": true,
+  "actual104_completion": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+    "sha256": "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944",
+    "arm": "A_OFF",
+    "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+    "global_arm_attempt": 2
+  },
+  "same_completion_readonly_audit_may_proceed": true,
+  "full_financial_account_accepted": false,
+  "mother_order_audit_accepted_here": false,
+  "financial_execution_authorized": false,
+  "financial_replays": 0,
+  "production_qualified": false,
+  "fresh_test": {
+    "runs": 1,
+    "tests": 1,
+    "exit_code": 0,
+    "elapsed_seconds": 0.024,
+    "name": "DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days",
+    "source_sha256": "e793ab33d71efff6df757d1e5f43965f9c393c0ab9ee4bfcd794e50f2b0780eb",
+    "source_assertions_unchanged": true,
+    "output_note": "新test无作者证据输出路径，仅将本次工具stdout保存在107；未覆写106作者RED/GREEN/compile。"
+  },
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage107_date_reader_independent_review/evidence.json",
+    "sha256": "4f9191b20be2bb93e9d36fd63e5acd23ed82fa568321540a1382fbf0d87b11f4"
+  },
+  "fresh_test_log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage107_date_reader_independent_review/fresh_named_test.txt",
+    "sha256": "55587816294ef7f8fdd20a671de67f9968b5a087fd554335e652f289c0078d00"
+  },
+  "stage_record_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0749_stage107_date_reader_independent_review.md",
+  "actual_audits_executed": 0,
+  "account_raw_or_seal_loaded": false,
+  "account_CSV_opened": false,
+  "market_loaders": 0,
+  "market_hashes": 0,
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "network_calls": 0,
+  "orders": 0,
+  "old_suite_reruns": 0,
+  "author_sources_modified": false,
+  "frozen095_or_financial_sources_modified": false,
+  "parent_failure_or_completion_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_agent_spawned": false,
+  "inherited_limits": [
+    "105真实前序现金/库存/成本/1641指标通过仅按pin原receipt继承；本次未独立重跑或授予完整财务接受。",
+    "同一104封存账户仍须root安排一次新目录完整只读审计，母胜率/母链完整接受尚未在107产生。",
+    "不改金融attempt计数，不重跑策略；原A全局第一次失败N/A、原B失败、A0受限/PIT/目标未达均保留。"
+  ],
+  "overfitting": false,
+  "continued_value": true
+}

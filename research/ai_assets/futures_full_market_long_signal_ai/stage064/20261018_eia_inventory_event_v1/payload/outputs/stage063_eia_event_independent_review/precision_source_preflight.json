@@ -1,0 +1,121 @@
+{
+  "schema": "stage063_precision_source_increment_preflight_v1",
+  "recorded_at": "2026-10-18T15:46:52.722282+08:00",
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+    "bytes": 7162,
+    "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158"
+  },
+  "precision_amendment": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/precision_input_amendment.json",
+    "bytes": 3035,
+    "sha256": "46946878f76d2b0a134bf274898868e622c4bded4d021a1add62116f8af3e729"
+  },
+  "previous_source_preflight_preserved": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_preflight.json",
+    "bytes": 5703,
+    "sha256": "69e72117dfeef101582f046d5647d42d446fc6bb7852e9f242131ed2c128739e"
+  },
+  "precision_decision_preflight": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_decision_preflight.json",
+    "bytes": 4044,
+    "sha256": "921e9283c95a5a3f7b47f91db771fc7d2089be2ae4d80673b4e7f0814409e4a1"
+  },
+  "sources": {
+    "stage060_eia_report_import.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py",
+      "bytes": 23966,
+      "sha256": "f40f1b07007d283b950187d05f144ec9954c125433eb130165285e1bac07d45e"
+    },
+    "stage061_eia_event_fit.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage061_eia_event_fit.py",
+      "bytes": 29818,
+      "sha256": "7d61a8b5c309ad24881d9d36d0ffffe7f2ae39af4750b7d4130dbb316857503d"
+    },
+    "test_stage061_eia_event_fit.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py",
+      "bytes": 11955,
+      "sha256": "1ae5502ffaaf3f16b3c59ed563f49327fd65daa09727fc270bb7caf431974ae6"
+    },
+    "stage062_eia_event_cash_compare.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage062_eia_event_cash_compare.py",
+      "bytes": 34254,
+      "sha256": "2885b980dac69e503c2f14c51d1f42c4a17e05b0c80cfd0d8af7a01dc5fec32a"
+    },
+    "test_stage062_eia_event_cash_compare.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage062_eia_event_cash_compare.py",
+      "bytes": 7671,
+      "sha256": "89a744ea4cce5afe225f0772dd36714c8bca87db024a295c94991856292f82e9"
+    },
+    "stage065_eia_precision_recovery.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage065_eia_precision_recovery.py",
+      "bytes": 16544,
+      "sha256": "3f9334595653cd825e4d7d2841db0492b6c0b77226645811e459877068e9c30e"
+    },
+    "test_stage065_eia_precision_recovery.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py",
+      "bytes": 6101,
+      "sha256": "170bb5123d3c4484ff03f1c6890914fe39d8e68bbc3bf7dafc28bbbfe8c4fdd6"
+    },
+    "test_stage060_eia_report_import.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage060_eia_report_import.py",
+      "bytes": 8448,
+      "sha256": "3d404e97baacb700851474cda0960094e067d4985be7417847e3c2e0db263750"
+    }
+  },
+  "reviewer_sources": {
+    "source_checks.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py",
+      "bytes": 19653,
+      "sha256": "43ed1fd5a3f30ed996c05abc646e1de5501ab2a28665534d98a5a76233154587"
+    },
+    "independent_review.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py",
+      "bytes": 27726,
+      "sha256": "2cb05e9a480f12bf4bda120b9eb7397cf24917228e79bd0c5ba75d6f6307b2b5"
+    },
+    "test_printed_precision.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_printed_precision.py",
+      "bytes": 1515,
+      "sha256": "839b730a6e6c8e1a5236494424f21143b4f332d4f9a4e2453376b070e3d51c56"
+    }
+  },
+  "targeted_green": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_green_final.log",
+    "bytes": 628,
+    "sha256": "657c20e74b44d2cb1390f6f5b9a26478b41d9864895599e828477771c13d9da2"
+  },
+  "critical": [],
+  "important": [],
+  "ready_for_root_controlled_sequence": true,
+  "ready_for_once_offline065_after060_completed": true,
+  "ready_for_direct_fit_cash_without_further_input_gate": false,
+  "required_sequence": [
+    "Wait immutable completed original060 manifest/terminal and exact original source/artifact bindings.",
+    "Root bind expected original060 manifest SHA and frozen065 source/test/amendment; execute unique offline065 once, with no new network.",
+    "Fresh061 zero-fit source preflight must accept final065 manifest and explicit producer/normalization_stage; preserve original060 source trace.",
+    "Root may then issue concrete unique061 six-fit and062 twelve-cash/oneSQL authorizations with final source manifest SHA.",
+    "Only after complete actual final061/062 manifests and explicit root authorization may063 run one independent full audit."
+  ],
+  "source_delta_findings": [
+    "065 copies original known row dictionaries unchanged; final063 will compare every original known current/prior_inline/officialdelta.",
+    "Only original HTTP200 unknown_parse_failed with exact arithmetic-only prefix is eligible; new parser rechecks header/date/positivefinite/threeexactrows and all3 bounds before replacing any report.",
+    "Printed quanta are exact Decimal exponents per field, preserve Difference, retain original rejection/residual and percell/report audit.",
+    "065 reads only completed060 saved raw SHA-bound bytes, no download function/subprocess invoked; old060/calendar/clock/ordinal/sham implementation frozen.",
+    "Dual manifest/terminal/source bindings explicit; incoming schema compatible060 but producer must be stage065_eia_precision_recovery/normalization_stage stage065.",
+    "063 dispatches original060 exact branch separately from065 printed precision branch;065 download startup0/offline startup1/original060 startup1 are distinct, no masquerading."
+  ],
+  "actual_scope": "Code/manifest-interface preflight and four targeted independent precision tests only. No full source data review, normalization run, fit/cash, SQL, network or full actual result audit.",
+  "actions": {
+    "normalization_actual": 0,
+    "fit": 0,
+    "cash_replay": 0,
+    "sql": 0,
+    "network": 0,
+    "full_actual_review": 0
+  },
+  "limitations": [
+    "Precision-compatible published values do not identify unrounded truth or prove contemporaneous captured-byte PIT.",
+    "Finance and alpha qualification remain pending; no fullgoal, narrowstop, increasedbet or production claim."
+  ]
+}

@@ -1,0 +1,31 @@
+{"phase": "fit_checked", "fit_id": "2020_COMMON_EVENT", "rows": 71344}
+{"phase": "fit_checked", "fit_id": "2020_INVENTORY", "rows": 71344}
+{"phase": "fit_checked", "fit_id": "2020_PAST_SHAM", "rows": 71344}
+{"phase": "fit_checked", "fit_id": "2023_COMMON_EVENT", "rows": 89670}
+{"phase": "fit_checked", "fit_id": "2023_INVENTORY", "rows": 89670}
+{"phase": "fit_checked", "fit_id": "2023_PAST_SHAM", "rows": 89670}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "COMMON_EVENT__base__primary_2020", "fills": 0}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "COMMON_EVENT__base__cold_2023", "fills": 0}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "COMMON_EVENT__stress__primary_2020", "fills": 0}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "COMMON_EVENT__stress__cold_2023", "fills": 0}
+{"phase": "cash_checked", "account_id": "INVENTORY__base__primary_2020", "fills": 84}
+{"phase": "cash_checked", "account_id": "INVENTORY__base__cold_2023", "fills": 4}
+{"phase": "cash_checked", "account_id": "INVENTORY__stress__primary_2020", "fills": 78}
+{"phase": "cash_checked", "account_id": "INVENTORY__stress__cold_2023", "fills": 4}
+{"phase": "cash_checked", "account_id": "PAST_SHAM__base__primary_2020", "fills": 33}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "PAST_SHAM__base__cold_2023", "fills": 0}
+{"phase": "cash_checked", "account_id": "PAST_SHAM__stress__primary_2020", "fills": 31}
+/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py:46: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  frame=fill_daily.reindex(dates).ffill()
+{"phase": "cash_checked", "account_id": "PAST_SHAM__stress__cold_2023", "fills": 0}
+{"status": "accepted_saved_research_calculation_not_complete_goal", "model_cells": 6, "predictions": 483042, "accounts": 12, "max_error": 5.4569682106375694e-11, "elapsed_seconds": 19.163812541984953}

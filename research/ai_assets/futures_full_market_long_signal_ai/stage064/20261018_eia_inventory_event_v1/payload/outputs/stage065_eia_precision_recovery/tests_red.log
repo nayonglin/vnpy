@@ -1,0 +1,50 @@
+test_only_original_arithmetic_rejections_restore_and_all_identities_survive (__main__.PrecisionRecoveryBehavior.test_only_original_arithmetic_rejections_restore_and_all_identities_survive) ... FAIL
+test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown (__main__.PrecisionRecoveryBehavior.test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown) ... FAIL
+test_raw_hash_drift_fails_before_recovery (__main__.PrecisionRecoveryBehavior.test_raw_hash_drift_fails_before_recovery) ... FAIL
+test_real_three_decimal_case_preserves_published_difference (__main__.PrecisionRecoveryBehavior.test_real_three_decimal_case_preserves_published_difference) ... FAIL
+test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered (__main__.PrecisionRecoveryBehavior.test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered) ... FAIL
+
+======================================================================
+FAIL: test_only_original_arithmetic_rejections_restore_and_all_identities_survive (__main__.PrecisionRecoveryBehavior.test_only_original_arithmetic_rejections_restore_and_all_identities_survive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py", line 37, in setUp
+    self.assertIsNotNone(m, 'Stage065 precision recovery is not implemented')
+AssertionError: unexpectedly None : Stage065 precision recovery is not implemented
+
+======================================================================
+FAIL: test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown (__main__.PrecisionRecoveryBehavior.test_quantum_uses_each_printed_precision_and_gross_error_stays_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py", line 37, in setUp
+    self.assertIsNotNone(m, 'Stage065 precision recovery is not implemented')
+AssertionError: unexpectedly None : Stage065 precision recovery is not implemented
+
+======================================================================
+FAIL: test_raw_hash_drift_fails_before_recovery (__main__.PrecisionRecoveryBehavior.test_raw_hash_drift_fails_before_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py", line 37, in setUp
+    self.assertIsNotNone(m, 'Stage065 precision recovery is not implemented')
+AssertionError: unexpectedly None : Stage065 precision recovery is not implemented
+
+======================================================================
+FAIL: test_real_three_decimal_case_preserves_published_difference (__main__.PrecisionRecoveryBehavior.test_real_three_decimal_case_preserves_published_difference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py", line 37, in setUp
+    self.assertIsNotNone(m, 'Stage065 precision recovery is not implemented')
+AssertionError: unexpectedly None : Stage065 precision recovery is not implemented
+
+======================================================================
+FAIL: test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered (__main__.PrecisionRecoveryBehavior.test_wrong_ending_and_lower_table_duplicate_cannot_be_recovered)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py", line 37, in setUp
+    self.assertIsNotNone(m, 'Stage065 precision recovery is not implemented')
+AssertionError: unexpectedly None : Stage065 precision recovery is not implemented
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=5)

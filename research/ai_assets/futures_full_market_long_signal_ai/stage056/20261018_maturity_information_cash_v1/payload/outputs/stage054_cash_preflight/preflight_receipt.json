@@ -1,0 +1,52 @@
+{
+  "CLI_help_checked": true,
+  "actual_cash_accounts": 0,
+  "actual_model_fit_calls": 0,
+  "created_at_utc": "2026-10-18T06:40:54.827280+00:00",
+  "fresh_output_refuses_existing_before_source_read": true,
+  "full_suite_not_run": "Root explicitly restricted to necessary new synthetic cases; old042 suite and actual tasks not run.",
+  "implementation_limitations": [
+    "research accrual close-mark/static vendor margin assumptions inherited042",
+    "252-day circular resampling does not supply independent markets",
+    "held diagnosed common identified domain is not full policy value or cash return"
+  ],
+  "native_source_queries": 0,
+  "protocol": {
+    "bytes": 11987,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage052_maturity_information_cash_protocol/protocol.json",
+    "sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c"
+  },
+  "red_green_evidence": "Initial missing054 module: 4 expected failures; then 4 GREEN. Scope interface refined after root review: strict original two held scopes, observed RED then 6 GREEN. Final source only; no actual data tasks started.",
+  "research_judgment": "No new parameter search; repeated historical research and unresolved payoff risk remain. Fixed maturity information comparison is still worth falsifying.",
+  "schema": "stage054_cash_preflight_v1",
+  "scope": "fixed052 pure cash adapter and statistics; full399252 rows per arm;053 main161014x3;12 root-only cash accounts",
+  "source": {
+    "bytes": 35598,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage054_maturity_cash_compare.py",
+    "sha256": "f5f73732747b64b812e48c09202f5d52dcf3f59726e20e05e21ba616453884bd"
+  },
+  "status": "passed",
+  "synthetic_command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage054_maturity_cash_compare.py",
+    "-v"
+  ],
+  "synthetic_exit_code": 0,
+  "synthetic_green_log": {
+    "bytes": 1412,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage054_cash_preflight/synthetic_green.log",
+    "sha256": "c427015896198ae668fbd6ebabb2f294d6b82f06020f73168697f5bf22e415d7"
+  },
+  "synthetic_tests": 6,
+  "tests": {
+    "bytes": 9222,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage054_maturity_cash_compare.py",
+    "sha256": "13e8bbbd98b91792f74f392806ad70f2a1e5c4165b7b706029769fc54893a8dd"
+  }
+}

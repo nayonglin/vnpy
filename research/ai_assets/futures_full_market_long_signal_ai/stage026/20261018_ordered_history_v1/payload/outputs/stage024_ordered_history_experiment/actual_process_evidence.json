@@ -1,0 +1,30 @@
+{
+  "schema": "stage024_actual_process_evidence_v1",
+  "initial_chunk": "39bf1f",
+  "session_id": 91664,
+  "final_chunk": "0709c8",
+  "exit_code": 0,
+  "starts": 1,
+  "complete_experiments": 1,
+  "actual_ridge_fit_calls": 108,
+  "fixture_fit_calls_separate": 1,
+  "financial_runs": 0,
+  "restarted": false,
+  "intermediate_running_chunks": [
+    "e96d9b",
+    "2cbd32",
+    "b61c89",
+    "fa20e7",
+    "49d7f1"
+  ],
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage024_ordered_history_experiment/experiment/actual_terminal.json",
+    "sha256": "963e5050155d03e42736456f42ad1c6181c0fef214cf67e50791712407f59250",
+    "bytes": 816
+  },
+  "stdout": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage024_ordered_history_experiment/fit_stdout.log",
+    "sha256": "d3472d602cf7dbfcf70b9a38a5cf892a3f376168c04bf3ef7675cc8bdee7513f",
+    "bytes": 11666
+  }
+}

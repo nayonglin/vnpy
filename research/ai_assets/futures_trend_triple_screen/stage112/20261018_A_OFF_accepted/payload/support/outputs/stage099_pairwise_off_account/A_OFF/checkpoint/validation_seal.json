@@ -1,0 +1,29 @@
+{
+  "arm": "A_OFF",
+  "attempt": 1,
+  "fixture_only": false,
+  "manifest_sha256": "c3cfb739817018859ca7cd24158d23e31d847d08f25da9d8b6630ebb21c23ee3",
+  "production_qualified": false,
+  "raw_sha256": "e22f6936422a6d862856945c2d45e65214fa52b9d325a3882eb31600fc688b33",
+  "reference_calendar_scope": "full_2020_2026",
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "schema": "stage065_engine_validation_seal_v1",
+  "status": "engine_snapshot_validated_not_independent_economic_review",
+  "validated_at": "2026-10-18 07:40:21.463475+08:00",
+  "validation": {
+    "actual_daily_count": 1641,
+    "actual_daily_dates_equal_preflight_reference": true,
+    "actual_settings_match_off_expected": true,
+    "all_consumed_inputs_unchanged_during_run": true,
+    "captured_bar_failures": 0,
+    "engine_returned": true,
+    "fixture_only": false,
+    "frozen_correctness_code_unchanged": true,
+    "historical_shared_signal_input_empty": true,
+    "pairwise_decision_dependency_absent": true,
+    "parameters_match_reference_except_off_policy": true,
+    "reference_calendar_scope": "full_2020_2026",
+    "strict_minute_missing_bars": 0
+  },
+  "writer_source_sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99"
+}

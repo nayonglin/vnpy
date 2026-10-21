@@ -1,0 +1,33 @@
+{
+  "schema": "stage064_precision_increment_prepare_receipt_v1",
+  "status": "increment_ready_wait_final_inputs_and_authorization",
+  "plan": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage064_local_registration/precision_increment_plan.json",
+    "sha256": "d19d91cddaaeb7258f9893b405e82ddd7e9d7ff98de77777c9ec137e5b263f67",
+    "bytes": 11819
+  },
+  "observed_small_sources_and_evidence": 16,
+  "observed_bytes": 83376,
+  "mapped065_declared_purposes": 16,
+  "helper": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage064_local_registration/prepare_and_register.py",
+    "sha256": "7842d06e27badddd6e185df5e87f335c635a0f05a574dc6666071c3a3150a58a",
+    "bytes": 18456,
+    "syntax": "AST_passed_no_helper_execution"
+  },
+  "archive_exists": false,
+  "index_unchanged": true,
+  "index_sha256": "af565e1b742097391f12a19c7156799f13faefcf83ee0bcf4faf763d78a73fe2",
+  "existing23refs_read_or_recomputed": false,
+  "actual_helper_prepare_calls": 0,
+  "register_calls": 0,
+  "git_add": false,
+  "new_downloads": 0,
+  "new_normalization_runs": 0,
+  "new_fits": 0,
+  "new_SQL": 0,
+  "new_cash_replays": 0,
+  "commit": false,
+  "push": false,
+  "production": false
+}

@@ -1,0 +1,51 @@
+{
+  "common": {
+    "columns": [
+      "stress_u_cost_R",
+      "low20_distance_R",
+      "r1_atr"
+    ],
+    "finite_count": [
+      23602,
+      23602,
+      23557
+    ],
+    "mean": [
+      0.09960131730777527,
+      1.0158686459072004,
+      -0.030233248914028482
+    ],
+    "scale": [
+      0.11676171751277893,
+      0.833401156060493,
+      0.7020945233505218
+    ],
+    "var": [
+      0.013633298676533987,
+      0.6945574869229663,
+      0.4929367197187964
+    ]
+  },
+  "feature_names": [
+    "cost_z",
+    "distance_z",
+    "r1_z",
+    "cost_missing",
+    "distance_missing",
+    "r1_missing",
+    "external_missing",
+    "s_z",
+    "s_z*r1_z",
+    "s_z*distance_z"
+  ],
+  "interaction_scaling": "none beyond common and scalar standardization",
+  "missing": "common train mean imputation; shared external missing -> all new slots exact0",
+  "n_features": 10,
+  "q": {
+    "finite_count": 44202,
+    "mean": -0.00015763887458901746,
+    "scale": 0.01081907832332511,
+    "var": 0.0001170524557662433
+  },
+  "weighting": "same mature training rows; finite weighted population; two information arms half weight each"
+}

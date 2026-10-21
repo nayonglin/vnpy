@@ -1,0 +1,30 @@
+{
+  "schema": "stage035_actual_process_evidence_v1",
+  "initial_chunk": "eb3402",
+  "session_id": 44639,
+  "running_chunks": [
+    "de7313",
+    "eb6001"
+  ],
+  "final_chunk": "bbde30",
+  "exit_code": 0,
+  "starts": 1,
+  "complete_experiments": 1,
+  "actual_ridge_fit_calls": 108,
+  "fixture_ridge_fit_calls_separate": 1,
+  "financial_runs": 0,
+  "sql_queries": 0,
+  "network_calls": 0,
+  "root_fresh034_evidence_chunk": "0ec88a",
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage035_peer_alignment_experiment/experiment/actual_terminal.json",
+    "sha256": "30d7d00de27e1f5b9d1aa07a793802f20e9e4e4f62e1411b608ab1c3990edb36",
+    "bytes": 1070
+  },
+  "stdout": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage035_peer_alignment_experiment/actual_stdout.log",
+    "sha256": "ab1d40455387e0fbfb8bfc486dd8c710eda64107f793871c1bd4f08e878f9e54",
+    "bytes": 12097
+  },
+  "source_and_results_frozen": true
+}

@@ -1,0 +1,29 @@
+......E..fit 1/6 START 2020_COMMON_EVENT train=2 test=1
+fit 1/6 DONE 2020_COMMON_EVENT
+fit 2/6 START 2020_INVENTORY train=2 test=1
+fit 2/6 DONE 2020_INVENTORY
+fit 3/6 START 2020_PAST_SHAM train=2 test=1
+fit 3/6 DONE 2020_PAST_SHAM
+fit 4/6 START 2023_COMMON_EVENT train=3 test=2
+fit 4/6 DONE 2023_COMMON_EVENT
+fit 5/6 START 2023_INVENTORY train=3 test=2
+fit 5/6 DONE 2023_INVENTORY
+fit 6/6 START 2023_PAST_SHAM train=3 test=2
+fit 6/6 DONE 2023_PAST_SHAM
+...
+======================================================================
+ERROR: test_preflight_saves_source_bound_terminal_and_cannot_fit (research.lines.futures_full_market_long_signal_ai.tools.test_stage061_eia_event_fit.EIAFitTests.test_preflight_saves_source_bound_terminal_and_cannot_fit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py", line 185, in test_preflight_saves_source_bound_terminal_and_cannot_fit
+    result = m.execute(args)
+             ^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage061_eia_event_fit.py", line 495, in execute
+    write_json(out / 'manifest.json', dict(schema='stage061_eia_event_fit_v1', **terminal, **result,
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: dict() got multiple values for keyword argument 'source'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.103s
+
+FAILED (errors=1)

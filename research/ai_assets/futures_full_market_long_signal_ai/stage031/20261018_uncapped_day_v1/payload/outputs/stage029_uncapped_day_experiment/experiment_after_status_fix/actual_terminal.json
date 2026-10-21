@@ -1,0 +1,22 @@
+{
+  "actual_model_fit_calls": 0,
+  "elapsed_seconds": 17.067513999994844,
+  "error": null,
+  "exit_code": 0,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T04:53:06.560202+00:00",
+  "fixture": false,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "source": {
+    "bytes": 21399,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py",
+    "sha256": "ee388ea4439b240054b8b5eb6dfa9907c6e982104ce8e6418cbe5057849d0fe2"
+  },
+  "sql_queries": 0,
+  "started_at": "2026-10-18T04:52:49.492527+00:00",
+  "status": "completed"
+}

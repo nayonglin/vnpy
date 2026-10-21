@@ -1,0 +1,27 @@
+{
+  "actual_model_fit_calls": 0,
+  "actual_start_count": 1,
+  "completed_actual_builds": 1,
+  "completed_label_rows": 399252,
+  "elapsed_seconds": 75.517025750014,
+  "error": null,
+  "exit_code": 0,
+  "feature_module": {
+    "bytes": 10066,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+    "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+  },
+  "finished_at": "2026-10-18T06:19:20.708053+00:00",
+  "fixture": false,
+  "native_source_queries": 1,
+  "network_calls": 0,
+  "new_cash_accounts": 0,
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "source": {
+    "bytes": 30955,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_full_opportunity_builder.py",
+    "sha256": "27bdd8c8905520e75d32297e69f67d6b560dd635d07946a6b030c2c1f3388bf0"
+  },
+  "started_at": "2026-10-18T06:18:05.190906+00:00",
+  "status": "completed"
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "stage114_B_OFF_actual_runtime_resume_v1",
+  "observed_at": "2026-10-18T08:00:50.094831+08:00",
+  "issued_by": "root",
+  "financial_session": 47648,
+  "financial_run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+  "financial_restarted": false,
+  "financial_attempts_total": 11,
+  "accepted_ledgers_total": 4,
+  "new_runtime_driver_session": 95182,
+  "new_runtime_driver_start_chunk": "38486f",
+  "new_runtime_driver_status": "terminal_after_two_successful_provider_deliveries_then_current_request_changed",
+  "new_runtime_driver_terminal": {
+    "chunk_id": "d3b39b",
+    "exit_code": 1,
+    "error": "request_not_current_owner_wait",
+    "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/a167b50d9fa6437bbaf764a0ed5c6eeb/manifest.json",
+    "manifest_sha256": "beb4d8b2535d7dc24b102504a494bd2576548d5794ce38936ab620b762a2b024"
+  },
+  "batch_id": "batch003",
+  "original_batch002_failure_preserved": true,
+  "runtime_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/review_receipt.json",
+    "sha256": "394879ddf698d5bb6d20cc54e62fb433e376977f78c70a9e0ecaea72df89bfb0"
+  },
+  "actual_external_runtime_session_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/a167b50d9fa6437bbaf764a0ed5c6eeb",
+  "sidecar_was_not_in_original_financial_preflight": true,
+  "original_limits_changed": false,
+  "provider_success_not_yet_claimed": false,
+  "production_qualified": false,
+  "provider_connections": 2,
+  "successful_published_network_requests": [
+    "d3877eb65bfc7f8ac2304141da971ae8012a0fb61cbe1b32722debeece2080be",
+    "08dc30017c54bdee9ab526a211a9aaff65eddc228092cf287837db61408be772"
+  ],
+  "current_request_observed_080150": "b03ab9745b6b557205695938c592ebf0710d0a07bb9f409d2d17c6a1c8ca6940",
+  "stale_observation_exact_stack_not_stored": true,
+  "successful_provider_deliveries_now_proven": 2,
+  "continuation_operator": "ai_label_validation_batch004_onwards_original_scope_unchanged"
+}

@@ -1,9 +1,11 @@
 # 三重滤网趋势策略持续迭代研究线
 
+> 2026-10-18 11:06 CST目标交接：用户进一步明确“全市场全品种寻找超高质量做多信号，不限正式版AI月池”。后续主动研究转 `futures_full_market_long_signal_ai`；本线19品种多空证据、金融负结果和工程资格保留，不能冒充新目标母体，不再推进原拟混合多空12/24事件pilot。155导出与156独立身份审查已完成（receipt `86216ef9…c54f6`）；仅旧身份层接受，0结果标签。157/158收口后仅作为native可识别性/设计反证参考。
+
 - line_id：futures_trend_triple_screen。
 - 建立时间：2026-10-17；来源分支codex/ai-training-data-expansion，起始HEAD cdac67c5a。
-- 用户目标：按三重滤网思路持续迭代现策略，寻找扣成本收益更高且最大回撤更低的可复验版本；规则、AI特征及其他有机制依据方向均在范围内。
-- 当前状态（2026-10-18 07:26 CST）：真实A_OFF首次已exit1，097独立确认为纯AI池strategy字符串被checkpoint键名guard误拒，partial缺完整账本、绩效N/A；不能等价恢复，原session不再poll/restart。098按099合同只修保存与真实prepare预验，095仅同步新固定族/当前review绑定，等待100定向独立接受；旧A目录原地保留，新族明确全局A第2次/B第1次。当前无活跃金融/provider，累计9attempt/3accepted、训练0；4e439c2/091冻结、所有失败/负结果/PIT限制保持，目标active未达成、production_qualified=false。
+- 用户目标（2026-10-18已拓宽）：不断迭代策略，寻求更高成本后收益与更低回撤；规则、AI特征及其他方向均可，重点AI识别超高质量信号，再独立检验极窄止损和增加投注。三重滤网不再是总目标的强制形状，旧记录/负结果和原验证门保留。
+- 当前状态（2026-10-18 10:56 CST）：149/150集中修复后，153实际输入prepare成功（1641日/224源/7075数据/150000），EMA仍无金融readiness或绩效。用户目标已拓宽，152确认现存900原生potential事件与两A的886候选，成熟/全机会/跨roll母标签仍缺；155正有界关联事件去向，不直接训练或加注。累计11金融attempt/4完整独立accepted、训练0；目标active未达成，production_qualified=false。
 - 研究与生产分离：当前m0008参数身份与已接受Stage249修复源码组合为离线对照，production_qualified=false；实际生产资格缺项不由本线修改或冒充通过。
 - 记录规则：各轮中文stage、完整失败臂/参数/数据/源码指纹和独立复核；不向旧研究线追加，不覆盖原行情或用户脏registry。本线索引由合入者统一更新。
 
@@ -185,3 +187,71 @@
 - 原A_OFF第1次金融实际exit1，合法AI策略字符串被checkpoint字段名guard误拒；引擎已返回但完整frames未保存，097独立确认不可等价恢复，绩效N/A。旧失败原地保留，金融9attempt/3accepted、训练0。
 - 唯一098修复对真实metadata精确路径/字符串身份放行，真实prepare先校验；引擎返回立即正确标phase。新固定099族与原失败绑定，下一A整体第2次、B第1次。095只适配路径/身份，经济算术未变，087只改两常量。
 - 100独立定向复核0/0/0，新两项测试仅一次exit0；receipt34721033…c3f。101真实注册78项payload，manifest3e2592f9…5d73，副本SHA通过，不含原始行情/私有配置。尚无新preflight/金融结果。下一步新闭包实际preflight/readiness后运行A，再独立验账与B对照；不将修复当alpha突破。新增过拟合否，继续真实取证有价值，目标active、生产资格false。
+
+## Stage102—110：共同OFF对照A完整接受与B实际运行（2026-10-18 07:52 CST）
+
+- 新099族实际A整体第2次、全研究attempt10完整exit0，run7cf2c2bffdc34d8cbd926693aa75dd10；完整raw2,955,544 bytes成功保存。原095审计先因raw Timestamp/CSV ISO日比较失败，105准确保留；106仅独立raw_exports返回边界copy usage.signal_date严格规范，原会计算术/金融源不变，107独立0/0/0。
+- 同一sealed账户106只读完整审计实际exit0/7.568859秒，reader receipt1cc00ed0…ffad，金融重放0；现金/库存/成本/身份/母链全部通过、剩余0/0/0。A权益2,151,930/收益1334.620000%/DD−48.388528%/Sharpe1.344825/滑点575670/817fills；318闭合订单根episode114赢、35.849057%，85retry/8roll链接，未合并跨roll经济母交易标签。原费率0及日收盘保证金限制保留，不冒称真实全部费用或分钟峰。
+- 当前B整体第1次、全研究attempt11，run81ffc8f704ce4c5eb701e97e0397b12a/session47648/PID44392；07:43:14启动，月AI及原035有序机制不改。首hc2005 Jan15请求本地验收交付；第2jm2005 Mar10等待，batch002 prepare网络前因数值FROZEN路径抢先解析旧SDK3.9.4而拒，四endpoint无改、provider0，未创建packet/网络attempt。原B不重启；109只外部子进程启动环境选择准备，原087/065/owner/readiness及限额不改。
+- 累计金融11attempt/4完整独立accepted、训练0。未找到同时更高收益和更低回撤候选，不能仅以胜过较弱A_OFF达成目标；103明确全机会/统一母交易标签尚不足训练，不扩大字段模型。新增过拟合否，继续B完整取证有价值；goal active、production_qualified=false。
+
+- Stage109/111外部provider runtime一次有限离线三代及独立复核0/0/0，原数值/SDK3.10.2/guard/源不改。114原B同进程batch003实际2次网络成功交付、CF本地复用后前4response已齐；真实exit1为current请求更替检查，原失败保留，不改scope/不重试旧packet，108 operator仅实际新request从batch004续接。新runtime sidecar不在原金融context，最终资格另绑定。A仍4完整accepted、总金融11，B尚无完整绩效，goal active。
+
+## Stage115—118：实际补数资格与固定对照推进（2026-10-18 08:13 CST）
+
+- 115独立接受closed batch003两jm2005真实交付450 full分钟键，runtime12 sidecar/111/真实018 SDK/七值/021/response闭合，receipt649ad19b…5d6，剩余0/0/0；不外推未来整批。118实际注册75 payload，manifest24bb66b7…854，副本SHA通过，不含原始行情/私有数据或活跃记录。
+- 108在同B真实owner下通过109/111逐批交付，已推进2020-07下旬，不重启金融、不修改策略或预算；总金融仍11attempt/4accepted。115不是新完整B绩效，B结果N/A。
+- 116有限收益盲原作者/AQR/LEAN调研未发现有依据的新机制，未加臂/训练，不宣称穷尽目标。117已接受A存量自然年度分解揭示2022−16.4721%、2026至Oct14−33.2530%；只是曲线分段，不是独立fresh start，也不按坏年调参。优先完成固定B，若达双目标才进既定真实多周期与成本门。新增过拟合否，继续有价值；goal active、production_qualified=false。
+
+## Stage119：已关闭批次的增量独立复核（2026-10-18 08:28 CST）
+
+- 收据`outputs/stage119_closed_operator_batches_incremental_review/review_receipt.json`实测SHA `ce4dfc81d81f30e6fa5ba9d0250ed8581517aa1fc0f39c73bb8b1e842251bd6c`；独立复核剩余P0/P1/P2=0/0/0。只接受冻结的batch004—025共22个实际终态、22份runtime manifest、148个解释器sidecar及24个新增published交付，不重审115的batch003，不纳入后来批次。
+- 权限键5120=5115 full+5 anchor-only，其中1个既有请求键、5119个新增请求键；24份均核已有严格资格语义，4个形状/跨年样本916行做独立价格重算，其他20份没有独立价格重算。既有RAM值不冒称已独立重建，原021原子比较合同继承边界保留。4个零连接批和018 driver exit1均保留，不等同金融终态。
+- root同一session47648实际轮询chunk f2ab56仍live；本阶段未新增金融、训练、provider或测试，累计11attempt/4完整独立accepted。B完整绩效仍N/A，不能从数据资格推断alpha；当前参数冻结，目标active未达成。新增过拟合否，继续价值是，下一步仍为同一B的真实终态与完整独立财务审计。
+
+## Stage121：新增原著第三层机制的收益盲澄清（2026-10-18 08:42 CST）
+
+- 原著2014年第39章PDF244—246与Backtrader官方订单文档/GitHub源码直接核对后，平均EMA穿透的逆向限价确实不同于035的顺向突破；116的三来源有限检索不能外推为穷尽。研究记录SHA `f6ec0dfe2b619b90c2bda5e3f039ebac0bed3949c7e92374df70c21ceafc7fb0`，未读取B输出或中途收益。
+- root接受其有限判断：值得澄清唯一可编程定义及成交可识别性，目前不进入实现/金融。035本来不要求FI回零，不能将取消回零当新意。原文4—6周、normal pullbacks、平均按bar或episode及准备有效期均未给本项目唯一口径，本阶段不选窗口或撮合参数。
+- 必须面对直接启动趋势的漏单、逆向选择、限价排队/部分成交未知、同bar假浮盈及q放大。L越过原S时abs(L−S)不是合法风险；开盘越S的真实预挂限价成交不能事后撤销避损。未形成候选、无新回测/训练，不改变正在运行的B或收益/DD双目标。新增过拟合否；有限澄清有价值，立即金融实施无足够依据。
+
+- Stage123（08:48）按明确边界仅两轮作者官网/GitHub搜索、三正文成功与一次手册不可访问后收口；记录SHA `0d6e39a6170e973b38fea9ccf68f68f16ad411f54951510c5a4f13f647bdea90`。作者TradeStation手册的SafeZone止损不能挪作目标限价入场公式；现已核资料仍未唯一规定bar/episode、均值分母、固定观察窗、EMA初始化。root接受“不再无限追原版定义；未来可在收益前明示一次独立适配，但不能称原样复刻”。无B输出读取、新数据计算、实施/金融/训练或额外审批条件，当前B不受影响。
+
+
+## Stage124—126：单一限价适配定义（2026-10-18 09:14 CST）
+
+- 124仅拟议设计，SHA28b584b2…0d33；125独立静态定义复核P0/P1/P2=0/0/0，收据b449d89d…d43d。126 root收益前明示采纳错侧gap同母保守保护且不retry、L仅约束初开而原retry可越L。13/26/positive-only/DAY/严格一tick及V>=q只这一组，非原样Elder，无新源码/金融/训练或真实臂。
+- 分钟queue/全量、首分钟有利close额外屏蔽、悲观反证非全局下界和未来hook未验证等边界保留。当前B仍原session47648，完整绩效N/A、总金融11attempt/4accepted；参数与预算不改。只进入后续隔离实施规划，不签金融readiness，不以静态定义复核冒充alpha；目标active未达成。
+
+
+## Stage122、127—133：有限数据审查、限价组件完成与B真实预算失败（2026-10-18 09:43 CST）
+
+- 122独立最终增量仅closed026—129：104terminal/104manifest/591sidecars、125交付（90network+35local）、28301唯一键，8分层样本2971行；receipt950762ec…d17，P0/P1/P2=0/0/0。115+119+122合计151份，不冒称全部159response复核，response也不等于消费commit。108已封存全部driver，末CF505 prepare-only明确排除，未启动batch130。
+- 127固定实施计划、128唯一ledger与129/130两个独立组件、131真实native接合完成；没有新真实arm/金融入口。u时L定价/原gross只缩/no refill，错误侧gap真实初开→同母保护close且R=N/A/no retry，合法0.5R/retry可越初开L，首bar私有视图同时接即时/lifetime。真实RED、oracle失败7110e4与最后六方法GREENcc88d0/compile9670c0全保留。
+- 132一次整体独立审查剩余0/0/0，receiptbb4d79bd…640b，六源无漂移；额外有限拒单schema/空方真实holding consumer两反例实际exit0。root只接受组件，不重复旧suite，不外推alpha、queue、真实全历史数据资格或金融/生产readiness。
+- 原B总attempt11于chunk4e198d真实exit1，实际TimeoutError qualified_data_wait_budget_exceeded被外层bar_failed包装，停2025-04-11；不是猜测alarm或绩效门失败。failure_capture SHA c0047f6b…c260保留，没有raw/seal/summary，不能用部分账本恢复完整成绩。133 actual terminal事实SHA8d287ff4…9172；金融11attempt/4完整accepted不变，训练0。
+- 当前先由134独立核终态/原预算与实际gate consumed范围，定义精确数据复用；不盲重跑、不重复下载、原失败/策略/预算保留。新增过拟合否，继续价值在有界数据复用后取得可接受金融对照；目标active、production_qualified=false。
+
+
+## Stage134—135：失败独立审查闭合，精确数据复用实施（2026-10-18 09:50 CST）
+
+- 134 receipt2d6f19e8…dd7a，剩余P0/P1/P2=0/0/0，确认原resolver7200.009121秒超总预算，单wait约710.913秒未到1800；未以猜测alarm替代真实异常。没有combined/frames或完整raw/seal/summary，B绩效N/A，金融11attempt/4完整accepted保持。
+- 原capture160请求/159 pointers及真实appendcommit/1失败，全部commit old_keys_changed=0；36391唯一键=36345full+46anchor-only，真实appended31703/E4688。151审查覆盖之外8份身份已定位并只核既有021/strictgate资格链，未重聚价格；末CF505 prepare-only无消费，排除。audit-only projection SHA f601f0f3…ea18，没有途中PnL，也不自授新层资格。
+- 原061 freeze硬绑定旧063/B_TS/stage036，不能直接喂此065 failure；其通用数据容器与等值append/分权数学可复用。135明确新中性builder仅冻本次159scope，不合并/重存/重审旧190层，未来按序叠加；新manifest仍须一次独立代码+actual数据资格，不能拿134审计projection当数据资格。
+- 136作者已开始新增两源/tiny两测试与一次actual候选freeze；没有新runner/真实账户/下载/训练/readiness，旧源和原预算不改。新增过拟合否，继续价值在降低重复等待成本，目标active未达成。
+
+
+## Stage136—139：新分钟复用层接受与日线来源裁决（2026-10-18 10:04 CST）
+
+- 136候选仅一次真实freeze exit0，manifest563556d9…e694a；137一次联合代码/actual研究数据审查0/0/0，独立receipt b3fbb16d…dee68。159交付/36391key/36345full/46anchor-only逐七值/rights/proof相等，2783必要源闭合；原061 loader真实一次851d27 exit0，无金融。原pending manifest不改，以manifest+独立receipt表达资格；原190层未合并/重存/重审。
+- 138只读盘点确认原A_OFF同源DB SHA273f0bc1…36a54，无WAL/SHM，116394行/533合约/1786日，字段/唯一性/OHLCV正常。原零V记录保留，native carry生成边界有源码证据；0134500资格不外推全库。
+- 139 root明确后续一次研究级“同源继承+无损规范化+有限跨源样本”新审查，不声称全日线重聚分钟认证，不按未来后继筛末bar/零V删条/补价。141只导出候选，142新独立数据资格后才固定EMA13/26 build；140仅规划最小真实金融接合，无新真实臂/readiness。
+- 已读广期所337号署名通知原文镜像（南华12/6 16:56:08），12/17结算起20、12/18首笔规则；因此u12/17已知D12/18 tick20。GFEX原直连400timeout如实保留，不以运行源码注释冒称公告证据。
+- 金融11attempt/4完整accepted、训练0；完整新收益仍N/A。新增过拟合否，继续价值在完成既定候选的真实比较；目标active未达成、production_qualified=false。
+
+## Stage138—147 固定日线特征与EMA真实接合（2026-10-18）
+
+- 139裁定原accepted基准DB研究级源继承，无损导出而不逐年重新认证；141保留全部116394行/533真实合约和1468零成交量行，排除合成carry。142独立精确键/数值转换核对，固定127模型仅一次build，96813 ready，29期末无后续D仅特征不得下单。
+- LC tick公告原文由南华转载，2024-12-06已公开、12-17结算后生效；u=12-17使用D=12-18新tick不前视。成交量单位仅官方2020单边统计＋TQ原值透传的来源级推断；V≥q仍是研究成交近似，非排队证明。
+- 140真实入口计划经144采纳，145/146分别接native账户/持久化/独立账本与真实owner/等待/runtime。只约定四组合方法和一次整体独审，未以B身份冒充EMA；不改原570/600/840/1800/7200/4预算，暂无EMA金融结果。
+- 147保存闭合119—144、127/135新源、固定142特征和B失败/独立资格；233payload，manifest `39ce26bf01cb36f3dc21f0986b9efccd03480cdfe21569493ebda966310104c0`。新暂存234条，旧158条保持，未提交/推送、无原始行情或凭证。登记是复现证据，不是alpha晋级。

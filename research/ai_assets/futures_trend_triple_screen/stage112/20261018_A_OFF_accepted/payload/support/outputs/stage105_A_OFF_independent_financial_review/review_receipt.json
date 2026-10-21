@@ -1,0 +1,116 @@
+{
+  "schema": "stage105_partial_independent_A_OFF_audit_v1",
+  "reviewed_at": "2026-10-18T07:44:14.253692+08:00",
+  "independent_review": true,
+  "status": "core_cash_inventory_cost_metrics_passed_mother_reader_schema_blocked_not_fully_accepted",
+  "arm": "A_OFF",
+  "attempt": 1,
+  "global_arm_attempt": 2,
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "completion": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+    "sha256": "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944"
+  },
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+    "sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f"
+  },
+  "actual_audit_terminal": {
+    "command": [
+      "/Users/mac/Desktop/fian/.py311/bin/python",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage095_independent_off_account_review.py",
+      "--audit",
+      "--arm",
+      "A_OFF",
+      "--completion-evidence",
+      "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+      "--completion-evidence-sha256",
+      "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 7.202041624987032,
+    "audit_invocations": 1,
+    "financial_replays": 0,
+    "model_fits": 0,
+    "source_sha256": "be688b02314b7c9d5a23d21f3cf0575e9d66a6e1f7a8a5b8c80ebcd627426b6f"
+  },
+  "passed_execution_prefix": [
+    "root actual terminal and six external account SHA pins",
+    "fixed runner/writer sources and ownership/context/preflight/readiness closure",
+    "inherited078/081/094 and actual100 scope review exact087 two-source bindings",
+    "OFF eight keys/runtime absent/monthlyAI retained/compact settings+parameters reference equality",
+    "all raw account frames/capture-derived clock+usage exported CSV hash-equivalence",
+    "actual TradeData identity including synthetic parent signal lineage",
+    "1641 full calendar and 150000 account capital",
+    "unique chronological fills, signs and frame-vs-actual clock price/volume",
+    "one-pass fill-to-inventory start/end quantities and close marks",
+    "exchange margin and 1.10 reported broker daily margin",
+    "150000+cumulative actual cash+inventory marks equals equity",
+    "daily net_pnl cumulative and internal equity equality",
+    "per-fill slippage/commission charged once, daily fills/fees reconciled",
+    "return/DD/Sharpe/risk/count metrics equality to reported values",
+    "strict minute scan complete counts and first time"
+  ],
+  "passed_prefix_evidence": "frozen095 reached A a_mothers line435 after all prefix assertions; actual traceback contains first scalar mother failure; not an inferred summary-only pass",
+  "completed_mother_order_audit": false,
+  "mother_win_rate": null,
+  "accepted_financial_account": false,
+  "p0_findings": 0,
+  "p1_findings": 1,
+  "p2_findings": 0,
+  "findings": [
+    {
+      "id": "P1-105-001",
+      "component": "independent095 reader schema",
+      "cause": "raw usage.signal_date Timestamp('2020-01-08 00:00:00') compared against CSV candidate.date str '2020-01-08'",
+      "actual_trade": "BACKTESTING.1",
+      "actual_contract": "rb2005.SHFE",
+      "actual_candidate": "opened flat_entry long_case3 selected_volume10 candidate_index1",
+      "evidence": "actual_mother_date_type_probe.json",
+      "original_matches": 0,
+      "strict_ISO_day_matches": 1,
+      "consequence": "false unproven_rollover_open; no actual missing plan demonstrated; no financial rerun required"
+    }
+  ],
+  "qualification_scope": "own071/087 data code not self-reviewed; external078/081/094/100 bindings inherited",
+  "files": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/actual_mother_date_type_probe.json": {
+      "sha256": "b8d1eb3725bc3d43f82ed3b12e21aba9c58f53f95784afa92bdc32c4b186c9a8",
+      "bytes": 2324
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/audit.stderr.log": {
+      "sha256": "0203be6a441a2ec64889413e7b0a11d740cac5c9bb6da7a2d04a64425625db7b",
+      "bytes": 1358
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/first_mother_identity_probe.json": {
+      "sha256": "d4352aa8d2a50e6a358dad4a716ca6be6989a66fd636a582b1380b70ef78006f",
+      "bytes": 14593
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/actual_audit_terminal.json": {
+      "sha256": "7381a774793044962394cc4472e9f48eaf10f5776b75deab2cf7ffb379882496",
+      "bytes": 731
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage105_A_OFF_independent_financial_review/audit.stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "financial_replays": 0,
+  "actual_audit_invocations": 1,
+  "diagnostic_only_raw_loads_after_failure": 1,
+  "model_loads": 0,
+  "model_fits": 0,
+  "network_calls": 0,
+  "market_data_reload": false,
+  "old_suite_reruns": 0,
+  "prior_A_OFF_global_attempt1_status": "failed_no_complete_performance_NA",
+  "A0_reference": "restricted_fixed_pairwise_counterfactual_057_058_P1s",
+  "confidence": {
+    "core_cash_inventory_cost_metrics": "assertion-verified on entire completed account",
+    "schema_cause": "direct actual type and unique plan predicate evidence",
+    "mother_episodes": "not yet audited"
+  },
+  "original_goal_achieved": false,
+  "promotion_allowed": false,
+  "production_qualified": false
+}

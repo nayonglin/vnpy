@@ -1,0 +1,3062 @@
+{
+  "scopes": [
+    {
+      "digest": "b68b0d420bb109644528eb9aff5f6b580bb7fdf4223d366158503d22b5915d42",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b68b0d420bb109644528eb9aff5f6b580bb7fdf4223d366158503d22b5915d42/request.json",
+      "file_sha256": "85f88d1f0d451eb1e109e0ada1af04ef8537a22b1a25c802f54469c08a857439",
+      "batches": [
+        "batch026"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch026",
+      "requirements": [
+        {
+          "symbol": "CF105.CZCE",
+          "day": "2021-04-07",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "fc6f4e7929dc6085572ed9c1edd4abcc4a00b6ea46239e7c47cdcbd8ad947fd6",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_fc6f4e7929dc6085572ed9c1edd4abcc4a00b6ea46239e7c47cdcbd8ad947fd6/request.json",
+      "file_sha256": "d3a4fb49dd16bb56af23f85be0c316124ab9f8040c72541c5540323069f37d23",
+      "batches": [
+        "batch027"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch027",
+      "requirements": [
+        {
+          "symbol": "AP110.CZCE",
+          "day": "2021-04-12",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "67a125af8b868e602ff3c5c9efc270e1b1b0bb5abf705c9df2d40ea57302a1c1",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_67a125af8b868e602ff3c5c9efc270e1b1b0bb5abf705c9df2d40ea57302a1c1/request.json",
+      "file_sha256": "a8317232d3d421e65078a930e83e0b1977de15729d37fd9ce99cf2a09e1cd612",
+      "batches": [
+        "batch028"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch028",
+      "requirements": [
+        {
+          "symbol": "AP110.CZCE",
+          "day": "2021-04-15",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "bed6f6c35962f0b1e2a07c49eda9a675e7ff684273453cc46e48aa774fe6088b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_bed6f6c35962f0b1e2a07c49eda9a675e7ff684273453cc46e48aa774fe6088b/request.json",
+      "file_sha256": "c8d4f28b8ba406c90a14cbb040f7a07adab12f2cfb04d6ff16d680ef457606e1",
+      "batches": [
+        "batch029"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch029",
+      "requirements": [
+        {
+          "symbol": "jm2201.DCE",
+          "day": "2021-08-25",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "f1b63a52ff9916a9a4a17def87a75407da693a196c77c0e03b23112bb4bb4883",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_f1b63a52ff9916a9a4a17def87a75407da693a196c77c0e03b23112bb4bb4883/request.json",
+      "file_sha256": "89f3f2ad07c9c64cb184adabe8b76606607943280608942bc19bde0c58306d26",
+      "batches": [
+        "batch030"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch030",
+      "requirements": [
+        {
+          "symbol": "lh2201.DCE",
+          "day": "2021-09-24",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "f1633d048d32ba5103c10511d87be5468a980cc9fa2a41bea06e15afefc8dc60",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_f1633d048d32ba5103c10511d87be5468a980cc9fa2a41bea06e15afefc8dc60/request.json",
+      "file_sha256": "723a62eb3068465126b9d12635f312ed38201c1031a2d8ad3323cb1cc35ae201",
+      "batches": [
+        "batch031"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch031",
+      "requirements": [
+        {
+          "symbol": "hc2205.SHFE",
+          "day": "2022-01-21",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "3308c752b42170a9667ce916bd9a11cbc80a803b5c808e703d629e10b1cde7a1",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_3308c752b42170a9667ce916bd9a11cbc80a803b5c808e703d629e10b1cde7a1/request.json",
+      "file_sha256": "4cfc0bea978052cdc31e3a4adec11b64a9d26fa915e2f3e1c3db3cefa02c9b02",
+      "batches": [
+        "batch032"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch032",
+      "requirements": [
+        {
+          "symbol": "rb2205.SHFE",
+          "day": "2022-01-24",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "685f89706bf16736124255c4d3e548e25edc53132d8c97b85690f1c5af299759",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_685f89706bf16736124255c4d3e548e25edc53132d8c97b85690f1c5af299759/request.json",
+      "file_sha256": "539cbacfac799313244c6807f22c468cf4694fb5e1cbf01e2ea38dd289c5aa4c",
+      "batches": [
+        "batch033"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch033",
+      "requirements": [
+        {
+          "symbol": "hc2205.SHFE",
+          "day": "2022-01-25",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "27f27fa9e7a1fc499fca5bdf4ecee6ec03fffcbc715bbc47205511042ec413a6",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_27f27fa9e7a1fc499fca5bdf4ecee6ec03fffcbc715bbc47205511042ec413a6/request.json",
+      "file_sha256": "da512d2c0240691d8327131c18296d07a2a40329ed76f99492364c55f9a8b84a",
+      "batches": [
+        "batch034"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch034",
+      "requirements": [
+        {
+          "symbol": "au2206.SHFE",
+          "day": "2022-03-14",
+          "kind": "full_session",
+          "R": 555,
+          "E": 0,
+          "M": 555
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "82826a45cec017762d5a65e0d409a46c3d1c00e9018a786774903d0539fb689b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_82826a45cec017762d5a65e0d409a46c3d1c00e9018a786774903d0539fb689b/request.json",
+      "file_sha256": "e8f262712a4a3562cd28d8913b817bbcff01538eae087b7bfd9e954f97695bde",
+      "batches": [
+        "batch035"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch035",
+      "requirements": [
+        {
+          "symbol": "au2206.SHFE",
+          "day": "2022-05-17",
+          "kind": "full_session",
+          "R": 555,
+          "E": 0,
+          "M": 555
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "49019a3e0134519789a4e52d80724c8cc1a72a2d984227e9e3fb5d51a70cb2cd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_49019a3e0134519789a4e52d80724c8cc1a72a2d984227e9e3fb5d51a70cb2cd/request.json",
+      "file_sha256": "21e8418913a2575303c8c51a57cf0b0cba3e0a4fa1dbfd75d17762c82c63befa",
+      "batches": [
+        "batch036"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2209.SHFE",
+          "day": "2022-05-31",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 46,
+      "packet_exists": false
+    },
+    {
+      "digest": "e83c2d61178821224cc02574df08eba0c5d2cf22f02c7d5e1de7ff8b95715da4",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e83c2d61178821224cc02574df08eba0c5d2cf22f02c7d5e1de7ff8b95715da4/request.json",
+      "file_sha256": "654fb05719632a52ef1e056ebb85f2459a0e029de65d89fa69e0ee08c754fc9d",
+      "batches": [
+        "batch037"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch037",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-06-16",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "a37a78f4897cb690a8bc70d761e67e36398d7b0a70891d1bb0e3bf5b04723a9c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_a37a78f4897cb690a8bc70d761e67e36398d7b0a70891d1bb0e3bf5b04723a9c/request.json",
+      "file_sha256": "05fccc42f0913bcd48deb7ef276f6e3e728489d9340260c285e6607178e97685",
+      "batches": [
+        "batch038"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch038",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-05",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "35309f41aeb5d05cd22b91bb1efd6a013cde476586e7e2eb587e789eac4b87fd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_35309f41aeb5d05cd22b91bb1efd6a013cde476586e7e2eb587e789eac4b87fd/request.json",
+      "file_sha256": "57ac1a8c4161537cb3ae3e9d3106b1e6463266d052c20f50d59ab79215168059",
+      "batches": [
+        "batch038"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch038",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-06",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "70b50c4349a153ad1dc2cc5587f5cec7ad9c51244c235fe0575ead11fab3e568",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_70b50c4349a153ad1dc2cc5587f5cec7ad9c51244c235fe0575ead11fab3e568/request.json",
+      "file_sha256": "e7db79f1c7843244ed001f5a49b811af65c6cef36c33653b3448b66a42773df8",
+      "batches": [
+        "batch038"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "hc2210.SHFE",
+          "day": "2022-07-08",
+          "kind": "full_session",
+          "R": 345,
+          "E": 120,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "a0e120f117f088eeb8f87e4af90c3bf8c64c0b2f96cda694e750731713b81174",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_a0e120f117f088eeb8f87e4af90c3bf8c64c0b2f96cda694e750731713b81174/request.json",
+      "file_sha256": "200501111590fa9bb4966d251df1fb7a6ca5a9654ae5af9b4af515bb04a00f13",
+      "batches": [
+        "batch039"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch039",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-19",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "95acad593299babfae329c195d6f6ef11ca64cf087aeac5763b0b9fe4ecce76d",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_95acad593299babfae329c195d6f6ef11ca64cf087aeac5763b0b9fe4ecce76d/request.json",
+      "file_sha256": "d0e9f72344f373e0d680c678ec08c7a632d890841a1e00ee8bd5930623c97e26",
+      "batches": [
+        "batch040"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch040",
+      "requirements": [
+        {
+          "symbol": "jm2209.DCE",
+          "day": "2022-07-20",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "8d8cdb264c7c8262fb32d822a8f474916c7b1256c1bf1cdf0ce5c4ca221a3594",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_8d8cdb264c7c8262fb32d822a8f474916c7b1256c1bf1cdf0ce5c4ca221a3594/request.json",
+      "file_sha256": "df9f4d2dd1a8a67c6d001b11a25f3eb1c172e119dcd3024059875107ceafc13e",
+      "batches": [
+        "batch041"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch041",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-26",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "24f9f4dc92ecd63477ee7f41fd0e9c0beca7da16b83a1031ddc0a38e4604923d",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_24f9f4dc92ecd63477ee7f41fd0e9c0beca7da16b83a1031ddc0a38e4604923d/request.json",
+      "file_sha256": "205c2c8736c385fefe9ec44e735ba282d6bff7b88f86eb8f1eb8cd49e0680dad",
+      "batches": [
+        "batch041"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch041",
+      "requirements": [
+        {
+          "symbol": "jm2209.DCE",
+          "day": "2022-07-26",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "554911de9bdbe4efb9a15fe82188f72324ee64fbf4158238cde5e23a0d9ffa83",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_554911de9bdbe4efb9a15fe82188f72324ee64fbf4158238cde5e23a0d9ffa83/request.json",
+      "file_sha256": "9ca1c0553de6fb3a594e9161d3b0b761011ce0f34f0753c12897236061581e3a",
+      "batches": [
+        "batch042"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch042",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-27",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "49e9542f1c1edf4f7883ed27866ec48a63a4c6684276f520744fcc9e955cbba1",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_49e9542f1c1edf4f7883ed27866ec48a63a4c6684276f520744fcc9e955cbba1/request.json",
+      "file_sha256": "1f18dd868cddea7a81ecf4b896647aa83985d07c4d30a443e6650f4d76fe5ae1",
+      "batches": [
+        "batch043"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch043",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-07-28",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "223719a850e1f833986ded601e47a9cb03aefa70a4d6be93a9188b3f65f84bdc",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_223719a850e1f833986ded601e47a9cb03aefa70a4d6be93a9188b3f65f84bdc/request.json",
+      "file_sha256": "e8f58c906d0783f510abdeca403bc5c78890163342e5aafb76314a274e4bb014",
+      "batches": [
+        "batch044"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch044",
+      "requirements": [
+        {
+          "symbol": "SA209.CZCE",
+          "day": "2022-08-02",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "a26ef32a22ad383c18888766f787a5e2943e645ea988b8bbdbf71c34f73e6d2f",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_a26ef32a22ad383c18888766f787a5e2943e645ea988b8bbdbf71c34f73e6d2f/request.json",
+      "file_sha256": "b462cd82210c23fc66ad97c00c70b9e9aee0856513128c1c9f9943a20839a731",
+      "batches": [
+        "batch045"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch045",
+      "requirements": [
+        {
+          "symbol": "MA209.CZCE",
+          "day": "2022-08-04",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "af627beca6726610580c2f8afb24e4e5645a3e89b435cd8b2fcf5c0d6b824a50",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_af627beca6726610580c2f8afb24e4e5645a3e89b435cd8b2fcf5c0d6b824a50/request.json",
+      "file_sha256": "9568b85882c3f073f34e8384fccdcb8ff310356551b50c2939d478906e34a604",
+      "batches": [
+        "batch046"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SA301.CZCE",
+          "day": "2022-08-10",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "cf4326e511372e3f55fe17a3e57f01714cdd3bcc503b2c6c014ff01208a0b366",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_cf4326e511372e3f55fe17a3e57f01714cdd3bcc503b2c6c014ff01208a0b366/request.json",
+      "file_sha256": "58ec391605cabbcfc666804b913e060ddba8571001c0281f05029e40e0ec1fa5",
+      "batches": [
+        "batch047"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch047",
+      "requirements": [
+        {
+          "symbol": "jm2209.DCE",
+          "day": "2022-08-17",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "a9861c0a08cdba12a385626d98b3265269a6bf429cd9b1ecb7474e4f82202dea",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_a9861c0a08cdba12a385626d98b3265269a6bf429cd9b1ecb7474e4f82202dea/request.json",
+      "file_sha256": "5f9db904394b0b3d971fb4886386da20238c68aab44a9db452707d93e9f4742f",
+      "batches": [
+        "batch048"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch048",
+      "requirements": [
+        {
+          "symbol": "FG209.CZCE",
+          "day": "2022-08-18",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "182644fba24571c2e3ad8d26bc0927c61040f4bad785584c1993937fb3102f99",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_182644fba24571c2e3ad8d26bc0927c61040f4bad785584c1993937fb3102f99/request.json",
+      "file_sha256": "dd152331cbc94074d23178860e73d6ce8f926bfedb0025b83a143b675536b4a6",
+      "batches": [
+        "batch049"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch049",
+      "requirements": [
+        {
+          "symbol": "jm2209.DCE",
+          "day": "2022-08-19",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "edc86d6d4f3221a325fb8e70f57989a6599d6b7188bc7aa7cd265459de32ac77",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_edc86d6d4f3221a325fb8e70f57989a6599d6b7188bc7aa7cd265459de32ac77/request.json",
+      "file_sha256": "d6e7da9a116aa5c50dc81e9a664931341cae7e4bb771ea399b4ccb5551b128c6",
+      "batches": [
+        "batch050"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SM301.CZCE",
+          "day": "2022-08-31",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "f81ea1b1940298b2a0cca84a2853363a70cc04de618547e0e744d43f8e82dcc2",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_f81ea1b1940298b2a0cca84a2853363a70cc04de618547e0e744d43f8e82dcc2/request.json",
+      "file_sha256": "d50e0be2852b785f246826796241cda4b65f98da1a2cfc9fd3eef7249a99589b",
+      "batches": [
+        "batch051"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "hc2301.SHFE",
+          "day": "2022-09-23",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "b843d25388f797695f50ff87bb347662b68ee9f9fc7aecc78aab8f41eaae1430",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b843d25388f797695f50ff87bb347662b68ee9f9fc7aecc78aab8f41eaae1430/request.json",
+      "file_sha256": "c97ad45d1209b7eb9818ffef69a735d5472d02ee7d933cee733acb0a379f5051",
+      "batches": [
+        "batch052"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "cu2211.SHFE",
+          "day": "2022-10-11",
+          "kind": "full_session",
+          "R": 465,
+          "E": 0,
+          "M": 465
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "ae0c6fe7affeb60671b16b509d42900f6ada8ded7e8a747d0456c0389e6f5fc5",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ae0c6fe7affeb60671b16b509d42900f6ada8ded7e8a747d0456c0389e6f5fc5/request.json",
+      "file_sha256": "c53f421703128740a478988fe507f3f2470d3e83b5d41f779acd6cc1f8f41e2c",
+      "batches": [
+        "batch053"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch053",
+      "requirements": [
+        {
+          "symbol": "au2212.SHFE",
+          "day": "2022-11-22",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "e9aaf90deb19e67e62f7a143771940fd8942ff5e0a51022f8e06552e22d52402",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e9aaf90deb19e67e62f7a143771940fd8942ff5e0a51022f8e06552e22d52402/request.json",
+      "file_sha256": "2db685c77a3949e46e9d78a0adf182d19628b80a3e3b4e89ee3a0398142b0c94",
+      "batches": [
+        "batch054"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "cu2301.SHFE",
+          "day": "2022-12-01",
+          "kind": "full_session",
+          "R": 465,
+          "E": 464,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "f8a251be336e719fa3eac109429e8878a9a1b091ff33b8bdd12c9c88ab1de26e",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_f8a251be336e719fa3eac109429e8878a9a1b091ff33b8bdd12c9c88ab1de26e/request.json",
+      "file_sha256": "160defd5697628a4a28fd05c7ec677c1df61ccdeb94112404420b6e53e17cb4c",
+      "batches": [
+        "batch055"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "jm2305.DCE",
+          "day": "2022-12-12",
+          "kind": "full_session",
+          "R": 345,
+          "E": 344,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "63d342a377d62ade4a84c2b887f4c352a10be15738e24b93ebc33f33456a2ea9",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_63d342a377d62ade4a84c2b887f4c352a10be15738e24b93ebc33f33456a2ea9/request.json",
+      "file_sha256": "44047b47783becbbdf7a77cc9b4f2660c469284c56fbcf5ba3f96ed3cf55a7cf",
+      "batches": [
+        "batch056"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch056",
+      "requirements": [
+        {
+          "symbol": "fu2301.SHFE",
+          "day": "2022-12-14",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "26d1cc232962f5a87e0648ad67c5dfbd2cd925783f49ec60004920b0ccec4e2c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_26d1cc232962f5a87e0648ad67c5dfbd2cd925783f49ec60004920b0ccec4e2c/request.json",
+      "file_sha256": "8b5e41fd05a7a3214020ed652d5192336b548844586cf8d87bbee6852737a734",
+      "batches": [
+        "batch057"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch057",
+      "requirements": [
+        {
+          "symbol": "lh2303.DCE",
+          "day": "2022-12-16",
+          "kind": "full_session",
+          "R": 225,
+          "E": 1,
+          "M": 224
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "59376f46cf12f9c2937281c222b13e1b889e5356c9c5e2ea2a9c561049eddbdd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_59376f46cf12f9c2937281c222b13e1b889e5356c9c5e2ea2a9c561049eddbdd/request.json",
+      "file_sha256": "e98ed87624c1932a01e87284729149dae4afb37a17d63510a267969bef5bcd75",
+      "batches": [
+        "batch058"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch058",
+      "requirements": [
+        {
+          "symbol": "fu2305.SHFE",
+          "day": "2022-12-20",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "770dac2b66f0c070b5a6e5c9c1b1b0e24dc767f413af094f69a725b399f2c885",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_770dac2b66f0c070b5a6e5c9c1b1b0e24dc767f413af094f69a725b399f2c885/request.json",
+      "file_sha256": "d5ba00ff08e1f2f6d7641f13cce5b539b688aaccd53b41df8e0890869395c298",
+      "batches": [
+        "batch059"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch059",
+      "requirements": [
+        {
+          "symbol": "cu2303.SHFE",
+          "day": "2023-02-13",
+          "kind": "full_session",
+          "R": 465,
+          "E": 0,
+          "M": 465
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "db7701a354b14bda6c85e088ae5260165f03c7e0baab0d6aa823cd19a8ad9d85",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_db7701a354b14bda6c85e088ae5260165f03c7e0baab0d6aa823cd19a8ad9d85/request.json",
+      "file_sha256": "43df145c6f7bbc665d53a347ae322b6befada7334a1b4e5f97b07591e260a871",
+      "batches": [
+        "batch059"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch059",
+      "requirements": [
+        {
+          "symbol": "cu2303.SHFE",
+          "day": "2023-02-20",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "4f1e1f996858433003da5bda05cceb329ce252d2f40f32262a196894db1dace0",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4f1e1f996858433003da5bda05cceb329ce252d2f40f32262a196894db1dace0/request.json",
+      "file_sha256": "675a5e550249d311b4fee52e682e7301e0797e0466a8e4c0e0eaa5f0b5e8e79e",
+      "batches": [
+        "batch060"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch060",
+      "requirements": [
+        {
+          "symbol": "MA305.CZCE",
+          "day": "2023-03-13",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "179ac174b169636576714bbe4f20d1d649857b4b08a442488ae97e8f9c132097",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_179ac174b169636576714bbe4f20d1d649857b4b08a442488ae97e8f9c132097/request.json",
+      "file_sha256": "a9d8a9fb3cb7098cef7e6790958f09f8557cb9f87bec95a58f48bcb6122d2fba",
+      "batches": [
+        "batch061"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch061",
+      "requirements": [
+        {
+          "symbol": "MA305.CZCE",
+          "day": "2023-03-14",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "bd024c6c432149085a7de13aefcc8cbbf04f505ae2f2611251d811458ae34edf",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_bd024c6c432149085a7de13aefcc8cbbf04f505ae2f2611251d811458ae34edf/request.json",
+      "file_sha256": "80e6b9e9a29591712b4d2174113a10336b116e640b9452e12163008422f3ed94",
+      "batches": [
+        "batch061"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch061",
+      "requirements": [
+        {
+          "symbol": "MA305.CZCE",
+          "day": "2023-03-15",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "1852d3d9b767c214456334183c36e4abe37fb3006fb456ee4a7b1c578b6348dd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_1852d3d9b767c214456334183c36e4abe37fb3006fb456ee4a7b1c578b6348dd/request.json",
+      "file_sha256": "eeff896884d3fd25ec9664e394d6bdd540286a9e608ef8d52846cc8bf24d13d8",
+      "batches": [
+        "batch061"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch061",
+      "requirements": [
+        {
+          "symbol": "MA305.CZCE",
+          "day": "2023-03-16",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "a3c9fda890bc7d447d0bf4597cc67e8109433c6da851f027c487897692d7fb62",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_a3c9fda890bc7d447d0bf4597cc67e8109433c6da851f027c487897692d7fb62/request.json",
+      "file_sha256": "9eccae31586977823f0e10df651be6f7579f4e90327966282fc688a44f0e9c1d",
+      "batches": [
+        "batch062"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "cu2304.SHFE",
+          "day": "2023-03-20",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "1adb608ddf3e473a9b86108d94a243a864631798ded0b9eb73547398e8585db6",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_1adb608ddf3e473a9b86108d94a243a864631798ded0b9eb73547398e8585db6/request.json",
+      "file_sha256": "b3585a1da78977194c08ff431ce418597f06bae8f19af0541ab4cb6ab2fcf3c5",
+      "batches": [
+        "batch063"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch063",
+      "requirements": [
+        {
+          "symbol": "MA305.CZCE",
+          "day": "2023-04-03",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "55564805f442dda6e10972ccf484eeaf65e699b971dee52100679b5cecbab76a",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_55564805f442dda6e10972ccf484eeaf65e699b971dee52100679b5cecbab76a/request.json",
+      "file_sha256": "4714321907387cf03218e7834f7098fbce6529ce48faaca49cf47afdbe5e72aa",
+      "batches": [
+        "batch064"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2309.SHFE",
+          "day": "2023-04-11",
+          "kind": "full_session",
+          "R": 345,
+          "E": 344,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "00b16d90cecf3817a6a2d1d262e489984b0de6a66e0468bcf60634962d4bba84",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_00b16d90cecf3817a6a2d1d262e489984b0de6a66e0468bcf60634962d4bba84/request.json",
+      "file_sha256": "6ca25c01ba789c95c3280a64cf591aafe7da24ff625eafe4700069b0ca278414",
+      "batches": [
+        "batch065"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "hc2310.SHFE",
+          "day": "2023-04-13",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "1d31d2019ff4852df8fe588f437af253604220e50989e992d5148ec6a2d565ba",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_1d31d2019ff4852df8fe588f437af253604220e50989e992d5148ec6a2d565ba/request.json",
+      "file_sha256": "ea94b0faf82dad21211cc6961e72ad3d1813a0eb66c30bb1cd230ee4b707b388",
+      "batches": [
+        "batch066"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch066",
+      "requirements": [
+        {
+          "symbol": "OI309.CZCE",
+          "day": "2023-04-21",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "969e86c18930c903ef8457761dc3f616bbac64af22779d7ddbff5fd5f3388b10",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_969e86c18930c903ef8457761dc3f616bbac64af22779d7ddbff5fd5f3388b10/request.json",
+      "file_sha256": "5b18a08ec9844b873f889da2306f8b344481e4696f2450ec4e8e8481faeeae6c",
+      "batches": [
+        "batch067"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch067",
+      "requirements": [
+        {
+          "symbol": "jm2305.DCE",
+          "day": "2023-04-24",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "17df8cf9d41e72ee9a715084e42e2e4330b3d056768780a3c79b56ee681b5ba8",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_17df8cf9d41e72ee9a715084e42e2e4330b3d056768780a3c79b56ee681b5ba8/request.json",
+      "file_sha256": "fea76676a3a463c25d5b2a61b6a93b500651ce7b487a8b126e9b51948d137084",
+      "batches": [
+        "batch068"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SM306.CZCE",
+          "day": "2023-04-24",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "e8b6fa2bbc2b97bc1b9b84a40c082ad1372437e5989faee92a79f8f208d3e316",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e8b6fa2bbc2b97bc1b9b84a40c082ad1372437e5989faee92a79f8f208d3e316/request.json",
+      "file_sha256": "daf878ea38404b7f10e194253da6b4c3ce638f95da1fe3e047f7b321eb33b53c",
+      "batches": [
+        "batch069"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch069",
+      "requirements": [
+        {
+          "symbol": "FG309.CZCE",
+          "day": "2023-05-18",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "b9138ce01fc1659b3f7ece6c15db83f7ccc9f49cf78c5d802eca68538fe0c753",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b9138ce01fc1659b3f7ece6c15db83f7ccc9f49cf78c5d802eca68538fe0c753/request.json",
+      "file_sha256": "25ee32db22579ce2ff472223ec903dcbd353decb90a1497fd7a3fe0cd25d887e",
+      "batches": [
+        "batch069"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "cu2306.SHFE",
+          "day": "2023-05-19",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "9a155fa052bf48034b44b64da5eababa33158e3106f7642adcbe60d98ed164e0",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_9a155fa052bf48034b44b64da5eababa33158e3106f7642adcbe60d98ed164e0/request.json",
+      "file_sha256": "ac3118c705668c98a31ef6af8b2b82c75883eba5f09f9c69ab4a20959020fa5a",
+      "batches": [
+        "batch070"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch070",
+      "requirements": [
+        {
+          "symbol": "FG309.CZCE",
+          "day": "2023-05-23",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "fc0737c7abcebee7d93b66d7004d4117845c4f9bcecd37d744b3cb0258f2eec9",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_fc0737c7abcebee7d93b66d7004d4117845c4f9bcecd37d744b3cb0258f2eec9/request.json",
+      "file_sha256": "c6deca0f02d967e3141347a2e4e9f893620fa2b67dfbbf7dfca4ce569b8174dd",
+      "batches": [
+        "batch071"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch071",
+      "requirements": [
+        {
+          "symbol": "FG309.CZCE",
+          "day": "2023-06-05",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "e4d6621d1e5645fab467ecdc50a2e47113e28eca35921f83e7be16fc42160c59",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e4d6621d1e5645fab467ecdc50a2e47113e28eca35921f83e7be16fc42160c59/request.json",
+      "file_sha256": "55742b16a5823efa40d6aa146fa2d34ed3ca4a59f6502a561caeec0aa7cd915c",
+      "batches": [
+        "batch072"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SM309.CZCE",
+          "day": "2023-07-18",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "7c6e26c955dcb10df7368968063feda79cfb5fcb1be486cdd9022c039b302e5b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_7c6e26c955dcb10df7368968063feda79cfb5fcb1be486cdd9022c039b302e5b/request.json",
+      "file_sha256": "b92862429fa8ca661fc2f4f8b3b4d13074fba1574dd45e29c6b2bb3b6aa679e4",
+      "batches": [
+        "batch073"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch073",
+      "requirements": [
+        {
+          "symbol": "CF309.CZCE",
+          "day": "2023-07-19",
+          "kind": "full_session",
+          "R": 345,
+          "E": 344,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "1777f0725ee1a69d6ee6a2a886e6a4ef9b98cb2e9bd1083cf9361a0995b8941d",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_1777f0725ee1a69d6ee6a2a886e6a4ef9b98cb2e9bd1083cf9361a0995b8941d/request.json",
+      "file_sha256": "335520c082401c786e2d8abf07ed708f40d1858457f2ff13f4a6535246717d23",
+      "batches": [
+        "batch074"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch074",
+      "requirements": [
+        {
+          "symbol": "CF309.CZCE",
+          "day": "2023-07-20",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "10f2bbec540c701116577b5951aef2e742a4367fc8dbde41b17002f8caca3794",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_10f2bbec540c701116577b5951aef2e742a4367fc8dbde41b17002f8caca3794/request.json",
+      "file_sha256": "df18a23215e4e34d9d344b7d0539ab31bb91edac5f80f2cf80ee9b47b606a446",
+      "batches": [
+        "batch075"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch075",
+      "requirements": [
+        {
+          "symbol": "CF309.CZCE",
+          "day": "2023-07-25",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        },
+        {
+          "symbol": "cu2308.SHFE",
+          "day": "2023-07-25",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 55,
+      "packet_exists": true
+    },
+    {
+      "digest": "afe11f98a5e6825646581d8ac2b41f209a766ccd4f6bb75f02101c7549511090",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_afe11f98a5e6825646581d8ac2b41f209a766ccd4f6bb75f02101c7549511090/request.json",
+      "file_sha256": "bfc6f110a37d09d3238528851490023590dbde4ca331bc425631d13e328358f8",
+      "batches": [
+        "batch076"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch076",
+      "requirements": [
+        {
+          "symbol": "MA309.CZCE",
+          "day": "2023-08-10",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "2cfcec0bbbe2e197927f5ad33500baa7feaa2cb86b28da8c55d97329ab5f5171",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_2cfcec0bbbe2e197927f5ad33500baa7feaa2cb86b28da8c55d97329ab5f5171/request.json",
+      "file_sha256": "a21c3f389c5516f691ba3ece7d03292893f00f531ea29d9e07f322f3415076fb",
+      "batches": [
+        "batch076"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch076",
+      "requirements": [
+        {
+          "symbol": "MA309.CZCE",
+          "day": "2023-08-15",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "b3c20bbbe7eaeba2c626f8612817f9f1c2522980ed03ac3c0cc22e31a195ad12",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b3c20bbbe7eaeba2c626f8612817f9f1c2522980ed03ac3c0cc22e31a195ad12/request.json",
+      "file_sha256": "57b81f0ca6021c0e456ddafe14f95c89f9a61d9a56e780aee1c4156dc29147d8",
+      "batches": [
+        "batch077"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2310.SHFE",
+          "day": "2023-08-24",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "b619e1f910dfd07ceb74f808a839c8b3056eadbd26aa95368bb05bb7b4e62ce2",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b619e1f910dfd07ceb74f808a839c8b3056eadbd26aa95368bb05bb7b4e62ce2/request.json",
+      "file_sha256": "d12d3ad89b23c0ba4b9b73ba763456dafe5611e1fb2bf7b066ab5f67f61d4fb3",
+      "batches": [
+        "batch078"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SM310.CZCE",
+          "day": "2023-08-31",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        },
+        {
+          "symbol": "fu2310.SHFE",
+          "day": "2023-08-31",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 36,
+      "packet_exists": false
+    },
+    {
+      "digest": "371a84e409c7f6c5d8da47069365c17a005cbf07eb6a6bc3694e85fb9607dece",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_371a84e409c7f6c5d8da47069365c17a005cbf07eb6a6bc3694e85fb9607dece/request.json",
+      "file_sha256": "3a9505f4811716e73acbca4f0a43aca71231beda0bf21fe962625db956d23715",
+      "batches": [
+        "batch078"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch078",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-04",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "93cb6229bef7f6c8966157e13bcf0ecff7b945f769d5309e42a5c0d73218863f",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_93cb6229bef7f6c8966157e13bcf0ecff7b945f769d5309e42a5c0d73218863f/request.json",
+      "file_sha256": "c4e8bd8becd521f06468f1d086e19a8818c43b2b0b91e748483033cdfd64d791",
+      "batches": [
+        "batch079"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "hc2401.SHFE",
+          "day": "2023-09-07",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "5ed3fa0023716c797fee76bd9c09363e9c5803d0397d63c737fe899d9f8b6ea2",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_5ed3fa0023716c797fee76bd9c09363e9c5803d0397d63c737fe899d9f8b6ea2/request.json",
+      "file_sha256": "fb5f55d7842a81a4eebe85ee944609bae00bc07442eb6f1355ef7981d449543d",
+      "batches": [
+        "batch080"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch080",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-14",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "dfb1a338c3f396e152ab92b16b3f8c6c0a4fd76b7bc338261f6b31dc97265b3b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_dfb1a338c3f396e152ab92b16b3f8c6c0a4fd76b7bc338261f6b31dc97265b3b/request.json",
+      "file_sha256": "a97a6f1c156bf7b72bde481ff06f276a3462554e87e50270aafc5cd37063fa10",
+      "batches": [
+        "batch081"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch081",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-15",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "208af8e28269d969748d9941662dfc5464802595a19ae49def0b2a7009d00d4c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_208af8e28269d969748d9941662dfc5464802595a19ae49def0b2a7009d00d4c/request.json",
+      "file_sha256": "53da650692e507e114854ab466b5e7796e45441d52c40b25f04ac921ed7a4b9e",
+      "batches": [
+        "batch081"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch081",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-18",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "332d347f840ee0c0370a49900bce673366c3f72b6778cfd5f5271fa7fb697843",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_332d347f840ee0c0370a49900bce673366c3f72b6778cfd5f5271fa7fb697843/request.json",
+      "file_sha256": "5284e3213b06f496c9e4ebb12ddb903343fa7767e89ac4911ab0ab693e170dab",
+      "batches": [
+        "batch081"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch081",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-20",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "c9670ecfcc234d3bde104323f7ff7d424cef9c08286acfc1a0d713a75afd210c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_c9670ecfcc234d3bde104323f7ff7d424cef9c08286acfc1a0d713a75afd210c/request.json",
+      "file_sha256": "01863f5c27bc496dcdc13d55889a6351e535742eb23f30b31fd70f1359877721",
+      "batches": [
+        "batch082"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch082",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-21",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "8f8e7c7db0b492e200911f30698c2a6aa6a243efa1f9ceb952ad39b461fa5d42",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_8f8e7c7db0b492e200911f30698c2a6aa6a243efa1f9ceb952ad39b461fa5d42/request.json",
+      "file_sha256": "286522f25c6f2d052b304b042ef5468452312b52ab2c1ca6df5ed5f2b5f5573e",
+      "batches": [
+        "batch083"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch083",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-09-27",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "bf66b9aa700ec026e3c04d681adec83de822c8f3bb170d2b45af0ffae5e33833",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_bf66b9aa700ec026e3c04d681adec83de822c8f3bb170d2b45af0ffae5e33833/request.json",
+      "file_sha256": "04d0d174d31543a08feb1b0cabe411f7c42e9491557a7b0571124577e98b267c",
+      "batches": [
+        "batch083"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch083",
+      "requirements": [
+        {
+          "symbol": "fu2311.SHFE",
+          "day": "2023-09-27",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "398b2b30207cab881376a770c35ba5c15538f9d3f85e669b9689c759879a3a60",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_398b2b30207cab881376a770c35ba5c15538f9d3f85e669b9689c759879a3a60/request.json",
+      "file_sha256": "987ab4e1187914e64939c62a42cce08c2d39a0639ef5b09732ba798f33587465",
+      "batches": [
+        "batch083"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch083",
+      "requirements": [
+        {
+          "symbol": "FG401.CZCE",
+          "day": "2023-10-09",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "44d033104e94fd9039a485200084b61b9fc397e902f23dacfb4ecedc787017d4",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_44d033104e94fd9039a485200084b61b9fc397e902f23dacfb4ecedc787017d4/request.json",
+      "file_sha256": "1a1d5754bd635cf61153b4bdd50b0ea22b33e3312288b8dc98690b0b6aed182f",
+      "batches": [
+        "batch083"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "cu2311.SHFE",
+          "day": "2023-10-09",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "e46f1cb87c6c002e1e9076bd85727219f41481cf175c4436fabef8960c116a0b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e46f1cb87c6c002e1e9076bd85727219f41481cf175c4436fabef8960c116a0b/request.json",
+      "file_sha256": "99190004bb60309d2940b12b3e6b60b3e968463c634b3b0c66faff9613407533",
+      "batches": [
+        "batch083"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch083",
+      "requirements": [
+        {
+          "symbol": "fu2311.SHFE",
+          "day": "2023-10-10",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "621ddaf5046183c6dc38e31d7cc547b28e6a07e865f995c545b6110512268a4b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_621ddaf5046183c6dc38e31d7cc547b28e6a07e865f995c545b6110512268a4b/request.json",
+      "file_sha256": "d0e9a8be78c122bec93d91a9bc0193c80e8bd6a6cff51491c3dc213c0ab0f262",
+      "batches": [
+        "batch084"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch084",
+      "requirements": [
+        {
+          "symbol": "fu2311.SHFE",
+          "day": "2023-10-17",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "00a26955336fe5f267422539408118179e209ddf9492770945db1789f8352d9a",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_00a26955336fe5f267422539408118179e209ddf9492770945db1789f8352d9a/request.json",
+      "file_sha256": "c7dfb417e9e382b9574c303707f39f2b8bcab567cf7d351e19f05077f20b519c",
+      "batches": [
+        "batch085"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch085",
+      "requirements": [
+        {
+          "symbol": "SM311.CZCE",
+          "day": "2023-10-19",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "7bb468fa846eb3c236e6fb2eb714a4dd951ce29d44eaf12573277667cba45691",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_7bb468fa846eb3c236e6fb2eb714a4dd951ce29d44eaf12573277667cba45691/request.json",
+      "file_sha256": "52dce6221b89e3f3a941817bfd1ec42441c7af4b59807dd7580f99e25f9b09db",
+      "batches": [
+        "batch086"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2312.GFEX",
+          "day": "2023-10-19",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "c0954aab9bc8a0361710fca23c37eadab909b484b40c34a66267369688be59e9",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_c0954aab9bc8a0361710fca23c37eadab909b484b40c34a66267369688be59e9/request.json",
+      "file_sha256": "74bffff873320d41b0a186fc0e047e427220e6384ecd7a96ab80d0b49abe0bb6",
+      "batches": [
+        "batch086"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch086",
+      "requirements": [
+        {
+          "symbol": "cu2311.SHFE",
+          "day": "2023-10-20",
+          "kind": "full_session",
+          "R": 465,
+          "E": 0,
+          "M": 465
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "7e2ec7fd6184727d39796626e6c9b24a8b1812032a9ca1f719f863a4ccc622a6",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_7e2ec7fd6184727d39796626e6c9b24a8b1812032a9ca1f719f863a4ccc622a6/request.json",
+      "file_sha256": "55bbf75f6ebd745cf93c8ae2767e82c41b863b7d3c4601c4bcb6971c51c5f34d",
+      "batches": [
+        "batch087"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch087",
+      "requirements": [
+        {
+          "symbol": "cu2311.SHFE",
+          "day": "2023-10-26",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "ec761505c1c1378a592eb0b952a2e6354cc24ecdf584ca200d2267b01ac57251",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ec761505c1c1378a592eb0b952a2e6354cc24ecdf584ca200d2267b01ac57251/request.json",
+      "file_sha256": "1c88ecfd24db400a44488d20e1431d0767dfcb47642a2089c11a91a8599fd33d",
+      "batches": [
+        "batch087"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2401.SHFE",
+          "day": "2023-10-30",
+          "kind": "full_session",
+          "R": 345,
+          "E": 120,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "ddb50fa5ce3882fa65c3b79becdbcb4d3c9ce8c31a899d78bfcd12c9fb713e87",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ddb50fa5ce3882fa65c3b79becdbcb4d3c9ce8c31a899d78bfcd12c9fb713e87/request.json",
+      "file_sha256": "c3be36233bc2ca628161d20c5f8a5ccd792bf7d632b4ce4cdf077591e20951bc",
+      "batches": [
+        "batch088"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch088",
+      "requirements": [
+        {
+          "symbol": "si2312.GFEX",
+          "day": "2023-11-07",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "e2f68e5a4f3ac4b86dffd5e89591637f4362d3890fc671be6ffdfdfcc4a5b43d",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e2f68e5a4f3ac4b86dffd5e89591637f4362d3890fc671be6ffdfdfcc4a5b43d/request.json",
+      "file_sha256": "63d406c0ccd0fbcff3fd9fbdd194223dd346b2c2182b0b6fdad6fd26760c33ac",
+      "batches": [
+        "batch089"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "jm2401.DCE",
+          "day": "2023-11-22",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "2ba07c7c7f6f2f1401567fe26ac2570f5052485ba96f100b2115b7ac51ebea67",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_2ba07c7c7f6f2f1401567fe26ac2570f5052485ba96f100b2115b7ac51ebea67/request.json",
+      "file_sha256": "079eb66e96d69615bfa045f01a4698cd63ed1fc147a92fa03b9af3ed2b4f0892",
+      "batches": [
+        "batch090"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch090",
+      "requirements": [
+        {
+          "symbol": "lh2401.DCE",
+          "day": "2023-11-30",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "d6d0be9292e7ecfb51956d45237e65fa19a79466d52a719761009b7b1e97d0df",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_d6d0be9292e7ecfb51956d45237e65fa19a79466d52a719761009b7b1e97d0df/request.json",
+      "file_sha256": "6c8eb1a5414b1a5eb1da29c403c900065957df3dfe606e4f568e41ebd3cd38a0",
+      "batches": [
+        "batch091"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch091",
+      "requirements": [
+        {
+          "symbol": "CF401.CZCE",
+          "day": "2023-12-01",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "65504b43ce6d662de27a59113b82d16db1d677d20031bf455b22cf0bdcb3fa2a",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_65504b43ce6d662de27a59113b82d16db1d677d20031bf455b22cf0bdcb3fa2a/request.json",
+      "file_sha256": "3235fc9a691ba42b2b5c90f753bc08effda973ebbc24ac25a5d06da2112fd5ec",
+      "batches": [
+        "batch092"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch092",
+      "requirements": [
+        {
+          "symbol": "lh2401.DCE",
+          "day": "2023-12-11",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        },
+        {
+          "symbol": "ru2401.SHFE",
+          "day": "2023-12-11",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 55,
+      "packet_exists": true
+    },
+    {
+      "digest": "0c9cad5ca55b10e06a62dc3f88af2a7895ab9c6da1711fc2a0b5736fb1df4d53",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_0c9cad5ca55b10e06a62dc3f88af2a7895ab9c6da1711fc2a0b5736fb1df4d53/request.json",
+      "file_sha256": "6efaa82dbd4a48f3f1404cfd93a3b6526e7ac4974b07a95cfd3a3e5749445653",
+      "batches": [
+        "batch093"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch093",
+      "requirements": [
+        {
+          "symbol": "fu2401.SHFE",
+          "day": "2023-12-14",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "35cbc94631e7a8cf65fd8cd7de027f8d511f38f55883f391f4eae35fdd6dd72b",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_35cbc94631e7a8cf65fd8cd7de027f8d511f38f55883f391f4eae35fdd6dd72b/request.json",
+      "file_sha256": "134faced7c4736a5f6880244fcdd30b2f5abd251f8efa4046e54bddb87cb74c1",
+      "batches": [
+        "batch094"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch094",
+      "requirements": [
+        {
+          "symbol": "OI401.CZCE",
+          "day": "2023-12-26",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "34e3d9300cd801ec35be516c6465f4accc6c9a3c0a7ea8f22bc05fe0b2695afc",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_34e3d9300cd801ec35be516c6465f4accc6c9a3c0a7ea8f22bc05fe0b2695afc/request.json",
+      "file_sha256": "460e469dd84b318679ee45bd969d81ac34824a46eeaa4acc4d6b49cb5dd1e7cc",
+      "batches": [
+        "batch095"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch095",
+      "requirements": [
+        {
+          "symbol": "cu2401.SHFE",
+          "day": "2023-12-29",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        },
+        {
+          "symbol": "cu2402.SHFE",
+          "day": "2023-12-29",
+          "kind": "full_session",
+          "R": 465,
+          "E": 1,
+          "M": 464
+        }
+      ],
+      "route": "network",
+      "sources": 54,
+      "packet_exists": true
+    },
+    {
+      "digest": "ae21d29ca77939180ff7a6859a4f88b666698644d53150b0f0529f1d27d49266",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ae21d29ca77939180ff7a6859a4f88b666698644d53150b0f0529f1d27d49266/request.json",
+      "file_sha256": "ba0da3bf2b1cae36d94600147eac33f13b74bb47158e457d9d0c649012d55d43",
+      "batches": [
+        "batch096"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SM403.CZCE",
+          "day": "2024-02-01",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "4b36260cf34c7d976e617c618bdbadc257628201cfc87e10db139297d8938b56",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4b36260cf34c7d976e617c618bdbadc257628201cfc87e10db139297d8938b56/request.json",
+      "file_sha256": "6e369eeb5a221d8e1329f288f420e9a9594bc8b616d2233f02a2d57073c54931",
+      "batches": [
+        "batch096"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch096",
+      "requirements": [
+        {
+          "symbol": "fu2403.SHFE",
+          "day": "2024-02-02",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "da73efa178d0b94be2b03bdd34e4b5acd2d483261c135b86a026c090719847f9",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_da73efa178d0b94be2b03bdd34e4b5acd2d483261c135b86a026c090719847f9/request.json",
+      "file_sha256": "df68eda96da46bb8a2f286a9b6372eef43eb9a67c7269672fdae4449e6eacf5b",
+      "batches": [
+        "batch097"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2404.GFEX",
+          "day": "2024-02-21",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "4bf8f96381f3852be726ea1b68b196f94b817981a918bf2db43b9fd613f97c43",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4bf8f96381f3852be726ea1b68b196f94b817981a918bf2db43b9fd613f97c43/request.json",
+      "file_sha256": "02b6bab05bdb6955059eb9001dfbc60570973f9194f42c07d357e6216c30bfcb",
+      "batches": [
+        "batch098"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch098",
+      "requirements": [
+        {
+          "symbol": "fu2405.SHFE",
+          "day": "2024-03-12",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "6a434080c1f5ca99c2431131beab2319e0a0161455d882e358bf3260f86f179e",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_6a434080c1f5ca99c2431131beab2319e0a0161455d882e358bf3260f86f179e/request.json",
+      "file_sha256": "f90109376a73ede5e6d54fb88f6697a114a31fc6f53d625ec2bde85f0f62ee6c",
+      "batches": [
+        "batch099"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch099",
+      "requirements": [
+        {
+          "symbol": "fu2405.SHFE",
+          "day": "2024-03-13",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "ca5c9bc82dea305604486f2843a2573113e31cbf33f5ee3f7ac7955e111b6441",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ca5c9bc82dea305604486f2843a2573113e31cbf33f5ee3f7ac7955e111b6441/request.json",
+      "file_sha256": "80a635ac9f0fcf2b7952fce095d02e86c89ea843647f02775f4f8a4edbef69e7",
+      "batches": [
+        "batch100"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch100",
+      "requirements": [
+        {
+          "symbol": "SM405.CZCE",
+          "day": "2024-04-11",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "245b4c1af08a28fc5190ff6b7acc656dd45e9a781393ef7c60eeef4b50653285",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_245b4c1af08a28fc5190ff6b7acc656dd45e9a781393ef7c60eeef4b50653285/request.json",
+      "file_sha256": "6a165578356c200f66643c0c87af911d49589b6e61fc845f3370e080067a3676",
+      "batches": [
+        "batch101"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch101",
+      "requirements": [
+        {
+          "symbol": "MA405.CZCE",
+          "day": "2024-04-12",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "5d6dee57594724d1c15c50c7184f1ad543fc7691fb592e56b6c21a4af1f3141c",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_5d6dee57594724d1c15c50c7184f1ad543fc7691fb592e56b6c21a4af1f3141c/request.json",
+      "file_sha256": "8bd88fee7e4e079dbcd6842c9e427d6c5ec8179a717a190dba6a06f12643fb95",
+      "batches": [
+        "batch102"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch102",
+      "requirements": [
+        {
+          "symbol": "fu2405.SHFE",
+          "day": "2024-04-17",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "7f423de04e6f86b14d85c509dd89d2bf543f72148955793999cb3858e5d63de1",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_7f423de04e6f86b14d85c509dd89d2bf543f72148955793999cb3858e5d63de1/request.json",
+      "file_sha256": "3397e24cfe81f419e79ba2089adaa1acef86d5bfb7a6193d64a60e93a22e6ae0",
+      "batches": [
+        "batch103"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch103",
+      "requirements": [
+        {
+          "symbol": "SM405.CZCE",
+          "day": "2024-04-22",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "28d267ec7cd9a01b255c404dd18acbe8abd53aad3b4c61385e4f6f1a36805439",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_28d267ec7cd9a01b255c404dd18acbe8abd53aad3b4c61385e4f6f1a36805439/request.json",
+      "file_sha256": "16e3c8c31de4a82ae1abf4817d4f8d108c5307d254d836007db74b357f624b32",
+      "batches": [
+        "batch104"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2407.GFEX",
+          "day": "2024-05-21",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "c30bb5c4a029be9348cff726687b86af63cd2c96acfb9ebe67269ba211a350fc",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_c30bb5c4a029be9348cff726687b86af63cd2c96acfb9ebe67269ba211a350fc/request.json",
+      "file_sha256": "7664d93f7bfd9cb5c98b99a077cb20fecad647e8dec9c48843398e4255f10af6",
+      "batches": [
+        "batch105"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch105",
+      "requirements": [
+        {
+          "symbol": "FG409.CZCE",
+          "day": "2024-06-04",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "140c4f1deb4302eed495e278aa190a90671425cd35a3f802057275ba2113af37",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_140c4f1deb4302eed495e278aa190a90671425cd35a3f802057275ba2113af37/request.json",
+      "file_sha256": "fdf8682a789f6d675755317579b5d4d8e1a5dbddada15567eb9d2ead2a1c358c",
+      "batches": [
+        "batch106"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch106",
+      "requirements": [
+        {
+          "symbol": "cu2407.SHFE",
+          "day": "2024-06-21",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "b60efbc9bb2abf5334ccccf94afbb006d7509e3af4774cfbb1b3bfa6ede659c0",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b60efbc9bb2abf5334ccccf94afbb006d7509e3af4774cfbb1b3bfa6ede659c0/request.json",
+      "file_sha256": "d92dc09bbc2d95d14a8144b8b7d35c447fc954272838dd08c5314d4b89e07c0e",
+      "batches": [
+        "batch107"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "lc2411.GFEX",
+          "day": "2024-07-03",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "ef2a501996ecd0bbac77d88b4e93e54a118658353d45d956725065e9dc5c4604",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ef2a501996ecd0bbac77d88b4e93e54a118658353d45d956725065e9dc5c4604/request.json",
+      "file_sha256": "1d4492d915f14db57b517b9778ac7f011a464ee5b9b6c2b20c89e0439a230078",
+      "batches": [
+        "batch108"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "lc2411.GFEX",
+          "day": "2024-07-04",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "362991045578b6d1c8ade30fdc00c679156773cd3188ee9645e5e334cc8274ee",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_362991045578b6d1c8ade30fdc00c679156773cd3188ee9645e5e334cc8274ee/request.json",
+      "file_sha256": "60b0e98e7721ded52580b76c2f22ba7459a987003de414b07cba6cf5558eeacb",
+      "batches": [
+        "batch108"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "SH409.CZCE",
+          "day": "2024-07-05",
+          "kind": "full_session",
+          "R": 345,
+          "E": 1,
+          "M": 344
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "e93ae1cb5f4b93764a3d20fcf7862e1e0e354650fe45e72a92bd15d0b16fc243",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e93ae1cb5f4b93764a3d20fcf7862e1e0e354650fe45e72a92bd15d0b16fc243/request.json",
+      "file_sha256": "40abd7d4b252cd7bf172940083d843c9a8a1a125287cd9b9dd0baf944ef73bc2",
+      "batches": [
+        "batch109"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch109",
+      "requirements": [
+        {
+          "symbol": "FG409.CZCE",
+          "day": "2024-07-08",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "6aeaadffd3bea86fe651659b3a528b847aeb5199e8eb94722fd8a1e1812fe577",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_6aeaadffd3bea86fe651659b3a528b847aeb5199e8eb94722fd8a1e1812fe577/request.json",
+      "file_sha256": "57d7063a37b1320010a90f17b82fbc8ec08ff41af881fe384a82aa9265df321e",
+      "batches": [
+        "batch110"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch110",
+      "requirements": [
+        {
+          "symbol": "si2409.GFEX",
+          "day": "2024-08-08",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "ce2b2a5ef8ced4a12f6a1ecc816c9e2a4db6519e1e8afaafafe86b8568f6fb05",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_ce2b2a5ef8ced4a12f6a1ecc816c9e2a4db6519e1e8afaafafe86b8568f6fb05/request.json",
+      "file_sha256": "40654e55d325464bebff03ad6ebcf4d72c9cf38fe60ece720c32d84660053af3",
+      "batches": [
+        "batch110"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch110",
+      "requirements": [
+        {
+          "symbol": "fu2409.SHFE",
+          "day": "2024-08-12",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "4c7de304e414ef85624e2ff026e13a572120b44d9c3e5f794cf4cfd81f18dced",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4c7de304e414ef85624e2ff026e13a572120b44d9c3e5f794cf4cfd81f18dced/request.json",
+      "file_sha256": "352b9b632ff84fc4c42d036bfe98a3e49d978f855a91dd3cead16cc3495e9238",
+      "batches": [
+        "batch111"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch111",
+      "requirements": [
+        {
+          "symbol": "OI409.CZCE",
+          "day": "2024-08-14",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "d06f0d8a7bb8d72b3592c7a21a6744c5c4c636d588e21d18d2d502a797c648cc",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_d06f0d8a7bb8d72b3592c7a21a6744c5c4c636d588e21d18d2d502a797c648cc/request.json",
+      "file_sha256": "34e7a3c6231726319e276ae4f9d2503fd99a0eb629fdabe29afe26b95d6af9e6",
+      "batches": [
+        "batch112"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch112",
+      "requirements": [
+        {
+          "symbol": "OI409.CZCE",
+          "day": "2024-08-20",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "b1dc17efc864e89f9e54c56b20e53438a178e74afb41cb11e0446cdb7e13020f",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b1dc17efc864e89f9e54c56b20e53438a178e74afb41cb11e0446cdb7e13020f/request.json",
+      "file_sha256": "494f4d9d102fc43edef64a1f59e0692b25faf63a5f3d227a29d9d2a4ae650b94",
+      "batches": [
+        "batch113"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "FG501.CZCE",
+          "day": "2024-08-28",
+          "kind": "full_session",
+          "R": 345,
+          "E": 120,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "85fa4987c84a534d4a621cea7f640ff5fce659dbb110e8941a0695087d61e477",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_85fa4987c84a534d4a621cea7f640ff5fce659dbb110e8941a0695087d61e477/request.json",
+      "file_sha256": "f3cbba7a13fc56d57a323d5440d4fe2b7ac4a3ba8d0d31994a012459c164b592",
+      "batches": [
+        "batch114"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch114",
+      "requirements": [
+        {
+          "symbol": "AP501.CZCE",
+          "day": "2024-10-22",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "076340b1df5c2940f5fd3d0ac9f3ef890f052644202981df8e1626e8b957ed77",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_076340b1df5c2940f5fd3d0ac9f3ef890f052644202981df8e1626e8b957ed77/request.json",
+      "file_sha256": "ca308e8fc2cdffe7d47bc3dc0d30f80f2794a61efa06ad6e5a4a182df8e352b4",
+      "batches": [
+        "batch115"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2412.GFEX",
+          "day": "2024-10-24",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "6ebd3d609d8232a7cab3dc6a5e7c9022f77d523c691b9df72a2e28634d832209",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_6ebd3d609d8232a7cab3dc6a5e7c9022f77d523c691b9df72a2e28634d832209/request.json",
+      "file_sha256": "8503adbe8306899912cbf8b0e508e9a0fcb53f0bbcd4a1b4dd097c9d3183d291",
+      "batches": [
+        "batch116"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch116",
+      "requirements": [
+        {
+          "symbol": "FG501.CZCE",
+          "day": "2024-12-12",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "d55da0c3bdd3c2c157e37a33e38057d8d07f31464209356e2e8ec55726bf82a2",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_d55da0c3bdd3c2c157e37a33e38057d8d07f31464209356e2e8ec55726bf82a2/request.json",
+      "file_sha256": "0d0677052ab40686f0d37f0ee3726adeaf74c9887cde57ca0df0f9cdaf8eae1a",
+      "batches": [
+        "batch117"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch117",
+      "requirements": [
+        {
+          "symbol": "sp2501.SHFE",
+          "day": "2024-12-13",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "e76422007bd2231c7554cac42a0d46aed9988af0b71754b833593dc314578214",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_e76422007bd2231c7554cac42a0d46aed9988af0b71754b833593dc314578214/request.json",
+      "file_sha256": "d90c4e9f1e471f1a220dcceb6fbe2daf455b14014dbd25e2c8e7cdaf38624506",
+      "batches": [
+        "batch118"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch118",
+      "requirements": [
+        {
+          "symbol": "SM501.CZCE",
+          "day": "2024-12-16",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "1efef4a51fd1043011ce5116dc29ba4e5cc068569988c9e39b03e32fc8b7ac53",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_1efef4a51fd1043011ce5116dc29ba4e5cc068569988c9e39b03e32fc8b7ac53/request.json",
+      "file_sha256": "fc81c811f8eb0e727e36ea132b6b2446fbdef6096e95bf92ca765dcca43abbc1",
+      "batches": [
+        "batch118"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch118",
+      "requirements": [
+        {
+          "symbol": "si2501.GFEX",
+          "day": "2024-12-16",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "4d76f40fad99baa2f3513af7c8e203886109a869d2a6e1ad1be484244967e203",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4d76f40fad99baa2f3513af7c8e203886109a869d2a6e1ad1be484244967e203/request.json",
+      "file_sha256": "039a60d13870456e6f4d2edd2d1e02ef71c8b33c3e9396ebff828c8edd3e9b01",
+      "batches": [
+        "batch119"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch119",
+      "requirements": [
+        {
+          "symbol": "sp2501.SHFE",
+          "day": "2024-12-16",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "b5392db97ecc61b153dd4c2cde210f84dd5d1e7170bd57fc2f103f9ed1053f81",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_b5392db97ecc61b153dd4c2cde210f84dd5d1e7170bd57fc2f103f9ed1053f81/request.json",
+      "file_sha256": "0521f476289af7e8f583536de1391a774a91bde99fa6dcd082833b68d3787beb",
+      "batches": [
+        "batch119"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch119",
+      "requirements": [
+        {
+          "symbol": "SM501.CZCE",
+          "day": "2024-12-17",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "9e206378affdba39090408f4b9286d812586b1a7452be0bf91dfd02c713f7870",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_9e206378affdba39090408f4b9286d812586b1a7452be0bf91dfd02c713f7870/request.json",
+      "file_sha256": "3d9d388f928106d36805a83f1565d8e04041d6b3207653f63427b75018505f8d",
+      "batches": [
+        "batch120"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch120",
+      "requirements": [
+        {
+          "symbol": "si2502.GFEX",
+          "day": "2025-01-14",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "network",
+      "sources": 52,
+      "packet_exists": true
+    },
+    {
+      "digest": "9b632aa1b1c7b3c7865da0919c3e5c481f447935561a4e26bdb1a6077aa14be2",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_9b632aa1b1c7b3c7865da0919c3e5c481f447935561a4e26bdb1a6077aa14be2/request.json",
+      "file_sha256": "ddb9ede59922348e167a8345764c7f7368a4023ddac29b856e33f9c0a75d42f0",
+      "batches": [
+        "batch121"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2503.SHFE",
+          "day": "2025-01-14",
+          "kind": "full_session",
+          "R": 345,
+          "E": 344,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "3d059691435c55921aa148d9ddc823ebc08884e98b0d90024989604df05e46cd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_3d059691435c55921aa148d9ddc823ebc08884e98b0d90024989604df05e46cd/request.json",
+      "file_sha256": "c2c63bd586282c1e1123bf8e983e9b728eac8d462eff27d2766382ad58cb027b",
+      "batches": [
+        "batch122"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch122",
+      "requirements": [
+        {
+          "symbol": "si2503.GFEX",
+          "day": "2025-02-05",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "9b86556b89c58e9f0e4271a4d97b81bebf45295ea72066b7d7c416fc768d0ba4",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_9b86556b89c58e9f0e4271a4d97b81bebf45295ea72066b7d7c416fc768d0ba4/request.json",
+      "file_sha256": "c2a4d0eab10f3b6ea0480cbc1cd17601dad33687662ae010c4f2ed38d26f51fb",
+      "batches": [
+        "batch123"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": "batch123",
+      "requirements": [
+        {
+          "symbol": "si2503.GFEX",
+          "day": "2025-02-06",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "network",
+      "sources": 51,
+      "packet_exists": true
+    },
+    {
+      "digest": "4501fe7e75e38ae006ecc62c431cd90f00c10b170d8349122c70936702b1cebd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4501fe7e75e38ae006ecc62c431cd90f00c10b170d8349122c70936702b1cebd/request.json",
+      "file_sha256": "3f35bc7e222aca8975c6bb63a18080a08dd3ba7483ba7db59bcbbff9e86ca2ee",
+      "batches": [
+        "batch124"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2505.GFEX",
+          "day": "2025-02-12",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "240f2a292794c5c4301a71ada396981f81a509019216363d7d7f31e3759254f8",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_240f2a292794c5c4301a71ada396981f81a509019216363d7d7f31e3759254f8/request.json",
+      "file_sha256": "ad2095a6a60ff66fe8b8fd4dcaf909d39c1698ad1727034591d783adc4c058f2",
+      "batches": [
+        "batch125"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "si2505.GFEX",
+          "day": "2025-02-13",
+          "kind": "full_session",
+          "R": 225,
+          "E": 0,
+          "M": 225
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    },
+    {
+      "digest": "fd02166b67e76f4db68b7da0958e7c1e64a9e238e3a6946ba38da8131a8be740",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_fd02166b67e76f4db68b7da0958e7c1e64a9e238e3a6946ba38da8131a8be740/request.json",
+      "file_sha256": "77a3c8713b9913d8614987200630f5a20f98eafe9c6ff85714b80f79c728c87c",
+      "batches": [
+        "batch126"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "lh2505.DCE",
+          "day": "2025-03-21",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "332c26060ca717db91880f5bb94ef30bdfcbb5272c764fe9a3a44f2dd322107e",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_332c26060ca717db91880f5bb94ef30bdfcbb5272c764fe9a3a44f2dd322107e/request.json",
+      "file_sha256": "8760c6a2616972cb7942cc301907c6b18ad5b98d14992fa2147d02f98dc0b82b",
+      "batches": [
+        "batch127"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "lh2505.DCE",
+          "day": "2025-03-28",
+          "kind": "full_session",
+          "R": 225,
+          "E": 224,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 33,
+      "packet_exists": false
+    },
+    {
+      "digest": "4377b39fd851ae19ed80ae8324057d4eedf66541ae0e27cc57e25e4f4f36b9fd",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_4377b39fd851ae19ed80ae8324057d4eedf66541ae0e27cc57e25e4f4f36b9fd/request.json",
+      "file_sha256": "83da5a60283cf41ffc40008e43e4ce53a31708f1e32cdf867c62d63055b351c6",
+      "batches": [
+        "batch128"
+      ],
+      "response_exists": true,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "fu2505.SHFE",
+          "day": "2025-04-08",
+          "kind": "anchor",
+          "R": 1,
+          "E": 0,
+          "M": 1
+        }
+      ],
+      "route": "accepted_local",
+      "sources": 32,
+      "packet_exists": false
+    }
+  ],
+  "pending": [
+    {
+      "digest": "7422216c316b1eeea381af05e31318dfbea8903ffe77c31c6c9b6c7cf2c087eb",
+      "request_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/data_wait/request_7422216c316b1eeea381af05e31318dfbea8903ffe77c31c6c9b6c7cf2c087eb/request.json",
+      "file_sha256": "f6c7c41032809d75fee0917cfef492318b6266a0dee4d86fa1ab995d417ccea7",
+      "batches": [
+        "batch129"
+      ],
+      "response_exists": false,
+      "prior_accepted": false,
+      "provider_event_batch": null,
+      "requirements": [
+        {
+          "symbol": "CF505.CZCE",
+          "day": "2025-04-11",
+          "kind": "full_session",
+          "R": 345,
+          "E": 0,
+          "M": 345
+        }
+      ]
+    }
+  ],
+  "network_count": 90,
+  "unique_resolver_requests": 126,
+  "prior_observed": []
+}

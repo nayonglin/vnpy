@@ -1,0 +1,101 @@
+{
+  "schema": "stage142_independent_daily_source_audit_v1",
+  "completed_at": "2026-10-18T10:10:58.277501+08:00",
+  "all_checks_passed": true,
+  "candidate_manifest_sha256": "96eea70a16b7a5715f697aaa06a4e34107e328109849ca573eba88be78cc8b90",
+  "rows": 116394,
+  "contracts": 533,
+  "dates": 1786,
+  "zero_volume_rows_retained": 1468,
+  "database_read_bytes_calls": 1,
+  "database_path_opened_as_sqlite": false,
+  "sqlite_deserialize_same_hashed_bytes": true,
+  "sqlite_query_only": true,
+  "database_sha256": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54",
+  "database_before": {
+    "": {
+      "exists": true,
+      "bytes": 112726016,
+      "mtime_ns": 1792049549085915333
+    },
+    "-wal": {
+      "exists": false,
+      "bytes": 0
+    },
+    "-shm": {
+      "exists": false,
+      "bytes": 0
+    }
+  },
+  "database_after": {
+    "": {
+      "exists": true,
+      "bytes": 112726016,
+      "mtime_ns": 1792049549085915333
+    },
+    "-wal": {
+      "exists": false,
+      "bytes": 0
+    },
+    "-shm": {
+      "exists": false,
+      "bytes": 0
+    }
+  },
+  "all_exact_keys_equal": true,
+  "all_five_float64_values_bit_equal": true,
+  "scalar_sha256": "60976debf28e9fd52d1ba596ce1590ca2a021b3507f99daeab62ae65d6fd52dd",
+  "candidate_sources_verified": 21,
+  "finite_samples": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/CZCE/AP101.csv",
+      "sha256": "0e05dbebb1f6510cfd2d72d79d8dc5e0b94b361d091c48b12bd2e8f45bf64dc4",
+      "contract": "AP101.CZCE",
+      "day": "2021-01-14",
+      "all_five_values_bit_equal": true,
+      "values": {
+        "open": 5778.0,
+        "high": 5778.0,
+        "low": 5778.0,
+        "close": 5778.0,
+        "volume": 0.0
+      }
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_daily_2010_2026_04/SHFE/fu2101.csv",
+      "contract": "fu2101.SHFE",
+      "day": "2020-06-29",
+      "sha256": "ec9ad59edab9bdc2365d1dc50d9e8de77155753965628936c4527ab68e413fa3",
+      "all_five_values_bit_equal": true,
+      "values": {
+        "open": 1855.0,
+        "high": 1859.0,
+        "low": 1812.0,
+        "close": 1821.0,
+        "volume": 130206.0
+      }
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage013_missing_daily_recovery/network_attempt1/qualified_daily.csv",
+      "contract": "sp2611.SHFE",
+      "day": "2026-10-14",
+      "sha256": "89cd6502bba89bb32fce4ca032adb1266a8978b91fd7f1b0e1519aa464df6833",
+      "all_five_values_bit_equal": true,
+      "values": {
+        "open": 4686.0,
+        "high": 4710.0,
+        "low": 4594.0,
+        "close": 4596.0,
+        "volume": 93705.0
+      }
+    }
+  ],
+  "native_carry_excluded_exact_keys": 16,
+  "tail_rows_not_filtered_by_future_successor": true,
+  "old013_4500_scope_extended": false,
+  "all_market_minute_reaggregation": false,
+  "native_model_provider_network_financial_runs": 0,
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0
+}

@@ -1,0 +1,7 @@
+test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened (test_stage135_accepted_off_wait_delta.OffDeltaTest.test_origin_provenance_and_same_bytes_cannot_be_upgraded_or_reopened) ... ok
+test_overlapping_rights_conflicts_and_readonly_original_container_compose (test_stage135_accepted_off_wait_delta.OffDeltaTest.test_overlapping_rights_conflicts_and_readonly_original_container_compose) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.161s
+
+OK

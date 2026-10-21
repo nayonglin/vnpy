@@ -1,0 +1,11 @@
+{
+  "schema": "stage037_context_actual_terminal_v1",
+  "exit_code": 0,
+  "started_at": "2026-10-18T13:07:52+08:00",
+  "finished_at": "2026-10-18T13:07:55+08:00",
+  "elapsed_seconds": 3.236635542009026,
+  "source_sha256": "b4cbcc11406211285f5fbedb5c5d1cef687c86e3af0158c5c10c1dfac25ce0a6",
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_backtests": 0
+}

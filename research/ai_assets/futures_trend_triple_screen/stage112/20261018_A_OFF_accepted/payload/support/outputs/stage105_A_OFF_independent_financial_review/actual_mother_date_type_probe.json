@@ -1,0 +1,77 @@
+{
+  "schema": "stage105_actual_mother_date_type_probe_v1",
+  "trade_id": "BACKTESTING.1",
+  "raw_checkpoint_sha256": "e22f6936422a6d862856945c2d45e65214fa52b9d325a3882eb31600fc688b33",
+  "raw_usage_signal_date": {
+    "value": "2020-01-08 00:00:00",
+    "repr": "Timestamp('2020-01-08 00:00:00')",
+    "type": "pandas._libs.tslibs.timestamps.Timestamp"
+  },
+  "exported_candidate_date": {
+    "value": "2020-01-08",
+    "repr": "'2020-01-08'",
+    "type": "builtins.str"
+  },
+  "raw_identity": {
+    "trade_id": {
+      "value": "BACKTESTING.1",
+      "repr": "'BACKTESTING.1'",
+      "type": "builtins.str"
+    },
+    "vt_symbol": {
+      "value": "rb2005.SHFE",
+      "repr": "'rb2005.SHFE'",
+      "type": "builtins.str"
+    },
+    "signal_datetime": {
+      "value": "2020-01-08 00:00:00+08:00",
+      "repr": "datetime.datetime(2020, 1, 8, 0, 0, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))",
+      "type": "datetime.datetime"
+    },
+    "signal_order_id": {
+      "value": "BACKTESTING.1",
+      "repr": "'BACKTESTING.1'",
+      "type": "builtins.str"
+    },
+    "execution_datetime": {
+      "value": "2020-01-08 21:00:00+08:00",
+      "repr": "datetime.datetime(2020, 1, 8, 21, 0, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))",
+      "type": "datetime.datetime"
+    },
+    "trading_date": {
+      "value": "2020-01-09",
+      "repr": "datetime.date(2020, 1, 9)",
+      "type": "datetime.date"
+    }
+  },
+  "exported_clock": {
+    "trade_id": "BACKTESTING.1",
+    "vt_symbol": "rb2005.SHFE",
+    "signal_datetime": "2020-01-08T00:00:00",
+    "signal_order_id": "BACKTESTING.1",
+    "execution_datetime": "2020-01-08 21:00:00+08:00",
+    "trading_date": "2020-01-09",
+    "direction": "多",
+    "offset": "开",
+    "price": "3617.0",
+    "volume": "10.0"
+  },
+  "opened_candidate": {
+    "candidate_index": "1",
+    "date": "2020-01-08",
+    "entry_context": "flat_entry",
+    "contract_vt_symbol": "rb2005.SHFE",
+    "direction": "long",
+    "signal": "long_case3",
+    "candidate_status": "opened",
+    "selected_volume": "10"
+  },
+  "current_scalar_match_count": 0,
+  "ISO_day_only_match_count": 1,
+  "proven_schema_mismatch": true,
+  "audit_invocations": 1,
+  "diagnostic_only_raw_loads_after_failure": 1,
+  "financial_replays": 0,
+  "numerical_recalculation": false,
+  "source_or_account_modified": false
+}

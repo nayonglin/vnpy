@@ -1,0 +1,41 @@
+{
+  "schema": "stage063_eia_protocol_preflight_v1",
+  "recorded_at": "2026-10-18T15:14:07.640659+08:00",
+  "phase": "protocol_only_no_actual_review",
+  "bindings": {
+    "protocol": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+      "bytes": 7162,
+      "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158"
+    },
+    "plan": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1508_stage059_eia_full_market_implementation_plan.md",
+      "bytes": 5259,
+      "sha256": "e717d8ac9dfc53ff356e6866cb7393e180d629efd6b5e3bd998255e2b8f00677"
+    },
+    "proposal": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1456_stage057_eia_inventory_release_signal_proposal.md",
+      "bytes": 19999,
+      "sha256": "8ec1ef71ffc4bfee59dace77ebb10b6ed746cbd093a87cdf2cc8cdb5270cfbb2"
+    }
+  },
+  "critical": [],
+  "important": [],
+  "findings": "No remaining material protocol contradiction. Full-family eligibility and model-package interpretation replace rejected oil-only restriction.",
+  "matrix": {
+    "fits": 6,
+    "cash_accounts": 12,
+    "features": 10
+  },
+  "qualified_scope": "Design can enter bounded source implementation/preflight. No actual source/model/cash result is accepted by this receipt.",
+  "actions": {
+    "fit": 0,
+    "cash_strategy_replay": 0,
+    "native_sql": 0,
+    "network_download": 0,
+    "actual_result_review": 0
+  },
+  "next": "Root will re-authorize independent implementation preparation/review after061/062 handoff. No extended source sweep or reviewer code preparation now.",
+  "overfitting": "No outcome-driven tuning here; repeated-history selection, few release cohorts, stale valuation and reconstructed archival availability remain limits.",
+  "continuation_value": "Yes for one fixed falsification after input acceptance; full-market quality, narrow stops and increased bets remain unproved."
+}

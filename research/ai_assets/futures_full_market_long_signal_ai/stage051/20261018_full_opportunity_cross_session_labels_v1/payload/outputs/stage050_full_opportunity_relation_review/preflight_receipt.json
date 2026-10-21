@@ -1,0 +1,28 @@
+{
+  "schema": "stage050_independent_preflight_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "recorded_at": "2026-10-18T14:09:00+08:00",
+  "status": "design_no_material_blocker_source_and_actual_review_pending",
+  "findings": {"critical": 0, "important": 0, "minor": 0},
+  "protocol": {
+    "path": "research/lines/futures_full_market_long_signal_ai/outputs/stage048_full_opportunity_build_protocol/protocol.json",
+    "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413",
+    "bytes": 8720
+  },
+  "read_documents": [
+    {"name": "registry", "sha256": "5a108f97531c9aaed370105f7c99e67b7e89c3255923194285a6786a891a6918"},
+    {"name": "LINE", "sha256": "7a09fd92af11ef087051d16df3424dd10a850943d8066451f5f475547a9318c3"},
+    {"name": "045", "sha256": "84200eca0544be2570357c4a2dca42be416b99d27039de542998a7da52896626"},
+    {"name": "046", "sha256": "ae2450f31dfa6e32ad696172c128413af736b1287890399b8fc6034dbbe7edf1"},
+    {"name": "048", "sha256": "038eb47fa37f7067db261b5c0d6a4aec26a0f9a5ed7f43136b661ca7da488171"}
+  ],
+  "external_read": [
+    {"url": "https://arxiv.org/abs/2308.00383", "scope": "author_abstract_only", "judgment": "not_the_same_formula_or_domestic_long_alpha_proof"},
+    {"url": "https://raw.githubusercontent.com/hudson-and-thames/mlfinlab/master/mlfinlab/labeling/labeling.py", "scope": "raw_public_source", "judgment": "relevant_functions_are_pass_stubs_interface_reference_only"}
+  ],
+  "operations": {"SQL": 0, "model_fits": 0, "strategy_replays": 0, "cash_accounts": 0, "downloads": 0, "production": false},
+  "adopted_target_denominator": "2*N_u*exact_epoch_multiplier_no_cost_denominator",
+  "actual_data_qualified": false,
+  "financial_conclusion": null,
+  "next_action": "Read final stable source, then wait for root complete-terminal authorization before one independent actual audit; no core author calculation imports."
+}

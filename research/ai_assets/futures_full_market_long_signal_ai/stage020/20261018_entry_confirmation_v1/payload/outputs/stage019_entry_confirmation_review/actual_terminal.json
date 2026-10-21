@@ -1,0 +1,18 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "started_at": "2026-10-18T12:15:57.541693+08:00",
+  "finished_at": "2026-10-18T12:16:10.284005+08:00",
+  "elapsed_seconds": 12.742474625003524,
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/outputs/stage019_entry_confirmation_review/independent_review.py",
+  "model_fits": 0,
+  "financial_runs": 0,
+  "SQL_queries": 0,
+  "author_entrypoint_calls": 0,
+  "actual_session_id": 71787,
+  "initial_chunk": "3dfdb3",
+  "progress_chunk": "67e33e",
+  "terminal_chunk": "a4ba87",
+  "actual_tool_exit_code": 0,
+  "small_post_terminal_manifest_closure_checked": true
+}

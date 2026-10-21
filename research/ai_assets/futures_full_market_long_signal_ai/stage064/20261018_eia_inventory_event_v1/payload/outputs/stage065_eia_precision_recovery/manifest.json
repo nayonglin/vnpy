@@ -1,0 +1,153 @@
+{
+  "schema": "stage060_eia_import_manifest_v1",
+  "producer": "stage065_eia_precision_recovery",
+  "normalization_stage": "stage065",
+  "status": "completed",
+  "artifacts": {
+    "calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/calendar.csv",
+      "bytes": 204918,
+      "sha256": "d46e05bfe488b4faba64016e5eed022085bdac9837b3b8d974c9ac13267b6104",
+      "declared_role": "unchanged_official_release_calendar"
+    },
+    "normalized_stocks": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/normalized_stocks.csv",
+      "bytes": 915640,
+      "sha256": "dcd9feda5074ec2fa520b006522fe7b37abca72f5f29f727b5b0e075c128c29f",
+      "declared_role": "normalized_three_inventory_components_with_precision_recovery"
+    },
+    "report_features": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/report_features.csv",
+      "bytes": 387871,
+      "sha256": "799c897351461719a08f2b38db71f834365e2dbc27370e07cba44b9ae8991626",
+      "declared_role": "causal_full_calendar_scalar_and_past_sham"
+    },
+    "event_map": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/event_map.csv",
+      "bytes": 384387,
+      "sha256": "80e56af79cbd2325ed55451790d3e440127500b9416b7850a0bea2a4ef1fcb86",
+      "declared_role": "unique_decision_date_causal_external_input_all_families"
+    },
+    "coverage": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/coverage.json",
+      "bytes": 2248,
+      "sha256": "de954c3339d60810c9c4f699028b120b48cc6fdd5152c2aa783ff0647465bf5a",
+      "declared_role": "two_layer_source_coverage"
+    },
+    "coverage_by_year": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/coverage_by_year.csv",
+      "bytes": 305,
+      "sha256": "e9e0e0cae265925b97cab1a10990c90436fbb63e65e1b6f9923b173d4502c593",
+      "declared_role": "source_annual_coverage_and_precision_recovery"
+    },
+    "source_bindings": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/source_bindings.json",
+      "bytes": 1333351,
+      "sha256": "ec85e887e0fdf0b164d8c6dceb21035c2d6353c3036f73fe4f00bef4130cff7d",
+      "declared_role": "two_layer_public_source_status_and_hash_bindings"
+    },
+    "recovery_audit": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/recovery_audit.csv",
+      "bytes": 246562,
+      "sha256": "6fc113ef603d2e20f45d64fbeab7aa8a75050f556c23359d616a77fca45e1c62",
+      "declared_role": "report_and_cell_printed_precision_residual_bound_and_original_rejection_audit"
+    },
+    "actual_terminal": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/actual_terminal.json",
+      "bytes": 651,
+      "sha256": "b4904f10a4612f4ff1d25cb19b06e2d6a108d7f33708b57bf78e9447038d03c8",
+      "declared_role": "offline_normalization_actual_terminal"
+    },
+    "tests_red": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/tests_red.log",
+      "bytes": 4247,
+      "sha256": "fe0164ca0652bd93843f7a6ea5b4929e8c812f2638b963e21d6fd6bc989130d2",
+      "declared_role": "new_behavior_red_evidence"
+    },
+    "tests_green": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/tests_green.log",
+      "bytes": 944,
+      "sha256": "b37474869041d035692e9b30955f6efce894973e3b7f4a31fc28748d7d5dc279",
+      "declared_role": "new_behavior_green_evidence"
+    }
+  },
+  "input_bindings": {
+    "precision_input_amendment": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/precision_input_amendment.json",
+      "bytes": 3035,
+      "sha256": "46946878f76d2b0a134bf274898868e622c4bded4d021a1add62116f8af3e729",
+      "declared_role": "frozen_precision_input_correction_contract"
+    },
+    "original_stage060_manifest": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/manifest.json",
+      "bytes": 6129,
+      "sha256": "00a964468d6fc2cd272d522ae1343227df13b05e3a17dc216305c890a30ba923",
+      "declared_role": "immutable_original_source_actual_manifest"
+    },
+    "original_stage060_actual": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/actual_terminal.json",
+      "bytes": 550,
+      "sha256": "f7334b3392dfdc4d267a96b80595edc0cca33bd74c7d0ab485dfd5444b1be6c2",
+      "declared_role": "actual_execution_terminal"
+    },
+    "original_stage060_source_bindings": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/source_bindings.json",
+      "bytes": 1206818,
+      "sha256": "57e8b5cb518ec29409a4e0fa81ba8029b8db412faaf8df2daba45bcd218d004d",
+      "declared_role": "public_source_hash_header_and_status_bindings"
+    },
+    "original_stage060_implementation": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py",
+      "bytes": 23966,
+      "sha256": "f40f1b07007d283b950187d05f144ec9954c125433eb130165285e1bac07d45e",
+      "declared_role": "implementation_contract"
+    },
+    "original_stage060_tests": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage060_eia_report_import.py",
+      "bytes": 8448,
+      "sha256": "3d404e97baacb700851474cda0960094e067d4985be7417847e3c2e0db263750",
+      "declared_role": "new_behavior_contract_tests"
+    },
+    "archive_acquisition": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/archive_fetch_receipt.json",
+      "bytes": 1056,
+      "sha256": "d6537e5b8e30b2ac17c631ed98bd48e1632d0adecf736999370bf94081410a30",
+      "declared_role": "official_index_acquisition_receipt"
+    },
+    "accepted_china_calendar": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "bytes": 44824,
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+      "declared_role": "accepted_source_trading_calendar_no_prices"
+    },
+    "protocol": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+      "bytes": 7162,
+      "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158",
+      "declared_role": "frozen_protocol"
+    },
+    "frozen_stage060_implementation": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py",
+      "bytes": 23966,
+      "sha256": "f40f1b07007d283b950187d05f144ec9954c125433eb130165285e1bac07d45e",
+      "declared_role": "unchanged_calendar_clock_ordinal52_sham_semantics"
+    },
+    "implementation": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage065_eia_precision_recovery.py",
+      "bytes": 16544,
+      "sha256": "3f9334595653cd825e4d7d2841db0492b6c0b77226645811e459877068e9c30e",
+      "declared_role": "precision_correction_implementation"
+    },
+    "tests": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py",
+      "bytes": 6101,
+      "sha256": "170bb5123d3c4484ff03f1c6890914fe39d8e68bbc3bf7dafc28bbbfe8c4fdd6",
+      "declared_role": "precision_correction_new_behavior_tests"
+    }
+  },
+  "source_end": "2026-10-16",
+  "new_http_requests": 0,
+  "all_families_same_event_eligibility": true,
+  "raw_source_handling": "original Stage060 excluded_raw_sources only; no raw copies or registrations",
+  "goal_complete": false
+}

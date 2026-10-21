@@ -1,0 +1,9 @@
+{
+  "arm": "A_OFF",
+  "fixture_only": false,
+  "raw_sha256": "e22f6936422a6d862856945c2d45e65214fa52b9d325a3882eb31600fc688b33",
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF",
+  "status": "completed_pending_independent_review",
+  "summary_sha256": "3bb7fd2a6cd6d60b5f6ff6e84371dbbb770d3a89cfd45aab630ef5dae9041fcf"
+}

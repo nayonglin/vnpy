@@ -1,0 +1,32 @@
+{
+  "financial_runs": 0,
+  "green": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "log": {
+      "bytes": 1032,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tests_green.log",
+      "sha256": "761136910e1e8be62a64ebb792db20dfa42aa7daf6c3a6321e6ec816bb94a1e9"
+    },
+    "tests": 6,
+    "tool_chunk_id": "c1059e"
+  },
+  "model_fits": 0,
+  "old_suite_run": false,
+  "red": {
+    "errors": 0,
+    "exit_code": 1,
+    "failures": 6,
+    "log": {
+      "bytes": 6746,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tests_red.log",
+      "sha256": "2e326b28f8b141506b0eb5a09df27c33b0e837c7344e97600090fc39779af55c"
+    },
+    "reason": "missing implementation",
+    "tool_chunk_id": "0eee24"
+  },
+  "schema": "stage034_behavior_test_receipt_v1",
+  "sql_queries": 0,
+  "test_methods": 6
+}

@@ -1,0 +1,98 @@
+{
+  "actual_build_invocations": 1,
+  "artifacts": [
+    {
+      "bytes": 18558,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage034_peer_alignment_dataset.py",
+      "reproducibility_required": true,
+      "role": "feature_contract",
+      "sha256": "9b3e7ac37cbe46e0124af9905e63d4d457d37f9853a3ca3d69e28650d7ba5f25"
+    },
+    {
+      "bytes": 7596,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage034_peer_alignment_dataset.py",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "cde2cfc3062d054ddd12343e05ca7a1a8674d50e452bba49d0fd7e5fa6f8fb0d"
+    },
+    {
+      "bytes": 6229,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1305_stage034_peer_alignment_dataset.md",
+      "reproducibility_required": true,
+      "role": "decision_asset",
+      "sha256": "eb5feaa45c9fab87859d02334389b9d50656552a4eaa6ce4c4282f470a2e8c18"
+    },
+    {
+      "bytes": 2705,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/actual_terminal.json",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "39f50228b90d1ae9c43b20002bac53984489ff9685d3aace3f367c31de7c028a"
+    },
+    {
+      "bytes": 8417799,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/context_states.csv.gz",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "4a3f6a1cbdc1881c5cd3e24e6d3c8e53a24663427847122d6a582be1f9d4edf0"
+    },
+    {
+      "bytes": 24275877,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/contexts.npz",
+      "reproducibility_required": true,
+      "role": "feature_contract",
+      "sha256": "ba38c6386d56c290f5dbaf3770b9db21c754e8e4f9185e32a9328c0ce45ab272"
+    },
+    {
+      "bytes": 8193711,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/event_ids.csv.gz",
+      "reproducibility_required": true,
+      "role": "feature_contract",
+      "sha256": "b829623c1c1d716a7af3cdc21a0dc0cbab3adba9ae85dfc98fe7ada93e98963d"
+    },
+    {
+      "bytes": 81972,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/export/manifest.json",
+      "reproducibility_required": true,
+      "role": "decision_asset",
+      "sha256": "2a3abe55eabf0fba5bb5d749fb4343d1bf341e3d217b93619554ab11bf98d990"
+    },
+    {
+      "bytes": 1032,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tests_green.log",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "761136910e1e8be62a64ebb792db20dfa42aa7daf6c3a6321e6ec816bb94a1e9"
+    },
+    {
+      "bytes": 963,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tests_receipt.json",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "73986b9dc8303b8b319b5bd440807cab86e549f7f0a661e3167e83bfbcfe4fa4"
+    },
+    {
+      "bytes": 6746,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tests_red.log",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "2e326b28f8b141506b0eb5a09df27c33b0e837c7344e97600090fc39779af55c"
+    },
+    {
+      "bytes": 937,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage034_peer_alignment_dataset/tool_execution_receipt.json",
+      "reproducibility_required": true,
+      "role": "qualification_evidence",
+      "sha256": "87febf3c897d04392f11db1633dfd6e4e0ddbca08485401a416d0db6796d2fb5"
+    }
+  ],
+  "completed_builds": 1,
+  "financial_runs": 0,
+  "labels_rebuilt": false,
+  "line_id": "futures_full_market_long_signal_ai",
+  "model_fits": 0,
+  "network_calls": 0,
+  "raw_source_assets_copied": false,
+  "schema": "stage034_artifact_inventory_v1",
+  "sql_queries": 0
+}

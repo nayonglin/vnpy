@@ -1,0 +1,275 @@
+{
+  "schema": "stage063_bounded_printed_precision_probe_v1",
+  "purpose": "Independent root-cause check of five cached actual CSVs only; not fullsource or financial review",
+  "cases": [
+    {
+      "report_id": "eia_wpsr_2016_10_19",
+      "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/eia_wpsr_2016_10_19.csv",
+      "sha256": "3bfd34fec9d3c6ed26e6b656837f03e18796a8bd60c63d411e7f4c2267d4c65b",
+      "bytes": 5734,
+      "components": [
+        {
+          "series": "Commercial (Excluding SPR)",
+          "printed": [
+            "468.7",
+            "474.0",
+            "-5.2"
+          ],
+          "residual_million": "-0.1",
+          "rounding_bound_million": "0.15",
+          "residual_thousand": "-100.0",
+          "rounding_bound_thousand": "150.00",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Total Motor Gasoline",
+          "printed": [
+            "228.0",
+            "225.5",
+            "2.5"
+          ],
+          "residual_million": "0.0",
+          "rounding_bound_million": "0.15",
+          "residual_thousand": "0.0",
+          "rounding_bound_thousand": "150.00",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Distillate Fuel Oil",
+          "printed": [
+            "155.7",
+            "157.0",
+            "-1.2"
+          ],
+          "residual_million": "-0.1",
+          "rounding_bound_million": "0.15",
+          "residual_thousand": "-100.0",
+          "rounding_bound_thousand": "150.00",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        }
+      ]
+    },
+    {
+      "report_id": "eia_wpsr_2020_02_26",
+      "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/eia_wpsr_2020_02_26.csv",
+      "sha256": "8b504fcbd4265970cb43c1cb724f0f4ce2823548eefbde547ea01a8dee7a00a6",
+      "bytes": 6035,
+      "components": [
+        {
+          "series": "Commercial (Excluding SPR)",
+          "printed": [
+            "443.335",
+            "442.883",
+            "0.452"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Total Motor Gasoline",
+          "printed": [
+            "256.387",
+            "259.078",
+            "-2.691"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Distillate Fuel Oil",
+          "printed": [
+            "138.472",
+            "140.587",
+            "-2.114"
+          ],
+          "residual_million": "-0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "-1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        }
+      ]
+    },
+    {
+      "report_id": "eia_wpsr_2020_03_04",
+      "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/eia_wpsr_2020_03_04.csv",
+      "sha256": "7e5316aa202cdb2050d4e9bbb6ca666e963bcdc727406fd912768d15d4c119b3",
+      "bytes": 6042,
+      "components": [
+        {
+          "series": "Commercial (Excluding SPR)",
+          "printed": [
+            "444.119",
+            "443.335",
+            "0.785"
+          ],
+          "residual_million": "-0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "-1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Total Motor Gasoline",
+          "printed": [
+            "252.048",
+            "256.387",
+            "-4.340"
+          ],
+          "residual_million": "0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Distillate Fuel Oil",
+          "printed": [
+            "134.464",
+            "138.472",
+            "-4.008"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        }
+      ]
+    },
+    {
+      "report_id": "eia_wpsr_2020_02_20",
+      "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/eia_wpsr_2020_02_20.csv",
+      "sha256": "ae8f371ec4866801e8dabec755206d6a488496e8dd153f5a25582c1a530ac4f5",
+      "bytes": 6050,
+      "components": [
+        {
+          "series": "Commercial (Excluding SPR)",
+          "printed": [
+            "442.883",
+            "442.468",
+            "0.414"
+          ],
+          "residual_million": "0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Total Motor Gasoline",
+          "printed": [
+            "259.078",
+            "261.049",
+            "-1.971"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Distillate Fuel Oil",
+          "printed": [
+            "140.587",
+            "141.222",
+            "-0.636"
+          ],
+          "residual_million": "0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        }
+      ]
+    },
+    {
+      "report_id": "eia_wpsr_2020_03_11",
+      "raw_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/excluded_raw_sources/eia_wpsr_2020_03_11.csv",
+      "sha256": "b4b7df8689e58657ef37403353021fd2d685be0fd9ae4f8f59a31682cb2ae3a0",
+      "bytes": 6076,
+      "components": [
+        {
+          "series": "Commercial (Excluding SPR)",
+          "printed": [
+            "451.783",
+            "444.119",
+            "7.664"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Total Motor Gasoline",
+          "printed": [
+            "246.999",
+            "252.048",
+            "-5.048"
+          ],
+          "residual_million": "-0.001",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "-1.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": false,
+          "inside_derived_bound": true
+        },
+        {
+          "series": "Distillate Fuel Oil",
+          "printed": [
+            "128.060",
+            "134.464",
+            "-6.404"
+          ],
+          "residual_million": "0.000",
+          "rounding_bound_million": "0.0015",
+          "residual_thousand": "0.000",
+          "rounding_bound_thousand": "1.5000",
+          "exact_equality": true,
+          "inside_derived_bound": true
+        }
+      ]
+    }
+  ],
+  "known_reports_probed": 5,
+  "components_probed": 15,
+  "nonzero_residual_components": 8,
+  "all_within_derived_printing_bounds": true,
+  "official_unit": "stock million_barrels; normalized_thousand_barrels=1000*native; no lower-table daily flow rows",
+  "official_rounding_semantics": {
+    "url": "https://www.eia.gov/petroleum/supply/weekly/pdf/table1.pdf",
+    "page_zero_based": 0,
+    "line": 92,
+    "evidence": "Root read official PDF: differences use unrounded numbers and totals can differ due to independent rounding. No new PDF downloaded by reviewer."
+  },
+  "diagnostic_note": "Initial probe strict UTF8 decode failed on a lower-table Windows dash; replaced undecodable bytes only, selected stock numeric tokens remain exact Decimal. This was not counted as the behavior RED test.",
+  "actions": {
+    "network": 0,
+    "fit": 0,
+    "cash_strategy_replay": 0,
+    "sql": 0,
+    "full_actual_result_review": 0
+  }
+}

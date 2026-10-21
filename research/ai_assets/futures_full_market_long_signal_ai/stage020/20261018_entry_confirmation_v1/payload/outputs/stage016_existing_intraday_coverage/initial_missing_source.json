@@ -1,0 +1,1 @@
+{"exit_code":1,"tool_chunk":"b93caa","reason":"Original eligible57 CSV missing at historical reader path; no minute scan or payload read had begun. Retained missing-source state, not synthesized pool membership."}

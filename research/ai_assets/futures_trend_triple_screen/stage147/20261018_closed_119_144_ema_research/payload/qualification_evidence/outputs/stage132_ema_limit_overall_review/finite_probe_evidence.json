@@ -1,0 +1,29 @@
+{
+  "fixture_only": true,
+  "financial_replays": 0,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "network_calls": 0,
+  "cases": [
+    {
+      "name": "wrong_L_full_planner_schema",
+      "limit": 94.0,
+      "stop": 95.0,
+      "selected_volume": 0,
+      "pending_intents": 0,
+      "fills": 0,
+      "reserved_margin": 0.0,
+      "setup_retained": true
+    },
+    {
+      "name": "short_actual_holding_consumer",
+      "fill": 100.0,
+      "raw_first_low": 95.0,
+      "private_lifetime_low": 100.0,
+      "actual_layer_low": 100.0,
+      "native_initial_fills": 1,
+      "retry_events": 0,
+      "raw_unchanged": true
+    }
+  ]
+}

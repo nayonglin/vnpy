@@ -1,0 +1,50 @@
+{
+  "schema": "stage108_actual_driver_tool_terminal_v1",
+  "recorded_at": "2026-10-18T09:02:46.389065+08:00",
+  "run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+  "batch_id": "batch083",
+  "driver_session_id": 77897,
+  "initial_tool_chunk_id": "6f00fe",
+  "terminal_tool_chunk_id": "c2aff1",
+  "terminal_observed": true,
+  "exit_code": 0,
+  "source_runtime_sidecar": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/852f967e5f8e4cd7ae6ed9048fbe45be/manifest.json",
+    "sha256": "d68eab1c08710694462bc573fdfb73032845616eba0a3d4d752218ef4ae3344a",
+    "old_financial_context_includes_this_sidecar": false
+  },
+  "launcher_terminal": {
+    "exit_code": 0,
+    "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/852f967e5f8e4cd7ae6ed9048fbe45be/manifest.json",
+    "manifest_sha256": "d68eab1c08710694462bc573fdfb73032845616eba0a3d4d752218ef4ae3344a"
+  },
+  "launcher_terminal_sha256": "2d921fdc9753acce734b661b1817abec5397727a0b67853585916f7748575f23",
+  "journal": {
+    "events": [
+      {
+        "published": true,
+        "request_sha256": "8f8e7c7db0b492e200911f30698c2a6aa6a243efa1f9ceb952ad39b461fa5d42"
+      },
+      {
+        "published": true,
+        "request_sha256": "bf66b9aa700ec026e3c04d681adec83de822c8f3bb170d2b45af0ffae5e33833"
+      },
+      {
+        "published": true,
+        "request_sha256": "398b2b30207cab881376a770c35ba5c15538f9d3f85e669b9689c759879a3a60"
+      },
+      {
+        "published": true,
+        "request_sha256": "e46f1cb87c6c002e1e9076bd85727219f41481cf175c4436fabef8960c116a0b"
+      }
+    ],
+    "max_provider_connections": 4,
+    "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+    "provider_connections": 4,
+    "status": "stopped_no_current_wait"
+  },
+  "journal_sha256": "c632ba05da8d422a51681ab2bd20b4d27de76b69eb4eda8dc42f0ced3b35775d",
+  "financial_session_polled_by_operator": false,
+  "new_financial_runs": 0,
+  "new_training_runs": 0
+}

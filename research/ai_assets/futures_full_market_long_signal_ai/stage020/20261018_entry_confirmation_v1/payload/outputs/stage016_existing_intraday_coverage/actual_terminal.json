@@ -1,0 +1,19 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "started_at": "2026-10-18T12:00:10.693665+08:00",
+  "finished_at": "2026-10-18T12:00:11.105511+08:00",
+  "elapsed_seconds": 0.41250099998433143,
+  "interpreter_requested": ".py311/bin/python",
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/outputs/stage016_existing_intraday_coverage/inventory.py",
+  "financial_attempts": 0,
+  "model_fits": 0,
+  "downloads": 0,
+  "provider_connections": 0,
+  "tool_chunk": "5a9481",
+  "first_command_missing_source_exit": 1,
+  "metadata_summary_corrected_from_retained_inventory": true,
+  "inventory_script_final_sha256": "b60505e5afd4c9963cccd054b8dab672717a23136ad30f178d097686ad049088",
+  "supplemental_metadata_only_chunk": "1ecf56",
+  "supplemental_minute_named_paths": 95
+}

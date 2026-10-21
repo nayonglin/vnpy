@@ -1,0 +1,13 @@
+{
+  "actual_fit_calls_completed": 27,
+  "actual_fit_calls_started": 27,
+  "actual_start_count": 1,
+  "completed_actual_runs": 1,
+  "elapsed_seconds": 118.20012049999787,
+  "exit_code": 0,
+  "goal_complete": false,
+  "native_source_queries": 0,
+  "new_cash_accounts": 0,
+  "production_qualified": false,
+  "status": "completed"
+}

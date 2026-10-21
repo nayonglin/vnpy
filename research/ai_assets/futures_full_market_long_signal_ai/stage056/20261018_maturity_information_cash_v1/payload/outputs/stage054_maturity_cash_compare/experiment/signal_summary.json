@@ -1,0 +1,21 @@
+{
+  "action": "history_ready20 and finite score>0; no future mask",
+  "arms": {
+    "ALIGNED": {
+      "finite_scores": 161014,
+      "potentials": 7211
+    },
+    "COMMON": {
+      "finite_scores": 161014,
+      "potentials": 7279
+    },
+    "SHUFFLED": {
+      "finite_scores": 161014,
+      "potentials": 7279
+    }
+  },
+  "full_reference_rows_preserved": true,
+  "mother_rows_per_arm": 399252,
+  "no_2019_pseudo_predictions": true,
+  "prediction_rows_per_arm": 161014
+}

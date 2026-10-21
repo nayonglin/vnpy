@@ -1,0 +1,24 @@
+{
+  "schema": "stage012_actual_review_terminal_v1",
+  "command": [
+    ".py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_actual.py"
+  ],
+  "started_at": "2026-10-18T11:49:26+08:00",
+  "finished_at": "2026-10-18T11:49:45+08:00",
+  "elapsed_seconds": 18.545825083972886,
+  "exit_code": 0,
+  "process_invocations": 2,
+  "numeric_review_invocations": 1,
+  "prior_bootstrap_failure": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/bootstrap_attempt1_actual_terminal.json",
+    "sha256": "66cd24f2926bf9c6f2d2d0a0a5207131565e515201a422ea4aa7d9ad9f352fef",
+    "reason": "resolved_venv_symlink_used_base_python_failed_import_before_data_read"
+  },
+  "source_sha256": "d8caf3318c9fc75a23df4c8d4290f2f4dd056b95b0c68f7215341b82c439e98a",
+  "stdout_sha256": "f5a9aeaa43932d3fd709d4055753e902c3d58cc2e7a3830b0d854f81291a1dca",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_fits_by_reviewer": 0,
+  "SQL_queries": 0,
+  "financial_runs": 0
+}

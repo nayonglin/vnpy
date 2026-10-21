@@ -1,0 +1,15 @@
+test_limit_scan_volume_day_end_and_private_view (test_stage127_ema_limit_engine.EmaLimitEngineTests.test_limit_scan_volume_day_end_and_private_view) ... FAIL
+
+======================================================================
+FAIL: test_limit_scan_volume_day_end_and_private_view (test_stage127_ema_limit_engine.EmaLimitEngineTests.test_limit_scan_volume_day_end_and_private_view)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage127_ema_limit_engine.py", line 51, in test_limit_scan_volume_day_end_and_private_view
+    self.assertIsNotNone(limit_context, "Stage127 EMA limit scan is not implemented")
+AssertionError: unexpectedly None : Stage127 EMA limit scan is not implemented
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)
+

@@ -1,0 +1,45 @@
+{
+  "schema": "stage055_independent_preflight_v1",
+  "phase": "protocol_preflight_only",
+  "recorded_at": "2026-10-18T14:34:34.466546+08:00",
+  "line_id": "futures_full_market_long_signal_ai",
+  "protocol_sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c",
+  "bindings": {
+    "design_document": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1431_stage052_maturity_information_cash_protocol.md",
+      "sha256": "7021bc3041972e207b2b2027788d4d8c0289258a2e9c71b44fcc5951c56578cd",
+      "matches": true
+    },
+    "accepted_decision": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1423_stage051_full_opportunity_data_acceptance.md",
+      "sha256": "485a9b3a942efe10fa8b4980763fdcde98b58644c7bee9cadf5fcdcd38c0d77e",
+      "matches": true
+    },
+    "accepted_kernel": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+      "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+      "matches": true
+    }
+  },
+  "protocol_findings": {
+    "critical": [],
+    "important": [],
+    "minor": []
+  },
+  "matrix": {
+    "common_columns": 26,
+    "head_dimension": 53,
+    "fits": 27,
+    "cash_accounts": 12
+  },
+  "scope_limit": "Protocol acceptance only. Source preflight and independent actual review are pending. No actual result has passed.",
+  "actions": {
+    "native_sql": 0,
+    "fit": 0,
+    "cash_strategy_replay": 0,
+    "download": 0,
+    "author_core_import": 0
+  },
+  "overfitting": "No new outcome-based parameter choice in this review; historical research selection and conditional-label risks remain.",
+  "continuation_value": "Yes: ready for bounded implementation preflight and one prespecified actual comparison; no AI or financial advantage accepted."
+}

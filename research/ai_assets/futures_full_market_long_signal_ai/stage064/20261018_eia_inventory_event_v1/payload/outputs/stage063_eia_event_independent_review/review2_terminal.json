@@ -1,0 +1,41 @@
+{
+  "schema": "stage063_review2_controlled_terminal_v1",
+  "status": "completed",
+  "exit_code": 0,
+  "review_starts_total": 2,
+  "complete_reviews_total": 1,
+  "first_review_failed_due_to_reviewer_metadata_adapter": true,
+  "first_failure_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_first_attempt_terminal.json",
+    "bytes": 1501,
+    "sha256": "2cce93058314ef59404922f3452338b644f58de983e42772ac6c76c4a23bd10d"
+  },
+  "review2_start": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/review2_started.json",
+    "bytes": 4297,
+    "sha256": "ed71bae62025d33919d514328e2d43040e0bb2006ace0adbe679ab7b96be3768"
+  },
+  "review2_log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/review2.log",
+    "bytes": 4345,
+    "sha256": "85b767e50e2623b6bd1f1747f1a88de1423936805fb129dadc5a7684b920766d"
+  },
+  "completed_at_utc": "2026-10-18T07:56:52.986481+00:00",
+  "review2_actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_terminal.json",
+    "bytes": 1798,
+    "sha256": "148ce1fa43069534c0af71008cc8876cecad36c0fe567f7ed944be54219027b8"
+  },
+  "review2_receipt": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/review_receipt.json",
+    "bytes": 108035,
+    "sha256": "44994ff68ef91b8b98fcc24f179dc7a67be5e7dfed752b67e3f439eadf516262"
+  },
+  "reviewer_sources_stable": true,
+  "author_results_unchanged": true,
+  "fit": 0,
+  "cash_strategy_replay": 0,
+  "sql": 0,
+  "network": 0,
+  "diagnostics_note": "Two pandas FutureWarning messages on empty saved-fill forward-fill dtype; zero-trade accounts reconcile correctly in pinned runtime. No source changes or repeat calculation after completed review."
+}

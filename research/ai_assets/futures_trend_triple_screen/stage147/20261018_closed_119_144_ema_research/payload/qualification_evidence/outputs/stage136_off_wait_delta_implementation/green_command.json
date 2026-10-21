@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_trend_triple_screen/tools",
+    "-p",
+    "test_stage135_accepted_off_wait_delta.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "recorded_at": "2026-10-18T09:55:26.897028+08:00",
+  "log_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/green.log",
+  "log_sha256": "473dd8ad611460994b7f9d79a809dc13d4125837159b7a64064337afccfa406f"
+}

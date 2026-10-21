@@ -1,0 +1,115 @@
+{
+  "schema": "stage004_source_bindings_v1",
+  "scope_start": "2010-01-01",
+  "scope_end": "2026-10-16",
+  "database": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite",
+    "bytes": 378552320,
+    "mtime_ns": 1792236170627661666,
+    "inode": 28078628,
+    "sha256": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "sha256_verification": "inherited_stage266_not_rehashed_this_stage",
+    "wal_present": false,
+    "shm_present": false
+  },
+  "calendar": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+    "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+    "bytes": 44824
+  },
+  "small_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/dataset_manifest.json",
+      "sha256": "d77145c2b17fa115e3aa5f4a9689955447c09139dfb734f6fdde7376cc7c3ebd",
+      "bytes": 4965
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/contract.json",
+      "sha256": "3009ee06c0db70f6df3736569392c5d1da2a593ca3b0b95825ad601b139f4149",
+      "bytes": 3548
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/independent_review_summary.json",
+      "sha256": "c8067bfad40db0f1817f5e81be9b7c0e4b024a09356d097ed0f5a7aa0b904576",
+      "bytes": 11171
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/unit_contract.json",
+      "sha256": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c",
+      "bytes": 6280
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/cleaning_summary.json",
+      "sha256": "8d66a7a550b7f07b0699def5690d359da4b131d29d1b6dc1b047aa64e80f3bcf",
+      "bytes": 628902
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/reader_semantics_erratum.json",
+      "sha256": "14efd68b550cff97e6da331068f538aa2e0e0c600e77749f5addc549f4a266f3",
+      "bytes": 3703
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_independent_validation/final_monotonic_delta_review.json",
+      "sha256": "9c9f2b715deaf78f7150f3f6ecd79d05c0a225dd386e550e16f1a8fc13d4c0e0",
+      "bytes": 13605
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/trading_dates.npy",
+      "sha256": "57dd7f539d1cdbefb528978a6c7bd79b118790f933ce63c37b10747b999f9585",
+      "bytes": 44824
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/futures_metadata.json",
+      "sha256": "7feb3e6a98b9f6c054b329fb74a2044be2700ae83f7f11c8de07632cd9f2ae89",
+      "bytes": 7112153
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage266_training_reader.py",
+      "sha256": "eaa0b51a4e76ab139c4b9b64af005304a19c895b20529f7366b8b88b6ad86c2c",
+      "bytes": 30932
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_contract_metadata.csv",
+      "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a",
+      "bytes": 11173
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/input_inventory.json",
+      "sha256": "5d3b65aa5058911f6a0cc4a4895736109a68c5c1c90201bcbd8e7bf402eb3f6f",
+      "bytes": 21444
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/actual_terminal.json",
+      "sha256": "a2eddab4f1e0fbfac9417e046389fa95ace89382fdc42696ec7209a81b492bf5",
+      "bytes": 423
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/handoff_manifest.json",
+      "sha256": "855ea6ba469a9c91b947e8fb3084adf97f766bb1fedd87cf08afd738b3182caf",
+      "bytes": 2981
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1111_stage002_full_market_input_inventory.md",
+      "sha256": "646ab3538576c38a7cc03e6dd9ee48cdb5bf06a71f8a2a1306882fde0664f962",
+      "bytes": 12238
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1108_stage003_product_day_opportunity_contract.md",
+      "sha256": "664a3210b666880b58d27c9ea31b0cfcc535572a0536f5b957867f1b87157bdf",
+      "bytes": 6430
+    }
+  ],
+  "input_inventory_independently_reviewed": false,
+  "opportunity_contract_frozen_before_actual_export": true,
+  "expected_input_counts": {
+    "product_catalog": 98,
+    "calendar_scope_days": 4074,
+    "complete_panel_rows": 399252,
+    "observed_product_days": 212852,
+    "accepted_contract_day_rows": 1552456
+  },
+  "financial_ready": false,
+  "label_ready": false,
+  "model_ready": false,
+  "production_qualified": false
+}

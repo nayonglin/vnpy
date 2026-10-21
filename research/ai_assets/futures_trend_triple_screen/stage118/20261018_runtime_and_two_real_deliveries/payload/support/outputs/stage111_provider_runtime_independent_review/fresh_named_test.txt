@@ -1,0 +1,7 @@
+test_three_generations_real_identity_and_fail_closed_inputs (stage111_fresh_runtime_selection.ProviderRuntimeSelectionTest.test_three_generations_real_identity_and_fail_closed_inputs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.919s
+
+OK
+

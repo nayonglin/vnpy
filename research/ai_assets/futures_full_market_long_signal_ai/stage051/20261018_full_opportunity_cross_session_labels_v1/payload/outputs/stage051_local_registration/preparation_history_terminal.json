@@ -1,0 +1,31 @@
+{
+  "schema": "stage051_pre_register_preparation_terminals_v1",
+  "status": "prepared_wait_final_root_authorization",
+  "commands": [
+    {
+      "phase": "initial_plan_and_dependency_reuse",
+      "chunk_id": "552173",
+      "exit_code": 0,
+      "wall_time_seconds": 8.25e-06,
+      "helper_execution": false
+    },
+    {
+      "phase": "stable049_explicit_role_metadata_sha_size",
+      "chunk_id": "949809",
+      "exit_code": 0,
+      "wall_time_seconds": 0.07104525,
+      "helper_execution": false
+    }
+  ],
+  "registrar_calls": 0,
+  "git_add": false,
+  "archive_copy_calls": 0,
+  "new_builds": 0,
+  "new_sql_queries": 0,
+  "new_model_fits": 0,
+  "new_cash_runs": 0,
+  "raw_audit_read": false,
+  "production": false,
+  "commit": false,
+  "push": false
+}

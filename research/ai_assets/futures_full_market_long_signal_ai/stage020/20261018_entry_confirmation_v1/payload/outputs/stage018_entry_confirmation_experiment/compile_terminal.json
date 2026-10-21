@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "py_compile",
+    "research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.03681029099971056,
+  "role": "qualification_evidence",
+  "reproducibility_required": true,
+  "source_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+      "sha256": "c744ed5f25f8a67a9ded2f16d4eb91b766a6e52290ef8e7b2839c5d5755708e1",
+      "bytes": 27426,
+      "role": "feature_contract",
+      "reproducibility_required": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage018_entry_confirmation_experiment.py",
+      "sha256": "05d2388ce0b65f835cf576ca51b121234988846b863cb0a2f7703e75fe9700bd",
+      "bytes": 6950,
+      "role": "feature_contract",
+      "reproducibility_required": true
+    }
+  ]
+}

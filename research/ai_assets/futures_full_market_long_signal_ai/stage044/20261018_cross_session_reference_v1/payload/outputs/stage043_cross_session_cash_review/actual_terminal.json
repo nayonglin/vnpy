@@ -1,0 +1,12 @@
+{
+  "schema": "stage043_actual_terminal_v1",
+  "exit_code": 0,
+  "started_at": "2026-10-18T13:43:41+08:00",
+  "finished_at": "2026-10-18T13:44:08+08:00",
+  "elapsed_seconds": 26.814914582995698,
+  "source_sha256": "7e292046c91da684bc2c89a2ab309e4f5048230b064e370251e95434a1da478f",
+  "core_sha256": "4310bdd81375e17406b1773658c582ccb570a25d09b8fa53d15461c76cbb3eaa",
+  "sql_queries": 0,
+  "strategy_replays": 0,
+  "model_fit_calls": 0
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "stage005_actual_review_terminal_v1",
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/review_actual.py",
+  "started_at": "2026-10-18T11:19:20.309276+08:00",
+  "finished_at": "2026-10-18T11:19:25.451589+08:00",
+  "script_elapsed_seconds": 5.142365208012052,
+  "tool_terminal_chunk": "7013d0",
+  "actual_exit_code": 0,
+  "tool_wall_time_seconds": 5.141655542,
+  "actual_review_invocations": 1,
+  "actual_checks": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/actual_review_checks.json",
+    "sha256": "8867dbb315a422e928abe40d6147ce99dd6a30bfe67abce1369d7020c655ca2f",
+    "bytes": 14562
+  },
+  "review_script": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage005_opportunity_independent_review/review_actual.py",
+    "sha256": "f968f30433c42187f4ac6c72a702d59d5328a3ed0cbbb05a771f8a06069c9549",
+    "bytes": 14622
+  },
+  "producer_export_reruns": 0,
+  "source_DB_full_hash_recomputed": false,
+  "financial_runs": 0,
+  "native_runs": 0,
+  "model_fits": 0,
+  "network_calls": 0
+}

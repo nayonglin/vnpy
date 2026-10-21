@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage018_entry_confirmation_experiment.py",
+    "-k",
+    "pre_entry_low",
+    "-v"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 0.294067292008549,
+  "role": "qualification_evidence",
+  "reproducibility_required": true
+}

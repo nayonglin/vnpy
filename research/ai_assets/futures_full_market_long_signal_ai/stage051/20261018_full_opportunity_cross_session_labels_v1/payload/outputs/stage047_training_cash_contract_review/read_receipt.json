@@ -1,0 +1,74 @@
+{
+  "schema": "stage047_training_and_cash_contract_review_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "recorded_at": "2026-10-18T14:00:07+08:00",
+  "independent_review": true,
+  "status": "bounded_contract_proposal_no_new_fit_until_label_and_information_frozen",
+  "critical": 0,
+  "important": 2,
+  "minor": 0,
+  "important_items": [
+    "full_opportunity_cross_session_economic_label_contract_not_yet_implemented",
+    "one_genuinely_new_ex_ante_information_known_time_contract_not_yet_bound"
+  ],
+  "bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/registry.md",
+      "sha256": "5a108f97531c9aaed370105f7c99e67b7e89c3255923194285a6786a891a6918",
+      "bytes": 23739
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "sha256": "7a09fd92af11ef087051d16df3424dd10a850943d8066451f5f475547a9318c3",
+      "bytes": 19163
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1358_stage047_full_opportunity_training_cash_contract_review.md",
+      "sha256": "a8f805d15bfaf1e57d3261c5bceb80da418a407ff57aac03cef8aa68e6737cbe",
+      "bytes": 12118
+    }
+  ],
+  "actual_primary_reads": [
+    "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+    "https://raw.githubusercontent.com/hudson-and-thames/mlfinlab/master/mlfinlab/cross_validation/cross_validation.py",
+    "https://raw.githubusercontent.com/hudson-and-thames/mlfinlab/master/mlfinlab/sampling/concurrent.py"
+  ],
+  "public_github_core_methods_are_pass_stubs": true,
+  "proposal": {
+    "opportunity_mother_rows": 399252,
+    "hard_signal_filter": null,
+    "real_label_interval_and_known_time": true,
+    "training_cutoff_years": [
+      2020,
+      2023,
+      2026
+    ],
+    "arms": [
+      "M0",
+      "M0_plus_one_new_information"
+    ],
+    "max_small_fit_calls": 18,
+    "primary_account_starts": [
+      2020,
+      2023
+    ],
+    "cash_scenarios": [
+      "base",
+      "stress"
+    ],
+    "fixed_cash_accounts": 8,
+    "main_uncertainty": "paired account log-growth difference fixed252source-day blocks/2000; conditional and limited by historical years",
+    "leverage_or_stop_optimization": false
+  },
+  "overlap_warning": "raw rows, weights and resamples are not independent economic experiences",
+  "implementation_calls": 0,
+  "sql_queries": 0,
+  "fit_calls": 0,
+  "financial_runs": 0,
+  "market_data_downloads": 0,
+  "large_inventory_calls": 0,
+  "external_code_executions": 0,
+  "production_qualification_required_for_research": false,
+  "production_qualified": false,
+  "goal_complete": false
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "stage022_fixed_ordered_history_information_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "frozen_spec": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1229_stage022_fixed_ordered_history_protocol.md",
+    "sha256": "3d35c65109db530e4d37818e91ee0e52e3a15f68001fcc5549d3b3cc83c2e967",
+    "bytes": 8189
+  },
+  "parent_protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+    "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+    "bytes": 3306
+  },
+  "data_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+    "bytes": 88826
+  },
+  "data_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a",
+    "bytes": 4493
+  },
+  "source_bindings": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json",
+    "sha256": "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb",
+    "bytes": 5592
+  },
+  "source_feature_code": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+    "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+    "bytes": 22578
+  },
+  "design_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1215_stage021_ordered_history_information_review.md",
+    "sha256": "f64dfcef8c7066dcd6354f195bf0ce1e6b98a685efc011837d1056bbdf77d4ca",
+    "bytes": 10426
+  },
+  "arms": [
+    "S",
+    "ORDER",
+    "BAG"
+  ],
+  "sequence": {
+    "bars": 20,
+    "channels": [
+      "delta_close_atr",
+      "range_atr",
+      "close_location",
+      "log_relative_volume"
+    ],
+    "dtype": "<f4",
+    "order": "oldest_to_newest",
+    "bag": "lexsort_all_four_tuple_no_date_tie",
+    "flatten": "time_then_channel"
+  },
+  "learner": {
+    "rff_dimensions": 128,
+    "input_dimensions": {
+      "S": 11,
+      "ORDER": 91,
+      "BAG": 91
+    },
+    "seed": 20261018,
+    "rng": "numpy.default_rng normal(91,128) then uniform(0,2pi,128)",
+    "bandwidth": "gamma=1/(2*d_active)",
+    "direct_S_connection": true,
+    "ridge_alpha": 1.0,
+    "solver": "cholesky",
+    "fit_intercept": true,
+    "head_dimension": 139,
+    "blas_threads": 1
+  },
+  "scaling": {
+    "S": "train_date_weighted_population",
+    "block": "four_channels_pooled_twenty_positions_train_weight_over_twenty",
+    "constant_scale": 1,
+    "clip": false
+  },
+  "annual_test_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "scopes": [
+    "main",
+    "holdout_0",
+    "holdout_1"
+  ],
+  "actual_fit_calls_expected": 108,
+  "mask": "score>0",
+  "bootstrap": {
+    "block_length_source_days": 60,
+    "repetitions": 2000,
+    "seed": 20261018
+  },
+  "gates_count": 20,
+  "primary_start": "2020-01-01",
+  "secondary_start": "2015-01-01",
+  "representation_primary_contrast": "ORDER-BAG",
+  "financial_ready": false,
+  "production_qualified": false
+}

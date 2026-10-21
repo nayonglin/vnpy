@@ -1,0 +1,120 @@
+{
+  "schema": "stage061_independent_wait_delta_review_v1",
+  "reviewed_at": "2026-10-18T10:03:07.841462+08:00",
+  "reviewer": "off_wait_delta_review",
+  "independent_review": true,
+  "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/manifest.json",
+  "manifest_sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a",
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "findings": [],
+  "status": "accepted_exact_key_research_data_only",
+  "qualified_research_data": true,
+  "exact_rights_confirmed": true,
+  "old_key_values_unchanged": true,
+  "review_scope": "New135 code plus actual159 committed delivery delta;065/B_OFF origin remains distinct from063/B_TS. Compatible061 data container only.",
+  "code_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py": "e128a199deddf728b24a58ee4511bdb781121fe668945249351a1ed573cc5977",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage135_accepted_off_wait_delta.py": "4c990835b19ea6852d05e637d37fa3bfa4a854f0ca17130549045e02e4bca735"
+  },
+  "static_review_sections": [
+    {
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py",
+      "lines": "38-140",
+      "judgment": "accepted: actual134/133/065/087 identity and inherited upstream, no old063 terminal impersonation"
+    },
+    {
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py",
+      "lines": "158-238",
+      "judgment": "accepted: original dual-record commit/pointer, owner fingerprints, canonical/file/fingerprint/response/021 source closure, exact rights, seven-value conflict rejection"
+    },
+    {
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py",
+      "lines": "239-301",
+      "judgment": "accepted: failed excluded;17g, source drift check, atomic new directory; public actual SHA pin; author never signs data qualification"
+    },
+    {
+      "file": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage135_accepted_off_wait_delta.py",
+      "lines": "187-264",
+      "judgment": "accepted static two meaningful fixture compositions; author GREEN evidence inherited, no reviewer rerun"
+    }
+  ],
+  "actual_data_audit": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/actual_data_audit.json",
+    "sha256": "12820f705a16b61e42798762ccb60e5a8ad901ce1e6ad64dc88c69f8f4286b5b",
+    "bytes": 69987
+  },
+  "counts": {
+    "accepted_deliveries": 159,
+    "accepted_keys": 36391,
+    "qualified_full_keys": 36345,
+    "qualified_anchor_keys": 36391,
+    "explicit_anchor_only_keys": 46
+  },
+  "source_fingerprints_verified": 2783,
+  "source_map_exactly_matches_manifest": true,
+  "all_overlay_values_equal_signed_delivery_bytes": true,
+  "full_anchor_and_proofs_exact": true,
+  "old_key_values_unchanged_basis": "159 actual original021 strict equal-only commit events old_keys_changed=0, bound by original065 capture and134 independent audit; not a new global RAM/base-market reconstruction.",
+  "old_key_evidence_scope": "Original159 strict-gate commit facts inherited from134 and matching bound021 sources; does not claim a new all-market/base RAM reconstruction.",
+  "actual_appended_keys_sum": 31703,
+  "existing_request_keys_sum": 4688,
+  "failed_request_excluded": "7422216c316b1eeea381af05e31318dfbea8903ffe77c31c6c9b6c7cf2c087eb",
+  "actual134_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/review_receipt.json",
+    "sha256": "2d6f19e8fbb6f94976380ae114c7ca6cde8c70ea4ad5df3d2f9628aeaa9edd7a"
+  },
+  "author_test_and_freeze_evidence": {
+    "green_command.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/green_command.json",
+      "sha256": "7a826188971880feca6382e479b05a5d51981763c4d38ca7f06bd0f6899eccaf",
+      "bytes": 543
+    },
+    "actual_freeze_command.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/actual_freeze_command.json",
+      "sha256": "a6112a60c3e62b82b63b976ba528fd099c716f0c27ecd845291e308445d05cc5",
+      "bytes": 1549
+    },
+    "actual_tool_terminals.json": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/actual_tool_terminals.json",
+      "sha256": "74b59f6ac26aeccebcefa79847026a891f6138161638ba4d4281c67ddb1fe3b9",
+      "bytes": 430
+    },
+    "green.log": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/green.log",
+      "sha256": "473dd8ad611460994b7f9d79a809dc13d4125837159b7a64064337afccfa406f",
+      "bytes": 504
+    },
+    "actual_freeze.log": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage136_off_wait_delta_implementation/actual_freeze.log",
+      "sha256": "58f5357ab25e59a8be1a24bd84f32cce48d84ea45ac9f1f199360902211ff7a0",
+      "bytes": 155
+    }
+  },
+  "author_test_rerun": false,
+  "original021_qualification_inherited": true,
+  "prior151_and_eight_source_reviews_inherited": true,
+  "financial_accepted": false,
+  "financial_readiness_created": false,
+  "production_qualified": false,
+  "partial_PnL_read_or_reported": false,
+  "old190_layer_merged_or_requalified": false,
+  "financial_model_provider_network_guard_readiness_runs": 0,
+  "experiment_counters_unchanged": {
+    "actual_attempts": 11,
+    "accepted_financial_arms": 4
+  },
+  "limitations": [
+    "Only selected159 exact-key delivery bytes and2783 necessary source bindings were verified;7663 capture fingerprint metadata was not globally rehashed or requalified.",
+    "Original021 completed-bar/daily and151/eight review qualification is inherited. No raw market price/daily reaggregation, database/provider/network/model/guard or financial replay.",
+    "old_keys_changed0 is original strict-gate evidence;no claim of reconstructing the entire historical base or live engine RAM. Future append still uses unchanged equal-only guard.",
+    "The original061190-delivery layer and two anchor provenance are identity references only;not merged,re-frozen or re-reviewed.",
+    "The author manifest stays frozen_pending_independent_review/new_layer_qualified_research_data=false;independent acceptance resides in this separately pinned receipt.",
+    "No new runner or complete B financial result accepted;the failed original run and11attempt/4accepted counters remain."
+  ],
+  "overfitting": false,
+  "overfitting_reason": "Fixed actual consumed scope;no PnL selection,strategy parameter changes or performance interpretation.",
+  "continued_value": true,
+  "continued_value_reason": "The bounded accepted data layer can reduce repeated provider waits;this is data qualification only,not alpha or financial readiness."
+}

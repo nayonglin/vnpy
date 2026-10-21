@@ -1,0 +1,74 @@
+{
+  "schema": "stage137_final_pinned_source_and_artifact_stability_v1",
+  "checked_at": "2026-10-18T10:03:33.512789+08:00",
+  "all_unchanged": true,
+  "files": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage135_accepted_off_wait_delta.py": {
+      "sha256": "e128a199deddf728b24a58ee4511bdb781121fe668945249351a1ed573cc5977",
+      "bytes": 22088
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage135_accepted_off_wait_delta.py": {
+      "sha256": "4c990835b19ea6852d05e637d37fa3bfa4a854f0ca17130549045e02e4bca735",
+      "bytes": 18464
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/manifest.json": {
+      "sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a",
+      "bytes": 850092
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/audit_only_snapshot.json": {
+      "sha256": "f601f0f32eb258b6cde458754709d2451b433025dbe297619992c59beb42ea18",
+      "bytes": 5131992
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/review_receipt.json": {
+      "sha256": "2d6f19e8fbb6f94976380ae114c7ca6cde8c70ea4ad5df3d2f9628aeaa9edd7a",
+      "bytes": 30718
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage134_B_OFF_failure_independent_review/committed_scope_audit.json": {
+      "sha256": "1d8578b14c9adaf16fbdb5b3d5aa519cfa2e1d6690c82e58bb59539324a978cd",
+      "bytes": 1878375
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/source_run_snapshot.json": {
+      "sha256": "3e070f4ca1c836b986e5e33fb06e37ca4c43c69f9512a32200bcd51ebef0d232",
+      "bytes": 6278
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/accepted_deliveries.json": {
+      "sha256": "e045bd42b9a97e50b2413d1b1abfb7c41d379214faa62884a9c399107b15a8f0",
+      "bytes": 3403323
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/overlay.csv": {
+      "sha256": "c0f979fa5abb8c84d239a01ab1617ccd6fd09def164e9ecf5e0b252b59467f8e",
+      "bytes": 2630128
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/rights.csv": {
+      "sha256": "358c986819a505a8d2d276cd2b3f7d53a4350f0b03cec608a6cc4ea3a2ba3ad0",
+      "bytes": 3945752
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage137_off_wait_delta_independent_review/review_receipt.json": {
+      "sha256": "b3fbb16d219484bdac9329e6c4f12db18a3b762de3adbea7b79710c79f8dee68",
+      "bytes": 7330
+    }
+  },
+  "reviewer_evidence": {
+    "review_actual_data.py": {
+      "sha256": "902b8ab2912502ff2711f12766f0aff21c9eba431b2c54006ced112adc11f81c",
+      "bytes": 24038
+    },
+    "actual_data_audit.json": {
+      "sha256": "12820f705a16b61e42798762ccb60e5a8ad901ce1e6ad64dc88c69f8f4286b5b",
+      "bytes": 69987
+    },
+    "review_receipt.json": {
+      "sha256": "b3fbb16d219484bdac9329e6c4f12db18a3b762de3adbea7b79710c79f8dee68",
+      "bytes": 7330
+    },
+    "loader_acceptance.json": {
+      "sha256": "1507edbfcd5f43efbf29bca4c253c9d76f0035e2803580c9bc3445ddd39de524",
+      "bytes": 988
+    },
+    "command_evidence.json": {
+      "sha256": "2ec2d4e6c347e94472b686a72245f1cae9f3bc3fc944105b6e37f1b29c73ebe9",
+      "bytes": 2189
+    }
+  },
+  "final_check_scope": "Pinned producer code/test,manifest,four artifacts,134 origin/capture-scope identities and independent receipt only;the immediately preceding unchanged061 loader itself rechecked all2783 necessary sources;no repeated suite or global market rehash."
+}

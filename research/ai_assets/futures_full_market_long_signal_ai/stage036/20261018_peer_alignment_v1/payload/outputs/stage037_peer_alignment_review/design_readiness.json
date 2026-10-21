@@ -1,0 +1,56 @@
+{
+  "schema": "stage037_peer_alignment_design_readiness_v1",
+  "recorded_at": "2026-10-18T13:02:42+08:00",
+  "line_id": "futures_full_market_long_signal_ai",
+  "inputs_read": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/registry.md",
+      "sha256": "7b497c396f37ca2e867601f42a47f104ffbb72c33e19eb3dde25f7bca6cb11df",
+      "bytes": 23807
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "sha256": "b8423cadf149280dc24c034af9f6c54caeb1eb71be3f045f7644dc92d5da5cbb",
+      "bytes": 15382
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1251_stage032_cross_family_aligned_state_design.md",
+      "sha256": "d396bb4f5717c1104f85469fb675ac3f3cfe8e20a5db51cf8865e17de5c21c9b",
+      "bytes": 13001
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1300_stage033_fixed_peer_alignment_protocol.md",
+      "sha256": "7370e8fc05bbbc9e8a0436f2e63abc4078ba8ad43e8d33c46837e58d79e281be",
+      "bytes": 8327
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage033_peer_alignment_protocol/protocol.json",
+      "sha256": "6328b2429106028531916050982bcf57f033285366a745f2f08a29a308a2556b",
+      "bytes": 3273
+    }
+  ],
+  "independent_review": true,
+  "status": "design_no_material_blocker_awaiting034_035_complete",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "material_design_blocker": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_backtests": 0,
+  "downloads": 0,
+  "author_calculation_imports": 0,
+  "review_scope": [
+    "034 source/tests causal prefix, own/F exclusion, strict held peer and market-summary pool, all stored schema/ID/main summary equality and bounded independently selected q window reconstruction",
+    "035 all108 fit identities/date weights/shared18 and pooledq scalers/all predictions",
+    "six predetermined saved-coefficient Ridge normal equations:2015 main and2026 holdout0 by3arms",
+    "all scope/year/period common-payoff statistics, two bootstrap grids/CI and20gates"
+  ],
+  "limitations": [
+    "Contemporaneous20day Pearson relation with u-1 shock is not direct causal lead-lag identification.",
+    "Queryown historical observations allowed in held test; no zero-history zero-shot claim.",
+    "One fixed shuffled null is a representation control, not full randomization test.",
+    "COMMON effective18 vs19 information direction makes it secondary; ALIGNED-SHUFFLED is primary.",
+    "All outcomes remain fixed DAY proxy, not cash returns, real tradability or safe leverage."
+  ]
+}

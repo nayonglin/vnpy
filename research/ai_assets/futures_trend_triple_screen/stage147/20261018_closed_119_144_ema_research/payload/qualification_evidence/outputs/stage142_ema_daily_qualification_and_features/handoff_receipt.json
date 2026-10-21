@@ -1,0 +1,44 @@
+{
+  "schema": "stage142_fixed_ema_feature_generation_handoff_v1",
+  "reviewer": "off_wait_delta_review_stage142",
+  "scope": "Fixed accepted127 model generation plus bounded actual scalar and source stability checks; not an independent review of the new142 review/build script.",
+  "fixed_model_generated_and_checked": true,
+  "feature_math_changes": false,
+  "new142_script_fully_independently_code_reviewed": false,
+  "research_only": true,
+  "financial_ready": false,
+  "production_qualified": false,
+  "feature_manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/feature_manifest.json",
+  "feature_manifest_sha256": "3edc75693057d12cecffb5bddb7908d5e508f488dc18a08e36946488f3337c28",
+  "features_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/features.csv",
+  "features_sha256": "d9d8fa958c5c52a329f977a5ee2fa6a146901608e6cc1fb53dd4d75d4d591245",
+  "daily_source_qualification_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/daily_source_qualification.json",
+  "daily_source_qualification_sha256": "553b07a161a7b05cd1d161e541accbf8fcb489af0786af6a3bba2b02ce1ef592",
+  "fixed_model_sha256": "6568f87ec74bebdb9afa730b3347c5eb52cdf31bd8f3ca3cc9208b1c55c2f7d6",
+  "feature_build_evidence_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/feature_build_evidence.json",
+  "feature_build_evidence_sha256": "6a5c60ae2dac0dd68419194a94462ce2e2bea23e57a7dbdffb95179eace3d0d3",
+  "actual_unique_build": {
+    "chunk_id": "8834c1",
+    "exit_code": 0,
+    "load_bound_daily_csv_calls": 1,
+    "build_ema_rows_calls": 1,
+    "rows": 116394
+  },
+  "bounded_scalar_probes": {
+    "count": 2,
+    "passed": true,
+    "samples": ["AP005.CZCE/2019-07-25", "fu2101.SHFE/2020-02-21"],
+    "scope": "Actual38-bar seed,26-valid-EMA window,positive denominators and scalar values; complete evidence referenced above."
+  },
+  "source_stability": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/final_stability.json",
+    "sha256": "1e79f25ea2401e4b4522723a2bbc1f8be995482ba76d5d2fc50c711576c92115",
+    "chunk_id": "1e73c0",
+    "exit_code": 0,
+    "all_unchanged": true,
+    "DB_rehashed_again": false
+  },
+  "future_review_boundary": "The future145/146 overall code review covers the typed reader and this handoff. This receipt records generation/check evidence only and does not replace that review.",
+  "prior142_artifacts_modified_for_handoff": false,
+  "additional_feature_build_or_price_suite_runs_for_handoff": 0
+}

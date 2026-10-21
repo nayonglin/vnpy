@@ -1,0 +1,57 @@
+{
+  "schema": "stage029_actual_process_evidence_v1",
+  "starts": 2,
+  "complete_experiments": 1,
+  "attempts": [
+    {
+      "initial_chunk": "bb0244",
+      "session_id": 76823,
+      "final_chunk": "64f988",
+      "exit_code": 1,
+      "terminal": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/experiment/actual_terminal.json",
+        "sha256": "8758da89305a25d3f9e0deaff289bcb5f977f1096c68cfd6759dfb84a6e8f274",
+        "bytes": 741
+      },
+      "source_snapshot": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/attempt01_stage029_uncapped_day_experiment.py",
+        "sha256": "37f5b485d4734bc36bdcabcc64db4ee3636e6f058f6e3a5102fb93347300e9c7",
+        "bytes": 21347
+      },
+      "tests_snapshot": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/attempt01_test_stage029_uncapped_day_experiment.py",
+        "sha256": "1bd4076a0cc127539acbec84d8901f78617c9d303950214da65e40dab1b9168f",
+        "bytes": 5017
+      },
+      "actual_stdout": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/actual_stdout.log",
+        "sha256": "4ba6ff94fbc81354893b80ea19c933ad7bf55a8036a92870f7fb9a62293a653e",
+        "bytes": 1625
+      },
+      "outcomes_exported": false
+    },
+    {
+      "initial_chunk": "db6684",
+      "session_id": 22593,
+      "final_chunk": "518e23",
+      "exit_code": 0,
+      "terminal": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/experiment_after_status_fix/actual_terminal.json",
+        "sha256": "29f4d6660d20d1026360f97062cbd48a9b9c25dad4d3a83d48f454cd74cc46a5",
+        "bytes": 718
+      },
+      "actual_stdout": {
+        "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/actual_stdout_after_status_fix.log",
+        "sha256": "3d197218b0875cde6d3f854b0176dbdd17f9a0986bebeeb1c658e94257a75369",
+        "bytes": 917
+      },
+      "root_authorized_status_fix": true
+    }
+  ],
+  "model_fits": 0,
+  "fixture_model_fits": 0,
+  "financial_runs": 0,
+  "sql_queries": 0,
+  "network_calls": 0,
+  "policy_parameters_changed": false
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "stage063_first_attempt_terminal_v1",
+  "status": "failed",
+  "exit_code": 1,
+  "actual_review_start_count": 1,
+  "started_at_utc": "2026-10-18T07:54:02.912088+00:00",
+  "failure_recorded_at_utc": "2026-10-18T07:54:26.736161+00:00",
+  "process_elapsed_seconds": 0.424237708,
+  "failure_class": "independent_reviewer_csv_integer_representation_adapter",
+  "failure": "source_checks.py line172 int(saved.source_row_number) rejected string 3.0; semantic integer row number is unchanged.",
+  "last_phase": "saved_source_stock_metadata; model/cash checks not reached",
+  "log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_first_attempt.log",
+    "bytes": 987,
+    "sha256": "fa4422657ea76119abcd27bf09b8506bd2154248a373a7aff0adc8485417d061"
+  },
+  "source_code_at_start": {
+    "independent_review.py": "2cb05e9a480f12bf4bda120b9eb7397cf24917228e79bd0c5ba75d6f6307b2b5",
+    "source_checks.py": "43ed1fd5a3f30ed996c05abc646e1de5501ab2a28665534d98a5a76233154587",
+    "cash_adapter.py": "a79040c6b06da4703843bcd8294d45d351566c6758292adf32ed5acb9d6e58b7",
+    "cash_review_core.py": "4310bdd81375e17406b1773658c582ccb570a25d09b8fa53d15461c76cbb3eaa",
+    "cash_diagnostics_checks.py": "e1616f3dfc2f68952664be29c605586318c06bb03a98ff73cc2cc49c4a4684da"
+  },
+  "automatic_rerun": false,
+  "fit_calls": 0,
+  "cash_policy_replays": 0,
+  "sql": 0,
+  "network": 0,
+  "actual_results_accepted": false
+}

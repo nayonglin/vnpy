@@ -1,0 +1,12 @@
+{
+  "data_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+    "bytes": 88826
+  },
+  "data_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a",
+    "bytes": 4493
+  }
+}

@@ -1,0 +1,12 @@
+test_archive_cross_year_release_and_data_ending_are_distinct (__main__.ImportBehaviors.test_archive_cross_year_release_and_data_ending_are_distinct) ... ok
+test_archive_orphan_td_group_is_retained_as_official_report (__main__.ImportBehaviors.test_archive_orphan_td_group_is_retained_as_official_report) ... ok
+test_calendar_missing_ordinal_and_sham_never_use_future_or_inline_prior (__main__.ImportBehaviors.test_calendar_missing_ordinal_and_sham_never_use_future_or_inline_prior) ... ok
+test_conservative_dst_u_next_native_D_and_superseded_unique_event_interface (__main__.ImportBehaviors.test_conservative_dst_u_next_native_D_and_superseded_unique_event_interface) ... ok
+test_delayed_same_day_issues_use_release_cell_not_directory_day (__main__.ImportBehaviors.test_delayed_same_day_issues_use_release_cell_not_directory_day) ... ok
+test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs (__main__.ImportBehaviors.test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs) ... ok
+test_upper_stock_exact_labels_convert_and_reject_bad_differences (__main__.ImportBehaviors.test_upper_stock_exact_labels_convert_and_reject_bad_differences) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.043s
+
+OK

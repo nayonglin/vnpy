@@ -1,0 +1,126 @@
+{
+  "schema": "stage037_peer_alignment_independent_review_v1",
+  "independent_review": true,
+  "status": "accepted_calculations_rejected_quality_screen",
+  "manifest": {
+    "path": "research/lines/futures_full_market_long_signal_ai/outputs/stage035_peer_alignment_experiment/experiment/manifest.json",
+    "sha256": "073526fb3439f42b744519b6a7cb7c4a2931d8169e36c040513d27bc44962c51",
+    "bytes": 64625
+  },
+  "source_code_read": {
+    "bytes": 30616,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage035_peer_alignment_experiment.py",
+    "sha256": "7141bb6e026fece3baa88d1a98db1d5cbe2a6ed8268d5e5ed9d116b7d4204292"
+  },
+  "fit_records_checked": 108,
+  "scalar_predictions_checked": 969654,
+  "normal_equations_checked": [
+    {
+      "fit_id": "2015_main_COMMON",
+      "relative_normal_residual": 2.4434166679775243e-13,
+      "weighted_intercept_residual": 7.323364133973356e-16
+    },
+    {
+      "fit_id": "2015_main_ALIGNED",
+      "relative_normal_residual": 2.4389340308438634e-13,
+      "weighted_intercept_residual": 7.125435373595698e-16
+    },
+    {
+      "fit_id": "2015_main_SHUFFLED",
+      "relative_normal_residual": 2.4456795444243534e-13,
+      "weighted_intercept_residual": 7.349180928805225e-16
+    },
+    {
+      "fit_id": "2026_holdout_0_COMMON",
+      "relative_normal_residual": 2.9334342947816875e-15,
+      "weighted_intercept_residual": 2.052826982357326e-15
+    },
+    {
+      "fit_id": "2026_holdout_0_ALIGNED",
+      "relative_normal_residual": 2.773059978923235e-15,
+      "weighted_intercept_residual": 2.099872489774027e-15
+    },
+    {
+      "fit_id": "2026_holdout_0_SHUFFLED",
+      "relative_normal_residual": 2.8552979336370302e-15,
+      "weighted_intercept_residual": 2.075602981979697e-15
+    }
+  ],
+  "all_period_scope_reports_checked": 56,
+  "gates": {
+    "primary_ALIGNED_selected_identified_dates_ge60": true,
+    "primary_ALIGNED_selected_identified_families_ge8": true,
+    "primary_ALIGNED_lower_ci_positive": false,
+    "primary_ALIGNED_minus_COMMON_lower_ci_positive": false,
+    "primary_ALIGNED_minus_SHUFFLED_lower_ci_positive": false,
+    "primary_participation_lower_ci_positive": false,
+    "same_mask_cost_1R_primary_ALIGNED_lower_positive": false,
+    "four_complete_years_ALIGNED_minus_COMMON_lower_positive": false,
+    "four_complete_years_ALIGNED_minus_SHUFFLED_lower_positive": false,
+    "partial_2026_ALIGNED_lower_positive": false,
+    "all_2015_ALIGNED_lower_positive": false,
+    "all_2015_ALIGNED_minus_COMMON_lower_positive": false,
+    "all_2015_ALIGNED_minus_SHUFFLED_lower_positive": false,
+    "all_2015_participation_lower_positive": false,
+    "holdout_0_primary_ALIGNED_lower_positive": false,
+    "holdout_0_primary_ALIGNED_minus_COMMON_lower_positive": false,
+    "holdout_0_primary_ALIGNED_minus_SHUFFLED_lower_positive": false,
+    "holdout_1_primary_ALIGNED_lower_positive": false,
+    "holdout_1_primary_ALIGNED_minus_COMMON_lower_positive": false,
+    "holdout_1_primary_ALIGNED_minus_SHUFFLED_lower_positive": true
+  },
+  "quality_information_screen_pass": false,
+  "max_abs_prediction_error": 2.220446049250313e-16,
+  "max_abs_daily_output_error": 3.552713678800501e-15,
+  "max_abs_numeric_error": 7.105427357601002e-15,
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "qualified_for_fixed_proxy_experiment": true,
+  "real_economic_labels_ready": false,
+  "financial_ready": false,
+  "production_qualified": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "author_calculation_imports": 0,
+  "financial_backtests": 0,
+  "downloads": 0,
+  "primary_2020_date_equal_means": {
+    "identified_rows": 65.43057247259439,
+    "COMMON_lower": -0.0001476938745677535,
+    "COMMON_upper": 0.0016202896803698204,
+    "stress_COMMON_lower": -0.005878945827257092,
+    "stress_COMMON_upper": -0.004110962272319518,
+    "COMMON_selection_rate": 0.007164064940861673,
+    "COMMON_mse_proxy_lower": 2.6628142481199837,
+    "ALIGNED_lower": -0.0003786893134017002,
+    "ALIGNED_upper": 0.0012529858860215058,
+    "stress_ALIGNED_lower": -0.0059562295464114234,
+    "stress_ALIGNED_upper": -0.004324554346988217,
+    "ALIGNED_selection_rate": 0.006971925291262154,
+    "ALIGNED_mse_proxy_lower": 2.662792905041454,
+    "SHUFFLED_lower": -0.00013346868152815314,
+    "SHUFFLED_upper": 0.001356529835021949,
+    "stress_SHUFFLED_lower": -0.005490535453868889,
+    "stress_SHUFFLED_upper": -0.004000536937318787,
+    "SHUFFLED_selection_rate": 0.006696333465425919,
+    "SHUFFLED_mse_proxy_lower": 2.6626045358925245,
+    "ALIGNED_minus_COMMON_lower": -0.000367303794348315,
+    "ALIGNED_minus_COMMON_upper": -0.00023099543883394646,
+    "stress_ALIGNED_minus_COMMON_lower": -0.00021359207466869942,
+    "stress_ALIGNED_minus_COMMON_upper": -7.72837191543309e-05,
+    "ALIGNED_minus_SHUFFLED_lower": -0.0002881088993590936,
+    "ALIGNED_minus_SHUFFLED_upper": -6.065568151489672e-05,
+    "stress_ALIGNED_minus_SHUFFLED_lower": -0.0005085823600280811,
+    "stress_ALIGNED_minus_SHUFFLED_upper": -0.00028112914218388416,
+    "participation_lower": -0.0007000395285463681,
+    "participation_upper": 0.0016555825109681628,
+    "stress_participation_lower": -0.0007000395285463681,
+    "stress_participation_upper": 0.0016555825109681628
+  },
+  "limitations": [
+    "Fixed peer projection conditional DAY proxy only; not cash returns or deployability; q can proxy own lag omitted from COMMON, not proof beyond full own history or causality.",
+    "Fixed-prediction block CI excludes model retraining and repeated researcher selection.",
+    "No SQL or full q rebuild; separate context review covers full schema/main summaries plus492 independently reconstructed cells and code/behavior causal boundaries."
+  ]
+}

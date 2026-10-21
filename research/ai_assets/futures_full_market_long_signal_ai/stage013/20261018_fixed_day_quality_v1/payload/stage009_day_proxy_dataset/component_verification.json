@@ -1,0 +1,38 @@
+{
+  "schema": "stage009_component_verification_v1",
+  "red": {
+    "chunk": "a47214",
+    "exit_code": 1,
+    "methods": 4,
+    "expected_assertion": "new DAY proxy dataset builder is not implemented"
+  },
+  "first_green": {
+    "chunk": "0719df",
+    "exit_code": 0,
+    "methods": 4,
+    "elapsed_seconds": 0.055
+  },
+  "final_green": {
+    "exit_code": 0,
+    "methods": 4,
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_full_market_long_signal_ai/tools -p test_stage009_day_proxy_dataset.py -v"
+  },
+  "compiled_only": [
+    "research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+    "research/lines/futures_full_market_long_signal_ai/tools/test_stage009_day_proxy_dataset.py"
+  ],
+  "sources": {
+    "research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+    "research/lines/futures_full_market_long_signal_ai/tools/test_stage009_day_proxy_dataset.py": "1ee59dd763fb1d54b2bb65b35f36b5690b5d6e8511c0393610f4092f7d79ac51"
+  },
+  "runtime": {
+    "executable": "/Users/mac/Desktop/fian/.py311/bin/python",
+    "python": "3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)]",
+    "numpy": "2.2.3",
+    "pandas": "2.2.3",
+    "sqlite": "3.43.1"
+  },
+  "actual_builds_so_far": 0,
+  "model_fits": 0,
+  "financial_runs": 0
+}

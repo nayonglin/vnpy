@@ -1,0 +1,84 @@
+{
+  "schema": "stage142_independent_daily_source_qualification_v1",
+  "reviewed_at": "2026-10-18T10:10:58.278643+08:00",
+  "reviewer": "off_wait_delta_review_stage142",
+  "independent_review": true,
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "findings": [],
+  "new_data_qualification": true,
+  "qualified_research_data": true,
+  "qualification_scope": "all116394_exact_research_keys_only",
+  "raw_same_baseline_source": true,
+  "fully_independent_market_repricing": false,
+  "acceptance_basis": [
+    "accepted_baseline_same_frozen_real_contract_DB",
+    "lossless_seven_column_normalization",
+    "three_bounded_original_CSV_samples_and138_carry_evidence"
+  ],
+  "candidate_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage141_ema_daily_normalized_source/candidate_manifest.json",
+    "sha256": "96eea70a16b7a5715f697aaa06a4e34107e328109849ca573eba88be78cc8b90"
+  },
+  "daily_csv": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage141_ema_daily_normalized_source/daily.csv",
+    "sha256": "71dd740fb605e1ff8365fb6fc7236ab6d19f8d90a7f7be72c753d29733b7df5c"
+  },
+  "exact_keys": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage141_ema_daily_normalized_source/exact_keys.csv",
+    "sha256": "5e8493067d422c27ba7e4512dfbb30ea74de11193b46d0a71547940ed3f48317",
+    "count": 116394,
+    "contract_column": "vt_symbol",
+    "date_column": "date"
+  },
+  "source_audit": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage142_ema_daily_qualification_and_features/source_audit.json",
+    "sha256": "a39c3c4cac4d12a6d6f4f362a1b5fa66c1b61f97935e9e7899f1b7d395ad4729"
+  },
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage138_ema_daily_input_inventory/inventory.json": "01d8c0bd0aae3a15326fca2173d193da36d471cd96e5d5af0415cbac210d42a4",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage138_ema_daily_input_inventory/bounded_followup.json": "6de842800f3dc9e96d7886b6480ec5909c0dbbbbac1b430eb0bc866ae9c07a3a",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0959_stage138_ema_daily_input_inventory.md": "c9c239bea67668165497717e1a467637fd691587c1991a45f6c346987af42853",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_1002_stage139_ema_daily_source_acceptance_boundary.md": "48118bf563e7447ce3343958dbfc8bbd5cabea0cf37fa8bbdacd5113e130c759",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage141_ema_daily_normalized_source/export_daily.py": "f3966a2b55436d8f06c7d1757d54d5bec65cf1b64400132cfca405129bd1053b",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/preflight/A_OFF.json": "c8c1d1bfcc5faf61be9e170f5ae6998557e856e2c9aff2fb2434de08452e7ad2",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF/run_context.json": "c7e861612f4635bb40ff79ed278822ee369dd5caa581fc02b8e7e122f38153d6",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF/effective_parameters.json": "c4f585ad2349b57aa5c39ea2591c576925ecdf7b17d22ef41bea6b919d8306e4",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage001_first_screen/A0_attempt2/effective_parameters.json": "c49a2560d687bd506705e1ce7bd8cfee2fecb697869f1c51da3c6f7f1debfa61",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage005_potential_signal_demand/global_engine_calendar.csv": "a3edfab95f284cc368be2712127c2900197ff4c6dfb62cba62a651de1c1137f3",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_independent_review/review_receipt.json": "28beb5a3eafa9dcb7b23e4ad93d7332865533007c0e040c3d21f0ddcc8fa9346",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage027_ordered_features/input_manifest.json": "426cd031619b42167b150a1c543e367d39f75911612aa5bc101a14da754b3ae8",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage027_build_ordered_features.py": "8703c9ba3cf5ad581884405696984754e571ae035e59d52396437b2f74026acb",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/import_tqsdk_all_futures_daily_to_db.py": "0fd37e73b40a7c104eacc9acf9b2e456559cf1ebdcef0c8ce9acc2fd578255cb",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/download_tqsdk_all_futures_daily_csv.py": "51ecc292b6f8753c9822558282edb5e40eef38ebb93441ca81dd7e306150dca8",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_roll_intraday_execution.py": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+    "/Users/mac/Desktop/fian/.vntrader/database.db": "273f0bc18de3070e4e085e4d6585fba71d6e1bb1256e3c7fb5adfc6532836a54"
+  },
+  "scope": {
+    "interval": "d",
+    "start": "2019-06-01 00:00:00",
+    "end": "2026-10-14 00:00:00",
+    "metadata_contracts": 806,
+    "observed_contracts": 533,
+    "dates": 1786,
+    "rows": 116394,
+    "zero_volume_rows": 1468,
+    "duplicate_keys": 0
+  },
+  "zero_volume_rows_retained": 1468,
+  "financial_ready": false,
+  "production_qualified": false,
+  "limitations": [
+    "Same frozen accepted baseline DB source inherited;not a new independent vendor or full minute/daily price reaggregation.",
+    "Stage0134500 exact-key qualification remains4500;new all116394 research-key acceptance is separately signed under139 boundary.",
+    "Original provider zero-volume rows and real-contract final rows retained without future-successor filtering;no fill,splice,adjustment or new calendar.",
+    "Finite AP zero-volume sample proves this row existed before native carry,not provider-serial completion or all1468 zero-volume correctness.",
+    "Carry16 missing DB keys excluded;calendar gaps remain genuine127 warmup resets.",
+    "No financial readiness,alpha,full B account,production or live-trading qualification granted."
+  ]
+}

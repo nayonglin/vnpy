@@ -1,0 +1,18 @@
+{
+  "economics_status": {
+    "exact_epoch_metadata_snapshot": 212852,
+    "unresolved_exact_epoch_metadata": 186400
+  },
+  "mother_rows": 399252,
+  "no_AI": true,
+  "policy": "close55_confirm_next_source_open_2N_stop_causal20low_no_PT",
+  "potential_intents": 6389,
+  "products": 98,
+  "ready55": 174435,
+  "states": {
+    "insufficient_or_gap_history": 38417,
+    "no_accepted_observation": 186400,
+    "ready_breakout": 6389,
+    "ready_no_breakout": 168046
+  }
+}

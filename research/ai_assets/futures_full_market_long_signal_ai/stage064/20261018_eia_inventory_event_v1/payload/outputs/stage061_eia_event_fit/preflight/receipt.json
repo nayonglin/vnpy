@@ -1,0 +1,86 @@
+{
+  "actual_cash_accounts": 0,
+  "actual_research_fit_calls": 0,
+  "artifacts": [
+    {
+      "bytes": 4854,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/red.log",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "initial_missing_implementation_red",
+      "sha256": "6b37cf53f1c8c78a26ba480009951c54e8d9b1655f21d3faaf409aa69f0432f8"
+    },
+    {
+      "bytes": 2757,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/red_source_validation.log",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "intermediate_red_with_corrected_test_name_error",
+      "sha256": "179da0154fe6fc88d701bf6b79bb0d4b05cde6c047377a285ec649d01f75ce43"
+    },
+    {
+      "bytes": 2069,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/red_source_validation_corrected.log",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "source_integrity_new_behavior_red",
+      "sha256": "9b66a4acb0de8ae2717227a36901a85cd8800779ec450cf9d5638a24b7d2293b"
+    },
+    {
+      "bytes": 1626,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/red_start_receipt.log",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "start_manifest_new_behavior_red",
+      "sha256": "faf23a73e3889b7c3bcc2ae15934b0ea9091769de4d9afa61a0565404b866e45"
+    },
+    {
+      "bytes": 556,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/green.log",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "final_new_behavior_green",
+      "sha256": "4f41adce6f95fd3cae525054aa4fad34dc12901b6edd34b834965bb63f3ebbfd"
+    },
+    {
+      "bytes": 2566,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/preflight/accepted_input_receipt.json",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "accepted_normalized_input_preflight",
+      "sha256": "761232fc780df5748ba0653c7be084cc4de4ba7d078dbae097fff12c9570c10a"
+    }
+  ],
+  "final_green_exit_code": 0,
+  "goal_complete": false,
+  "initial_red_failures": 7,
+  "narrow_stop_or_increased_bet_qualified": false,
+  "native_SQL": 0,
+  "production_qualified": false,
+  "real_sklearn_fixture_fits": 0,
+  "schema": "stage061_new_behavior_preflight_receipt_v1",
+  "source": {
+    "bytes": 29818,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "experiment_source",
+    "sha256": "7d61a8b5c309ad24881d9d36d0ffffe7f2ae39af4750b7d4130dbb316857503d"
+  },
+  "source060_final_preflight": "pending final 060 manifest, CLI supplied for zero-fit preflight",
+  "source060_not_assumed_complete": true,
+  "source_start_manifest_red_exit_code": 1,
+  "source_validation_corrected_red_exit_code": 1,
+  "status": "completed_implementation_and_accepted_input_preflight",
+  "synthetic_stub_fit_calls_per_green": 6,
+  "tests": {
+    "bytes": 11955,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "new_behavior_tests",
+    "sha256": "1ae5502ffaaf3f16b3c59ed563f49327fd65daa09727fc270bb7caf431974ae6"
+  },
+  "tests_failed": 0,
+  "tests_passed": 13
+}

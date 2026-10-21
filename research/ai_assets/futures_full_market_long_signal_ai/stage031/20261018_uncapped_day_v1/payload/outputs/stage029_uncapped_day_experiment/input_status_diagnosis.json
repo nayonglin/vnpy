@@ -1,0 +1,16 @@
+{
+  "schema": "stage029_input_status_diagnosis_v1",
+  "actual_source_status_counts": {
+    "observed_long_research_opportunity": 212852,
+    "no_accepted_observation": 186400
+  },
+  "all_194709_ready_have_status": "observed_long_research_opportunity",
+  "audit_coverage": 212852,
+  "bug": "author adapter assumed status literal observed, not actual observed_long_research_opportunity",
+  "policy_or_parameter_changed": false,
+  "full_run_restarted": false,
+  "raw_prices_exported": false,
+  "actual_terminal": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage029_uncapped_day_experiment/experiment/actual_terminal.json",
+  "final_process_chunk": "64f988",
+  "exit_code": 1
+}

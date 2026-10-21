@@ -1,0 +1,38 @@
+{
+  "schema": "stage108_actual_driver_tool_terminal_v1",
+  "recorded_at": "2026-10-18T08:05:18.734554+08:00",
+  "run_id": "81ffc8f704ce4c5eb701e97e0397b12a",
+  "batch_id": "batch006",
+  "driver_session_id": 64940,
+  "initial_tool_chunk_id": "758ca8",
+  "terminal_tool_chunk_id": "e3f12c",
+  "terminal_observed": true,
+  "exit_code": 0,
+  "source_runtime_sidecar": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/0845221b3b1547b491324fd30646811c/manifest.json",
+    "sha256": "cc36fd5a9015e659dfc6352aa73152a0c3c28338b3c32f926c026319e8822627",
+    "old_financial_context_includes_this_sidecar": false
+  },
+  "launcher_terminal": {
+    "exit_code": 0,
+    "manifest_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/0845221b3b1547b491324fd30646811c/manifest.json",
+    "manifest_sha256": "cc36fd5a9015e659dfc6352aa73152a0c3c28338b3c32f926c026319e8822627"
+  },
+  "launcher_terminal_sha256": "8de7b04a0988112107bbd4fd304ccea1df5a765e04ccebe859ec14ffa1811977",
+  "journal": {
+    "events": [
+      {
+        "published": true,
+        "request_sha256": "594e0e258bca973d06e8d9c15f19018b20ad4a132977964eda23209fe3c70a27"
+      }
+    ],
+    "max_provider_connections": 4,
+    "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+    "provider_connections": 1,
+    "status": "stopped_no_current_wait"
+  },
+  "journal_sha256": "67e2ff1e2c1b911bd78ba65f8fde2ee3b49c90a7dae3ed74268a3bdeaba9c453",
+  "financial_session_polled_by_operator": false,
+  "new_financial_runs": 0,
+  "new_training_runs": 0
+}

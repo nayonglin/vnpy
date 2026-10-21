@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "all_finite": true,
+    "dtype": "<f4",
+    "id_rows": 194709,
+    "identity_unique": true,
+    "npz_keys": [
+      "ordered"
+    ],
+    "sequence_index_exact": true,
+    "shape": [
+      194709,
+      20,
+      4
+    ],
+    "source_db_stat_equal": true
+  },
+  "issued_at": "2026-10-18T12:29:40+08:00",
+  "manifest_sha256": "3b8da3d7e94a9e3e3fc755b233d2bb93ef6ebf6813a66a0a0a913052eb8bf64a",
+  "new_model_fit_or_SQL_or_financial_runs": 0,
+  "schema": "stage023_final_local_verification_v1"
+}

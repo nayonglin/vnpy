@@ -1,0 +1,55 @@
+{
+  "schema": "stage030_uncapped_day_design_readiness_v1",
+  "recorded_at": "2026-10-18T12:46:55+08:00",
+  "line_id": "futures_full_market_long_signal_ai",
+  "independent_review": true,
+  "inputs_read": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/registry.md",
+      "sha256": "0b8deb8d0361ca93599f29f699aa6254dbd01b54ba65ed296153182582cfe718",
+      "bytes": 23718
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "sha256": "08948b19564ab06d78c748b528b56fdd33f264bb00533c9497b189e01e637bd1",
+      "bytes": 12362
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1240_stage027_day_target_mismatch_and_uncapping_design.md",
+      "sha256": "cb69cced032d414519395ac6d214cdb8a767ec9b8863eb188f1643de9dcdf863",
+      "bytes": 11912
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1245_stage028_fixed_uncapped_day_protocol.md",
+      "sha256": "b9e1e3a2eb5b552b189fe7186abbe43b03e5e5991912c8e22785b6f1fe32d065",
+      "bytes": 6890
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage028_uncapped_day_protocol/protocol.json",
+      "sha256": "5c2ed793c64f74d503e7a474a93e4885905087b087e7925756c8395eb35100f2",
+      "bytes": 2687
+    }
+  ],
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "material_design_blocker": false,
+  "status": "design_no_material_blocker_awaiting_completed029",
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_backtests": 0,
+  "downloads": 0,
+  "author_calculation_imports": 0,
+  "actual029_result_review_started": false,
+  "review_scope": [
+    "all original009 identities and ready/unknown preservation",
+    "all identified A/B/common-path paired/decomposition/stress results independently derived from inherited audit/state without rejudging barriers",
+    "eight daily outputs, all seventeen annual periods by scope, full2010/primary2020, family heterogeneity",
+    "two common source-day bootstrap grids/CI and all11gates"
+  ],
+  "limitations": [
+    "B single-valued only in inherited continuous ideal price policy; no real financial label qualification.",
+    "Fixed policy family groups are heterogeneity partitions, not trained holdout generalization.",
+    "No024 model/mask/feature reused; deletingPT is a policy test, not new information or AI alpha."
+  ]
+}

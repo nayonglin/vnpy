@@ -1,0 +1,21 @@
+{
+  "schema": "stage019_handoff_v1",
+  "artifacts": {
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1216_stage019_entry_confirmation_independent_review.md": {
+      "sha256": "770a97a4590a53d3ffef1fb4248f479ebe51be937f30f0699d23cb382c46c9be",
+      "bytes": 6137
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage019_entry_confirmation_review/actual_terminal.json": {
+      "sha256": "a5a13c08b63829f31ceec2e24fc1ff693b3a00bdc35bb452330d0a6f2cf8608b",
+      "bytes": 640
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage019_entry_confirmation_review/independent_review.py": {
+      "sha256": "abb42f03cf02b3fe8240d1f94660e5073b1f881833c532392d51201053cc7632",
+      "bytes": 19666
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage019_entry_confirmation_review/review_receipt.json": {
+      "sha256": "1667fc9985c072a853b0dbca1a1c59efacabcfc7ad3fa468d0b50da79ba02625",
+      "bytes": 27340
+    }
+  }
+}

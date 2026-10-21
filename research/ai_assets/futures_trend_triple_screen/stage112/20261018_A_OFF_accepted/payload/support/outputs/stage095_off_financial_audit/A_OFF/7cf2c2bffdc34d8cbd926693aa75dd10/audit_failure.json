@@ -1,0 +1,11 @@
+{
+  "arm": "A_OFF",
+  "completion_evidence_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage104_A_OFF_actual_completion/root_actual_completion.json",
+  "completion_evidence_sha256": "fd6272aeeb94b8546008224d54479aeab5e5e11d2cf5e73439c110b097f17944",
+  "error": "AssertionError(('rb2005.SHFE', 'BACKTESTING.1', 'unproven_rollover_open'))",
+  "financial_replays": 0,
+  "production_qualified": false,
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "schema": "stage095_independent_off_account_audit_failure_v1",
+  "status": "blocked_no_accepted_economic_result"
+}

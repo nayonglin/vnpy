@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "condition": 1,
+      "nominal_pass": false,
+      "reason": "Both primary2020 base paired CI lower>0, return higher and DD not deeper; unresolved differential exposure cannot be assumed away.",
+      "status": "unknown"
+    },
+    {
+      "condition": 2,
+      "nominal_pass": false,
+      "reason": "INVENTORY self stress positive and survives; cold2023 both costs same positive direction and DD not deeper; unknown payoff has no invented finite bound.",
+      "status": "unknown"
+    }
+  ],
+  "decision": "unknown",
+  "diagnostic_reporting": "all families, annual continuous slices, direct oil/other, concentration required; no extra training/eligibility gate",
+  "goal_complete": false,
+  "increased_bet_qualified": false,
+  "narrow_stop_qualified": false,
+  "production_qualified": false
+}

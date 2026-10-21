@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "test_stage106_independent_off_account_review.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days",
+    "-v"
+  ],
+  "cwd": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days (test_stage106_independent_off_account_review.DateReaderTests.test_raw_usage_day_reader_preserves_both_joins_and_rejects_unsafe_days) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.023s\n\nOK\n",
+  "financial_replays": 0,
+  "account_loads": 0
+}

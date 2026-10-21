@@ -1,0 +1,51 @@
+{
+  "schema": "stage042_pre_actual_handoff_v1",
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py",
+    "sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+    "bytes": 50405
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage042_cross_session_experiment.py",
+    "sha256": "6541047f65bbe7ac63effce47fa11aebaba822e4c23d35de688ad73992de84c1",
+    "bytes": 9539
+  },
+  "fixtures_receipt": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/fixtures_receipt.json",
+    "sha256": "16dba3643a160b39384298380c8b8913f914d1805758b5baf3233205f18e6b41",
+    "bytes": 1775
+  },
+  "machine_protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage039_cross_session_reference_protocol/protocol.json",
+    "sha256": "58fe0f80de248f1d3095ac9ef859c0cb9bd84e369809a466f2b554dd38195466",
+    "bytes": 9600
+  },
+  "actual_starts": 0,
+  "actual_native_source_reads": 0,
+  "actual_cash_accounts": 0,
+  "unique_planned_command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/tools/stage042_cross_session_experiment.py --protocol research/lines/futures_full_market_long_signal_ai/outputs/stage039_cross_session_reference_protocol/protocol.json --protocol-sha256 58fe0f80de248f1d3095ac9ef859c0cb9bd84e369809a466f2b554dd38195466 --output research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment",
+  "planned_stdout": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/actual_stdout.log",
+  "planned_final_manifest": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage042_cross_session_experiment/experiment/manifest.json",
+  "actual_requires_root_explicit_run_authorization": true,
+  "implementation_contract": {
+    "u_independent_allocations": "scaled prefloor real target, fee=2*fee(uclose), common lambda then capfloor",
+    "D_recheck": "own risk with Dopen two-side costs, own margin(buyfill)+entryfee vs own frozen bufferedMargin+roundtripFee; no D cash reuse or reallocation",
+    "cash": "initial+realized_gross-fees; unrealized at native close; equity=sum; slippage only diagnostic",
+    "price_unknown": "original evidence stays unknown after missing; research cash entry cancel or held stale/deferred exit",
+    "run_source": "one streamed native SQL into arrays, one signal/reference precompute, price mother plus eighteen fresh books",
+    "source_allocation_audit": "existing-position joint reductions get explicit u budget rows and D outcome; new entry independent reserved fields; no extra portfolio rule"
+  },
+  "outputs": [
+    "signals_all.csv.gz",
+    "signal_summary.json",
+    "price_reference/{episodes,position_days,intent_decisions}.csv.gz",
+    "cash/{scenario}__{window_id}/{fills,daily,budgets,position_days,closed_episodes,open_episodes}.csv.gz",
+    "cash/{scenario}__{window_id}/summary.json",
+    "cash_summary.json",
+    "cash_summary.csv",
+    "source_read_receipt.json",
+    "actual_terminal.json",
+    "manifest.json",
+    "excluded_raw_audit/native_case_slices.json.gz"
+  ]
+}

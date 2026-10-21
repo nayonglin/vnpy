@@ -1,0 +1,29 @@
+{"event": "root_sequence_started_waiting_for_single_source", "at": "2026-10-18T07:26:02.061103+00:00", "process_id": 4616}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:26:02.065088+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:26:32.079876+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:27:02.095634+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:27:32.112907+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:28:02.130029+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:28:32.140894+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:29:02.158042+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:29:32.169531+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:30:02.180333+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:30:32.200238+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:31:02.218472+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:31:32.238174+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:32:02.252570+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:32:32.271768+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:33:02.287412+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:33:32.307506+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:34:02.317270+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:34:32.333137+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:35:02.343391+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:35:32.359505+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:36:02.376315+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:36:32.394425+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:37:02.414107+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:37:32.434410+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:38:02.456710+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:38:32.482052+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "waiting_for_same_source", "at": "2026-10-18T07:39:02.503974+00:00", "source_pid": 3442, "live_process_confirmed": true, "consecutive_missing_observations": 0, "model_fits": 0, "cash_accounts": 0}
+{"event": "stopped_without_automatic_restart", "at": "2026-10-18T07:39:16.419072+00:00", "error": "KeyboardInterrupt: "}

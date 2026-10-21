@@ -1,0 +1,34 @@
+test_archive_cross_year_release_and_data_ending_are_distinct (__main__.ImportBehaviors.test_archive_cross_year_release_and_data_ending_are_distinct) ... ok
+test_archive_orphan_td_group_is_retained_as_official_report (__main__.ImportBehaviors.test_archive_orphan_td_group_is_retained_as_official_report) ... ok
+test_calendar_missing_ordinal_and_sham_never_use_future_or_inline_prior (__main__.ImportBehaviors.test_calendar_missing_ordinal_and_sham_never_use_future_or_inline_prior) ... ok
+test_conservative_dst_u_next_native_D_and_superseded_unique_event_interface (__main__.ImportBehaviors.test_conservative_dst_u_next_native_D_and_superseded_unique_event_interface) ... ok
+test_delayed_same_day_issues_use_release_cell_not_directory_day (__main__.ImportBehaviors.test_delayed_same_day_issues_use_release_cell_not_directory_day) ... ok
+test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs (__main__.ImportBehaviors.test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs) ... FAIL
+test_upper_stock_exact_labels_convert_and_reject_bad_differences (__main__.ImportBehaviors.test_upper_stock_exact_labels_convert_and_reject_bad_differences) ... ok
+
+======================================================================
+FAIL: test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs (__main__.ImportBehaviors.test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage060_eia_report_import.py", line 101, in test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs
+    got = m.make_report_signals(reports, stocks, ['2021-01-07','2021-01-08'], source_end='2021-01-08')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py", line 195, in make_report_signals
+    missing = any(key not in stocks or not np.isfinite(stocks[key].get('current', np.nan)) or not np.isfinite(stocks[key].get('delta', np.nan)) for key in required)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage060_eia_report_import.py", line 195, in <genexpr>
+    missing = any(key not in stocks or not np.isfinite(stocks[key].get('current', np.nan)) or not np.isfinite(stocks[key].get('delta', np.nan)) for key in required)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage060_eia_report_import.py", line 103, in test_explicit_unknown_stock_rows_remain_calendar_events_with_neutral_inputs
+    self.fail('explicit null stock coverage must not crash or disappear: ' + str(exc))
+AssertionError: explicit null stock coverage must not crash or disappear: ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.040s
+
+FAILED (failures=1)

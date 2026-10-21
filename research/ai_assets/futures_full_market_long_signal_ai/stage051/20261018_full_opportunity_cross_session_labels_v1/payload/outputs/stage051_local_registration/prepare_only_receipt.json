@@ -1,0 +1,29 @@
+{
+  "schema": "stage051_prepare_only_receipt_v1",
+  "status": "prepared_no_blocker_wait_final_inputs_and_authorization",
+  "helper": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage051_local_registration/prepare_and_register.py",
+    "sha256": "64870de93350eec14cfe7ab83ffed38fa79aa27be965af8fbe3943d67f8a6271",
+    "bytes": 12895,
+    "syntax_parse": "passed_no_helper_execution"
+  },
+  "plan": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage051_local_registration/registration_plan.json",
+    "sha256": "3005a93cb9e1aa04a2329cfa39c454421dccf415107843a140266c762e033a11"
+  },
+  "observed_contract_files": 8,
+  "reused_archived_dependency_count": 4,
+  "reused_bytes_without_new_copy": 8222400,
+  "destination_does_not_exist": true,
+  "index_unchanged": true,
+  "unrelated_index_sha256": "c91966bea2a7bdc4fe462985137f4cf878b75877a0ba4e610d0131b1ac7c3e1f",
+  "registrar_calls": 0,
+  "git_add": false,
+  "builder_calls": 0,
+  "sql_queries": 0,
+  "model_fits": 0,
+  "financial_runs": 0,
+  "commit": false,
+  "push": false,
+  "production": false
+}

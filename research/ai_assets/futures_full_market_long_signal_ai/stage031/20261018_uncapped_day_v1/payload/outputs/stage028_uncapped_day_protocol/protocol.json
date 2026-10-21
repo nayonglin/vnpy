@@ -1,0 +1,90 @@
+{
+  "schema": "stage028_fixed_uncapped_day_policy_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "issued_at": "2026-10-18T12:45:34.687521+08:00",
+  "frozen_spec": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1245_stage028_fixed_uncapped_day_protocol.md",
+    "sha256": "b9e1e3a2eb5b552b189fe7186abbe43b03e5e5991912c8e22785b6f1fe32d065",
+    "bytes": 6890
+  },
+  "parent_protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+    "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+    "bytes": 3306
+  },
+  "data_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+    "bytes": 88826
+  },
+  "data_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a",
+    "bytes": 4493
+  },
+  "design_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1240_stage027_day_target_mismatch_and_uncapping_design.md",
+    "sha256": "cb69cced032d414519395ac6d214cdb8a767ec9b8863eb188f1643de9dcdf863",
+    "bytes": 11912
+  },
+  "arms": {
+    "A": {
+      "entry": "next_source_day_open",
+      "stop_atr_fraction": 0.25,
+      "take_profit_R": 4,
+      "exit": "DAY"
+    },
+    "B": {
+      "entry": "same_OPEN",
+      "stop_atr_fraction": 0.25,
+      "take_profit_R": null,
+      "exit": "DAY"
+    }
+  },
+  "cohort": "all_original_feature_ready_no_model_mask",
+  "scope_start": "2010-01-01",
+  "scope_end": "2026-10-16",
+  "primary_start": "2020-01-01",
+  "annual_years": [
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "family_groups": 2,
+  "base_cost_R": 0.2,
+  "stress_cost_R": 1.0,
+  "bootstrap": {
+    "block_length_source_days": 60,
+    "repetitions": 2000,
+    "seed": 20261018
+  },
+  "numeric_consistency_tolerance": {
+    "atol": 1e-09,
+    "rtol": 1e-12,
+    "not_for_barrier_or_gate": true
+  },
+  "gate_count": 11,
+  "right_tail_support": {
+    "primary_dates": 60,
+    "primary_families": 8,
+    "B_gross_strictly_greater_than": 4
+  },
+  "model_fits": 0,
+  "sql_queries": 0,
+  "financial_ready": false,
+  "production_qualified": false
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "stage025_design_readiness_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "recorded_utc": "2026-10-18T04:27:13Z",
+  "independent_review": true,
+  "phase": "pre_result_design_review_only",
+  "inputs_read": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/registry.md",
+      "sha256": "d5e59196ab50c0d9f82e600e82b32642c8b35e73287fd3c2316065a890c55c50",
+      "bytes": 23790
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/LINE.md",
+      "sha256": "ff10671d5d2c9116910aadf5d85f1a3d415be794802b133f6e1f056362bbe0d7",
+      "bytes": 9898
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage022_ordered_history_protocol/protocol.json",
+      "sha256": "ae0708cb9eb232d5c5d7936fc705f77b2f361e4b039442e707b82c828b27f99a",
+      "bytes": 3548
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1229_stage022_fixed_ordered_history_protocol.md",
+      "sha256": "3d35c65109db530e4d37818e91ee0e52e3a15f68001fcc5549d3b3cc83c2e967",
+      "bytes": 8189
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1215_stage021_ordered_history_information_review.md",
+      "sha256": "f64dfcef8c7066dcd6354f195bf0ce1e6b98a685efc011837d1056bbdf77d4ca",
+      "bytes": 10426
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+      "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+      "bytes": 3306
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1129_stage007_fixed_day_quality_protocol.md",
+      "sha256": "393062ccb353e5d803927ad4fe1d7e4223d60edc4a070a710b7c0f2eb549e135",
+      "bytes": 10148
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+      "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+      "bytes": 22578
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+      "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+      "bytes": 88826
+    }
+  ],
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "material_design_blocker": false,
+  "actual_result_review_started": false,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_backtests": 0,
+  "author_calculation_imports": 0,
+  "external_downloads": 0,
+  "review_scope": [
+    "023 sequence cohort IDs / finite dtype / same 21bar source and four-channel definition / canonical whole-tuple bag",
+    "024 exact108fit split clock and family exclusion / date weights / pooled scaler and shared RFF arrays",
+    "saved head coefficients and weighted Ridge normal equations / all predictions including unknown labels",
+    "independent common payoff paired endpoints, daily aggregation, pressure and participation diagnostic",
+    "all scopes/years, common fixed bootstrap grids and all20gates"
+  ],
+  "limitations": [
+    "No model-free or causal order-information claim; fixed RFF geometry and single random map remain.",
+    "S uses mechanical d_active bandwidth but is secondary; ORDER vs BAG is primary.",
+    "Proxy utility with research cost and daily ambiguity is not cash return, true win rate, liquidity or deployability."
+  ],
+  "status": "design_no_material_blocker_awaiting_root_024_completion_notice"
+}

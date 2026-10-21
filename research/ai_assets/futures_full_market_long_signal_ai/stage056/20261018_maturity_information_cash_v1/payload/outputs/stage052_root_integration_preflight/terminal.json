@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "research/lines/futures_full_market_long_signal_ai/tools",
+    "-p",
+    "test_stage05[34]*.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 1.677200791949872,
+  "sources_unchanged": true,
+  "sources": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage053_maturity_information_fit.py",
+      "bytes": 28619,
+      "sha256": "045168b069bddef62777a010277a8e7409ea094dc2ac57db33f81cd5b63c7c9b"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage053_maturity_information_fit.py",
+      "bytes": 8135,
+      "sha256": "fee2f2a9cb9404af6c0c4d53f2dce385e54d7b80f9b23eb0db14f1acdd3b0362"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage054_maturity_cash_compare.py",
+      "bytes": 35598,
+      "sha256": "f5f73732747b64b812e48c09202f5d52dcf3f59726e20e05e21ba616453884bd"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage054_maturity_cash_compare.py",
+      "bytes": 9222,
+      "sha256": "13e8bbbd98b91792f74f392806ad70f2a1e5c4165b7b706029769fc54893a8dd"
+    }
+  ],
+  "new_actual_fit_calls": 0,
+  "new_fixture_fit_calls": 0,
+  "native_SQL": 0,
+  "new_cash_accounts": 0,
+  "scope": "new053054 integrated contracts; one-time characterization skipped; no old suite"
+}

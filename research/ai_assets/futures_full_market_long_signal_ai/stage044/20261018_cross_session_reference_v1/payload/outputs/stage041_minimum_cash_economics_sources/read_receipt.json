@@ -1,0 +1,223 @@
+{
+  "artifact_inventory": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+      "required": true,
+      "role": "Chinese bounded source conclusions and mapping contract"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+      "required": true,
+      "role": "machine-loadable exact epoch economic projection with unresolved statuses, no prices"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/read_receipt.json",
+      "required": true,
+      "role": "source/hash/read-scope/terminal handoff; self hash supplied externally"
+    }
+  ],
+  "continue_value_after": true,
+  "continue_value_before": true,
+  "cost_margin_policy": "root-adopted Stage040; vendor rate=max(two positive metadata rates); base20%/stress40% floors; fixed 1bp/3bp fees/slippage with tick maxima; CNY1000000; no new parameter scenarios",
+  "counts": {
+    "clean_epochs": 9520,
+    "exact_epoch_metadata": 9502,
+    "exact_future_info": 7146,
+    "future_info_unique_keys": 7574,
+    "margin_source_disagreements_abs_gt_1e_minus12": 2164,
+    "margin_source_disagreements_binary_exact": 2168,
+    "normalized_rq_epochs": 10862,
+    "product_default_future_info": 2356,
+    "unresolved_exact_epoch_metadata": 18
+  },
+  "earlier_relevant_terminal_handles": [
+    {
+      "chunk_id": "98493f",
+      "exit_code": 0,
+      "role": "small metadata join"
+    },
+    {
+      "chunk_id": "5ae1f2",
+      "exit_code": 0,
+      "role": "versions and TQ coverage"
+    },
+    {
+      "chunk_id": "a94098",
+      "exit_code": 0,
+      "role": "bounded H5 headers and latest F specs"
+    }
+  ],
+  "economic_fields": [
+    "contract_multiplier",
+    "round_lot",
+    "tick_size",
+    "vendor_margin_rate",
+    "listed_date",
+    "maturity_date",
+    "de_listed_date",
+    "nominal_month_first_date",
+    "known_lifecycle_exit_boundary"
+  ],
+  "economic_projection": {
+    "bytes": 8146494,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage041_minimum_cash_economics_sources/economic_projection.json",
+    "sha256": "046cdef307d1a8d75b454168505cd6dc9e5fdf8510feb4b9611fa2652f8e962c"
+  },
+  "financial_ready": false,
+  "financial_runs": 0,
+  "full_market_price_inventory_runs": 0,
+  "issued_at": "2026-10-18T13:26:27.567831+08:00",
+  "known_lifecycle_exit_boundary": "minimum(nominal month first, known exact metadata maturity, known exact metadata delisted); not a tradable bar or proof of legal deadline",
+  "large_source_hashing": "No big H5 or SQLite rehash; existing H5 SHA d288f6e4c7468981e95fbb0c1c9e2e1e66bfb99f5ba607843728aec535c8bfee inherited only from bundle_download_status",
+  "line_id": "futures_full_market_long_signal_ai",
+  "lookup": "json.load(...)[instruments][contract_epoch_id]",
+  "mark_policy": "uniform accepted same-epoch close research mark; no settlement join this run",
+  "market_downloads": 0,
+  "metadata_projection_export": {
+    "attempt_handles": [
+      {
+        "chunk_id": "1ecb0d",
+        "exit_code": 1,
+        "reason": "pre-export source-margin count assertion; direct float comparison versus tolerance count"
+      },
+      {
+        "chunk_id": "4b8ea0",
+        "exit_code": 1,
+        "reason": "diagnostic confirmed 2168 binary inequalities versus 2164 abs>1e-12; no projection written"
+      },
+      {
+        "chunk_id": "090083",
+        "exit_code": 0,
+        "result": "projection exported; both source-margin comparison counts retained; original financial values unchanged",
+        "wall_time_seconds": 0.136993375
+      },
+      {
+        "chunk_id": "117ced",
+        "exit_code": 0,
+        "result": "count-key spelling clarified before final projection hash handoff"
+      }
+    ],
+    "attempts": 3,
+    "complete_exports": 1
+  },
+  "model_fits": 0,
+  "new_overfit_after": false,
+  "new_overfit_before": false,
+  "production_qualified": false,
+  "registry_read_scope": "line identity/directory only; own LINE read; no edits",
+  "research_cash_scenario_can_proceed_after_protocol_freeze": true,
+  "schema": "stage041_minimum_cash_economics_source_receipt_v1",
+  "source_bindings": [
+    {
+      "bytes": 7112153,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/futures_metadata.json",
+      "sha256": "7feb3e6a98b9f6c054b329fb74a2044be2700ae83f7f11c8de07632cd9f2ae89"
+    },
+    {
+      "bytes": 1759224,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/future_info.json",
+      "sha256": "e040dbc9ebd26c6c1cdff6366e1ac258b583d15710fbe6d6418cf237c537919e"
+    },
+    {
+      "bytes": 2067,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage265_deep_daily/rqalpha/bundle_download_status.json",
+      "sha256": "86292908f3f178dbfccd2835f146f838aa8b6266b0d4c191b2b4a31e5b32cbad"
+    },
+    {
+      "bytes": 2014579,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/csv_inventory.json",
+      "sha256": "226a7fba29754eb00c9aea394f8611caa6076b52a200ef56707307dba61d0782"
+    },
+    {
+      "bytes": 11333,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage265_rqalpha_inventory.py",
+      "sha256": "5f5d87637ae2237692ea3a459c1c36c2b62330f555cf6f44afb742af76e90d33"
+    },
+    {
+      "bytes": 11173,
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/tqsdk_all_futures_contract_metadata.csv",
+      "sha256": "24a3573e847e024411b13a3a3b775791ded57563b0a68b717d1065078201635a"
+    },
+    {
+      "bytes": 4781,
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/qmt_universe.py",
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    {
+      "bytes": 10718,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1320_stage040_cross_session_minimum_cash_design_review.md",
+      "sha256": "075eb18f5c3aeb6f6f3e9dee5d7806b60f2b9e4837fcd92285bd289210d9d952"
+    }
+  ],
+  "source_h5_read_scope": {
+    "all_epoch_value_coverage_claimed": false,
+    "full_key_scan": false,
+    "header_probes": [
+      {
+        "key": "AL2105",
+        "shape": [
+          243
+        ]
+      },
+      {
+        "key": "IF1506",
+        "shape": [
+          166
+        ]
+      },
+      {
+        "key": "L2601F",
+        "present": false
+      }
+    ],
+    "record_reads": 0,
+    "sample_fields": [
+      "settlement",
+      "prev_settlement",
+      "limit_up",
+      "limit_down"
+    ]
+  },
+  "source_snapshot_scope": "RQ bundle rqbundle_202610; exact epoch identity does not certify historical day-by-day tick/margin/fees/PIT availability",
+  "sql_queries": 0,
+  "stage": {
+    "bytes": 16560,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1322_stage041_minimum_cash_economics_sources.md",
+    "sha256": "b546c81710e67f3a23eb6028c2a2b67f8ff3a0c87dc14a7e0e5a90463325ac63"
+  },
+  "stage035_or_037_new_results_read": false,
+  "stage038_unchanged": {
+    "bytes": 14880,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1314_stage038_cross_session_policy_mother_design.md",
+    "sha256": "769fddd904963fc7befc860fe5934221f6a361b041b2734e6bcd8a6618cf7edf"
+  },
+  "strategy_implementation_created": false,
+  "unresolved_epochs": [
+    "DCE.L_F.202704",
+    "DCE.PP_F.202704",
+    "DCE.V_F.202704",
+    "INE.LU.202710",
+    "INE.NR.202710",
+    "INE.SC.202710",
+    "SHFE.AG.202710",
+    "SHFE.AL.202710",
+    "SHFE.AO.202710",
+    "SHFE.AU.202701",
+    "SHFE.BU.202710",
+    "SHFE.CU.202710",
+    "SHFE.FU.202710",
+    "SHFE.HC.202710",
+    "SHFE.NI.202710",
+    "SHFE.RB.202710",
+    "SHFE.RU.202710",
+    "SHFE.SS.202710"
+  ],
+  "unresolved_policy": "18 exact-metadata-missing tail epochs fixed unresolved; potential intents retained, cash fills prohibited; fallback_candidate disabled for current replay and only future sourcing lead",
+  "web_sources": [
+    "https://raw.githubusercontent.com/ricequant/rqalpha/master/rqalpha/model/instrument.py",
+    "https://raw.githubusercontent.com/ricequant/rqalpha/master/rqalpha/data/base_data_source/storages.py",
+    "https://raw.githubusercontent.com/ricequant/rqalpha/master/rqalpha/data/base_data_source/data_source.py",
+    "https://github.com/ricequant/rqalpha/blob/master/rqalpha/mod/rqalpha_mod_sys_accounts/position_model.py",
+    "https://www.ricequant.com/doc/rqalpha-plus/api/types"
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "availability": {
+    "date_only": "23:59:59 America/New_York of official index actual release date, DST-aware; not URL folder date",
+    "decision": "first China source trading date with close16:00 Asia/Shanghai strictly after available_at; then following source native Dopen",
+    "missing": "unknown not today revised fill or zero-valued target",
+    "multiple_reports_same_u": "latest known by data_ending then issue_id retained for single decision; all reports update causal history"
+  },
+  "decision_scope": "all historical domestic futures families in accepted399252 mother; no oil family trading restriction",
+  "execution_authorization": {
+    "fit_or_cash_actual": false,
+    "independent_review_after_each_actual_financial_run": true,
+    "no_commit_push_or_production": true,
+    "no_new_branch_or_worktree": true,
+    "review_before_actual": true,
+    "source_import_impl_and_actual_after_new_behavior_tests": true
+  },
+  "finance": {
+    "cash_accounts_once": 12,
+    "cash_kernel_sha256": "ca40a4cf7b761b34f70d973a943723601d0ecf5fc355da3559d5bcbeff36661d",
+    "cash_kernel_source": "tools/stage042_cross_session_experiment.py",
+    "diagnostic_groups_do_not_filter_training_or_trading": true,
+    "family_diagnostics": [
+      "INE.SC",
+      "INE.LU",
+      "SHFE.FU",
+      "SHFE.BU"
+    ],
+    "financial_qualifications": "research close mark/static econ, not broker settlement or true intraday fills",
+    "initial_capital": 1000000,
+    "margin_budget": 0.25,
+    "margin_buffer": 1.1,
+    "missing_positions": "retain stale/deferred state and scenarios; never select with future clean-closure mask",
+    "reservation": "u joint real quantity beforefloor; D onlyreduce own allocations, no laterreleasedcashreuse",
+    "scenarios": [
+      "base",
+      "stress"
+    ],
+    "single_risk": 0.0025,
+    "starts": [
+      "2020-01-01",
+      "2023-01-01"
+    ],
+    "stop": "2N and causal20low unchanged, noPT",
+    "total_risk": 0.02
+  },
+  "frozen_at": "2026-10-18T15:08:12.580233+08:00",
+  "goal_complete": false,
+  "information_source": {
+    "archive_index": "https://www.eia.gov/petroleum/supply/weekly/archive/",
+    "download_concurrency": 4,
+    "max_index_route_requests": 3,
+    "max_reports": 900,
+    "normalized_stock_unit": "thousand_barrels",
+    "per_report_automatic_retries": 0,
+    "per_request_timeout_seconds": 20,
+    "raw_sources_in_git": false,
+    "raw_stock_unit": "million_barrels",
+    "release_date_not_inferred_from_url_or_data_ending": true,
+    "series_labels": [
+      "Commercial (Excluding SPR)",
+      "Total Motor Gasoline",
+      "Distillate Fuel Oil"
+    ],
+    "stock_conversion_factor": 1000,
+    "two_actual_csv_receipt": {
+      "bytes": 11731,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage058_eia_small_source_probe/csv_probe_receipt.json",
+      "sha256": "29fbfdf21c335775af08f39d3b14f1c26af8e1cb1499232dbb1f314626792bf0"
+    },
+    "unit_source": "https://www.eia.gov/petroleum/supply/weekly/pdf/table1.pdf"
+  },
+  "inputs": {
+    "common_new_slots": "exact0 in standardized space; other arms use shared train-only half-pooled scalar scaling; missing added slots0; no extra interaction rescaling",
+    "design_order": [
+      "cost_z",
+      "distance_z",
+      "r1_z",
+      "cost_missing",
+      "distance_missing",
+      "r1_missing",
+      "external_missing",
+      "s_z",
+      "s_z*r1_z",
+      "s_z*distance_z"
+    ],
+    "mother_labels": {
+      "manifest": "research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/manifest.json",
+      "sha256": "eff6b642d0727ddd7280589da8d9b61beba6f13ebf784faa96c37c3abe4d5145"
+    },
+    "n_features": 10,
+    "no_old_Y_masks_scores_models_reused": true,
+    "prepared_common": {
+      "bytes": 28214904,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/prepared_common.npz",
+      "sha256": "e3174cf1d2067611e6a2538d25aafee17772adcd1889a68408d727fdc4fc1fd3"
+    },
+    "prepared_common_identity": {
+      "bytes": 1604,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/prepared_common_identity.json",
+      "sha256": "fa7954b8b3c5e7f0b61688e470f18c23b827490da22aa018dedc39c1b5be1f84"
+    },
+    "raw_common_columns": [
+      "stress_u_cost_R",
+      "low20_distance_R",
+      "r1_atr"
+    ]
+  },
+  "learner": {
+    "alpha": 1.0,
+    "arms": [
+      "COMMON_EVENT",
+      "INVENTORY",
+      "PAST_SHAM"
+    ],
+    "cutoffs": [
+      "2020-01-01",
+      "2023-01-01"
+    ],
+    "cv_or_search": false,
+    "fit_calls_once": 6,
+    "fit_intercept": true,
+    "held_training": false,
+    "prediction_domain": "all2020+ mother for all3 arms, finite scores; non-event selected0, all event families ready20 && score>0 eligible",
+    "sample": "same all-family report-event rows for all arms; u<cutoff AND label_known<cutoff AND closed_complete_bar_model",
+    "solver": "cholesky",
+    "test_u_blocks": [
+      [
+        "2020-01-01",
+        "2023-01-01"
+      ],
+      [
+        "2023-01-01",
+        null
+      ]
+    ],
+    "type": "Ridge",
+    "weights": "training-only family inclusive interval concurrency uniqueness; normalize sum1 per report cohort then globalmean1"
+  },
+  "line_id": "futures_full_market_long_signal_ai",
+  "proposal": {
+    "bytes": 19999,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1456_stage057_eia_inventory_release_signal_proposal.md",
+    "sha256": "8ec1ef71ffc4bfee59dace77ebb10b6ed746cbd093a87cdf2cc8cdb5270cfbb2"
+  },
+  "scalar": {
+    "complete_official_calendar_ordinal_even_missing_rows": true,
+    "components_required": 3,
+    "delta": "same issue reported current-week stock change, not current revised history",
+    "denominator": "previous official report archived current stock, not retrospectively updated previous week",
+    "formula": "s_r=mean_k[-(delta_k_r-delta_k_(r-52))/I_k_(r-1)]",
+    "lag": 52,
+    "past_sham": "SHA256(stage057_past_sham_v1|report_id) as integer mod number of known eligible scalar reports strictly among prior52 calendar ordinals; same sampled report across every family",
+    "shared_missing": "current s missing or no usable past sham candidate -> all added slots0 in both info arms and same external_missing1"
+  },
+  "schema": "stage059_eia_full_market_information_protocol_v1",
+  "statistics": {
+    "bootstrap": "252source-day circularblocks,2000,seed20261018",
+    "continue": "both lower95CI>0, netreturnhigher and DDnotdeeper; ownstresspositive; 2023bothcost differences same direction and DDnotdeeper; unresolved differential risk cannot be assumed away",
+    "fail": "stop this exact seasonal innovation/daily-decision package, no parameter rescue",
+    "primary": "2020base dailylog INVENTORY-COMMON_EVENT and INVENTORY-PAST_SHAM, same indices",
+    "report": "all12 complete books, yearly continuous slices, everyfamily and directoil/otherdiagnostics, concentration, unknown/open/stale and alternatezero scenarios"
+  }
+}

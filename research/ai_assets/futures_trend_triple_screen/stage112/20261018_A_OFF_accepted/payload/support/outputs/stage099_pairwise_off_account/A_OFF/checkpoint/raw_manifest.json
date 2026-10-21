@@ -1,0 +1,21 @@
+{
+  "account_exports_only": true,
+  "arm": "A_OFF",
+  "attempt": 1,
+  "data_bindings_sha256": "a634d96b93a7b075beee995a426ca7adce57767d2395bf26141812c4f6601d92",
+  "fixture_only": false,
+  "output_directory": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF",
+  "policy_sha256": "9106292a518d769f65afd2f61c64745148e890c92623512195a8ff5893a66823",
+  "production_qualified": false,
+  "raw_bytes": 2955544,
+  "raw_filename": "raw_account.pkl.gz",
+  "raw_sha256": "e22f6936422a6d862856945c2d45e65214fa52b9d325a3882eb31600fc688b33",
+  "reference_calendar_scope": "full_2020_2026",
+  "run_context_sha256": "c7e861612f4635bb40ff79ed278822ee369dd5caa581fc02b8e7e122f38153d6",
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "schema": "stage065_raw_checkpoint_manifest_v1",
+  "source_bindings_sha256": "95757f3840de237cd4792658a8cbdf5e27f1be12227b6d88595379f6b3ebbbb8",
+  "status": "raw_evidence_not_validation_or_performance_pass",
+  "writer": "stage065_account_checkpoint.py",
+  "writer_source_sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99"
+}

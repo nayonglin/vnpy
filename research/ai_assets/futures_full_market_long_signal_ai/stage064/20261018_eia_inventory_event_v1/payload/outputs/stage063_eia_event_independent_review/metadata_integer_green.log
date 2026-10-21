@@ -1,0 +1,7 @@
+test_fractional_and_nonfinite_row_numbers_are_rejected (__main__.ExactMetadataInteger.test_fractional_and_nonfinite_row_numbers_are_rejected) ... ok
+test_integral_decimal_csv_representation_preserves_row_identity (__main__.ExactMetadataInteger.test_integral_decimal_csv_representation_preserves_row_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK

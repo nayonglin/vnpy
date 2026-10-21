@@ -1,0 +1,23 @@
+{
+  "event": "completed_actuals_pending_independent_review",
+  "at": "2026-10-18T07:52:52.303272+00:00",
+  "source_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/manifest.json",
+    "bytes": 8493,
+    "sha256": "41e3018e0a22ac0bd993f4f47518888af1b5f4347be5e673a9815bc7ebc5c8b6"
+  },
+  "fit_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/experiment/manifest.json",
+    "bytes": 46322,
+    "sha256": "646cc2f475c9f2060b22780b9e766ed2ed94d658ded5a85d7c9960e9651403cd"
+  },
+  "cash_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_event_cash_compare/experiment/manifest.json",
+    "bytes": 71684,
+    "sha256": "b902d63e3bd55d6728c8c1c063bfb087820eb6ad0ec4abc7cc1c53d4cd92211c"
+  },
+  "actual_fits": 6,
+  "actual_cash_accounts": 12,
+  "new_native_SQL": 1,
+  "goal_complete": false
+}

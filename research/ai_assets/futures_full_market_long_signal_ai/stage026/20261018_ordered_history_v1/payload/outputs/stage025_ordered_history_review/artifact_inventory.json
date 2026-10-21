@@ -1,0 +1,89 @@
+{
+  "schema": "stage025_artifact_inventory_v1",
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/design_readiness.json",
+      "sha256": "ad5754e0f8b3ed92a034cc12419ee38304878be533de3f1a519257cc2313a201",
+      "bytes": 3693,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/representation_review.py",
+      "sha256": "d9ece810f87c79cd928080ad2a6bee426e4c36cfb1f061eb2322707d3369699d",
+      "bytes": 5931,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/representation_review.json",
+      "sha256": "138b0fb1249c27e4d7b50a589d17065ae1a5f896c64ec428bfe2b3c8f8862202",
+      "bytes": 2892,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/representation_actual_terminal.json",
+      "sha256": "578aae6efbe28c56b56bbb4d4139fe9ae1828b47c0e860001609e36048b28d19",
+      "bytes": 364,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/model_result_review.py",
+      "sha256": "880de8422e7ff750b80fd1e7cc109293d8263bddc45355fbce54079a188d26a2",
+      "bytes": 23096,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/review_receipt.json",
+      "sha256": "4b17b43540a95ee1f9fb7afd42fc64341ebecb61fb1815152643760629796b3b",
+      "bytes": 5385,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage025_ordered_history_review/actual_terminal.json",
+      "sha256": "7f54bf9a9dca9c24cede58025765c60609e46ffb7afa75f715c3507127be326c",
+      "bytes": 362,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1236_stage025_ordered_history_independent_review.md",
+      "sha256": "47ef192874fd3cc7e6d5413321e619906a4350bcbfbb9dd901c3e164bf3a4e82",
+      "bytes": 6625,
+      "role": "decision_asset",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    }
+  ],
+  "independent_review": true,
+  "status": "accepted_calculations_rejected_quality_screen",
+  "actual_review_starts": 1,
+  "actual_review_completions": 1,
+  "actual_review_handle": {
+    "session_id": 45646,
+    "initial_chunk": "8c2673",
+    "final_chunk": "de10f1",
+    "exit_code": 0
+  },
+  "reviewed_fit_records": 108,
+  "reviewed_scalar_predictions": 969654,
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_runs": 0,
+  "downloads": 0,
+  "production_qualified": false
+}

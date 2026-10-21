@@ -1,0 +1,30 @@
+{
+  "schema": "stage029_status_adapter_regression_receipt_v1",
+  "red": {
+    "tool_chunk": "d3d199",
+    "exit_code": 1,
+    "test_errors": 3,
+    "reason": "real009 observed status rejected by old adapter"
+  },
+  "green": {
+    "tool_chunk": "fc6faf",
+    "exit_code": 0,
+    "tests": 5,
+    "failures": 0
+  },
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage029_uncapped_day_experiment.py",
+    "sha256": "ee388ea4439b240054b8b5eb6dfa9907c6e982104ce8e6418cbe5057849d0fe2",
+    "bytes": 21399
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage029_uncapped_day_experiment.py",
+    "sha256": "6b89c3cfd44b472cb0b7cc19b050fcb9f5e49db68fb13e8a1b4c4c7d40a7dbd6",
+    "bytes": 5199
+  },
+  "only_source_changes": "two observed status enum comparisons",
+  "policy_parameters_unchanged": true,
+  "full_restart_so_far": false,
+  "model_fits": 0,
+  "financial_runs": 0
+}

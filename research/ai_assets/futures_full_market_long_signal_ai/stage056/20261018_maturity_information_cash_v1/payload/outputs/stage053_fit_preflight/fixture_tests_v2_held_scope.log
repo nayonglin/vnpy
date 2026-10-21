@@ -1,0 +1,66 @@
+test_action_uses_only_ready_and_score_no_future_labels (test_stage053_maturity_information_fit.ContractTests.test_action_uses_only_ready_and_score_no_future_labels) ... ok
+test_forward_blocks_no_2019_and_matrix_keeps_unknown_missing (test_stage053_maturity_information_fit.ContractTests.test_forward_blocks_no_2019_and_matrix_keeps_unknown_missing) ... fit 1/27 START 2020_main_COMMON train=4 test=4
+fit 1/27 DONE 2020_main_COMMON seconds=0.025
+fit 2/27 START 2020_main_ALIGNED train=4 test=4
+fit 2/27 DONE 2020_main_ALIGNED seconds=0.005
+fit 3/27 START 2020_main_SHUFFLED train=4 test=4
+fit 3/27 DONE 2020_main_SHUFFLED seconds=0.005
+fit 4/27 START 2020_holdout_0_COMMON train=1 test=3
+fit 4/27 DONE 2020_holdout_0_COMMON seconds=0.005
+fit 5/27 START 2020_holdout_0_ALIGNED train=1 test=3
+fit 5/27 DONE 2020_holdout_0_ALIGNED seconds=0.005
+fit 6/27 START 2020_holdout_0_SHUFFLED train=1 test=3
+fit 6/27 DONE 2020_holdout_0_SHUFFLED seconds=0.005
+fit 7/27 START 2020_holdout_1_COMMON train=3 test=1
+fit 7/27 DONE 2020_holdout_1_COMMON seconds=0.005
+fit 8/27 START 2020_holdout_1_ALIGNED train=3 test=1
+fit 8/27 DONE 2020_holdout_1_ALIGNED seconds=0.005
+fit 9/27 START 2020_holdout_1_SHUFFLED train=3 test=1
+fit 9/27 DONE 2020_holdout_1_SHUFFLED seconds=0.005
+fit 10/27 START 2023_main_COMMON train=4 test=4
+fit 10/27 DONE 2023_main_COMMON seconds=0.005
+fit 11/27 START 2023_main_ALIGNED train=4 test=4
+fit 11/27 DONE 2023_main_ALIGNED seconds=0.005
+fit 12/27 START 2023_main_SHUFFLED train=4 test=4
+fit 12/27 DONE 2023_main_SHUFFLED seconds=0.005
+fit 13/27 START 2023_holdout_0_COMMON train=1 test=3
+fit 13/27 DONE 2023_holdout_0_COMMON seconds=0.005
+fit 14/27 START 2023_holdout_0_ALIGNED train=1 test=3
+fit 14/27 DONE 2023_holdout_0_ALIGNED seconds=0.005
+fit 15/27 START 2023_holdout_0_SHUFFLED train=1 test=3
+fit 15/27 DONE 2023_holdout_0_SHUFFLED seconds=0.005
+fit 16/27 START 2023_holdout_1_COMMON train=3 test=1
+fit 16/27 DONE 2023_holdout_1_COMMON seconds=0.005
+fit 17/27 START 2023_holdout_1_ALIGNED train=3 test=1
+fit 17/27 DONE 2023_holdout_1_ALIGNED seconds=0.005
+fit 18/27 START 2023_holdout_1_SHUFFLED train=3 test=1
+fit 18/27 DONE 2023_holdout_1_SHUFFLED seconds=0.005
+fit 19/27 START 2026_main_COMMON train=4 test=4
+fit 19/27 DONE 2026_main_COMMON seconds=0.005
+fit 20/27 START 2026_main_ALIGNED train=4 test=4
+fit 20/27 DONE 2026_main_ALIGNED seconds=0.005
+fit 21/27 START 2026_main_SHUFFLED train=4 test=4
+fit 21/27 DONE 2026_main_SHUFFLED seconds=0.005
+fit 22/27 START 2026_holdout_0_COMMON train=1 test=3
+fit 22/27 DONE 2026_holdout_0_COMMON seconds=0.005
+fit 23/27 START 2026_holdout_0_ALIGNED train=1 test=3
+fit 23/27 DONE 2026_holdout_0_ALIGNED seconds=0.005
+fit 24/27 START 2026_holdout_0_SHUFFLED train=1 test=3
+fit 24/27 DONE 2026_holdout_0_SHUFFLED seconds=0.006
+fit 25/27 START 2026_holdout_1_COMMON train=3 test=1
+fit 25/27 DONE 2026_holdout_1_COMMON seconds=0.005
+fit 26/27 START 2026_holdout_1_ALIGNED train=3 test=1
+fit 26/27 DONE 2026_holdout_1_ALIGNED seconds=0.006
+fit 27/27 START 2026_holdout_1_SHUFFLED train=3 test=1
+fit 27/27 DONE 2026_holdout_1_SHUFFLED seconds=0.005
+ok
+test_missing_does_not_drop_rows_all_arms_have_53_slots (test_stage053_maturity_information_fit.ContractTests.test_missing_does_not_drop_rows_all_arms_have_53_slots) ... ok
+test_one_small_real_fit_portable_leaf_values_include_learning_rate (test_stage053_maturity_information_fit.ContractTests.test_one_small_real_fit_portable_leaf_values_include_learning_rate) ... skipped 'one real fixture already characterized at preflight; default never refits'
+test_strict_maturity_and_held_family_excludes_F_as_one_family (test_stage053_maturity_information_fit.ContractTests.test_strict_maturity_and_held_family_excludes_F_as_one_family) ... ok
+test_training_scaler_finite_weighted_pool_and_future_poison (test_stage053_maturity_information_fit.ContractTests.test_training_scaler_finite_weighted_pool_and_future_poison) ... ok
+test_uniqueness_is_family_inclusive_and_then_date_equal (test_stage053_maturity_information_fit.ContractTests.test_uniqueness_is_family_inclusive_and_then_date_equal) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.263s
+
+OK (skipped=1)

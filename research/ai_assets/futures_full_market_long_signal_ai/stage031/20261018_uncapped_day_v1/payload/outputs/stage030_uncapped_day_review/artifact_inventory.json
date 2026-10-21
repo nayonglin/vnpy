@@ -1,0 +1,69 @@
+{
+  "schema": "stage030_artifact_inventory_v1",
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage030_uncapped_day_review/design_readiness.json",
+      "sha256": "05e42e0af407a94c09fe41f1877ba07dd6c10ac0a07627fe8d2bbd996b8723df",
+      "bytes": 2480,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage030_uncapped_day_review/independent_review.py",
+      "sha256": "8277c916c9f11a923d6a76cd387539ea6417caca05016b580263b010ae055e6d",
+      "bytes": 19902,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage030_uncapped_day_review/review_receipt.json",
+      "sha256": "fe6bca3c2d3e90675ad2a7f859b3eed3ad6d55f713647ea130fe542194763ef1",
+      "bytes": 4244,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage030_uncapped_day_review/actual_terminal.json",
+      "sha256": "081c1d9aae497bbc0f9efef7c6d87e43ec1c27fe6da3351c27b6b0b5418e1e09",
+      "bytes": 349,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1255_stage030_uncapped_day_independent_review.md",
+      "sha256": "4dfba8257f7e86afcf2072047ce1a647e6c22f69be76d8f918037cc742602044",
+      "bytes": 6868,
+      "role": "decision_asset",
+      "reproducibility_required": true,
+      "raw_ohlc": false
+    }
+  ],
+  "status": "accepted_calculations_rejected_policy_screen",
+  "independent_review": true,
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "actual_review_starts": 1,
+  "actual_review_completions": 1,
+  "actual_review_handle": {
+    "session_id": 5809,
+    "initial_chunk": "82b420",
+    "final_chunk": "e5ec64",
+    "exit_code": 0
+  },
+  "reviewed_author_starts": 2,
+  "reviewed_author_completions": 1,
+  "full_event_rows": 399252,
+  "identified_event_rows": 194168,
+  "scope_period_reports": 76,
+  "daily_outputs": 8,
+  "fit_calls": 0,
+  "sql_queries": 0,
+  "financial_runs": 0,
+  "downloads": 0,
+  "production_qualified": false
+}

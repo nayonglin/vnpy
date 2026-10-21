@@ -1,0 +1,5 @@
+{
+  "event": "stopped_without_automatic_restart",
+  "at": "2026-10-18T07:39:16.419072+00:00",
+  "error": "KeyboardInterrupt: "
+}

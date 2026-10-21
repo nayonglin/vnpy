@@ -1,0 +1,57 @@
+{
+  "schema": "stage055_independent_review_decision_v1",
+  "recorded_at": "2026-10-18T14:52:11.083265+08:00",
+  "review_receipt": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/review_receipt.json",
+    "bytes": 124197,
+    "sha256": "91764c7031eb3f910f95f8cde5da9bbc53112919910659ed0097a7e81175fc66",
+    "role": "independent_review_receipt",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "actual_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/actual_terminal.json",
+    "bytes": 1115,
+    "sha256": "0ae312686170f23e6bb41ff0acd877461a8c934a328d6cb08e1ad2cb55613805",
+    "role": "qualification_evidence",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "q_slot_description": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage055_maturity_information_cash_review/q_slot_description.json",
+    "bytes": 15637,
+    "sha256": "2b45375c289769730ed18894afd8ef3d7059aefef140c7f6485e7789e435f43d",
+    "role": "saved_model_description",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  },
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "research_arithmetic_accepted": true,
+  "incremental_information_advantage_supported": false,
+  "continuation_conditions": [
+    "unsupported",
+    "unsupported",
+    "unknown"
+  ],
+  "continue_same_q_model_policy_search": false,
+  "full_user_goal_complete": false,
+  "narrow_stop_or_increased_bet_qualified": false,
+  "production_qualified": false,
+  "main_base_nominal_profit_not_realized_profit_proof": true,
+  "stale_valuation_material": true,
+  "actions": {
+    "new_sql": 0,
+    "new_fit": 0,
+    "new_cash_strategy_replay": 0
+  },
+  "stage": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1436_stage055_maturity_information_cash_independent_review.md",
+    "bytes": 10942,
+    "sha256": "4567d3a96230bfbe10d3a78bc54b50ea89c967bbf49268945a3aba4b3232a75e",
+    "role": "stage_record",
+    "raw_ohlc": false,
+    "reproducibility_required": true
+  }
+}

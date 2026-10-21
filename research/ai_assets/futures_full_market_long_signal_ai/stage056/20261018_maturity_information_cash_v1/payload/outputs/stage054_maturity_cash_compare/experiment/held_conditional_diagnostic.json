@@ -1,0 +1,128 @@
+{
+  "cash_return_qualified": false,
+  "full_policy_value_qualified": false,
+  "groups": {
+    "holdout_0": {
+      "ALIGNED_minus_COMMON_daily_equal_mean_R": 0.0005918292544720286,
+      "ALIGNED_minus_SHUFFLED_daily_equal_mean_R": 0.0005918292544720286,
+      "arms": {
+        "ALIGNED": {
+          "finite_scores": 64077,
+          "full_mother_events": 64077,
+          "selected": 3173,
+          "selected_closed": 2893,
+          "selected_known_nonparticipation": 123,
+          "selected_label_states": {
+            "closed_complete_bar_model": 2893,
+            "entry_execution_unknown": 12,
+            "intent_right_censored": 1,
+            "known_nonparticipation": 123,
+            "open_right_censored": 5,
+            "path_or_execution_unknown": 139
+          },
+          "selected_unknown_or_open": 157
+        },
+        "COMMON": {
+          "finite_scores": 64077,
+          "full_mother_events": 64077,
+          "selected": 3123,
+          "selected_closed": 2836,
+          "selected_known_nonparticipation": 141,
+          "selected_label_states": {
+            "closed_complete_bar_model": 2836,
+            "entry_execution_unknown": 11,
+            "intent_right_censored": 1,
+            "known_nonparticipation": 141,
+            "open_right_censored": 5,
+            "path_or_execution_unknown": 129
+          },
+          "selected_unknown_or_open": 146
+        },
+        "SHUFFLED": {
+          "finite_scores": 64077,
+          "full_mother_events": 64077,
+          "selected": 3123,
+          "selected_closed": 2836,
+          "selected_known_nonparticipation": 141,
+          "selected_label_states": {
+            "closed_complete_bar_model": 2836,
+            "entry_execution_unknown": 11,
+            "intent_right_censored": 1,
+            "known_nonparticipation": 141,
+            "open_right_censored": 5,
+            "path_or_execution_unknown": 129
+          },
+          "selected_unknown_or_open": 146
+        }
+      },
+      "identified_common_events": 40841,
+      "identified_source_days": 1642,
+      "meaning": "conditional_on_closed_or_known_nonparticipation_common_domain; equal u-day mean(mask*stress netR); not full opportunity value or cash",
+      "status": "unknown",
+      "unknown_R_bounds": null,
+      "unknown_differential_selected_events": 17
+    },
+    "holdout_1": {
+      "ALIGNED_minus_COMMON_daily_equal_mean_R": 0.0004746020259327216,
+      "ALIGNED_minus_SHUFFLED_daily_equal_mean_R": 0.0004159734906419192,
+      "arms": {
+        "ALIGNED": {
+          "finite_scores": 96937,
+          "full_mother_events": 96937,
+          "selected": 6478,
+          "selected_closed": 5913,
+          "selected_known_nonparticipation": 174,
+          "selected_label_states": {
+            "closed_complete_bar_model": 5913,
+            "entry_execution_unknown": 24,
+            "intent_right_censored": 2,
+            "known_nonparticipation": 174,
+            "open_right_censored": 14,
+            "path_or_execution_unknown": 351
+          },
+          "selected_unknown_or_open": 391
+        },
+        "COMMON": {
+          "finite_scores": 96937,
+          "full_mother_events": 96937,
+          "selected": 6288,
+          "selected_closed": 5728,
+          "selected_known_nonparticipation": 171,
+          "selected_label_states": {
+            "closed_complete_bar_model": 5728,
+            "entry_execution_unknown": 25,
+            "intent_right_censored": 2,
+            "known_nonparticipation": 171,
+            "open_right_censored": 15,
+            "path_or_execution_unknown": 347
+          },
+          "selected_unknown_or_open": 389
+        },
+        "SHUFFLED": {
+          "finite_scores": 96937,
+          "full_mother_events": 96937,
+          "selected": 6359,
+          "selected_closed": 5799,
+          "selected_known_nonparticipation": 171,
+          "selected_label_states": {
+            "closed_complete_bar_model": 5799,
+            "entry_execution_unknown": 25,
+            "intent_right_censored": 2,
+            "known_nonparticipation": 171,
+            "open_right_censored": 15,
+            "path_or_execution_unknown": 347
+          },
+          "selected_unknown_or_open": 389
+        }
+      },
+      "identified_common_events": 62878,
+      "identified_source_days": 1642,
+      "meaning": "conditional_on_closed_or_known_nonparticipation_common_domain; equal u-day mean(mask*stress netR); not full opportunity value or cash",
+      "status": "unknown",
+      "unknown_R_bounds": null,
+      "unknown_differential_selected_events": 20
+    }
+  },
+  "schema": "stage054_held_conditional_diagnostic_v1",
+  "unknown_not_zero": true
+}

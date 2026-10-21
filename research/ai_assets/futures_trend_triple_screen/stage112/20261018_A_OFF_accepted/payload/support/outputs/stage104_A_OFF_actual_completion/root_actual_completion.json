@@ -1,0 +1,32 @@
+{
+  "schema": "stage095_off_actual_completion_v1",
+  "issued_by": "root",
+  "actual_terminal_observed": true,
+  "exit_code": 0,
+  "attempt": 1,
+  "fixture_only": false,
+  "reference_calendar_scope": "full_2020_2026",
+  "tool_session_id": 37421,
+  "tool_terminal_chunk_id": "0832ea",
+  "run_id": "7cf2c2bffdc34d8cbd926693aa75dd10",
+  "export_source": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF",
+  "runner084_source_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage065_run_pairwise_off.py",
+  "runner084_source_sha256": "1717f2ef30d098f4e503906c032f9b6ddac7aa9b968ae072b60b32b86b0725fb",
+  "checkpoint_writer": "stage065_account_checkpoint.py",
+  "checkpoint_writer_source_sha256": "ff2790a36d8b66d8de7e854c6daf3bd6efd7f275d474f4374883ead66e21fe99",
+  "summary_sha256": "3bb7fd2a6cd6d60b5f6ff6e84371dbbb770d3a89cfd45aab630ef5dae9041fcf",
+  "raw_checkpoint_sha256": "e22f6936422a6d862856945c2d45e65214fa52b9d325a3882eb31600fc688b33",
+  "raw_manifest_sha256": "c3cfb739817018859ca7cd24158d23e31d847d08f25da9d8b6630ebb21c23ee3",
+  "validation_seal_sha256": "7cfaa8ca02465b201aee52392895c0ecc72a4d2418d17f2b06faf50fdae5f9de",
+  "seal_receipt_sha256": "19d210c66b5577528f42f22ac098b9d2e6f0b4c66aefc974927404f0e7c89eb9",
+  "run_context_sha256": "c7e861612f4635bb40ff79ed278822ee369dd5caa581fc02b8e7e122f38153d6",
+  "arm": "A_OFF",
+  "owner_root": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/A_OFF",
+  "repaired_checkpoint_family": "stage099_checkpoint_metadata_fix_v1",
+  "global_financial_attempts_before_family": 9,
+  "global_arm_attempt": 2,
+  "prior_A_OFF_checkpoint_failure": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage096_A_OFF_actual_failure/actual_tool_terminal.json",
+    "sha256": "8eb4dfbfd675102a01ad4f6cf7b3aa8cfb814e590f00a396935a088d753fb085"
+  }
+}

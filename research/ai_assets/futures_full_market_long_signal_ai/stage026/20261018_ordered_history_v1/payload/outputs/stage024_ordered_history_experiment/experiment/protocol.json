@@ -1,0 +1,112 @@
+{
+  "actual_fit_calls_expected": 108,
+  "annual_test_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "arms": [
+    "S",
+    "ORDER",
+    "BAG"
+  ],
+  "bootstrap": {
+    "block_length_source_days": 60,
+    "repetitions": 2000,
+    "seed": 20261018
+  },
+  "data_manifest": {
+    "bytes": 88826,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e"
+  },
+  "data_review": {
+    "bytes": 4493,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a"
+  },
+  "design_review": {
+    "bytes": 10426,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1215_stage021_ordered_history_information_review.md",
+    "sha256": "f64dfcef8c7066dcd6354f195bf0ce1e6b98a685efc011837d1056bbdf77d4ca"
+  },
+  "financial_ready": false,
+  "frozen_spec": {
+    "bytes": 8189,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1229_stage022_fixed_ordered_history_protocol.md",
+    "sha256": "3d35c65109db530e4d37818e91ee0e52e3a15f68001fcc5549d3b3cc83c2e967"
+  },
+  "gates_count": 20,
+  "learner": {
+    "bandwidth": "gamma=1/(2*d_active)",
+    "blas_threads": 1,
+    "direct_S_connection": true,
+    "fit_intercept": true,
+    "head_dimension": 139,
+    "input_dimensions": {
+      "BAG": 91,
+      "ORDER": 91,
+      "S": 11
+    },
+    "rff_dimensions": 128,
+    "ridge_alpha": 1.0,
+    "rng": "numpy.default_rng normal(91,128) then uniform(0,2pi,128)",
+    "seed": 20261018,
+    "solver": "cholesky"
+  },
+  "line_id": "futures_full_market_long_signal_ai",
+  "mask": "score>0",
+  "parent_protocol": {
+    "bytes": 3306,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+    "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4"
+  },
+  "primary_start": "2020-01-01",
+  "production_qualified": false,
+  "representation_primary_contrast": "ORDER-BAG",
+  "scaling": {
+    "S": "train_date_weighted_population",
+    "block": "four_channels_pooled_twenty_positions_train_weight_over_twenty",
+    "clip": false,
+    "constant_scale": 1
+  },
+  "schema": "stage022_fixed_ordered_history_information_v1",
+  "scopes": [
+    "main",
+    "holdout_0",
+    "holdout_1"
+  ],
+  "secondary_start": "2015-01-01",
+  "sequence": {
+    "bag": "lexsort_all_four_tuple_no_date_tie",
+    "bars": 20,
+    "channels": [
+      "delta_close_atr",
+      "range_atr",
+      "close_location",
+      "log_relative_volume"
+    ],
+    "dtype": "<f4",
+    "flatten": "time_then_channel",
+    "order": "oldest_to_newest"
+  },
+  "source_bindings": {
+    "bytes": 5592,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json",
+    "sha256": "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb"
+  },
+  "source_feature_code": {
+    "bytes": 22578,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+    "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4"
+  }
+}

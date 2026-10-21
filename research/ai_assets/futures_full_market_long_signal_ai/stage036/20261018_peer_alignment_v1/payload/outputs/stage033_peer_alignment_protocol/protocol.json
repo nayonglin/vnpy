@@ -1,0 +1,106 @@
+{
+  "schema": "stage033_fixed_peer_alignment_information_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "issued_at": "2026-10-18T13:00:51.970910+08:00",
+  "frozen_spec": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1300_stage033_fixed_peer_alignment_protocol.md",
+    "sha256": "7370e8fc05bbbc9e8a0436f2e63abc4078ba8ad43e8d33c46837e58d79e281be",
+    "bytes": 8327
+  },
+  "parent_protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage007_quality_protocol/protocol.json",
+    "sha256": "2e5da3da4440223e3ac978256d563b80d5bd4264cec56d4085ed6062d7bad0a4",
+    "bytes": 3306
+  },
+  "data_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e",
+    "bytes": 88826
+  },
+  "data_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a",
+    "bytes": 4493
+  },
+  "source_feature_code": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage009_day_proxy_dataset.py",
+    "sha256": "f7e9eaa56bee511e670a0f09175e58321ab358a501b3e0d63a5d6e2b3ddb89c4",
+    "bytes": 22578
+  },
+  "design_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1251_stage032_cross_family_aligned_state_design.md",
+    "sha256": "d396bb4f5717c1104f85469fb675ac3f3cfe8e20a5db51cf8865e17de5c21c9b",
+    "bytes": 13001
+  },
+  "context_columns": [
+    "market_lag_median_r1",
+    "market_lag_breadth",
+    "market_lag_iqr_r1",
+    "market_lag_missing",
+    "peer_count",
+    "rho_abs_sum",
+    "relation_missing",
+    "q_aligned",
+    "q_shuffled"
+  ],
+  "context_dtype": "<f8",
+  "context_scopes": [
+    "main",
+    "holdout_0",
+    "holdout_1"
+  ],
+  "relation_window_source_days": 20,
+  "shock_lag_source_days": 1,
+  "null_prefix": "stage032-peer-alignment-null-v1",
+  "null_rule": "hash_sort_peer_values_into_lexical_rho_slots_no_seed_search",
+  "arms": [
+    "COMMON",
+    "ALIGNED",
+    "SHUFFLED"
+  ],
+  "head_dimension": 19,
+  "scaling": {
+    "common18": "train_date_weighted_population",
+    "q": "train_ALIGNED_and_SHUFFLED_pooled_equal_half_weight",
+    "zero_variance_scale": 1,
+    "clip": false
+  },
+  "ridge": {
+    "alpha": 1.0,
+    "solver": "cholesky",
+    "fit_intercept": true,
+    "blas_threads": 1
+  },
+  "annual_test_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "scopes": [
+    "main",
+    "holdout_0",
+    "holdout_1"
+  ],
+  "actual_fit_calls_expected": 108,
+  "mask": "score>0",
+  "bootstrap": {
+    "block_length_source_days": 60,
+    "repetitions": 2000,
+    "seed": 20261018
+  },
+  "gates_count": 20,
+  "primary_start": "2020-01-01",
+  "secondary_start": "2015-01-01",
+  "information_primary_contrast": "ALIGNED-SHUFFLED",
+  "financial_ready": false,
+  "production_qualified": false
+}

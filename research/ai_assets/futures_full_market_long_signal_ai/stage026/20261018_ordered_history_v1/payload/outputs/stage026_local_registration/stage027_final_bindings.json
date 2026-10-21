@@ -1,0 +1,22 @@
+{
+  "schema": "stage026_received_stage027_final_bindings_v1",
+  "frozen": true,
+  "root_authorized_final_assets": true,
+  "authorization": "Root task authorizes waiting for root or author final handoff, then one registration; final author handoff received from ordered_history_dataset.",
+  "artifacts": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1240_stage027_day_target_mismatch_and_uncapping_design.md",
+      "sha256": "cb69cced032d414519395ac6d214cdb8a767ec9b8863eb188f1643de9dcdf863",
+      "bytes": 11912,
+      "role": "decision_asset",
+      "reproducibility_required": true
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage027_day_target_mismatch_design/read_receipt.json",
+      "sha256": "1215cb23c5f81f69c9ecf3fb13656e0fda796b2f4e0dc32f1321df25a5141421",
+      "bytes": 2197,
+      "role": "qualification_evidence",
+      "reproducibility_required": true
+    }
+  ]
+}

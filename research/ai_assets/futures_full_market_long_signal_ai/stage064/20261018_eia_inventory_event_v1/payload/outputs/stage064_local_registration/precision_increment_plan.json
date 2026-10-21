@@ -1,0 +1,226 @@
+{
+  "schema": "stage064_precision_increment_preparation_plan_v1",
+  "prepared_at": "2026-10-18T15:49:13+08:00",
+  "status": "metadata_only_no_actual_prepare_register_or_gitadd",
+  "base_plan": "registration_plan.json preserved unchanged",
+  "reason": "EIA official printed precision contract invalidates exact displayed current-prior=Difference; source correction before first6fit/12cash, not outcome rescue.",
+  "new_observed_sources_and_evidence": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/precision_input_amendment.json",
+      "sha256": "46946878f76d2b0a134bf274898868e622c4bded4d021a1add62116f8af3e729",
+      "bytes": 3035,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "frozen_precision_input_contract"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1542_stage059_eia_precision_input_amendment.md",
+      "sha256": "4f630eb1625d8e1481b88f4da2c2b26cb602f608c7d38fe246c7a0d6f0658059",
+      "bytes": 5128,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "frozen_input_correction_record"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/orchestration_once/terminal.json",
+      "sha256": "b1bc2e731f3bf56114efd7540cb7552ac1d0043eda6161083c81f54a171cffb8",
+      "bytes": 400,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "immutable_interrupted_original_controller_terminal"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage065_eia_precision_recovery.py",
+      "sha256": "3f9334595653cd825e4d7d2841db0492b6c0b77226645811e459877068e9c30e",
+      "bytes": 16544,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage065_eia_precision_recovery.py",
+      "sha256": "170bb5123d3c4484ff03f1c6890914fe39d8e68bbc3bf7dafc28bbbfe8c4fdd6",
+      "bytes": 6101,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_probe.json",
+      "sha256": "ab66050f9934f09c7326175e2077cc2c729ac2c826a7055c7d48b16b25414c66",
+      "bytes": 9144,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_decision_preflight.json",
+      "sha256": "921e9283c95a5a3f7b47f91db771fc7d2089be2ae4d80673b4e7f0814409e4a1",
+      "bytes": 4044,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py",
+      "sha256": "43ed1fd5a3f30ed996c05abc646e1de5501ab2a28665534d98a5a76233154587",
+      "bytes": 19653,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_printed_precision.py",
+      "sha256": "839b730a6e6c8e1a5236494424f21143b4f332d4f9a4e2453376b070e3d51c56",
+      "bytes": 1515,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_red.log",
+      "sha256": "c41dfe62c09a1fc5357c0cb6ef56cefe5cef0b45525ba7cfb9aa1aa2d96d00d8",
+      "bytes": 2398,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_green.log",
+      "sha256": "1a81dc8b720a9b01940566c4f53c41ff4e878c09a9bc6163e1503c4c81dffbd8",
+      "bytes": 628,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_green_final.log",
+      "sha256": "657c20e74b44d2cb1390f6f5b9a26478b41d9864895599e828477771c13d9da2",
+      "bytes": 628,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/precision_source_preflight.json",
+      "sha256": "e1c1af267c37aee1b4b8eaf7ba489a5326247952648d9aca1fbc5bac95bb2c7c",
+      "bytes": 7346,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/tests_red.log",
+      "sha256": "fe0164ca0652bd93843f7a6ea5b4929e8c812f2638b963e21d6fd6bc989130d2",
+      "bytes": 4247,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/tests_green.log",
+      "sha256": "b37474869041d035692e9b30955f6efce894973e3b7f4a31fc28748d7d5dc279",
+      "bytes": 944,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/tests_rejected_cells_red.log",
+      "sha256": "ae21586e611e4ec3762adcb130a89244fddd5a416a2cba66475a0c00d9693bde",
+      "bytes": 1621,
+      "role": "qualification_evidence",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "status": "observed_current_preflight_wait_final_authorization"
+    }
+  ],
+  "source065_declared_role_to_registry": {
+    "unchanged_official_release_calendar": "decision_asset",
+    "normalized_three_inventory_components_with_precision_recovery": "decision_asset",
+    "causal_full_calendar_scalar_and_past_sham": "decision_asset",
+    "unique_decision_date_causal_external_input_all_families": "decision_asset",
+    "two_layer_source_coverage": "qualification_evidence",
+    "source_annual_coverage_and_precision_recovery": "qualification_evidence",
+    "two_layer_public_source_status_and_hash_bindings": "qualification_evidence",
+    "report_and_cell_printed_precision_residual_bound_and_original_rejection_audit": "decision_asset",
+    "offline_normalization_actual_terminal": "qualification_evidence",
+    "new_behavior_red_evidence": "qualification_evidence",
+    "new_behavior_green_evidence": "qualification_evidence",
+    "frozen_precision_input_correction_contract": "feature_contract",
+    "immutable_original_source_actual_manifest": "qualification_evidence",
+    "unchanged_calendar_clock_ordinal52_sham_semantics": "feature_contract",
+    "precision_correction_implementation": "feature_contract",
+    "precision_correction_new_behavior_tests": "feature_contract"
+  },
+  "future_required065": [
+    "new independent065manifest with producer065/normalization_stage065",
+    "unchanged normalized release calendar and three precision-recovered normalized stock components",
+    "full report scalar/past-sham/eventmap, report+cell recovery audit including rejected cells",
+    "coverage/yearcoverage/two-layer sourcebindings",
+    "source/test/RED-GREEN/actual started-terminal with offline normalization count and0newHTTP"
+  ],
+  "preserve_original060": [
+    "original immutable actual/manifest/normalized unknown observations/progress/failed reasons/sourcebindings",
+    "No overwrite or replacement by065; two separate manifests and actual terminals referenced explicitly."
+  ],
+  "precision_contract": "Each field keeps original Decimal quantum; abs(current-prior-reportedDifference)<=half sum quantum, all3 stocks valid; officialDifference never replaced by displayed subtraction; date/missing/real bound violations remain unknown.",
+  "required_controller_history": {
+    "original_controller_terminal_sha256": "b1bc2e731f3bf56114efd7540cb7552ac1d0043eda6161083c81f54a171cffb8",
+    "original_saved_status": "failed",
+    "original_saved_exit_code": 1,
+    "root_amendment_records_outer_session_exit": 130,
+    "source_manifest_before_interruption": null,
+    "fit_manifest_before_interruption": null,
+    "cash_manifest_before_interruption": null,
+    "next_execution_evidence": "May be direct root commands, not necessarily new watcher; preserve actual final command authorization/process handles/terminal without inventing a controller."
+  },
+  "future063_required": [
+    "precision_probe/decision/checker/test RED-GREEN and precision sourcepreflight",
+    "later complete source preflight after completed060 and065",
+    "final actual source/model/cash/statistical review once after root exact binding authorization"
+  ],
+  "accepted_dependency_policy": "Existing23 accepted refs untouched: no recalc, no copy, no old full payload hash.",
+  "exclusions": [
+    "all original raw060CSV/HTML/PDF/HTTPheader caches",
+    "nativeDB/OHLC/finite raw audit/private runtime",
+    "partial065/061/062 outputs or final hashes before actual completion"
+  ],
+  "pending_without_fabricated_sha": [
+    "complete060 original manifest/terminal",
+    "065 complete offline manifest/normalized outputs/recoveryaudit/terminal",
+    "fresh061 source preflight and eventual6fit/12cash actual outputs",
+    "063 final review",
+    "root064 finaldecision and explicit once register authorization"
+  ],
+  "operations_this_increment": {
+    "actual_helper_prepare_calls": 0,
+    "register_calls": 0,
+    "git_add": false,
+    "downloads": 0,
+    "offline_normalization_runs": 0,
+    "model_fit_calls": 0,
+    "cash_replays": 0,
+    "native_SQL": 0,
+    "old_refs_recalculated": false,
+    "commit": false,
+    "push": false,
+    "production": false
+  },
+  "judgment": "Only archive preparation and exact provenance preservation; input precision correction does not establish alpha, and old failure facts remain visible."
+}

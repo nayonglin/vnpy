@@ -1,0 +1,86 @@
+{
+  "actual_builds": 0,
+  "behavior_red_log": {
+    "bytes": 12025,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_red_final.txt",
+    "sha256": "94a15c47b898109fb0d0b527228610e6dcf31993950563f37a8c8b233dbb1cf4"
+  },
+  "downloads": 0,
+  "evidence": "This receipt is synthetic/preflight only. root has not started actual. No database or original panel/economic price input loaded.",
+  "feature_module": {
+    "bytes": 10066,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+    "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+  },
+  "feature_tests": {
+    "bytes": 7014,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_maturity_features.py",
+    "sha256": "f4682f4e4f2898ef2d0482db396dd4c7ad9428cf4b50e4f2ac5f504aedfb2046"
+  },
+  "first_complete_green_log": {
+    "bytes": 2592,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_green.txt",
+    "sha256": "18fa79b253214d2a1608b119514ffb5cdb6bbbca9eb3715030a59bdb32dd0866"
+  },
+  "first_green_attempt_log": {
+    "bytes": 3389,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_green_initial.txt",
+    "sha256": "e2c4de6915587cbe52229875e3e81d4f37ebbd3db967e479b9662d6f19d07356"
+  },
+  "green_log": {
+    "bytes": 2592,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_green_final.txt",
+    "sha256": "0cb3ed8d12b1f380530e4cbe27f60900f5afde5b21a6ce01298c8baa7739d5e6"
+  },
+  "initial_red_scaffold_log": {
+    "bytes": 17865,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_red.txt",
+    "sha256": "903ea30e53a039b06763134bcea3fb4393496f60e3f56bdc3e9bbee83a5575fe"
+  },
+  "issued_at": "2026-10-18T06:17:26.249477+00:00",
+  "model_fits": 0,
+  "module_native_queries": 0,
+  "new_cash_accounts": 0,
+  "old_suites_run": false,
+  "output_contract": {
+    "coverage": "time_family_coverage.csv.gz",
+    "dependency": "dependency_intervals.csv.gz; all mother rows; no future-dependent global weights",
+    "features": "features_all.csv.gz; all original event order",
+    "labels": "event_economic_labels.csv.gz; all original identity/order plus history/state, u-known risk/fees and closed paired event targets",
+    "peers": "peer_mapping.csv.gz; 1-to-many fixed tenor order and normalized return mapping",
+    "raw": "excluded_raw_audit/native_case_slices.json.gz; finite first-cause slices; raw_ohlc=true and reproducibility_required=false"
+  },
+  "protocol": {
+    "bytes": 8720,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage048_full_opportunity_build_protocol/protocol.json",
+    "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413"
+  },
+  "protocol_small_binding_validation_only": true,
+  "red_history": "initial stub:7 failures/7 interface errors; complete stub:13 failures/1 None numeric error; final RED14 AssertionErrors/1 overwrite pass; full behavior GREEN15 after terminal D/expiry branch correction",
+  "red_interface_completion_log": {
+    "bytes": 12181,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/labels_red_behavior.txt",
+    "sha256": "5e5a70180de8480e6835e0392f393f725cab1a2c0633ac16b82cfa4fbe28c98b"
+  },
+  "runtime": "project .py311/bin/python",
+  "schema": "stage049_full_opportunity_builder_preflight_v1",
+  "source": {
+    "bytes": 30955,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_full_opportunity_builder.py",
+    "sha256": "27bdd8c8905520e75d32297e69f67d6b560dd635d07946a6b030c2c1f3388bf0"
+  },
+  "syntax_valid": true,
+  "synthetic_final_exit_code": 0,
+  "synthetic_tests": 15,
+  "terminal_priority_red_log": {
+    "bytes": 1070,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/terminal_priority_red.txt",
+    "sha256": "1e48c31117bfe07dd10e3657840198c943ea0a13337187c52b6c73b4a216c897"
+  },
+  "terminal_priority_rule": "D exists in full calendar and reaches known expiry -> cancel at u; absent D plus expiry len sentinel -> intent right-censor; covered in existing terminal test",
+  "tests": {
+    "bytes": 12024,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py",
+    "sha256": "8b184120a9d7da870e0dd07e43f11b5c904351d8b89e7d6e94b216f04e3d0d9d"
+  }
+}

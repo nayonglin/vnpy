@@ -1,0 +1,73 @@
+{
+  "schema": "stage050_final_source_preflight_v1",
+  "recorded_at": "2026-10-18T14:18:31.591816+08:00",
+  "status": "final_stable_source_no_material_blocker_actual_pending",
+  "bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_full_opportunity_builder.py",
+      "bytes": 30955,
+      "sha256": "27bdd8c8905520e75d32297e69f67d6b560dd635d07946a6b030c2c1f3388bf0"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py",
+      "bytes": 12024,
+      "sha256": "8b184120a9d7da870e0dd07e43f11b5c904351d8b89e7d6e94b216f04e3d0d9d"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+      "bytes": 10066,
+      "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_maturity_features.py",
+      "bytes": 7014,
+      "sha256": "f4682f4e4f2898ef2d0482db396dd4c7ad9428cf4b50e4f2ac5f504aedfb2046"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_preflight/preflight_receipt.json",
+      "bytes": 4925,
+      "sha256": "4c7d3f2a285f6ba7e6570feae6188d30282c09a82fa817f869085f2ab6088aa0"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_root_integration_preflight/terminal.json",
+      "bytes": 2012,
+      "sha256": "f755ef18e62972220ce92aee91e32f60c1f34b2c5f2b861dde4ae7d105715309"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage050_full_opportunity_relation_review/preflight_receipt.json",
+      "bytes": 1894,
+      "sha256": "060d1850c3dbc1f43379c806db848d6095242de23a98d681469f5184882db2b5"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage050_full_opportunity_relation_review/feature_code_receipt.json",
+      "bytes": 1865,
+      "sha256": "94c9167ee42b47c73cd386dc47412d8e80d1631e0cfb4e78571663b65c4199ca"
+    }
+  ],
+  "findings": {
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "root_reported_integration": "19 new synthetic tests exit0/0.105s, source unchanged; reviewer read evidence, did not rerun",
+  "terminal_case_clarification": "If D<len(fullcalendar) and D>=expiry, u-known lifecycle cancellation precedes D>report_end censor. D==len(fullcalendar) is a sentinel, not a known expiry. Reviewer re-read final snippet and SHA.",
+  "review_scope": [
+    "20bar N/low20 history vs55 removed",
+    "all mother independent labels without family occupancy/cash gating",
+    "strict D and causal next-day boundary/old-epoch forced exit",
+    "absorbing unknown and open/right censor targets null",
+    "known nonparticipation diagnostic zero only",
+    "fixed 2N*M risk denominator and shared price path costs",
+    "complete product maturity mapping and exact same-bag null",
+    "final source identity and bounded raw-audit export"
+  ],
+  "operations": {
+    "SQL": 0,
+    "model_fits": 0,
+    "strategy_replays": 0,
+    "cash_accounts": 0,
+    "new_test_executions": 0
+  },
+  "actual_data_qualified": false,
+  "next": "Wait for root full actual terminal then one independent saved-data audit."
+}

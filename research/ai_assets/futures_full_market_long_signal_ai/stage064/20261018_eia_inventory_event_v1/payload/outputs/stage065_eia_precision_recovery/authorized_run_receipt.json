@@ -1,0 +1,27 @@
+{
+  "schema": "stage065_exact_authorized_offline_run_receipt_v1",
+  "declared_role": "one_offline_actual_command_authorization_and_terminal_receipt",
+  "status": "completed",
+  "started_at": "2026-10-18T07:51:11.828972+00:00",
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage065_eia_precision_recovery.py",
+    "--source-manifest",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage060_eia_report_import/manifest.json",
+    "--expected-source-manifest-sha",
+    "00a964468d6fc2cd272d522ae1343227df13b05e3a17dc216305c890a30ba923"
+  ],
+  "authorization_path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/authorization065.json",
+  "authorization_sha256": "78f7496ede502a8ad3ec90e52424eceb4f38b1c44defa83539b4354e8bf11bd7",
+  "parent_manifest_sha256": "00a964468d6fc2cd272d522ae1343227df13b05e3a17dc216305c890a30ba923",
+  "source_sha256": "3f9334595653cd825e4d7d2841db0492b6c0b77226645811e459877068e9c30e",
+  "tests_sha256": "170bb5123d3c4484ff03f1c6890914fe39d8e68bbc3bf7dafc28bbbfe8c4fdd6",
+  "offline_actual_invocations": 1,
+  "new_http_requests": 0,
+  "exit_code": 0,
+  "elapsed_seconds": 1.6864712919923477,
+  "finished_at": "2026-10-18T07:51:13.515812+00:00",
+  "terminal_sha256": "b4904f10a4612f4ff1d25cb19b06e2d6a108d7f33708b57bf78e9447038d03c8",
+  "manifest_sha256": "41e3018e0a22ac0bd993f4f47518888af1b5f4347be5e673a9815bc7ebc5c8b6",
+  "coverage_sha256": "de954c3339d60810c9c4f699028b120b48cc6fdd5152c2aa783ff0647465bf5a"
+}

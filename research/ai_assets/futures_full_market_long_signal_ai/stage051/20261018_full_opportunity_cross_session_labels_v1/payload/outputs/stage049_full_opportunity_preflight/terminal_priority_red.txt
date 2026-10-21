@@ -1,0 +1,17 @@
+test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed) ... FAIL
+
+======================================================================
+FAIL: test_terminal_open_and_last_intent_are_censored_not_artificially_closed (__main__.FullOpportunityContracts.test_terminal_open_and_last_intent_are_censored_not_artificially_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_full_opportunity_builder.py", line 167, in test_terminal_open_and_last_intent_are_censored_not_artificially_closed
+    self.assertEqual(final.participation_state, "known_nonparticipation")
+AssertionError: 'not_yet_observable' != 'known_nonparticipation'
+- not_yet_observable
++ known_nonparticipation
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+FAILED (failures=1)

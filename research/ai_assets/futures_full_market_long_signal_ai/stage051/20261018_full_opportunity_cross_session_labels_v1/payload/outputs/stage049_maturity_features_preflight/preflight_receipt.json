@@ -1,0 +1,113 @@
+{
+  "schema": "stage049_maturity_feature_preflight_v1",
+  "status": "synthetic_green_no_actual",
+  "recorded_at": "2026-10-18T14:10:58.132498+08:00",
+  "source": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage049_maturity_features.py",
+    "bytes": 10066,
+    "sha256": "991882aa8a12fe508bdd8b3d83bc22e86e6815389b0efbc937437b105a842de6"
+  },
+  "tests": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage049_maturity_features.py",
+    "bytes": 7014,
+    "sha256": "f4682f4e4f2898ef2d0482db396dd4c7ad9428cf4b50e4f2ac5f504aedfb2046"
+  },
+  "protocol": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage048_full_opportunity_build_protocol/protocol.json",
+    "bytes": 8720,
+    "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413"
+  },
+  "api": "build_features(panel, market, dates, economics) -> (feature_df, peer_df, summary)",
+  "inputs": "004 full mother DataFrame; already-loaded042 Market; its exact full dates list; economics instruments map (API-only, no lifecycle peer cuts)",
+  "feature_columns": [
+    "sequence_index",
+    "event_id",
+    "product_id",
+    "family_id",
+    "u_date",
+    "u_index",
+    "reference_epoch",
+    "status",
+    "normalizer",
+    "normalizer_missing",
+    "q_aligned",
+    "q_shuffled",
+    "q_missing",
+    "q_missing_reason",
+    "peer_count",
+    "peer_distinct_month_count",
+    "tenor_span_years",
+    "return_mean",
+    "return_std",
+    "return_min",
+    "return_max",
+    "front_next_basis_u",
+    "front_next_basis_prev",
+    "front_next_tenor_span_years",
+    "front_next_missing",
+    "front_epoch",
+    "next_epoch"
+  ],
+  "peer_columns": [
+    "event_id",
+    "peer_index",
+    "peer_epoch",
+    "nominal_month",
+    "tau_years",
+    "log_return",
+    "shuffle_rank",
+    "shuffled_source_epoch",
+    "shuffled_log_return"
+  ],
+  "feature_identity": "One feature row per input event in original panel order; no drop on missing q or label readiness; expected399252 asserted by root runner, not synthetic module.",
+  "peer_identity": "One-to-many; panel event order then nominal_month/epoch ascending. No raw OHLCV.",
+  "shuffle_replay": "Hash-sort original nonquery peers by SHA256(stage046_maturity_relation_v1|product_id|u|epoch), assign their returns to increasing tenor slots. shuffle_rank gives original peer hash rank; shuffled_source_epoch/log_return give target-row assignment. No forced derangement.",
+  "normalizer": "Exactly042 seeded_recursive N(u)/C(u), never009 rollingATR or D data.",
+  "front_next": "Same pair-observable positive-nominal exact-product pool including query; first2 distinct months, log(next/front) current and strictprevious, span, epoch identities, missing.",
+  "cache": "Index adjacent accepted epoch pairs once, cache only requested product/u keys; pop per mother row. No whole-life liquidity rank or future membership.",
+  "RED": {
+    "tool_chunk": "a0ebde",
+    "exit_code": 1,
+    "tests": 4,
+    "failures": 4,
+    "errors": 0,
+    "reason": "placeholder returned zero feature rows; assertions caught missing all-mother feature output"
+  },
+  "first_GREEN": {
+    "tool_chunk": "497848",
+    "exit_code": 0,
+    "tests": 4,
+    "failures": 0
+  },
+  "final_GREEN": {
+    "tool_chunk": "57e9fe",
+    "exit_code": 0,
+    "tests": 4,
+    "failures": 0,
+    "elapsed_test_seconds": 0.044,
+    "strengthened_existing_case": "nonconstant seed shock distinguishes042 N from rolling20ATR; query front-month stays in legacy control"
+  },
+  "compile": {
+    "tool_chunk": "0ab6bc",
+    "exit_code": 0,
+    "new_files": 2
+  },
+  "fixture_feature_build_calls_in_final_test_file": 7,
+  "behaviors": [
+    "hand-calculated gradient + nonconstant N + query/F isolation + static-expiry ignored + frontcontrol includesquery",
+    "literal fixedhash assignment and exact same bag + replayable shuffledq + no OHLCV export",
+    "strictu-1 notlastavailable + insufficient peers/absent reference stay NaN + full mother order",
+    "full/prefix/future-price-volume-poison equality including future-only epoch"
+  ],
+  "actual_native_source_reads": 0,
+  "actual_SQL": 0,
+  "actual_dataset_builds": 0,
+  "actual_model_fits": 0,
+  "actual_cash_backtests": 0,
+  "market_data_downloads": 0,
+  "old_test_suites": 0,
+  "production_actions": 0,
+  "actual_authorized_by_this_receipt": false,
+  "production_qualified": false,
+  "goal_complete": false
+}

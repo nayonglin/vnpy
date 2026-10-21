@@ -1,0 +1,72 @@
+{
+  "schema": "stage063_review2_controlled_start_v1",
+  "review_starts_total": 2,
+  "complete_reviews_before_start": 0,
+  "started_at_utc": "2026-10-18T07:56:02.445540+00:00",
+  "argv": [
+    ".py311/bin/python",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py",
+    "--fit-manifest",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/experiment/manifest.json",
+    "--fit-sha256",
+    "646cc2f475c9f2060b22780b9e766ed2ed94d658ded5a85d7c9960e9651403cd",
+    "--cash-manifest",
+    "research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_event_cash_compare/experiment/manifest.json",
+    "--cash-sha256",
+    "b902d63e3bd55d6728c8c1c063bfb087820eb6ad0ec4abc7cc1c53d4cd92211c"
+  ],
+  "command": ".py311/bin/python research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py --fit-manifest research/lines/futures_full_market_long_signal_ai/outputs/stage061_eia_event_fit/experiment/manifest.json --fit-sha256 646cc2f475c9f2060b22780b9e766ed2ed94d658ded5a85d7c9960e9651403cd --cash-manifest research/lines/futures_full_market_long_signal_ai/outputs/stage062_eia_event_cash_compare/experiment/manifest.json --cash-sha256 b902d63e3bd55d6728c8c1c063bfb087820eb6ad0ec4abc7cc1c53d4cd92211c",
+  "root_authorization": "One minimal reviewer metadata Decimal repair with RED/GREEN, followed by one controlled continuation; no automatic retry.",
+  "first_failure_terminal": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/actual_first_attempt_terminal.json",
+    "bytes": 1501,
+    "sha256": "2cce93058314ef59404922f3452338b644f58de983e42772ac6c76c4a23bd10d"
+  },
+  "metadata_test": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/test_metadata_integer.py",
+    "bytes": 922,
+    "sha256": "c9d4392b26d57c7aa7745d2a2e34f8f807ca639f4adb0eb126d9799647af249c"
+  },
+  "metadata_red": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/metadata_integer_red.log",
+    "bytes": 1955,
+    "sha256": "e8765d337b41dbdedb86a547f608778245a56c7916d0245e81ebcf045a503f3a"
+  },
+  "metadata_green": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/metadata_integer_green.log",
+    "bytes": 414,
+    "sha256": "a7a45813068369750fe8856a8073c3a93d6c197fd01de3a0ebbe48892bfde924"
+  },
+  "sources": {
+    "independent_review.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/independent_review.py",
+      "bytes": 27726,
+      "sha256": "2cb05e9a480f12bf4bda120b9eb7397cf24917228e79bd0c5ba75d6f6307b2b5"
+    },
+    "source_checks.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/source_checks.py",
+      "bytes": 20002,
+      "sha256": "94ef1357a82f15102ee2ffc62deff7995f49883726e81c18ac3e83591503de1c"
+    },
+    "cash_adapter.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_adapter.py",
+      "bytes": 16092,
+      "sha256": "a79040c6b06da4703843bcd8294d45d351566c6758292adf32ed5acb9d6e58b7"
+    },
+    "cash_review_core.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_review_core.py",
+      "bytes": 6195,
+      "sha256": "4310bdd81375e17406b1773658c582ccb570a25d09b8fa53d15461c76cbb3eaa"
+    },
+    "cash_diagnostics_checks.py": {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage063_eia_event_independent_review/cash_diagnostics_checks.py",
+      "bytes": 7508,
+      "sha256": "e1616f3dfc2f68952664be29c605586318c06bb03a98ff73cc2cc49c4a4684da"
+    }
+  },
+  "author_sources_unchanged": true,
+  "fit": 0,
+  "cash_strategy_replay": 0,
+  "sql": 0,
+  "network": 0
+}

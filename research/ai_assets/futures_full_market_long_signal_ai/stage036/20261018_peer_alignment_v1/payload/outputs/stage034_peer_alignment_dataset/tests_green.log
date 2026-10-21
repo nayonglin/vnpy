@@ -1,0 +1,11 @@
+test_future_prefix_cannot_change_past_contexts (__main__.PeerContextTests.test_future_prefix_cannot_change_past_contexts) ... ok
+test_held_family_counterfactual_cannot_pollute_train_context_or_market4 (__main__.PeerContextTests.test_held_family_counterfactual_cannot_pollute_train_context_or_market4) ... ok
+test_main_distribution_and_original_ready_id_storage_contract (__main__.PeerContextTests.test_main_distribution_and_original_ready_id_storage_contract) ... ok
+test_missing_constant_and_new_listing_keep_ready_unknown_rows (__main__.PeerContextTests.test_missing_constant_and_new_listing_keep_ready_unknown_rows) ... ok
+test_null_preserves_peer_values_and_one_peer_has_no_difference (__main__.PeerContextTests.test_null_preserves_peer_values_and_one_peer_has_no_difference) ... ok
+test_own_and_F_shock_excluded_but_query_history_is_used (__main__.PeerContextTests.test_own_and_F_shock_excluded_but_query_history_is_used) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.086s
+
+OK

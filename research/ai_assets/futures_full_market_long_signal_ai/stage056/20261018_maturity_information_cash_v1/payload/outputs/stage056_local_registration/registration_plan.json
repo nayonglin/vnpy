@@ -1,0 +1,107 @@
+{
+  "schema": "stage056_registration_preparation_plan_v1",
+  "prepared_at": "2026-10-18T14:44:13+08:00",
+  "stage": "stage056",
+  "run_id": "20261018_maturity_information_cash_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "destination": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage056/20261018_maturity_information_cash_v1",
+  "registrable": false,
+  "root_register_authorization": "not_yet_given_wait_final053_054_055_root056",
+  "known_stable_contract_sources": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1431_stage052_maturity_information_cash_protocol.md",
+      "sha256": "7021bc3041972e207b2b2027788d4d8c0289258a2e9c71b44fcc5951c56578cd",
+      "bytes": 10995,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "state": "stable_contract_or_source_only_not_actual_completion"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage052_maturity_information_cash_protocol/protocol.json",
+      "sha256": "968fa3505143587950d65fe27db0aa376916b0f005ffc6219b2af880a7e6974c",
+      "bytes": 11987,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "state": "stable_contract_or_source_only_not_actual_completion"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage053_maturity_information_fit.py",
+      "sha256": "045168b069bddef62777a010277a8e7409ea094dc2ac57db33f81cd5b63c7c9b",
+      "bytes": 28619,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "state": "stable_contract_or_source_only_not_actual_completion"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage053_maturity_information_fit.py",
+      "sha256": "fee2f2a9cb9404af6c0c4d53f2dce385e54d7b80f9b23eb0db14f1acdd3b0362",
+      "bytes": 8135,
+      "role": "feature_contract",
+      "reproducibility_required": true,
+      "raw_ohlc": false,
+      "state": "stable_contract_or_source_only_not_actual_completion"
+    }
+  ],
+  "pending_without_fabricated_sha": [
+    "053最终27fit manifest/全部模型及prepared_common/预测/训练复现证据",
+    "054最终12账户与全部现金表、CI索引分布、held diagnostics",
+    "055最终独审源码/证据/终态",
+    "root056最终决策及本次唯一register明确授权",
+    "052execution_ledger最终冻结状态（当前仍可更新，不绑定半成品）"
+  ],
+  "required_model_assets": [
+    "全部27个model.joblib和portable_model",
+    "训练ID区间/权重、scalers",
+    "prepared_common.npz和identity（新S11+共同控制X，禁止旧Y/atr污染）",
+    "所有预测、input_bindings/runtime_versions、实际terminal/manifest与必要fit receipt/source/tests"
+  ],
+  "required_cash_assets": [
+    "全部12账户fill/daily/budget/positions/closed/open/summary",
+    "共享CI索引和分布、held diagnostic",
+    "054源码/tests/真实预检与实际终态",
+    "055独立审查全部必要代码/证据/terminal"
+  ],
+  "role_policy": {
+    "model_joblib_portable_trees_weights_intervals_scalers": "model_artifact",
+    "prepared_normalized_X_and_predictions_cash_ledgers_CI_distribution_held_diagnostics": "decision_asset",
+    "identity_protocol_source_tests": "feature_contract",
+    "preflight_runtime_versions_fit_and_review_receipts_terminal": "qualification_evidence",
+    "raw_and_reproducible_cache": {
+      "role": "cache_or_visualization",
+      "reproducibility_required": false
+    }
+  },
+  "dependency_reference_file": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage056_local_registration/accepted_dependency_references.json",
+  "accepted_dependency_payload_references": 19,
+  "accepted_dependency_bytes_not_repeated": 157547706,
+  "exclusions": [
+    "旧009 feature_labels含旧Y/atr",
+    "old049/050/051149MB实体重复",
+    "nativeDB/SQLite/H5",
+    "rawOHLC与finite native audit",
+    "private env/runtime/credentials",
+    "未冻结execution_ledger或半成品actual outputs",
+    "可再生图/cache实体"
+  ],
+  "final_phase": [
+    "root final exact handoff with explicit roles/SHA/bytes/core JSON assertions",
+    "one prepare then one register exact new prefix gitadd",
+    "verify new source/copied SHA/size/canonical manifest/staged set and unrelated index equality"
+  ],
+  "current_operations": {
+    "register_calls": 0,
+    "git_add": false,
+    "new_model_fit_calls": 0,
+    "new_cash_runs": 0,
+    "sql_queries": 0,
+    "half_actual_outputs_read_as_complete": false,
+    "archive_payload_copied": false,
+    "commit": false,
+    "push": false,
+    "production": false
+  },
+  "judgment": "仅准备登记计划，不读取半产物作完成结论；没有新增alpha选择或过拟合，有价值保全三臂信息实验与真实现金对照的复现材料。"
+}

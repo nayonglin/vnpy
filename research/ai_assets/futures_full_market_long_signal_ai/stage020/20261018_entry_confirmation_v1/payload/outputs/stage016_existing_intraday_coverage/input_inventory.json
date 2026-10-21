@@ -1,0 +1,896 @@
+{
+  "schema": "stage016_existing_intraday_inventory_v1",
+  "started_at": "2026-10-18T12:00:10.693665+08:00",
+  "elapsed_seconds": 0.41143662499962375,
+  "all_market_products": 98,
+  "old19_products": 19,
+  "legacy_pool_products": null,
+  "legacy_pool_expected_path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_tradable_universe_eligible_full_market_tradable_universe_v1.csv",
+  "legacy_pool_path_exists": false,
+  "current_workspace_candidate_files": 1641,
+  "candidate_products": [
+    "CZCE.AP",
+    "CZCE.CF",
+    "CZCE.CY",
+    "CZCE.FG",
+    "CZCE.MA",
+    "CZCE.OI",
+    "CZCE.PK",
+    "CZCE.SA",
+    "CZCE.SH",
+    "CZCE.SM",
+    "DCE.EB",
+    "DCE.JD",
+    "DCE.JM",
+    "DCE.LH",
+    "DCE.M",
+    "DCE.RR",
+    "DCE.V",
+    "DCE.Y",
+    "GFEX.LC",
+    "GFEX.SI",
+    "SHFE.AG",
+    "SHFE.AU",
+    "SHFE.CU",
+    "SHFE.FU",
+    "SHFE.HC",
+    "SHFE.NI",
+    "SHFE.RB",
+    "SHFE.RU",
+    "SHFE.SP",
+    "SHFE.ZN"
+  ],
+  "candidate_products_count": 30,
+  "candidate_exchanges": [
+    "CZCE",
+    "DCE",
+    "GFEX",
+    "SHFE"
+  ],
+  "candidate_non19_products": [
+    "CZCE.CY",
+    "CZCE.PK",
+    "DCE.EB",
+    "DCE.JD",
+    "DCE.M",
+    "DCE.RR",
+    "DCE.V",
+    "DCE.Y",
+    "SHFE.AG",
+    "SHFE.NI",
+    "SHFE.ZN"
+  ],
+  "legacy57_without_candidate_paths": null,
+  "all98_without_candidate_paths": [
+    "CFFEX.IC",
+    "CFFEX.IF",
+    "CFFEX.IH",
+    "CFFEX.IM",
+    "CFFEX.T",
+    "CFFEX.TF",
+    "CFFEX.TL",
+    "CFFEX.TS",
+    "CZCE.CJ",
+    "CZCE.ER",
+    "CZCE.JR",
+    "CZCE.LR",
+    "CZCE.ME",
+    "CZCE.PF",
+    "CZCE.PL",
+    "CZCE.PM",
+    "CZCE.PR",
+    "CZCE.PX",
+    "CZCE.RI",
+    "CZCE.RM",
+    "CZCE.RO",
+    "CZCE.RS",
+    "CZCE.SF",
+    "CZCE.SR",
+    "CZCE.TA",
+    "CZCE.TC",
+    "CZCE.UR",
+    "CZCE.WH",
+    "CZCE.WS",
+    "CZCE.WT",
+    "CZCE.ZC",
+    "DCE.A",
+    "DCE.B",
+    "DCE.BB",
+    "DCE.BZ",
+    "DCE.C",
+    "DCE.CS",
+    "DCE.EG",
+    "DCE.FB",
+    "DCE.I",
+    "DCE.J",
+    "DCE.L",
+    "DCE.LG",
+    "DCE.L_F",
+    "DCE.P",
+    "DCE.PG",
+    "DCE.PP",
+    "DCE.PP_F",
+    "DCE.S",
+    "DCE.V_F",
+    "GFEX.PD",
+    "GFEX.PS",
+    "GFEX.PT",
+    "INE.BC",
+    "INE.EC",
+    "INE.LU",
+    "INE.NR",
+    "INE.SC",
+    "SHFE.AD",
+    "SHFE.AL",
+    "SHFE.AO",
+    "SHFE.BR",
+    "SHFE.BU",
+    "SHFE.OP",
+    "SHFE.PB",
+    "SHFE.SN",
+    "SHFE.SS",
+    "SHFE.WR"
+  ],
+  "filename_symbols_are_not_contract_epochs": true,
+  "source_roots_observed": {
+    "/Users/mac/.codex/worktrees/formal-2020-replay/fian": {
+      "declared_paths": 1584,
+      "currently_existing_paths": 1584
+    },
+    "/Users/mac/.codex/worktrees/formal-correctness-replay/fian": {
+      "declared_paths": 1584,
+      "currently_existing_paths": 1584
+    },
+    "/Users/mac/Desktop/fian": {
+      "declared_paths": 1584,
+      "currently_existing_paths": 1584
+    },
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/repo": {
+      "declared_paths": 1580,
+      "currently_existing_paths": 1580
+    },
+    "/Users/mac/Documents/Codex/fian-research-20261014": {
+      "declared_paths": 1580,
+      "currently_existing_paths": 1580
+    }
+  },
+  "db_overview_contracts": 17,
+  "db_overview_minutes": 22770,
+  "db_overview_products": 11,
+  "db_overview_first": "2020-03-06 09:00:00",
+  "db_overview_last": "2026-06-23 22:59:00",
+  "bounded_payload_files": 5,
+  "bounded_sql_payload_rows": 4,
+  "bound_minute_assets": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_stage861_stage860_full_visual_atlas_full_minute_bars_stage861_stage860_full_visual_atlas_v1.csv",
+      "exists": true,
+      "actual_bytes": 221112973,
+      "actual_mtime_ns": 1792054882645181499,
+      "inherited_sha256": "5c06124fac52ff37a19d1abe89f6f6a80d36b8ece874eb647286377317289189",
+      "inherited_bytes": 221112973,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/overlay.csv",
+      "exists": true,
+      "actual_bytes": 201153206,
+      "actual_mtime_ns": 1792249146721845374,
+      "inherited_sha256": "dbe07b09fab834b6695e736af6a14669be9481094b82c059d76ec15eaa2a1e4f",
+      "inherited_bytes": 201153206,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/overlay.csv",
+      "exists": true,
+      "actual_bytes": 497229678,
+      "actual_mtime_ns": 1792253704703663291,
+      "inherited_sha256": "c65ce34e2f02ebfa2af0b6cdfadc4c15ba377458ea61cd8d7ccf4457066908e9",
+      "inherited_bytes": 497229678,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage015_daily_recovered_minute_delta/overlay.csv",
+      "exists": true,
+      "actual_bytes": 48448039,
+      "actual_mtime_ns": 1792255191417388874,
+      "inherited_sha256": "5f756b03fd459905e8a4a75057f05be17f767b773a300097ade4b22a62ddc178",
+      "inherited_bytes": 48448039,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage020_reviewed_provider_overlay/overlay.csv",
+      "exists": true,
+      "actual_bytes": 8983498,
+      "actual_mtime_ns": 1792257753162122958,
+      "inherited_sha256": "ced7d46b749229cff984bf1575c3452f93b14b17b9c303a78cfb75ab0c1e907f",
+      "inherited_bytes": 8983498,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/overlay.csv",
+      "exists": true,
+      "actual_bytes": 3293608,
+      "actual_mtime_ns": 1792275261624763791,
+      "inherited_sha256": "8f11293533aa5dee86868b6d4cf583a64c21417dce71b6e9e70926ab7b476a00",
+      "inherited_bytes": 3293608,
+      "actual_rehash": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/overlay.csv",
+      "exists": true,
+      "actual_bytes": 2630128,
+      "actual_mtime_ns": 1792288539768847791,
+      "inherited_sha256": "c0f979fa5abb8c84d239a01ab1617ccd6fd09def164e9ecf5e0b252b59467f8e",
+      "inherited_bytes": 2630128,
+      "actual_rehash": false
+    }
+  ],
+  "later_exact_key_deltas": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2",
+      "accepted_deliveries": 190,
+      "accepted_keys": 44614,
+      "qualified_full_keys": 44565,
+      "qualified_anchor_keys": 44614,
+      "scope": "accepted_exact_keys_only",
+      "note": "key rights are not counts of complete sessions; acceptance inherited from later root receipt"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a",
+      "accepted_deliveries": 159,
+      "accepted_keys": 36391,
+      "qualified_full_keys": 36345,
+      "qualified_anchor_keys": 36391,
+      "scope": "accepted_exact_keys_only",
+      "note": "key rights are not counts of complete sessions; acceptance inherited from later root receipt"
+    }
+  ],
+  "sources": {
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage002_full_market_input_inventory/coverage_by_product_year.csv": {
+      "bytes": 152644,
+      "sha256": "3b96c5603eda75d83ef93c3da0da02549f6260ef7f0be0612fb00cb14ad3337b"
+    },
+    "/Users/mac/Desktop/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv": {
+      "bytes": 6272,
+      "sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage153_declared_delta_recorder_fix/prepare_retry/actual_preflight.json": {
+      "bytes": 2410807,
+      "sha256": "9264689b8daf93453086efb959b94c8032ca51bad0b5611101507c359c54e142"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage004_minute_coverage/local_source_candidates.csv": {
+      "bytes": 3637996,
+      "sha256": "fef48cd364cf94f2adf988aa9fee552ae4aa5422404c69f25a208cd64ee8d7ef"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/session_manifest.csv": {
+      "bytes": 3142485,
+      "sha256": "5f1ead9799648dba9f1d259cb2d9d11768bf0e7a69cf251109dacc8b5b61df78"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage002_local_minute_overlay/attempt2/summary.json": {
+      "bytes": 1958,
+      "sha256": "abb5d723f186d0bc8a7e6d172719c84572eb844600dd8b4106d1a1a911993d4b"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/session_manifest.csv": {
+      "bytes": 8914377,
+      "sha256": "d4bf5e4f8de8a24d30864fba1da0538bab9b247294c1012ff76b5b3c82ae88f7"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage011_needed_local_completed/summary.json": {
+      "bytes": 3106,
+      "sha256": "a0b60215a8229ef83627789a7f4d46c228295b30fd12693c6d4941f4ac31663b"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage015_daily_recovered_minute_delta/session_manifest.csv": {
+      "bytes": 696752,
+      "sha256": "2775c4125ef3afbb2d7bd9610a9dd79b4515beedd7a88c08e8a7d1572abcabe7"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage015_daily_recovered_minute_delta/summary.json": {
+      "bytes": 2513,
+      "sha256": "4e322dbd360959edd8c4b4826052406cdb14d222eb4bfc202c289f17089b80a5"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage020_reviewed_provider_overlay/session_manifest.csv": {
+      "bytes": 76846,
+      "sha256": "0df861a65b998c87a8485fada0147967e63f20e05261b069e99e145e1adc9e03"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage020_reviewed_provider_overlay/summary.json": {
+      "bytes": 3752,
+      "sha256": "0ef91d675c7da6488b8ce0e0188d154212300ec6ba0f2091fd7a842e2be6f82b"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage061_accepted_wait_delta/ccc4a13cbc8e4691af41a16916c659f2/manifest.json": {
+      "bytes": 898580,
+      "sha256": "48bc356b8723c4ae7104f7055ad8480de31fffb7fca6f115b537152eafc7900f"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage135_accepted_off_wait_delta/81ffc8f704ce4c5eb701e97e0397b12a/manifest.json": {
+      "bytes": 850092,
+      "sha256": "563556d9a70a4f841f606e6b668c6422ae11c7f28f0dcc9203451c20ab2e694a"
+    }
+  },
+  "financial_attempts": 0,
+  "model_fits": 0,
+  "downloads": 0,
+  "provider_connections": 0,
+  "large_payload_hashes": 0,
+  "qualification_granted": false,
+  "source_or_strategy_writes": 0,
+  "summary_correction": "Metadata-only correction: defaultdict lookups while emitting the 98-row table had inflated candidate keys to 98. Corrected from retained candidate file inventory; no source reread, payload scan, or qualification change.",
+  "other_minute_named_paths": [
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/DCE/lh2109_20210412_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693493674624,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/DCE/lh2309_20230711_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693493798416,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/DCE/jm2101_20201126_minute_backtest.csv",
+      "bytes": 49744,
+      "mtime_ns": 1791959693493554708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/DCE/jm1809_20180611_minute_backtest.csv",
+      "bytes": 54076,
+      "mtime_ns": 1791959693493048833,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/DCE/jm1901_20181213_minute_backtest.csv",
+      "bytes": 53374,
+      "mtime_ns": 1791959693493416124,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1805_20180228_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693497560374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/cu2010_20200827_minute_backtest.csv",
+      "bytes": 69874,
+      "mtime_ns": 1791959693495577166,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu2205_20220401_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693496959499,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu2205_20220330_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693496820374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb1805_20180116_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500284708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/au1906_20190212_minute_backtest.csv",
+      "bytes": 79958,
+      "mtime_ns": 1791959693494953416,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu1909_20190802_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693496417041,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/au1806_20180302_minute_backtest.csv",
+      "bytes": 80489,
+      "mtime_ns": 1791959693494412208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/cu2507_20250610_minute_backtest.csv",
+      "bytes": 69874,
+      "mtime_ns": 1791959693495745708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/cu2007_20200603_minute_backtest.csv",
+      "bytes": 69874,
+      "mtime_ns": 1791959693495257333,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc2010_20200902_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693499763249,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/ru2001_20191120_minute_backtest.csv",
+      "bytes": 51874,
+      "mtime_ns": 1791959693501672374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb2001_20191120_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500991291,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1905_20190404_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693499273249,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu2001_20191108_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693496651958,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb1805_20180301_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500577166,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/sp1906_20190222_minute_backtest.csv",
+      "bytes": 49858,
+      "mtime_ns": 1791959693502107291,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/cu2002_20191210_minute_backtest.csv",
+      "bytes": 69874,
+      "mtime_ns": 1791959693495108249,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb2210_20220707_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693501127166,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/au1806_20180115_minute_backtest.csv",
+      "bytes": 58644,
+      "mtime_ns": 1791959693494245374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/au1812_20181015_minute_backtest.csv",
+      "bytes": 58990,
+      "mtime_ns": 1791959693494788458,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/cu2008_20200622_minute_backtest.csv",
+      "bytes": 61024,
+      "mtime_ns": 1791959693495411833,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1810_20180712_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693497861333,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc2001_20191121_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693499607749,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb1905_20190305_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500713041,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb1805_20180130_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500436708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu1909_20190712_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693496197708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1905_20190225_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693499102666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/ru1905_20190220_minute_backtest.csv",
+      "bytes": 51874,
+      "mtime_ns": 1791959693501259666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu1905_20190212_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693495889958,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/ru1909_20190603_minute_backtest.csv",
+      "bytes": 51874,
+      "mtime_ns": 1791959693501385749,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/sp1906_20190213_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693501967666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1810_20180814_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693498153416,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc2101_20200903_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693500071333,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/ru2001_20191111_minute_backtest.csv",
+      "bytes": 51874,
+      "mtime_ns": 1791959693501522374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu2209_20220531_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693497246083,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1901_20181101_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693498814249,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1910_20190701_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693499445208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu2209_20220527_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693497106749,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/au1806_20180419_minute_backtest.csv",
+      "bytes": 80609,
+      "mtime_ns": 1791959693494597999,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/ru2005_20191206_minute_backtest.csv",
+      "bytes": 51874,
+      "mtime_ns": 1791959693501823291,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/fu1905_20190412_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693496037916,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/rb1910_20190625_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693500851291,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/SHFE/hc1805_20180201_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693497398583,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/SM005_20191218_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693492488416,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI901_20181016_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491210041,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP905_20190401_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693483002124,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI905_20190326_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491748708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/CF905_20190308_minute_backtest.csv",
+      "bytes": 55624,
+      "mtime_ns": 1791959693483433583,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/MA905_20190227_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693490180374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP001_20191205_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693482200749,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP905_20190321_minute_backtest.csv",
+      "bytes": 32974,
+      "mtime_ns": 1791959693482879249,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/SA205_20211229_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693492222083,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP901_20180921_minute_backtest.csv",
+      "bytes": 33424,
+      "mtime_ns": 1791959693482765583,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP810_20180620_minute_backtest.csv",
+      "bytes": 32524,
+      "mtime_ns": 1791959693482656874,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/MA809_20180709_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693489948666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG001_20191021_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693484047999,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/CF909_20190802_minute_backtest.csv",
+      "bytes": 55624,
+      "mtime_ns": 1791959693483758333,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG809_20180619_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693488959916,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG209_20220524_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693487936541,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI905_20190220_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491368708,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI905_20190306_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491535166,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/CF905_20190326_minute_backtest.csv",
+      "bytes": 55624,
+      "mtime_ns": 1791959693483619208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG209_20220527_minute_backtest.csv",
+      "bytes": 49804,
+      "mtime_ns": 1791959693488345874,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/MA909_20190710_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693490392333,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG209_20220602_minute_backtest.csv",
+      "bytes": 32570,
+      "mtime_ns": 1791959693488530583,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI001_20191021_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693490579374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG601_20251105_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693488755374,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG001_20191016_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693483905791,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/SM809_20180803_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693492770833,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI201_20210907_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693490885624,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/CF005_20200102_minute_backtest.csv",
+      "bytes": 51184,
+      "mtime_ns": 1791959693483131666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/CF905_20190131_minute_backtest.csv",
+      "bytes": 55624,
+      "mtime_ns": 1791959693483263666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/SM809_20180727_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693492607833,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI001_20191108_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693490731041,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/MA809_20180614_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693489692541,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI909_20190614_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693492063874,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/SM001_20191216_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693492359208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP005_20191219_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693482320874,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP210_20220406_minute_backtest.csv",
+      "bytes": 32524,
+      "mtime_ns": 1791959693482435916,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/MA005_20191225_minute_backtest.csv",
+      "bytes": 36844,
+      "mtime_ns": 1791959693489372208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/FG809_20180731_minute_backtest.csv",
+      "bytes": 53374,
+      "mtime_ns": 1791959693489170208,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI909_20190612_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491911041,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/OI805_20180205_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693491048791,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/CZCE/AP805_20180329_minute_backtest.csv",
+      "bytes": 32074,
+      "mtime_ns": 1791959693482546666,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage859_stage856_remaining_gap_backfill/GFEX/lc2401_20231107_minute_backtest.csv",
+      "bytes": 34774,
+      "mtime_ns": 1791959693494001874,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/au2206_20220510_minute_backtest.csv",
+      "bytes": 80691,
+      "mtime_ns": 1791959693502832833,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/au1912_20190806_minute_backtest.csv",
+      "bytes": 80126,
+      "mtime_ns": 1791959693502650791,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/SHFE/hc2205_20220330_minute_backtest.csv",
+      "bytes": 50494,
+      "mtime_ns": 1791959693502981291,
+      "payload_read": false
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage900_stage898_c9_gap_backfill/CZCE/MA905_20190304_minute_backtest.csv",
+      "bytes": 54124,
+      "mtime_ns": 1791959693502416874,
+      "payload_read": false
+    }
+  ],
+  "other_minute_named_path_count": 95,
+  "other_minute_named_paths_scope": "Not in standard-symbol inventory; mostly trading-date-specific raw/completed bundles. Not accepted or inferred as additional product coverage.",
+  "known_dated_handoff": {
+    "path": "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_handoff_complete_minutes_v2/SHFE/fu2611_20261014.csv",
+    "bytes": 45486,
+    "mtime_ns": 1792040677524462791,
+    "payload_read": false,
+    "scope": "file existence only; not qualified by this inventory"
+  }
+}

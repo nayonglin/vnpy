@@ -1,0 +1,34 @@
+{
+  "SQL_queries": 0,
+  "attempts": 3,
+  "command": [
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage018_entry_confirmation_experiment/experiment_after_input_boundary_fixes"
+  ],
+  "completed_full_experiment": 1,
+  "downloads": 0,
+  "elapsed_seconds": 24.905923709040508,
+  "error": null,
+  "exit_code": 0,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T12:13:24.311999+08:00",
+  "model_fits": 0,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "python_version": "3.11.5",
+  "reproducibility_required": true,
+  "role": "qualification_evidence",
+  "schema": "stage018_actual_terminal_v1",
+  "source": {
+    "bytes": 31561,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "e50126b4833b21005b775e41209c89e9a762b705159762f3b8bd2233c37aacb2"
+  },
+  "started_at": "2026-10-18T12:12:59.406130+08:00",
+  "status": "completed"
+}

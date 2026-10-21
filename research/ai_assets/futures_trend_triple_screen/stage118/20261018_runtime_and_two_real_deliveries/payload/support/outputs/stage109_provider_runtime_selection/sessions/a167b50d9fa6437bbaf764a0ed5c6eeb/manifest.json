@@ -1,0 +1,122 @@
+{
+  "automatic_retry": false,
+  "command": [
+    "/Users/mac/Desktop/fian/.py311/bin/python",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py",
+    "--role",
+    "drive",
+    "--owner",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope/B_OFF/81ffc8f704ce4c5eb701e97e0397b12a/owner.json",
+    "--owner-sha256",
+    "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+    "--batch-id",
+    "batch003",
+    "--max-connections",
+    "4",
+    "--budget-seconds",
+    "3600"
+  ],
+  "limits_unchanged": true,
+  "old_financial_context_includes_this_sidecar": false,
+  "original_scope_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage100_checkpoint_fix_independent_review/review_receipt.json",
+    "sha256": "347210330499f0e08c8a8cf5e3ac94c49698d1fcf04b84e8d8f20cc40cfc0c3f"
+  },
+  "owner_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope/B_OFF/81ffc8f704ce4c5eb701e97e0397b12a/owner.json": {
+      "bytes": 4750,
+      "sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/preflight_used.json": {
+      "bytes": 3258013,
+      "sha256": "bb6b92db0e897f9ceec1700e364d0efec978db6b04aaefa7dadd05e18163b37f"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage099_pairwise_off_account/B_OFF/run_context.json": {
+      "bytes": 252350,
+      "sha256": "81c35c8d0230ae2ef8a3ea96339c93ea3755a75dc8ff12a5eb4c3760f0d2e8a7"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage100_checkpoint_fix_independent_review/review_receipt.json": {
+      "bytes": 8160,
+      "sha256": "347210330499f0e08c8a8cf5e3ac94c49698d1fcf04b84e8d8f20cc40cfc0c3f"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage102_off_repaired_execution_readiness/B_OFF.json": {
+      "bytes": 1568607,
+      "sha256": "b6527f15cec02497d73e196fa7808478be0e1ee0a0edc85b2560ba8e5d95c6f1"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/review_receipt.json": {
+      "bytes": 7009,
+      "sha256": "394879ddf698d5bb6d20cc54e62fb433e376977f78c70a9e0ecaea72df89bfb0"
+    }
+  },
+  "owner_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage087_off_data_scope/B_OFF/81ffc8f704ce4c5eb701e97e0397b12a/owner.json",
+  "owner_sha256": "ce61dcf3cbe0696cfbc12f1ebcf0f12436ee0dfb84662623e91fce36ec957efb",
+  "probe_only": false,
+  "python_executable": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "runtime_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/review_receipt.json",
+    "sha256": "394879ddf698d5bb6d20cc54e62fb433e376977f78c70a9e0ecaea72df89bfb0"
+  },
+  "schema": "stage109_external_provider_runtime_v1",
+  "sdk_identity": {
+    "sdk_accepted_source_bindings": {
+      "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/api.py": {
+        "bytes": 232077,
+        "sha256": "264fff3e3979a156294d8bca745c8aa6c26136c8cbe58ef2bc7ceffd8b811c96"
+      },
+      "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/auth.py": {
+        "bytes": 10524,
+        "sha256": "1252fd43b7991046148863edf834068fea53216ccf0c5a511e8002e482a01c49"
+      },
+      "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/backtest/backtest.py": {
+        "bytes": 44841,
+        "sha256": "6f3f3eb9980ea10b45a964316a1a34cc1346c99ca537bb28b98c04de264f0447"
+      },
+      "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tools/downloader.py": {
+        "bytes": 19394,
+        "sha256": "12bd121175f943b0e895c8f5e771dc8d149e8aafa6d8c221d6dc47f38973d675"
+      },
+      "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk/tradeable/sim/tqsim.py": {
+        "bytes": 11274,
+        "sha256": "00a0c478f11c9c92dc402a2168c621fcd04c04c5f992b357459e8b0a228f3977"
+      }
+    },
+    "sdk_dist_info": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk-3.10.2.dist-info",
+    "sdk_imported": false,
+    "sdk_init_binding": {
+      "bytes": 731,
+      "sha256": "1939ae4cc4c4f6edd431b53cc9e752e4c0b4bca82f7139cbcea0dbbddf6ba33e"
+    },
+    "sdk_metadata_binding": {
+      "bytes": 6771,
+      "sha256": "4608e2ccb8fc536ffe6d820e84174dcfb56ffff44e4a27f95804112242b7a090"
+    },
+    "sdk_package": "/Users/mac/Desktop/fian/.py311/lib/python3.11/site-packages/tqsdk",
+    "sdk_version": "3.10.2"
+  },
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0752_stage109_provider_runtime_selection_contract.md": {
+      "bytes": 3471,
+      "sha256": "553ab50a370f02ecbd235e3b3a8c8952ad16591432d41ca168a443a27650960b"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage022_run_c0_qualified_wait.py": {
+      "bytes": 60111,
+      "sha256": "aaa0cc50c7c817c885afd6eb3630b28f714da21486a1ec2dfb8fbeb39437582c"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_provider.py": {
+      "bytes": 16901,
+      "sha256": "33b6bca67115e3c8438de768b6e180d055139470fa2b7069b7a4459b1d101b46"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage087_off_data_scope.py": {
+      "bytes": 52684,
+      "sha256": "73c8957f577908b322387aa65a547bd3dc25c6d40e211718bba99fa3f176a3b1"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime/sitecustomize.py": {
+      "bytes": 628,
+      "sha256": "ba9ae3352dd5c20cf6f6a6e7c09de5dda174f1cb397c5f9c8fd460557f112bc5"
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime_launcher.py": {
+      "bytes": 12742,
+      "sha256": "544809b18c6e8d1d74efd708cfec600b781b97da6bebd95d9e340e077f0ad93c"
+    }
+  }
+}

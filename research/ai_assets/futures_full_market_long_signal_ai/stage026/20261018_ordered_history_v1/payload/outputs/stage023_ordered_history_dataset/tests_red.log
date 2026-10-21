@@ -1,0 +1,77 @@
+test_build_only_reads_u_window_and_preserves_unknown_ready (__main__.SequenceTests.test_build_only_reads_u_window_and_preserves_unknown_ready) ... FAIL
+test_canonical_bag_moves_complete_tuples_after_storage_quantization (__main__.SequenceTests.test_canonical_bag_moves_complete_tuples_after_storage_quantization) ... FAIL
+test_formula_uses_previous_twenty_volume_and_flat_location (__main__.SequenceTests.test_formula_uses_previous_twenty_volume_and_flat_location) ... FAIL
+test_parent_summary_conflict_fails_instead_of_silently_changing_input (__main__.SequenceTests.test_parent_summary_conflict_fails_instead_of_silently_changing_input) ... FAIL
+test_storage_is_quantized_little_endian_ordered_only (__main__.SequenceTests.test_storage_is_quantized_little_endian_ordered_only) ... FAIL
+test_window_rejects_cross_epoch_short_and_source_calendar_gap (__main__.SequenceTests.test_window_rejects_cross_epoch_short_and_source_calendar_gap) ... FAIL
+
+======================================================================
+FAIL: test_build_only_reads_u_window_and_preserves_unknown_ready (__main__.SequenceTests.test_build_only_reads_u_window_and_preserves_unknown_ready)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 64, in test_build_only_reads_u_window_and_preserves_unknown_ready
+    m = self.implementation(); source = bars(); cal = [r['trade_date'] for r in source]
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+======================================================================
+FAIL: test_canonical_bag_moves_complete_tuples_after_storage_quantization (__main__.SequenceTests.test_canonical_bag_moves_complete_tuples_after_storage_quantization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 108, in test_canonical_bag_moves_complete_tuples_after_storage_quantization
+    m = self.implementation()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+======================================================================
+FAIL: test_formula_uses_previous_twenty_volume_and_flat_location (__main__.SequenceTests.test_formula_uses_previous_twenty_volume_and_flat_location)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 41, in test_formula_uses_previous_twenty_volume_and_flat_location
+    m = self.implementation(); w = bars()[:21]
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+======================================================================
+FAIL: test_parent_summary_conflict_fails_instead_of_silently_changing_input (__main__.SequenceTests.test_parent_summary_conflict_fails_instead_of_silently_changing_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 83, in test_parent_summary_conflict_fails_instead_of_silently_changing_input
+    m = self.implementation(); source = bars(); cal = [r['trade_date'] for r in source]
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+======================================================================
+FAIL: test_storage_is_quantized_little_endian_ordered_only (__main__.SequenceTests.test_storage_is_quantized_little_endian_ordered_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 94, in test_storage_is_quantized_little_endian_ordered_only
+    m = self.implementation()
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+======================================================================
+FAIL: test_window_rejects_cross_epoch_short_and_source_calendar_gap (__main__.SequenceTests.test_window_rejects_cross_epoch_short_and_source_calendar_gap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 53, in test_window_rejects_cross_epoch_short_and_source_calendar_gap
+    m = self.implementation(); w = bars()[:21]; cal = [r['trade_date'] for r in bars()]
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage023_ordered_history_dataset.py", line 36, in implementation
+    self.assertIsNotNone(MOD, 'Stage023 historical representation is not implemented')
+AssertionError: unexpectedly None : Stage023 historical representation is not implemented
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=6)

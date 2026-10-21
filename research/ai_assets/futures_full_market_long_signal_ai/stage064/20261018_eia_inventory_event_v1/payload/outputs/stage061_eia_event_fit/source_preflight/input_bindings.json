@@ -1,0 +1,68 @@
+{
+  "authorization": null,
+  "inputs": {
+    "event_map": {
+      "bytes": 384387,
+      "declared_role": "unique_decision_date_causal_external_input_all_families",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/event_map.csv",
+      "sha256": "80e56af79cbd2325ed55451790d3e440127500b9416b7850a0bea2a4ef1fcb86"
+    },
+    "labels": {
+      "bytes": 53980842,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/event_economic_labels.csv.gz",
+      "raw_ohlc": false,
+      "reproducibility_required": true,
+      "role": "economic_event_labels",
+      "sha256": "adb37b2dbc05d8f201588402ca04343a7dfa34e8cb5ba9e487d39738346f197b"
+    },
+    "mother_manifest": {
+      "bytes": 7268,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage049_full_opportunity_build/experiment/manifest.json",
+      "sha256": "eff6b642d0727ddd7280589da8d9b61beba6f13ebf784faa96c37c3abe4d5145"
+    },
+    "prepared_common": {
+      "bytes": 28214904,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/prepared_common.npz",
+      "sha256": "e3174cf1d2067611e6a2538d25aafee17772adcd1889a68408d727fdc4fc1fd3"
+    },
+    "prepared_common_identity": {
+      "bytes": 1604,
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage053_maturity_information_fit/experiment/prepared_common_identity.json",
+      "sha256": "fa7954b8b3c5e7f0b61688e470f18c23b827490da22aa018dedc39c1b5be1f84"
+    },
+    "report_features": {
+      "bytes": 387871,
+      "declared_role": "causal_full_calendar_scalar_and_past_sham",
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/report_features.csv",
+      "sha256": "799c897351461719a08f2b38db71f834365e2dbc27370e07cba44b9ae8991626"
+    }
+  },
+  "native_SQL": 0,
+  "old009_targets_masks_models_read": false,
+  "protocol": {
+    "bytes": 7162,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage059_eia_full_market_protocol/protocol.json",
+    "sha256": "ff1ecad21420681e8e1e8645be3da51172d35d4e24ef506ee3f88d2ed5e20158"
+  },
+  "source": {
+    "bytes": 29818,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "experiment_source",
+    "sha256": "7d61a8b5c309ad24881d9d36d0ffffe7f2ae39af4750b7d4130dbb316857503d"
+  },
+  "source_import_manifest": {
+    "bytes": 8493,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage065_eia_precision_recovery/manifest.json",
+    "sha256": "41e3018e0a22ac0bd993f4f47518888af1b5f4347be5e673a9815bc7ebc5c8b6"
+  },
+  "tests": {
+    "bytes": 11955,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/test_stage061_eia_event_fit.py",
+    "raw_ohlc": false,
+    "reproducibility_required": true,
+    "role": "new_behavior_tests",
+    "sha256": "1ae5502ffaaf3f16b3c59ed563f49327fd65daa09727fc270bb7caf431974ae6"
+  }
+}

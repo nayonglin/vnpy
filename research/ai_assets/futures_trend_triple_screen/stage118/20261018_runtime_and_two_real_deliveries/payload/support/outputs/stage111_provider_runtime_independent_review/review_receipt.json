@@ -1,0 +1,153 @@
+{
+  "schema": "stage111_provider_runtime_independent_review_v1",
+  "reviewed_at": "2026-10-18T07:58:45+08:00",
+  "line_id": "futures_trend_triple_screen",
+  "reviewer": "accepted_delta_review",
+  "independent_review": true,
+  "status": "accepted_finite_external_provider_runtime_selection",
+  "source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime_launcher.py": {
+      "sha256": "544809b18c6e8d1d74efd708cfec600b781b97da6bebd95d9e340e077f0ad93c",
+      "bytes": 12742
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/stage109_provider_runtime/sitecustomize.py": {
+      "sha256": "ba9ae3352dd5c20cf6f6a6e7c09de5dda174f1cb397c5f9c8fd460557f112bc5",
+      "bytes": 628
+    }
+  },
+  "integration_source_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage109_provider_runtime.py": {
+      "sha256": "1ab6480cd70009f1bf618878700accab6ca7bab9afd52b472f91ea74fc055a08",
+      "bytes": 5157
+    }
+  },
+  "p0_findings": 0,
+  "p1_findings": 0,
+  "p2_findings": 0,
+  "remaining_blocking_findings": [],
+  "independent_runtime_review_accepted": true,
+  "independent_integration_accepted": true,
+  "external_runtime_only": true,
+  "old_financial_context_includes_this_sidecar": false,
+  "original_scope_review": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage100_checkpoint_fix_independent_review/review_receipt.json",
+    "sha256": "347210330499f0e08c8a8cf5e3ac94c49698d1fcf04b84e8d8f20cc40cfc0c3f"
+  },
+  "selected_sdk_version": "3.10.2",
+  "sdk_imported_in_test": false,
+  "full_sdk_preflight_completed_in_test": false,
+  "credentials_read": false,
+  "network_calls": 0,
+  "provider_packets_created": 0,
+  "financial_runs": 0,
+  "production_qualified": false,
+  "numeric_module_identity": {
+    "joblib": {
+      "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/joblib/__init__.py",
+      "version": "1.5.3"
+    },
+    "numpy": {
+      "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/numpy/__init__.py",
+      "version": "2.4.4"
+    },
+    "pandas": {
+      "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/__init__.py",
+      "version": "2.3.3"
+    },
+    "scipy": {
+      "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/scipy/__init__.py",
+      "version": "1.17.1"
+    },
+    "sklearn": {
+      "file": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/sklearn/__init__.py",
+      "version": "1.8.0"
+    }
+  },
+  "probe_pid_chain": [
+    {
+      "pid": 46080,
+      "ppid": 46079,
+      "generation": 0
+    },
+    {
+      "pid": 46081,
+      "ppid": 46080,
+      "generation": 1
+    },
+    {
+      "pid": 46082,
+      "ppid": 46081,
+      "generation": 2
+    }
+  ],
+  "probe_manifest": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/sessions/1e8e090b870a4a4098329c2704992c16/manifest.json",
+    "sha256": "007d37dff4850a5b6667d9d5b986b47ca983fbd97ebc087165b8fd86a2466516"
+  },
+  "sitecustomize_failure_exit": 78,
+  "sys_executable_unchanged": true,
+  "original_guards_unchanged": true,
+  "limits_unchanged": {
+    "provider_soft_seconds": 570,
+    "provider_hard_seconds": 600,
+    "launch_reserve_seconds": 840,
+    "wait_seconds": 1800,
+    "run_seconds": 7200,
+    "batch_connections_max": 4,
+    "automatic_retry": false
+  },
+  "fresh_test": {
+    "runs": 1,
+    "tests": 1,
+    "exit_code": 0,
+    "elapsed_seconds": 3.919,
+    "name": "ProviderRuntimeSelectionTest.test_three_generations_real_identity_and_fail_closed_inputs",
+    "actual_test_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/tools/test_stage109_provider_runtime.py",
+    "test_sha256": "1ab6480cd70009f1bf618878700accab6ca7bab9afd52b472f91ea74fc055a08",
+    "output_redirect_only_in_memory": true,
+    "note": "仅测试finite_test_evidence目的地改111；launcher新UUID sessions sidecar按原实装追加，不覆盖作者证据。最初传入测试名多了_launcher后缀，由真实manifest与同SHA找到正确路径，未额外运行测试。"
+  },
+  "evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/evidence.json",
+    "sha256": "e9f6b9aecf668747135d1f2dd70e955eafe631a5a541a41e19ff00cc4d47295c"
+  },
+  "test_log": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/fresh_named_test.txt",
+    "sha256": "463aa75ecd80f6ccc139bf571899ff4f8b532dc165a24952b5a2c9e70849078a"
+  },
+  "finite_test_evidence": {
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage111_provider_runtime_independent_review/finite_test_evidence.json",
+    "sha256": "eff0c5369022d65b4c6e6ebb284746f65cf0f78c62c299e8d3180811dd02a589"
+  },
+  "stage_record_path": "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0758_stage111_provider_runtime_independent_review.md",
+  "dependency_bindings": {
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/stages/20261018_0752_stage109_provider_runtime_selection_contract.md": {
+      "sha256": "553ab50a370f02ecbd235e3b3a8c8952ad16591432d41ca168a443a27650960b",
+      "bytes": 3471
+    },
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_triple_screen/outputs/stage109_provider_runtime_selection/implementation_receipt.json": {
+      "sha256": "cbdd333a851b3e6cb49d06a465ae90a596bf9ccdda0f3f06b2549312933ea6c0",
+      "bytes": 1497
+    }
+  },
+  "acceptance_scope": "仅当前固定二源外部启动环境选择接受；原SDK metadata/find_spec与原018五源码核验通过，原版本/endpoint guard已到凭据前；不宣称SDK/API/provider成功。真实main仍需同owner/live/current及原所有预算/资格门；root按实际840余量决定batch003，禁止降门。",
+  "later_source_and_account_review_must_bind_external_sidecar": true,
+  "limitations": [
+    "三代probe没有SDK import/API/凭据/full sdk_preflight；只证明运行选择及原凭据前guard。",
+    "未预加载第三方依赖仅记录真实解析路径，不宣称属于五数值冻结范围。",
+    "新启动器/sidecar不在既有金融preflight；未来真实terminal及独立数据/账户审查须另绑定，不能追认旧闭包。"
+  ],
+  "model_loads": 0,
+  "model_fits": 0,
+  "model_predictions": 0,
+  "orders": 0,
+  "market_hashes": 0,
+  "old_suite_runs": 0,
+  "original_sources_or_packages_modified": false,
+  "owner_readiness_modified": false,
+  "LINE_registry_modified": false,
+  "git_stage_commit_push": false,
+  "new_agent_spawned": false,
+  "overfitting": false,
+  "continued_value": true
+}

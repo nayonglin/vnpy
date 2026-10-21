@@ -1,0 +1,35 @@
+{
+  "actual_export_invocations": 1,
+  "command": [
+    "research/lines/futures_full_market_long_signal_ai/tools/stage004_product_day_opportunities.py",
+    "--bindings",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage003_product_day_contract/source_bindings.json",
+    "--bindings-sha256",
+    "4423b84d1f16c76947d59a9c1a247916e44d634ebba77ece5b02ebf56260baeb",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export"
+  ],
+  "counts": {
+    "calendar_days": 4074,
+    "catalog_contracts": 10880,
+    "catalog_products": 98,
+    "contracts_with_candidates": 9520,
+    "no_accepted_observation": 186400,
+    "observed_long_research_opportunity": 212852,
+    "panel_rows": 399252,
+    "products_with_candidates": 97,
+    "qualified_candidate_rows": 1552456,
+    "rejected_rows": 0,
+    "source_observation_rows": 1552456
+  },
+  "elapsed_seconds": 24.858465957979206,
+  "exit_code": 0,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T11:14:59+08:00",
+  "manifest_sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003",
+  "network_calls": 0,
+  "schema": "stage004_actual_terminal_v1",
+  "source_code_sha256": "a6093f91c30fe835f3ddd84882a074f7b13185ef36013d2ed6f41a0e9ee8f8af",
+  "started_at": "2026-10-18T11:14:34+08:00",
+  "training_runs": 0
+}

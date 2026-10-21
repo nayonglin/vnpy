@@ -1,0 +1,20 @@
+{
+  "schema": "stage060_eia_import_terminal_v1",
+  "status": "completed",
+  "started_at": "2026-10-18T07:14:45.344677+00:00",
+  "process_id": 3442,
+  "source_end": "2026-10-16",
+  "model_fits": 0,
+  "cash_accounts": 0,
+  "sql_queries": 0,
+  "downloads_retried": 0,
+  "source_actual_startups": 1,
+  "goal_complete": false,
+  "finished_at": "2026-10-18T07:49:53.891282+00:00",
+  "elapsed_seconds": 2108.546619333036,
+  "calendar_reports": 794,
+  "known_reports": 596,
+  "unknown_reports": 198,
+  "report_network_attempts": 792,
+  "cached_reports": 2
+}

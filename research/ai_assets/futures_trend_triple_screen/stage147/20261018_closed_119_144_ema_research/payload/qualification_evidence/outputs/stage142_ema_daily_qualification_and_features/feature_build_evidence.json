@@ -1,0 +1,107 @@
+{
+  "schema": "stage142_one_feature_build_evidence_v1",
+  "completed_at": "2026-10-18T10:11:09.163807+08:00",
+  "load_bound_daily_csv_calls": 1,
+  "build_ema_rows_calls": 1,
+  "summary": {
+    "rows": 116394,
+    "contracts": 533,
+    "dates": 1786,
+    "ready_rows": 96813,
+    "not_ready_rows": 19581,
+    "reason_counts": {
+      "warmup_ema": 6387,
+      "warmup_window": 13194,
+      "ready": 96813
+    },
+    "yearly": {
+      "2019": {
+        "rows": 5492,
+        "ready": 3074
+      },
+      "2020": {
+        "rows": 13697,
+        "ready": 11391
+      },
+      "2021": {
+        "rows": 15016,
+        "ready": 12764
+      },
+      "2022": {
+        "rows": 15231,
+        "ready": 12652
+      },
+      "2023": {
+        "rows": 19161,
+        "ready": 16149
+      },
+      "2024": {
+        "rows": 20021,
+        "ready": 16731
+      },
+      "2025": {
+        "rows": 19199,
+        "ready": 16807
+      },
+      "2026": {
+        "rows": 8577,
+        "ready": 7245
+      }
+    },
+    "first_asof": "2019-06-03",
+    "last_asof": "2026-10-14",
+    "contracts_with_ready": 525,
+    "zero_volume_rows_retained": 1468,
+    "last_calendar_no_next_session_rows": 29,
+    "future_append_prefix_tests": "inherited accepted127 unit/132 evidence;not rerun"
+  },
+  "scalar_probes": [
+    {
+      "contract": "AP005.CZCE",
+      "asof": "2019-07-25",
+      "segment_start": "2019-06-03",
+      "real_bars": 38,
+      "seed": 8790.153846153846,
+      "valid_ema_count": 26,
+      "closed_form_scalar_matches": true,
+      "values": {
+        "ema": 8778.069734116913,
+        "ema_prev": 8809.414689803065,
+        "mean_down": 140.10421952882436,
+        "mean_up": 132.66668952505998
+      }
+    },
+    {
+      "contract": "fu2101.SHFE",
+      "asof": "2020-02-21",
+      "segment_start": "2019-12-23",
+      "real_bars": 38,
+      "seed": 2297.0,
+      "valid_ema_count": 26,
+      "closed_form_scalar_matches": true,
+      "values": {
+        "ema": 2278.8491761449754,
+        "ema_prev": 2271.6573721691384,
+        "mean_down": 61.94151506986337,
+        "mean_up": 48.78548160595804
+      }
+    }
+  ],
+  "LC_actual_boundary": [
+    {
+      "asof": "2024-12-16",
+      "execution_day": "2024-12-17",
+      "execution_tick": 50.0,
+      "actual_contract_rows": 5,
+      "known_from": "2024-12-06"
+    },
+    {
+      "asof": "2024-12-17",
+      "execution_day": "2024-12-18",
+      "execution_tick": 20.0,
+      "actual_contract_rows": 5,
+      "known_from": "2024-12-06"
+    }
+  ],
+  "financial_native_training_provider_network_guard_runs": 0
+}

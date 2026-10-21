@@ -1,0 +1,32 @@
+{
+  "SQL_queries": 0,
+  "command": [
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "--output",
+    "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage018_entry_confirmation_experiment/experiment"
+  ],
+  "downloads": 0,
+  "elapsed_seconds": 3.2447708750260063,
+  "error": "ValueError: D is not original exact source-calendar successor",
+  "exit_code": 1,
+  "financial_runs": 0,
+  "finished_at": "2026-10-18T12:08:11.704424+08:00",
+  "model_fits": 0,
+  "network_calls": 0,
+  "numpy": "2.2.3",
+  "pandas": "2.2.3",
+  "python": "/Users/mac/Desktop/fian/.py311/bin/python",
+  "python_version": "3.11.5",
+  "reproducibility_required": true,
+  "role": "qualification_evidence",
+  "schema": "stage018_actual_terminal_v1",
+  "source": {
+    "bytes": 27426,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/tools/stage018_entry_confirmation_experiment.py",
+    "reproducibility_required": true,
+    "role": "feature_contract",
+    "sha256": "c744ed5f25f8a67a9ded2f16d4eb91b766a6e52290ef8e7b2839c5d5755708e1"
+  },
+  "started_at": "2026-10-18T12:08:08.459726+08:00",
+  "status": "failed"
+}

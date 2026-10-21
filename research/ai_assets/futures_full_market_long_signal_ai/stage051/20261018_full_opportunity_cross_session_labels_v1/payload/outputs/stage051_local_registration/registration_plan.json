@@ -1,0 +1,117 @@
+{
+  "schema": "stage051_pre_registration_plan_v1",
+  "prepared_at": "2026-10-18T14:13:49+08:00",
+  "stage": "stage051",
+  "run_id": "20261018_full_opportunity_cross_session_labels_v1",
+  "line_id": "futures_full_market_long_signal_ai",
+  "destination": "/Users/mac/Desktop/fian/research/ai_assets/futures_full_market_long_signal_ai/stage051/20261018_full_opportunity_cross_session_labels_v1",
+  "registrable": false,
+  "root_register_authorization": "pending_after_actual049_final050_and_root051",
+  "observed_contract_bindings": [
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1358_stage045_full_opportunity_cross_session_economic_label_design.md",
+      "sha256": "84200eca0544be2570357c4a2dca42be416b99d27039de542998a7da52896626",
+      "bytes": 21477,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage045_full_opportunity_cross_session_economic_label_design/read_receipt.json",
+      "sha256": "98d11efee8b37c248f0222454b7a65ca48592ec2e997be06e550168fbfef83fc",
+      "bytes": 7840,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1401_stage046_ex_ante_maturity_relation_design.md",
+      "sha256": "ae2450f31dfa6e32ad696172c128413af736b1287890399b8fc6034dbbe7edf1",
+      "bytes": 13663,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage046_ex_ante_maturity_relation_design/research_receipt.json",
+      "sha256": "806a21ffa1352129050ba80e9f8d138596d8aa2c7982dfcbd3face27347703ea",
+      "bytes": 5441,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1358_stage047_full_opportunity_training_cash_contract_review.md",
+      "sha256": "a8f805d15bfaf1e57d3261c5bceb80da418a407ff57aac03cef8aa68e6737cbe",
+      "bytes": 12118,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage047_training_cash_contract_review/read_receipt.json",
+      "sha256": "174cb828c152feb8ad2328180c38a0d5f34e7701d13387fb0d4c4bb3cfe433cc",
+      "bytes": 2644,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1406_stage048_full_opportunity_build_protocol.md",
+      "sha256": "038eb47fa37f7067db261b5c0d6a4aec26a0f9a5ed7f43136b661ca7da488171",
+      "bytes": 8740,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    },
+    {
+      "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage048_full_opportunity_build_protocol/protocol.json",
+      "sha256": "3d24505daecf220c232ae71acb841a59bd5717e20906d5bf60f4b2dcb0d09413",
+      "bytes": 8720,
+      "status": "observed_contract_bytes_pending_final_root_handoff"
+    }
+  ],
+  "required_final_assets": [
+    "045/046/047/048合同与收据、048机器协议",
+    "049主builder、非query同product期限模块及两个测试、真实RED/GREEN/compile/preflight终态",
+    "049实际manifest全部归一经济标签/特征、peer mapping、dependency intervals、summary、terminal/source_bindings",
+    "050最终独立审查源码/收据/terminal",
+    "051根决策",
+    "本地prepare历史、显式role_mapping、有限闭包、最终request/helper"
+  ],
+  "pending_without_fabricated_sha": [
+    "049完整构建最终清单与实际结果",
+    "050最终独审清单与收据",
+    "root051最终冻结决策",
+    "root明确授权唯一register+精确gitadd"
+  ],
+  "dependency_reuse": {
+    "binding_file": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage051_local_registration/reused_dependency_bindings.json",
+    "source_dependencies": 4,
+    "original_bytes_not_repeated_as_payload": 8222400
+  },
+  "role_policy": {
+    "decision_and_normalized_labels_features": "decision_asset",
+    "source_module_tests_protocols": "feature_contract",
+    "review_preflight_real_terminal_receipts": "qualification_evidence",
+    "models_if_declared": "model_artifact",
+    "raw_and_reproducible_plot_cache": {
+      "role": "cache_or_visualization",
+      "reproducibility_required": false
+    }
+  },
+  "excluded_assets": [
+    "nativeDB/SQLite",
+    "004 raw panel",
+    "calendar raw file",
+    "049 excluded_raw_audit/**",
+    "raw OHLC",
+    "old big normalized input duplicates",
+    "private env/runtime/credentials"
+  ],
+  "economic_price_boundary": "规范化event经济标签内的参考/成交价作为标签审计可保存；整张原始OHLC表与原价审计切片排除。",
+  "future_commands": [
+    "prepare_and_register.py prepare（final_handoff齐且授权后）",
+    "prepare_and_register.py register（一次）",
+    "prepare_and_register.py verify"
+  ],
+  "index_policy": "snapshot已有index，精确登记新目的前缀，输出只给prefix计数和无关index SHA，不运行巨量gitstatus或reset",
+  "current_mutations": {
+    "created_archive_destination": false,
+    "registrar_calls": 0,
+    "git_add": false,
+    "model_fits": 0,
+    "financial_runs": 0,
+    "sql_queries": 0,
+    "production": false,
+    "commit": false,
+    "push": false
+  },
+  "judgment": "仅准备复现治理，不增加策略选择或过拟合；有价值保全全机会跨期经济标签和期限关系的可复验性，尚不声称构建或独审完成。"
+}

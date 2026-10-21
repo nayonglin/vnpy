@@ -1,0 +1,65 @@
+{
+  "aggregation": "equal identified products within u then equal source-calendar u; no-event dates NaN; known no-fill policy payoff0",
+  "artifact_roles": {
+    "event_intervals_daily_metrics": "decision_asset",
+    "original_DB_OHLC_audits": "external_ignored_not_registered",
+    "protocol_sources_tests": "feature_contract",
+    "receipts_checks_terminal": "qualification_evidence"
+  },
+  "base_cost_budget_r": 0.2,
+  "bootstrap": {
+    "block_length": 60,
+    "repetitions": 2000,
+    "seed": 20261018,
+    "shared_indices_within_period": true
+  },
+  "cohort": "all original399252 rows preserved; all feature_ready opportunities; evaluate original009 ready-and-label_identified subset; no new u setup gate or learned masks",
+  "confirmation_threshold": "u.high of original reference_epoch",
+  "data_end": "2026-10-16",
+  "direction": "long_only",
+  "downloads": 0,
+  "exit": "same D.close if no prior barrier exit",
+  "feature_label_manifest": {
+    "bytes": 88826,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage009_day_proxy_dataset/export/manifest.json",
+    "sha256": "ea26675e8322bee8a3c71d4ba0c731055a52a161359c1ac456de628029a5071e"
+  },
+  "financial_runs": 0,
+  "group_rule": "int(sha256(family_id),16)%2; heterogeneity only, not trained holdout",
+  "inherited_data_review": {
+    "bytes": 4493,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage011_day_proxy_dataset_review/review_receipt.json",
+    "sha256": "cf71e0c9a9cc570aa803ad437a117861961c64b13ec920a8b5ab573577301b4a"
+  },
+  "inherited_result_review": {
+    "bytes": 4179,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage012_day_proxy_experiment_review/review_receipt.json",
+    "sha256": "e6656decde31912f93fce6b5aaf910760a11971d4558f5e4bb0c39e5b169775f"
+  },
+  "label_only_columns": "all D coordinates, trigger/fill/path outcomes and return intervals; never u-time AI features",
+  "model_fits": 0,
+  "opportunity_manifest": {
+    "bytes": 257576,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/outputs/stage004_product_day_opportunities/export/manifest.json",
+    "sha256": "1c1c28e54af995dbe4aa516fcd0d7aa80e9be347fe0efaa4408f329425274003"
+  },
+  "participation_reference": "ex-post daily matched fill-rate p times OPEN, diagnostic not a tradable u decision; gap shared path exact scaling",
+  "path_model": "ideal continuous OHLC only; closed-form marginal intervals; common open exact paired0; other paired intervals are valid outer bounds",
+  "policies": [
+    "OPEN_at_D.open",
+    "CONFIRM_at_max_D.open_B_if_D.high_ge_B_else_no_fill"
+  ],
+  "primary_start": "2020-01-01",
+  "production_qualified": false,
+  "profit_r_multiple": 4.0,
+  "risk_atr_multiple": 0.25,
+  "schema": "stage015_all_ready_entry_confirmation_v1",
+  "screen": "all15 gates in frozen spec; no rescue or policy/model sweep",
+  "secondary_start": "2010-01-01",
+  "spec": {
+    "bytes": 8222,
+    "path": "/Users/mac/Desktop/fian/research/lines/futures_full_market_long_signal_ai/stages/20261018_1202_stage015_fixed_entry_confirmation_protocol.md",
+    "sha256": "fa51d49dbff0d4a323d4313c56493bc8316e071ee50de9e936797f7d06a7006f"
+  },
+  "stress_cost_budget_r": 1.0
+}
