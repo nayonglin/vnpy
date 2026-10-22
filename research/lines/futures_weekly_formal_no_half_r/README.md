@@ -25,3 +25,13 @@ PYTHONPATH=. .py311/bin/python research/lines/futures_weekly_formal_no_half_r/to
 ## 调研与判断
 
 [Backtesting.py官方多周期示例](https://kernc.github.io/backtesting.py/doc/examples/Multiple%20Time%20Frames.html)和[GitHub重采样实现](https://github.com/kernc/backtesting.py/blob/master/backtesting/lib.py)强调高周期指标的因果对齐。这里采用完成周后才发布的原则；不直接复制其交易引擎。周指标更慢不等于更稳，且真实合约41周历史可能不足，必须结合有效覆盖和全窗结果判断，不能缩短窗口救结果。
+
+## Stage003 后续指定配置
+
+用户要求关闭半R、C2和AI选品；实际关闭月度资格门，原19基础池不扩市场。三开关False、AI disabled且0快照、所有盘中事件0；真实首分钟成交校验仍保留。新入口：
+
+```sh
+PYTHONPATH=. .py311/bin/python research/lines/futures_weekly_formal_no_half_r/tools/run_stage003_with_anchors.py --arm D --attempt verification001
+```
+
+需要本机outputs/stage003_anchor_catalog及stage003_minute_patches证据；原C/A的runner、输入及成果均不覆盖。最新D与C比较图、年度表、审查和报告已保存artifacts/stage003_*及stages/Stage004。

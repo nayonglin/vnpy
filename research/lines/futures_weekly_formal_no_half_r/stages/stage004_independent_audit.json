@@ -1,0 +1,213 @@
+{
+  "D_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/D_attempt011",
+  "A": {
+    "end_equity": 2250195.0000000056,
+    "return_pct": 1400.1300000000037,
+    "dd_pct": -49.070504079098974,
+    "sharpe_252_sample": 1.3624041610349658,
+    "slippage": 605850.0,
+    "commission": 0.0,
+    "trades": 817,
+    "ledger_max_residual": 4.6566128730773926e-09,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 414,
+    "closed_lots": 15236.0,
+    "lot_weighted_win_pct": 23.405093200315044,
+    "fifo_match_win_pct": 30.193236714975846,
+    "remaining_open_lots": 0.0,
+    "per_symbol_pnl_max_residual": 7.275957614183426e-12,
+    "held_or_traded_rows": 1737,
+    "daily_raw_mismatches": 0
+  },
+  "C": {
+    "end_equity": 252800.0,
+    "return_pct": 68.53333333333333,
+    "dd_pct": -15.066180443003784,
+    "sharpe_252_sample": 0.7046592554551127,
+    "slippage": 5450.0,
+    "commission": 0.0,
+    "trades": 72,
+    "ledger_max_residual": 2.9103830456733704e-11,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 36,
+    "closed_lots": 161.0,
+    "lot_weighted_win_pct": 34.78260869565217,
+    "fifo_match_win_pct": 38.88888888888889,
+    "remaining_open_lots": 0.0,
+    "per_symbol_pnl_max_residual": 0,
+    "held_or_traded_rows": 241,
+    "daily_raw_mismatches": 0
+  },
+  "D": {
+    "end_equity": 323250.0,
+    "return_pct": 115.49999999999999,
+    "dd_pct": -16.340226297307847,
+    "sharpe_252_sample": 0.7290295202778371,
+    "slippage": 7360.0,
+    "commission": 0.0,
+    "trades": 100,
+    "ledger_max_residual": 1.1641532182693481e-10,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 50,
+    "closed_lots": 208.0,
+    "lot_weighted_win_pct": 40.86538461538461,
+    "fifo_match_win_pct": 44.0,
+    "remaining_open_lots": 0.0,
+    "per_symbol_pnl_max_residual": 3.637978807091713e-12,
+    "held_or_traded_rows": 436,
+    "daily_raw_mismatches": 0,
+    "minute_scans": 0,
+    "missing_requested_minutes": 0,
+    "invalid_minute_scans": 0,
+    "duplicate_minutes": 0,
+    "anchor_requests": 100,
+    "bad_anchors": 0,
+    "execution_failures": 0
+  },
+  "input_count": 6508,
+  "input_sha_mismatches": [],
+  "catalog": {
+    "rows": 42369,
+    "appended_rows": 33197,
+    "manifest_sha_match": true,
+    "source_hash_or_frozen_mismatches": [],
+    "duplicate_keys": 0,
+    "actual_used_unique_anchors": 20,
+    "actual_used_sources": [
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage461_completed_preclose_full_dates_probe/CZCE/SM501_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP405_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2501_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/lh2305_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2306_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2404_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2502_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2504_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/cu2505_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/cu2510_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2109_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2209_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/sp2405_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/au2506_completed_minute_backtest.csv"
+    ],
+    "actual_anchor_original_raw_mismatches": []
+  },
+  "proofs": 90,
+  "proof_rows": 357575,
+  "source_hash_or_frozen_mismatches": [],
+  "overlay_conflicting_patches": 0,
+  "overlay_duplicate_minutes": 0,
+  "weekly": {
+    "exported_bars": 23677,
+    "weekly_raw_mismatches": [],
+    "readiness_days": 1647,
+    "zero_ready_target_days": 102,
+    "median_ready_targets": 3.0,
+    "max_ready_targets": 19,
+    "coverage": {
+      "symbols": 809,
+      "max_week_count": 56,
+      "symbols_ever_ready": 428,
+      "rejected_incomplete_weeks": 649
+    }
+  },
+  "actual_flags": {
+    "enable_stage847_half_r_stop_retry": false,
+    "enable_stage827_intraday_c2_stop": false,
+    "enable_ai_product_pool_filter": false,
+    "research_exact_array_manager_size": 41,
+    "rollover_delay_trading_days": 5,
+    "rollover_shape_history_mode": "target_contract_only"
+  },
+  "strategy_class": "WeeklyIndicatorsStrategy",
+  "ai_candidates": {
+    "rows": 82,
+    "columns": [
+      "ai_product_pool_enabled",
+      "ai_product_pool_strategy",
+      "ai_product_pool_allowed",
+      "ai_product_pool_use_next_trade_date_for_entry",
+      "ai_product_pool_entry_effective_date",
+      "ai_product_pool_signal_date",
+      "ai_product_pool_score",
+      "ai_product_pool_rank",
+      "ai_product_pool_top_n"
+    ],
+    "enabled_values": [
+      0
+    ],
+    "allowed_values": [
+      1
+    ],
+    "nonempty_signal_dates": 0,
+    "nonzero_scores": 0,
+    "nonzero_ranks": 0
+  },
+  "universe": {
+    "rows": 19,
+    "products": [
+      "AP.CZCE",
+      "CF.CZCE",
+      "FG.CZCE",
+      "MA.CZCE",
+      "OI.CZCE",
+      "SA.CZCE",
+      "SH.CZCE",
+      "SM.CZCE",
+      "jm.DCE",
+      "lh.DCE",
+      "lc.GFEX",
+      "si.GFEX",
+      "au.SHFE",
+      "cu.SHFE",
+      "fu.SHFE",
+      "hc.SHFE",
+      "rb.SHFE",
+      "ru.SHFE",
+      "sp.SHFE"
+    ],
+    "sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34"
+  },
+  "disabled_event_rows": {
+    "intraday_events": 0,
+    "stop_retry_events": 0,
+    "c2_events": 0,
+    "minute_scan_requests": 0
+  },
+  "effective_parameter_deltas_C_to_D": [
+    {
+      "path": ".spec.overrides.enable_ai_product_pool_filter",
+      "C": true,
+      "D": false
+    },
+    {
+      "path": ".spec.overrides.enable_stage827_intraday_c2_stop",
+      "C": true,
+      "D": false
+    }
+  ],
+  "input_manifest_postflight": {
+    "inputs_unchanged": true,
+    "mismatches": []
+  }
+}

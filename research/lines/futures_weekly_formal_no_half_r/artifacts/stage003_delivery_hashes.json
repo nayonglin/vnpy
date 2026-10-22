@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-22T21:52:43.543390+08:00",
+  "D_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/D_attempt011",
+  "D_input_manifest_sha256": "3bd3248edec5b37b7c43a413558b53fba8750410af7381a7f4230b945c737934",
+  "source_scope": "offline_research_no_production_qualification",
+  "files": {
+    "research/lines/futures_weekly_formal_no_half_r/stages/20261022_2152_stage004_weekly_half_r_c2_ai_off_result.md": "672883e2325db57767a983d8d40e23d5597b40f831184bf4bb40237c165ef83f",
+    "research/lines/futures_weekly_formal_no_half_r/stages/stage004_independent_audit.json": "f8f02d020208831e7a6230ce422770f7218364a7b9dededc771bf6b60c3972b9",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage003_annual_results.csv": "a58e61f1f4536069808e04790570d6df86c63a4664f8c683804fb596b0a148a4",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage003_comparison_summary.json": "cd08cde5179b5fc88893dacc8554bcd865a4cfdb60c0baaf0281f59223130d35",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage003_equity_drawdown.png": "f7b9316c26afce92fd0af78e94e0afe11e8a22e7b6df635c8f55b1f6ef12e834"
+  }
+}
