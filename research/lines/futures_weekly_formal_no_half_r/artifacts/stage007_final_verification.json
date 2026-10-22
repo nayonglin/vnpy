@@ -1,0 +1,13 @@
+{
+  "frozen_unique_inputs": 7228,
+  "input_sha_mismatches": [],
+  "cross_run_same_path_sha_conflicts": [],
+  "tested_original_tools": 37,
+  "tested_tool_changes": [],
+  "reviewed_artifact_binding_mismatches": [],
+  "F_verdict": "REJECT_EXECUTION_ZERO_VOLUME",
+  "F_qualified_counts_established": false,
+  "new_reviewed_builder_sha256": "10acbafbb53b62668357bc03a838b4613fb07b97ccf544ea48eae486781f7926",
+  "chart_visual_inspection": "PASS: red rejected diagnostic label, original numeric paths retained",
+  "scope": "input/artifact bindings and related tests; not a pass of F execution"
+}

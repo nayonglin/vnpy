@@ -1,0 +1,18 @@
+{
+  "research/lines/futures_weekly_formal_no_half_r/stages/audit_sources/F_independent_audit.py": {
+    "original": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage007_independent_review/F_independent_audit.py",
+    "sha256": "fad08c1e4d35ca9345d5430f453808c566a1e785cc961fda283fcbfe2441765e"
+  },
+  "research/lines/futures_weekly_formal_no_half_r/stages/audit_sources/F_independent_supplement.py": {
+    "original": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage007_independent_review/F_independent_supplement.py",
+    "sha256": "969818d2bccd105b554904ed5d4f31b4522d5de7ca4797b16abb55c6935ccba4"
+  },
+  "research/lines/futures_weekly_formal_no_half_r/stages/audit_sources/F_finalize_review.py": {
+    "original": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage007_independent_review/F_finalize_review.py",
+    "sha256": "e2db1b12a282ade95a6cf036a3ba27bd4737e2b372a1a94e5920445a49a3ec71"
+  },
+  "research/lines/futures_weekly_formal_no_half_r/stages/audit_sources/E_independent_audit.py": {
+    "original": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_independent_review/E_independent_audit.py",
+    "sha256": "5074171e8e39f0e6bff33a14ca8196a78294487c114021d8591effea8e28e8ba"
+  }
+}

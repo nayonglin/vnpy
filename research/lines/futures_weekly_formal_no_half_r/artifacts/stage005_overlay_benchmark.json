@@ -1,0 +1,28 @@
+{
+  "scope": "same frozen E009 minute inputs, all4490-market symbol request, data_only",
+  "base_read_seconds": 1.8738962080096826,
+  "old_overlay_seconds": 41.72928891598713,
+  "batched_overlay_seconds": 1.2954713749932125,
+  "exact_frame_equal": true,
+  "layers": 129,
+  "rows": 1759902,
+  "columns": [
+    "vt_symbol",
+    "tq_symbol",
+    "bar_datetime",
+    "bar_id",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "open_oi",
+    "close_oi",
+    "bar_date",
+    "minute_source",
+    "trading_day"
+  ],
+  "financial_replays": 0,
+  "network_requests": 0,
+  "helper_sha256": "30f0a897cb1f1fe5e5cb5144cd54de5908c8301edaa9b36ee8598dda76dcdfc0"
+}

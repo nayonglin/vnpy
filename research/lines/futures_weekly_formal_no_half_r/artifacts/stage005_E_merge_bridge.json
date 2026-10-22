@@ -1,0 +1,8 @@
+{
+  "reference": "research/lines/futures_weekly_formal_no_half_r/outputs/E_attempt009",
+  "bridge": "research/lines/futures_weekly_formal_no_half_r/outputs/E_attempt010",
+  "daily_equity_costs_exact": true,
+  "all_trades_exact": true,
+  "same_settings_and_data": true,
+  "scope": "ingestion-only exact batching; no strategy or price change"
+}

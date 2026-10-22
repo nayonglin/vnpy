@@ -1,0 +1,112 @@
+{
+  "scope": "E010 merge bridge only; E009 remains final same-data baseline",
+  "E009_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/E_attempt009",
+  "E010_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/E_attempt010",
+  "csv_checks": {
+    "c2_events.csv": {
+      "byte_identical": true
+    },
+    "daily.csv": {
+      "byte_identical": false,
+      "rows": 1647,
+      "changed_columns": [
+        "minute_loaded_symbol_count"
+      ]
+    },
+    "entry_candidates.csv": {
+      "byte_identical": true
+    },
+    "entry_risk.csv": {
+      "byte_identical": true
+    },
+    "execution_clock.csv": {
+      "byte_identical": true
+    },
+    "execution_proxy_usage.csv": {
+      "byte_identical": true
+    },
+    "internal_equity_daily.csv": {
+      "byte_identical": true
+    },
+    "intraday_events.csv": {
+      "byte_identical": true
+    },
+    "long_signal_atr_shock.csv": {
+      "byte_identical": true
+    },
+    "long_signal_range_atr.csv": {
+      "byte_identical": true
+    },
+    "minute_scan_requests.csv": {
+      "byte_identical": true
+    },
+    "pending_orders.csv": {
+      "byte_identical": true
+    },
+    "positions.csv": {
+      "byte_identical": true
+    },
+    "rollover_delay.csv": {
+      "byte_identical": true
+    },
+    "rollover_shape_same_volume.csv": {
+      "byte_identical": true
+    },
+    "stop_retry_events.csv": {
+      "byte_identical": true
+    },
+    "trade_events.csv": {
+      "byte_identical": true
+    },
+    "trades.csv": {
+      "byte_identical": true
+    },
+    "weekly_bars.csv": {
+      "byte_identical": true
+    },
+    "weekly_readiness.csv": {
+      "byte_identical": true
+    },
+    "weekly_readiness_on_exit.csv": {
+      "byte_identical": true
+    }
+  },
+  "business_differences": [],
+  "metadata_only_differences": [
+    {
+      "file": "daily.csv",
+      "column": "minute_loaded_symbol_count",
+      "E009_unique": [
+        514
+      ],
+      "E010_unique": [
+        516
+      ]
+    }
+  ],
+  "new_strategy_replays_by_reviewer": 0,
+  "E010_input_manifest_sha256": "1e05a9b73f93d39ed0a55be43b2cd30cf729f59cebaea4f2ffab69c98f2c68ff",
+  "input_files": 7168,
+  "input_sha_mismatches": [],
+  "metrics.json": {
+    "byte_identical": true,
+    "content_equal": true
+  },
+  "effective_parameters.json": {
+    "byte_identical": true,
+    "content_equal": true
+  },
+  "actual_strategy_settings.json": {
+    "byte_identical": true,
+    "content_equal": true
+  },
+  "actual_database_binding.json": {
+    "byte_identical": true,
+    "content_equal": true
+  },
+  "E010_postflight": {
+    "inputs_unchanged": true,
+    "mismatches": []
+  },
+  "verdict": "PASS_EXACT_FINANCIAL_EQUIVALENCE"
+}

@@ -1,0 +1,1027 @@
+{
+  "E_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/E_attempt009",
+  "D": {
+    "end_equity": 323250.0,
+    "return_pct": 115.49999999999999,
+    "dd_pct": -16.340226297307847,
+    "sharpe_252_sample": 0.7290295202778371,
+    "slippage": 7360.0,
+    "commission": 0.0,
+    "trades": 100,
+    "ledger_max_residual": 1.1641532182693481e-10,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 50,
+    "closed_lots": 208.0,
+    "lot_weighted_win_pct": 40.86538461538461,
+    "fifo_match_win_pct": 44.0,
+    "remaining_open_lots": 0.0,
+    "closed_net_pnl": 173249.99999999994,
+    "average_winning_match": 14922.727272727272,
+    "average_losing_match_abs": 5742.592592592595,
+    "profit_factor": 2.1173814898419856,
+    "per_symbol_pnl_max_residual": 3.637978807091713e-12,
+    "held_or_traded_rows": 436,
+    "daily_raw_mismatches": 0
+  },
+  "E": {
+    "end_equity": 335420.0,
+    "return_pct": 123.61333333333336,
+    "dd_pct": -17.323449083105736,
+    "sharpe_252_sample": 0.731551024820383,
+    "slippage": 8480.0,
+    "commission": 0.0,
+    "trades": 108,
+    "ledger_max_residual": 1.1641532182693481e-10,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 54,
+    "closed_lots": 244.0,
+    "lot_weighted_win_pct": 45.90163934426229,
+    "fifo_match_win_pct": 44.44444444444444,
+    "remaining_open_lots": 0.0,
+    "closed_net_pnl": 185419.99999999994,
+    "average_winning_match": 14437.916666666666,
+    "average_losing_match_abs": 5554.827586206899,
+    "profit_factor": 2.1510335837109684,
+    "per_symbol_pnl_max_residual": 3.637978807091713e-12,
+    "held_or_traded_rows": 460,
+    "daily_raw_mismatches": 0,
+    "minute_scans": 0,
+    "missing_requested_minutes": 0,
+    "invalid_minute_scans": 0,
+    "duplicate_minutes": 0,
+    "anchor_requests": 108,
+    "bad_anchors": 0,
+    "execution_failures": 0
+  },
+  "input_count": 6780,
+  "input_sha_mismatches": [],
+  "catalog": {
+    "rows": 42369,
+    "appended_rows": 33197,
+    "manifest_sha_match": true,
+    "source_hash_or_frozen_mismatches": [],
+    "duplicate_keys": 0,
+    "actual_used_unique_anchors": 20,
+    "actual_used_sources": [
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage461_completed_preclose_full_dates_probe/CZCE/SM501_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP405_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2501_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/lh2305_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2306_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2404_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2502_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/au2504_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/cu2505_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/cu2510_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2109_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2209_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/sp2405_completed_minute_backtest.csv",
+      "/Users/mac/Desktop/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/au2506_completed_minute_backtest.csv"
+    ],
+    "actual_anchor_original_raw_mismatches": []
+  },
+  "proofs": 129,
+  "proof_rows": 358212,
+  "source_hash_or_frozen_mismatches": [],
+  "overlay_conflicting_patches": 0,
+  "overlay_duplicate_minutes": 0,
+  "weekly": {
+    "exported_bars": 25223,
+    "weekly_raw_mismatches": [],
+    "readiness_days": 1647,
+    "zero_ready_target_days": 58,
+    "median_ready_targets": 3.0,
+    "max_ready_targets": 19,
+    "coverage": {
+      "symbols": 809,
+      "max_week_count": 56,
+      "symbols_ever_ready": 453,
+      "rejected_incomplete_weeks": 677
+    }
+  },
+  "actual_flags": {
+    "enable_stage847_half_r_stop_retry": false,
+    "enable_stage827_intraday_c2_stop": false,
+    "enable_ai_product_pool_filter": false,
+    "research_exact_array_manager_size": 41,
+    "rollover_delay_trading_days": 5,
+    "rollover_shape_history_mode": "target_contract_only"
+  },
+  "strategy_class": "WeeklyIndicatorsStrategy",
+  "ai_candidates": {
+    "rows": 89,
+    "columns": [
+      "ai_product_pool_enabled",
+      "ai_product_pool_strategy",
+      "ai_product_pool_allowed",
+      "ai_product_pool_use_next_trade_date_for_entry",
+      "ai_product_pool_entry_effective_date",
+      "ai_product_pool_signal_date",
+      "ai_product_pool_score",
+      "ai_product_pool_rank",
+      "ai_product_pool_top_n"
+    ],
+    "enabled_values": [
+      0
+    ],
+    "allowed_values": [
+      1
+    ],
+    "nonempty_signal_dates": 0,
+    "nonzero_scores": 0,
+    "nonzero_ranks": 0
+  },
+  "universe": {
+    "rows": 19,
+    "products": [
+      "AP.CZCE",
+      "CF.CZCE",
+      "FG.CZCE",
+      "MA.CZCE",
+      "OI.CZCE",
+      "SA.CZCE",
+      "SH.CZCE",
+      "SM.CZCE",
+      "jm.DCE",
+      "lh.DCE",
+      "lc.GFEX",
+      "si.GFEX",
+      "au.SHFE",
+      "cu.SHFE",
+      "fu.SHFE",
+      "hc.SHFE",
+      "rb.SHFE",
+      "ru.SHFE",
+      "sp.SHFE"
+    ],
+    "sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34"
+  },
+  "disabled_event_rows": {
+    "intraday_events": 0,
+    "stop_retry_events": 0,
+    "c2_events": 0,
+    "minute_scan_requests": 0
+  },
+  "effective_parameter_deltas_D_to_E": [
+    {
+      "path": ".spec.overrides.mapping_csv_path",
+      "D": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/data/mapping.csv",
+      "E": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_data/mapping.csv"
+    }
+  ],
+  "input_manifest_postflight": {
+    "inputs_unchanged": true,
+    "mismatches": []
+  },
+  "held_or_traded_zero_or_missing_volume": 0,
+  "actual_database_binding": {
+    "database_list": [
+      [
+        0,
+        "main",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_data/daily.sqlite"
+      ]
+    ],
+    "expected": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_data/daily.sqlite"
+  },
+  "engine_capital": 150000.0,
+  "actual_fill_anchor_link_mismatches": [],
+  "internal_equity_max_residual": 5.820766091346741e-11,
+  "traded_products": [
+    "AP",
+    "CF",
+    "FG",
+    "MA",
+    "OI",
+    "SA",
+    "SH",
+    "SM",
+    "au",
+    "cu",
+    "fu",
+    "hc",
+    "jm",
+    "lh",
+    "rb",
+    "ru",
+    "sp"
+  ],
+  "traded_product_count": 17,
+  "margin_exposure": {
+    "days_positive": 316,
+    "mean_margin_equity_pct": 4.466683954353189
+  },
+  "E_held_or_traded_days_absent_old_D_database": [],
+  "annual": [
+    {
+      "arm": "D",
+      "year": "2020",
+      "pnl": 28220.0,
+      "return_pct": 18.813333333333325,
+      "end_equity": 178220.0
+    },
+    {
+      "arm": "D",
+      "year": "2021",
+      "pnl": 20230.0,
+      "return_pct": 11.351139041633939,
+      "end_equity": 198450.0
+    },
+    {
+      "arm": "D",
+      "year": "2022",
+      "pnl": 14549.999999999936,
+      "return_pct": 7.33182161753585,
+      "end_equity": 212999.9999999999
+    },
+    {
+      "arm": "D",
+      "year": "2023",
+      "pnl": 7229.999999999973,
+      "return_pct": 3.3943661971830963,
+      "end_equity": 220229.9999999999
+    },
+    {
+      "arm": "D",
+      "year": "2024",
+      "pnl": 41000.00000000002,
+      "return_pct": 18.616900513099942,
+      "end_equity": 261229.9999999999
+    },
+    {
+      "arm": "D",
+      "year": "2025",
+      "pnl": 88660.00000000003,
+      "return_pct": 33.93944033993037,
+      "end_equity": 349890.0
+    },
+    {
+      "arm": "D",
+      "year": "2026",
+      "pnl": -26640.0,
+      "return_pct": -7.613821486752981,
+      "end_equity": 323250.0
+    },
+    {
+      "arm": "E",
+      "year": "2020",
+      "pnl": 28220.0,
+      "return_pct": 18.813333333333325,
+      "end_equity": 178220.0
+    },
+    {
+      "arm": "E",
+      "year": "2021",
+      "pnl": 20230.0,
+      "return_pct": 11.351139041633939,
+      "end_equity": 198450.0
+    },
+    {
+      "arm": "E",
+      "year": "2022",
+      "pnl": 14549.999999999936,
+      "return_pct": 7.33182161753585,
+      "end_equity": 212999.9999999999
+    },
+    {
+      "arm": "E",
+      "year": "2023",
+      "pnl": 7229.999999999973,
+      "return_pct": 3.3943661971830963,
+      "end_equity": 220229.9999999999
+    },
+    {
+      "arm": "E",
+      "year": "2024",
+      "pnl": 41000.00000000002,
+      "return_pct": 18.616900513099942,
+      "end_equity": 261229.9999999999
+    },
+    {
+      "arm": "E",
+      "year": "2025",
+      "pnl": 88660.00000000003,
+      "return_pct": 33.93944033993037,
+      "end_equity": 349890.0
+    },
+    {
+      "arm": "E",
+      "year": "2026",
+      "pnl": -14470.0,
+      "return_pct": -4.13558546971905,
+      "end_equity": 335420.0
+    }
+  ],
+  "checks": {
+    "ledger": true,
+    "per_symbol": true,
+    "daily_cost": true,
+    "signed_volume": true,
+    "daily_raw": true,
+    "held_volume": true,
+    "sha": true,
+    "proof_sources": true,
+    "proof_overlay": true,
+    "catalog_source": true,
+    "anchors": true,
+    "weekly": true,
+    "flags": true,
+    "no_intraday_events": true,
+    "AI_disabled": true,
+    "internal_equity": true,
+    "window": true
+  },
+  "verdict": "PASS_RESEARCH_ACCOUNTING_WITH_LIMITATIONS",
+  "new_financial_replays": 0,
+  "D_to_E_source_attribution": {
+    "common_weekly_bars": 23677,
+    "common_weekly_value_mismatches": 0,
+    "added_completed_weekly_bars": 1546,
+    "removed_completed_weekly_bars": 0,
+    "added_bars_without_old_missing_or_zero_volume_source_day": 0,
+    "examples": [
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-06-06",
+        "previous_missing_days": [
+          "2019-06-03",
+          "2019-06-04",
+          "2019-06-05",
+          "2019-06-06"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-06-14",
+        "previous_missing_days": [
+          "2019-06-10",
+          "2019-06-11",
+          "2019-06-12",
+          "2019-06-13",
+          "2019-06-14"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-06-21",
+        "previous_missing_days": [
+          "2019-06-17",
+          "2019-06-18",
+          "2019-06-19",
+          "2019-06-20",
+          "2019-06-21"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-06-28",
+        "previous_missing_days": [
+          "2019-06-24",
+          "2019-06-25",
+          "2019-06-26",
+          "2019-06-27",
+          "2019-06-28"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-07-05",
+        "previous_missing_days": [
+          "2019-07-01",
+          "2019-07-02",
+          "2019-07-03",
+          "2019-07-04",
+          "2019-07-05"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-07-12",
+        "previous_missing_days": [
+          "2019-07-08",
+          "2019-07-09",
+          "2019-07-10",
+          "2019-07-11",
+          "2019-07-12"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-07-19",
+        "previous_missing_days": [
+          "2019-07-15",
+          "2019-07-16",
+          "2019-07-17",
+          "2019-07-18",
+          "2019-07-19"
+        ]
+      },
+      {
+        "vt_symbol": "AP001.CZCE",
+        "week_end": "2019-07-26",
+        "previous_missing_days": [
+          "2019-07-22",
+          "2019-07-23",
+          "2019-07-24",
+          "2019-07-25",
+          "2019-07-26"
+        ]
+      }
+    ],
+    "product_pnl_deltas": {
+      "MA": {
+        "D": -1330.0,
+        "E": 14350.0,
+        "delta": 15680.0
+      },
+      "SH": {
+        "D": 0.0,
+        "E": -1440.0,
+        "delta": -1440.0
+      },
+      "cu": {
+        "D": 30400.0,
+        "E": 25800.0,
+        "delta": -4600.0
+      },
+      "fu": {
+        "D": 15840.0,
+        "E": 18370.0,
+        "delta": 2530.0
+      }
+    },
+    "first_equity_difference": [
+      {
+        "date": "2026-08-17",
+        "account_equity_D": 323250.0,
+        "account_equity_E": 331300.0
+      }
+    ]
+  },
+  "independent_audit_script": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_independent_review/E_independent_audit.py",
+    "sha256": "5074171e8e39f0e6bff33a14ca8196a78294487c114021d8591effea8e28e8ba"
+  },
+  "conclusion": "RESEARCH_ONLY_NO_PROMOTION",
+  "actual_used_minute_volume": {
+    "unique_anchors": 108,
+    "minimum": 136.0,
+    "zero_or_negative": 0,
+    "details": [
+      {
+        "vt_symbol": "AP405.CZCE",
+        "bar_datetime": "2024-04-01 09:00:00",
+        "minute_volume": 5681.0
+      },
+      {
+        "vt_symbol": "AP405.CZCE",
+        "bar_datetime": "2024-04-19 09:00:00",
+        "minute_volume": 450.0
+      },
+      {
+        "vt_symbol": "AP505.CZCE",
+        "bar_datetime": "2025-04-14 09:00:00",
+        "minute_volume": 7040.0
+      },
+      {
+        "vt_symbol": "AP505.CZCE",
+        "bar_datetime": "2025-04-15 09:00:00",
+        "minute_volume": 4347.0
+      },
+      {
+        "vt_symbol": "CF109.CZCE",
+        "bar_datetime": "2021-07-09 21:00:00",
+        "minute_volume": 9343.0
+      },
+      {
+        "vt_symbol": "CF109.CZCE",
+        "bar_datetime": "2021-08-13 21:00:00",
+        "minute_volume": 1827.0
+      },
+      {
+        "vt_symbol": "FG009.CZCE",
+        "bar_datetime": "2020-08-07 21:00:00",
+        "minute_volume": 19661.0
+      },
+      {
+        "vt_symbol": "FG009.CZCE",
+        "bar_datetime": "2020-08-10 21:00:00",
+        "minute_volume": 6690.0
+      },
+      {
+        "vt_symbol": "FG101.CZCE",
+        "bar_datetime": "2020-11-20 21:00:00",
+        "minute_volume": 11163.0
+      },
+      {
+        "vt_symbol": "FG101.CZCE",
+        "bar_datetime": "2020-11-23 21:00:00",
+        "minute_volume": 10885.0
+      },
+      {
+        "vt_symbol": "FG305.CZCE",
+        "bar_datetime": "2023-03-31 21:00:00",
+        "minute_volume": 15706.0
+      },
+      {
+        "vt_symbol": "FG305.CZCE",
+        "bar_datetime": "2023-04-06 09:00:00",
+        "minute_volume": 26706.0
+      },
+      {
+        "vt_symbol": "FG401.CZCE",
+        "bar_datetime": "2023-11-24 21:00:00",
+        "minute_volume": 9465.0
+      },
+      {
+        "vt_symbol": "FG401.CZCE",
+        "bar_datetime": "2023-12-05 21:00:00",
+        "minute_volume": 15461.0
+      },
+      {
+        "vt_symbol": "MA101.CZCE",
+        "bar_datetime": "2020-11-06 21:00:00",
+        "minute_volume": 19469.0
+      },
+      {
+        "vt_symbol": "MA101.CZCE",
+        "bar_datetime": "2020-11-26 21:00:00",
+        "minute_volume": 31827.0
+      },
+      {
+        "vt_symbol": "MA109.CZCE",
+        "bar_datetime": "2021-07-16 21:00:00",
+        "minute_volume": 24076.0
+      },
+      {
+        "vt_symbol": "MA109.CZCE",
+        "bar_datetime": "2021-08-03 21:00:00",
+        "minute_volume": 40097.0
+      },
+      {
+        "vt_symbol": "MA610.CZCE",
+        "bar_datetime": "2026-09-11 21:00:00",
+        "minute_volume": 60934.0
+      },
+      {
+        "vt_symbol": "MA610.CZCE",
+        "bar_datetime": "2026-09-18 21:00:00",
+        "minute_volume": 31793.0
+      },
+      {
+        "vt_symbol": "OI009.CZCE",
+        "bar_datetime": "2020-08-07 21:00:00",
+        "minute_volume": 5681.0
+      },
+      {
+        "vt_symbol": "OI009.CZCE",
+        "bar_datetime": "2020-08-10 21:00:00",
+        "minute_volume": 6749.0
+      },
+      {
+        "vt_symbol": "SA105.CZCE",
+        "bar_datetime": "2021-03-05 21:00:00",
+        "minute_volume": 22146.0
+      },
+      {
+        "vt_symbol": "SA105.CZCE",
+        "bar_datetime": "2021-03-11 21:00:00",
+        "minute_volume": 13597.0
+      },
+      {
+        "vt_symbol": "SA401.CZCE",
+        "bar_datetime": "2023-12-01 21:00:00",
+        "minute_volume": 19325.0
+      },
+      {
+        "vt_symbol": "SA401.CZCE",
+        "bar_datetime": "2023-12-14 21:00:00",
+        "minute_volume": 2255.0
+      },
+      {
+        "vt_symbol": "SH611.CZCE",
+        "bar_datetime": "2026-10-08 09:00:00",
+        "minute_volume": 8987.0
+      },
+      {
+        "vt_symbol": "SH611.CZCE",
+        "bar_datetime": "2026-10-19 21:00:00",
+        "minute_volume": 2017.0
+      },
+      {
+        "vt_symbol": "SM109.CZCE",
+        "bar_datetime": "2021-07-26 09:00:00",
+        "minute_volume": 11463.0
+      },
+      {
+        "vt_symbol": "SM109.CZCE",
+        "bar_datetime": "2021-08-04 09:00:00",
+        "minute_volume": 9902.0
+      },
+      {
+        "vt_symbol": "SM501.CZCE",
+        "bar_datetime": "2024-11-18 09:00:00",
+        "minute_volume": 4842.0
+      },
+      {
+        "vt_symbol": "SM501.CZCE",
+        "bar_datetime": "2024-11-21 09:00:00",
+        "minute_volume": 3299.0
+      },
+      {
+        "vt_symbol": "SM605.CZCE",
+        "bar_datetime": "2026-03-23 09:00:00",
+        "minute_volume": 47603.0
+      },
+      {
+        "vt_symbol": "SM605.CZCE",
+        "bar_datetime": "2026-04-09 09:00:00",
+        "minute_volume": 15030.0
+      },
+      {
+        "vt_symbol": "au2206.SHFE",
+        "bar_datetime": "2022-03-11 21:00:00",
+        "minute_volume": 2899.0
+      },
+      {
+        "vt_symbol": "au2206.SHFE",
+        "bar_datetime": "2022-03-14 21:00:00",
+        "minute_volume": 1501.0
+      },
+      {
+        "vt_symbol": "au2212.SHFE",
+        "bar_datetime": "2022-10-10 09:00:00",
+        "minute_volume": 4427.0
+      },
+      {
+        "vt_symbol": "au2212.SHFE",
+        "bar_datetime": "2022-10-10 21:00:00",
+        "minute_volume": 1527.0
+      },
+      {
+        "vt_symbol": "au2306.SHFE",
+        "bar_datetime": "2023-03-17 21:00:00",
+        "minute_volume": 2512.0
+      },
+      {
+        "vt_symbol": "au2306.SHFE",
+        "bar_datetime": "2023-03-22 21:00:00",
+        "minute_volume": 1340.0
+      },
+      {
+        "vt_symbol": "au2312.SHFE",
+        "bar_datetime": "2023-09-15 21:00:00",
+        "minute_volume": 2253.0
+      },
+      {
+        "vt_symbol": "au2312.SHFE",
+        "bar_datetime": "2023-09-27 21:00:00",
+        "minute_volume": 2770.0
+      },
+      {
+        "vt_symbol": "au2312.SHFE",
+        "bar_datetime": "2023-10-27 21:00:00",
+        "minute_volume": 2187.0
+      },
+      {
+        "vt_symbol": "au2312.SHFE",
+        "bar_datetime": "2023-11-07 21:00:00",
+        "minute_volume": 1272.0
+      },
+      {
+        "vt_symbol": "au2404.SHFE",
+        "bar_datetime": "2024-02-02 21:00:00",
+        "minute_volume": 1070.0
+      },
+      {
+        "vt_symbol": "au2404.SHFE",
+        "bar_datetime": "2024-02-06 21:00:00",
+        "minute_volume": 829.0
+      },
+      {
+        "vt_symbol": "au2502.SHFE",
+        "bar_datetime": "2025-01-10 21:00:00",
+        "minute_volume": 3039.0
+      },
+      {
+        "vt_symbol": "au2502.SHFE",
+        "bar_datetime": "2025-01-21 21:00:00",
+        "minute_volume": 877.0
+      },
+      {
+        "vt_symbol": "au2504.SHFE",
+        "bar_datetime": "2025-01-21 21:00:00",
+        "minute_volume": 1869.0
+      },
+      {
+        "vt_symbol": "au2504.SHFE",
+        "bar_datetime": "2025-03-28 21:00:00",
+        "minute_volume": 136.0
+      },
+      {
+        "vt_symbol": "au2506.SHFE",
+        "bar_datetime": "2025-03-28 21:00:00",
+        "minute_volume": 4320.0
+      },
+      {
+        "vt_symbol": "au2506.SHFE",
+        "bar_datetime": "2025-04-07 21:00:00",
+        "minute_volume": 3892.0
+      },
+      {
+        "vt_symbol": "cu2101.SHFE",
+        "bar_datetime": "2020-11-27 21:00:00",
+        "minute_volume": 3563.0
+      },
+      {
+        "vt_symbol": "cu2101.SHFE",
+        "bar_datetime": "2020-12-23 21:00:00",
+        "minute_volume": 339.0
+      },
+      {
+        "vt_symbol": "cu2104.SHFE",
+        "bar_datetime": "2021-02-19 21:00:00",
+        "minute_volume": 2749.0
+      },
+      {
+        "vt_symbol": "cu2104.SHFE",
+        "bar_datetime": "2021-03-05 21:00:00",
+        "minute_volume": 3389.0
+      },
+      {
+        "vt_symbol": "cu2112.SHFE",
+        "bar_datetime": "2021-10-29 21:00:00",
+        "minute_volume": 2582.0
+      },
+      {
+        "vt_symbol": "cu2112.SHFE",
+        "bar_datetime": "2021-11-01 21:00:00",
+        "minute_volume": 2740.0
+      },
+      {
+        "vt_symbol": "cu2204.SHFE",
+        "bar_datetime": "2022-02-25 21:00:00",
+        "minute_volume": 2117.0
+      },
+      {
+        "vt_symbol": "cu2204.SHFE",
+        "bar_datetime": "2022-03-09 21:00:00",
+        "minute_volume": 3110.0
+      },
+      {
+        "vt_symbol": "cu2303.SHFE",
+        "bar_datetime": "2023-02-10 21:00:00",
+        "minute_volume": 2178.0
+      },
+      {
+        "vt_symbol": "cu2303.SHFE",
+        "bar_datetime": "2023-02-13 21:00:00",
+        "minute_volume": 1636.0
+      },
+      {
+        "vt_symbol": "cu2309.SHFE",
+        "bar_datetime": "2023-07-28 21:00:00",
+        "minute_volume": 1980.0
+      },
+      {
+        "vt_symbol": "cu2309.SHFE",
+        "bar_datetime": "2023-08-03 21:00:00",
+        "minute_volume": 2560.0
+      },
+      {
+        "vt_symbol": "cu2402.SHFE",
+        "bar_datetime": "2024-01-02 09:00:00",
+        "minute_volume": 2199.0
+      },
+      {
+        "vt_symbol": "cu2402.SHFE",
+        "bar_datetime": "2024-01-03 21:00:00",
+        "minute_volume": 2801.0
+      },
+      {
+        "vt_symbol": "cu2404.SHFE",
+        "bar_datetime": "2024-03-01 21:00:00",
+        "minute_volume": 836.0
+      },
+      {
+        "vt_symbol": "cu2404.SHFE",
+        "bar_datetime": "2024-03-18 21:00:00",
+        "minute_volume": 337.0
+      },
+      {
+        "vt_symbol": "cu2505.SHFE",
+        "bar_datetime": "2025-03-28 21:00:00",
+        "minute_volume": 4024.0
+      },
+      {
+        "vt_symbol": "cu2505.SHFE",
+        "bar_datetime": "2025-03-31 21:00:00",
+        "minute_volume": 1517.0
+      },
+      {
+        "vt_symbol": "cu2509.SHFE",
+        "bar_datetime": "2025-08-15 21:00:00",
+        "minute_volume": 1518.0
+      },
+      {
+        "vt_symbol": "cu2509.SHFE",
+        "bar_datetime": "2025-08-20 21:00:00",
+        "minute_volume": 1262.0
+      },
+      {
+        "vt_symbol": "cu2510.SHFE",
+        "bar_datetime": "2025-09-05 21:00:00",
+        "minute_volume": 2433.0
+      },
+      {
+        "vt_symbol": "cu2510.SHFE",
+        "bar_datetime": "2025-09-18 21:00:00",
+        "minute_volume": 1120.0
+      },
+      {
+        "vt_symbol": "cu2609.SHFE",
+        "bar_datetime": "2026-08-14 21:00:00",
+        "minute_volume": 1507.0
+      },
+      {
+        "vt_symbol": "cu2609.SHFE",
+        "bar_datetime": "2026-08-19 21:00:00",
+        "minute_volume": 2227.0
+      },
+      {
+        "vt_symbol": "fu2109.SHFE",
+        "bar_datetime": "2021-06-18 21:00:00",
+        "minute_volume": 16961.0
+      },
+      {
+        "vt_symbol": "fu2109.SHFE",
+        "bar_datetime": "2021-07-07 21:00:00",
+        "minute_volume": 22056.0
+      },
+      {
+        "vt_symbol": "fu2409.SHFE",
+        "bar_datetime": "2024-07-05 21:00:00",
+        "minute_volume": 16036.0
+      },
+      {
+        "vt_symbol": "fu2409.SHFE",
+        "bar_datetime": "2024-07-08 21:00:00",
+        "minute_volume": 12536.0
+      },
+      {
+        "vt_symbol": "fu2503.SHFE",
+        "bar_datetime": "2025-02-05 09:00:00",
+        "minute_volume": 23300.0
+      },
+      {
+        "vt_symbol": "fu2503.SHFE",
+        "bar_datetime": "2025-02-20 21:00:00",
+        "minute_volume": 1037.0
+      },
+      {
+        "vt_symbol": "fu2611.SHFE",
+        "bar_datetime": "2026-09-11 21:00:00",
+        "minute_volume": 23975.0
+      },
+      {
+        "vt_symbol": "fu2611.SHFE",
+        "bar_datetime": "2026-09-17 21:00:00",
+        "minute_volume": 20406.0
+      },
+      {
+        "vt_symbol": "hc2101.SHFE",
+        "bar_datetime": "2020-11-13 21:00:00",
+        "minute_volume": 9921.0
+      },
+      {
+        "vt_symbol": "hc2101.SHFE",
+        "bar_datetime": "2020-12-15 21:00:00",
+        "minute_volume": 1705.0
+      },
+      {
+        "vt_symbol": "hc2105.SHFE",
+        "bar_datetime": "2021-02-26 21:00:00",
+        "minute_volume": 12022.0
+      },
+      {
+        "vt_symbol": "hc2105.SHFE",
+        "bar_datetime": "2021-03-05 21:00:00",
+        "minute_volume": 12880.0
+      },
+      {
+        "vt_symbol": "hc2110.SHFE",
+        "bar_datetime": "2021-07-30 21:00:00",
+        "minute_volume": 40041.0
+      },
+      {
+        "vt_symbol": "hc2110.SHFE",
+        "bar_datetime": "2021-08-02 21:00:00",
+        "minute_volume": 15488.0
+      },
+      {
+        "vt_symbol": "jm2305.DCE",
+        "bar_datetime": "2023-03-17 21:00:00",
+        "minute_volume": 1824.0
+      },
+      {
+        "vt_symbol": "jm2305.DCE",
+        "bar_datetime": "2023-03-21 21:00:00",
+        "minute_volume": 1584.0
+      },
+      {
+        "vt_symbol": "jm2501.DCE",
+        "bar_datetime": "2024-11-15 21:00:00",
+        "minute_volume": 2744.0
+      },
+      {
+        "vt_symbol": "jm2501.DCE",
+        "bar_datetime": "2024-11-19 21:00:00",
+        "minute_volume": 2023.0
+      },
+      {
+        "vt_symbol": "lh2305.DCE",
+        "bar_datetime": "2023-03-27 09:00:00",
+        "minute_volume": 2424.0
+      },
+      {
+        "vt_symbol": "lh2305.DCE",
+        "bar_datetime": "2023-04-20 09:00:00",
+        "minute_volume": 194.0
+      },
+      {
+        "vt_symbol": "lh2409.DCE",
+        "bar_datetime": "2024-07-29 09:00:00",
+        "minute_volume": 1732.0
+      },
+      {
+        "vt_symbol": "lh2409.DCE",
+        "bar_datetime": "2024-08-14 09:00:00",
+        "minute_volume": 419.0
+      },
+      {
+        "vt_symbol": "rb2101.SHFE",
+        "bar_datetime": "2020-11-13 21:00:00",
+        "minute_volume": 8788.0
+      },
+      {
+        "vt_symbol": "rb2101.SHFE",
+        "bar_datetime": "2020-11-25 21:00:00",
+        "minute_volume": 16647.0
+      },
+      {
+        "vt_symbol": "rb2105.SHFE",
+        "bar_datetime": "2021-02-26 21:00:00",
+        "minute_volume": 45307.0
+      },
+      {
+        "vt_symbol": "rb2105.SHFE",
+        "bar_datetime": "2021-03-05 21:00:00",
+        "minute_volume": 40828.0
+      },
+      {
+        "vt_symbol": "ru2209.SHFE",
+        "bar_datetime": "2022-07-08 21:00:00",
+        "minute_volume": 5683.0
+      },
+      {
+        "vt_symbol": "ru2209.SHFE",
+        "bar_datetime": "2022-08-16 21:00:00",
+        "minute_volume": 710.0
+      },
+      {
+        "vt_symbol": "sp2205.SHFE",
+        "bar_datetime": "2022-03-11 21:00:00",
+        "minute_volume": 11080.0
+      },
+      {
+        "vt_symbol": "sp2205.SHFE",
+        "bar_datetime": "2022-03-14 21:00:00",
+        "minute_volume": 4331.0
+      },
+      {
+        "vt_symbol": "sp2405.SHFE",
+        "bar_datetime": "2024-03-29 21:00:00",
+        "minute_volume": 6116.0
+      },
+      {
+        "vt_symbol": "sp2405.SHFE",
+        "bar_datetime": "2024-04-08 09:00:00",
+        "minute_volume": 6921.0
+      }
+    ]
+  }
+}

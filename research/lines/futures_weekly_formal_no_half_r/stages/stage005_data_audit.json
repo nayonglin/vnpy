@@ -1,0 +1,136 @@
+{
+  "kind": "independent_data_preflight_only",
+  "financial_replays": 0,
+  "checked_at": "2026-10-22T23:04:32.152188+08:00",
+  "P0": 0,
+  "P1": 0,
+  "P2_unresolved": 0,
+  "completed_manifest_sha256": "72fedd9ef9ca6b5413436afa064f7226bd5445d9595674cb9afc5c1ef444cbf8",
+  "manifest_checked_files": 7,
+  "universe": 91,
+  "old_mapping_changes": 0,
+  "old86_metadata_changed_fields": [],
+  "extra5_metadata": [
+    {
+      "vt_symbol": "l_F.DCE",
+      "volume_multiple": 5.0,
+      "price_tick": 1.0,
+      "margin_ratio": 0.15
+    },
+    {
+      "vt_symbol": "pp_F.DCE",
+      "volume_multiple": 5.0,
+      "price_tick": 1.0,
+      "margin_ratio": 0.15
+    },
+    {
+      "vt_symbol": "v_F.DCE",
+      "volume_multiple": 5.0,
+      "price_tick": 1.0,
+      "margin_ratio": 0.15
+    },
+    {
+      "vt_symbol": "pd.GFEX",
+      "volume_multiple": 1000.0,
+      "price_tick": 0.05,
+      "margin_ratio": 0.15
+    },
+    {
+      "vt_symbol": "pt.GFEX",
+      "volume_multiple": 1000.0,
+      "price_tick": 0.05,
+      "margin_ratio": 0.15
+    }
+  ],
+  "old_database_changed_keys": 0,
+  "clean_inserted_keys_independently_checked": 247095,
+  "clean_inserted_mismatches": 0,
+  "daily_download_status_counts": {
+    "complete": 168,
+    "failed": 1,
+    "unavailable": 59
+  },
+  "daily_raw_files_sha_checked": 168,
+  "daily_raw_rows_presence_checked": 28466,
+  "raw_overlap_value_differences_for_clean_priority_review": 1,
+  "raw_zero_volume_rows": 8929,
+  "raw_max_accepted_date": "2026-10-22",
+  "remaining_daily_gaps_by_product": {
+    "LR.CZCE": 1564,
+    "RI.CZCE": 1155,
+    "JR.CZCE": 1073,
+    "PM.CZCE": 821,
+    "ZC.CZCE": 707,
+    "WH.CZCE": 592,
+    "RS.CZCE": 243,
+    "CY.CZCE": 154,
+    "bb.DCE": 55
+  },
+  "latest_daily_gaps": [
+    {
+      "continuous_symbol_vt": "LR.CZCE",
+      "main_contract_vt": "LR601.CZCE"
+    }
+  ],
+  "mapped_zero_volume_days": 3380,
+  "mapped_days": 125180,
+  "positive_volume_mapped_days": 115436,
+  "F_independent_causal_rows": 708,
+  "F_mismatches": [],
+  "F_basis": "previous_calendar_session_real_positive_volume_OI; known_delisted_date; no future_last_observed_filter",
+  "verdict": "PASS_DATA_BINDINGS_WITH_COVERAGE_LIMITATIONS",
+  "limitations": [
+    "91 eligible futures families are not 91 complete tradable daily histories.",
+    "6364 mapped daily gaps remain across 9 products; latest LR601 missing. Missing data never authorizes fills or stale held marks.",
+    "Zero-volume downloaded daily prices are retained as observations, excluded from weekly indicators; held/traded zero-volume days must fail financial runner.",
+    "Original 86 product multiplier/tick snapshots and original static/default margins retained; not historical daily broker/PIT terms; zero commission.",
+    "New 5 product multiplier/tick snapshot and F contractual expiries are known vendor snapshots, not strict historical publication-time PIT proof.",
+    "No financial result, positions, execution anchors, capacity, or promotion is reviewed here."
+  ],
+  "reviewed_code_sha256": {
+    "stage005_prepare_data.py": "26c7f3be17b8f58a6275c965b59cfa527524e00d0ccf867cff11cdfc066f088a",
+    "stage005_complete_daily.py": "886ba6f72835cc64b141b830c842d40a086b94d7a16aadebcd3b301d20d8dcf1",
+    "stage005_sessions.py": "6c513a6bfefa528dd301e20f58e19b548d6e30ba9e7e397f17fa37d8ac936d98",
+    "run_stage005_full_market.py": "d50ef4980b6adce3a25a4e5992c8c96fdd35150498b19b830b3ce21276235f2e"
+  },
+  "source_state_after": {
+    "db_sha_matches_manifest": true,
+    "mapping_sha_matches_manifest": true
+  },
+  "raw_clean_priority_difference_detail": [
+    {
+      "symbol": "ag2612.SHFE",
+      "date": "2026-07-20",
+      "db": [
+        13400.0,
+        14015.0,
+        13384.0,
+        13785.0,
+        59910.0,
+        87332.0
+      ],
+      "raw": [
+        13400.0,
+        14015.0,
+        13384.0,
+        13785.0,
+        59911.0,
+        87332.0
+      ],
+      "verified_clean_source_row": [
+        "SHFE.AG.202612",
+        "AG2612",
+        "2026-07-20",
+        13400.0,
+        14015.0,
+        13384.0,
+        13785.0,
+        59910.0,
+        87332.0,
+        "rqalpha",
+        "{\"key\":\"AG2612\",\"row\":141}"
+      ]
+    }
+  ],
+  "raw_clean_priority_difference_resolution": "One contract-day volume differs by 1; OHLC/OI match. Verified accepted clean row priority retained, no overwrite."
+}
