@@ -1,0 +1,101 @@
+{
+  "C_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/C_attempt045",
+  "A": {
+    "end_equity": 2250195.0000000056,
+    "return_pct": 1400.1300000000037,
+    "dd_pct": -49.070504079098974,
+    "sharpe_252_sample": 1.3624041610349658,
+    "slippage": 605850.0,
+    "commission": 0.0,
+    "trades": 817,
+    "ledger_max_residual": 4.6566128730773926e-09,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 414,
+    "closed_lots": 15236.0,
+    "lot_weighted_win_pct": 23.405093200315044,
+    "fifo_match_win_pct": 30.193236714975846,
+    "remaining_open_lots": 0.0,
+    "per_symbol_pnl_max_residual": 7.275957614183426e-12,
+    "held_or_traded_rows": 1737,
+    "daily_raw_mismatches": 0
+  },
+  "C": {
+    "end_equity": 252800.0,
+    "return_pct": 68.53333333333333,
+    "dd_pct": -15.066180443003784,
+    "sharpe_252_sample": 0.7046592554551127,
+    "slippage": 5450.0,
+    "commission": 0.0,
+    "trades": 72,
+    "ledger_max_residual": 2.9103830456733704e-11,
+    "daily_cost_max_residual": 0.0,
+    "signed_volume_mismatch": 0,
+    "rate_values": [
+      0.0
+    ],
+    "account_days": 1647,
+    "first_day": "2020-01-02",
+    "last_day": "2026-10-22",
+    "closed_fifo_matches": 36,
+    "closed_lots": 161.0,
+    "lot_weighted_win_pct": 34.78260869565217,
+    "fifo_match_win_pct": 38.88888888888889,
+    "remaining_open_lots": 0.0,
+    "per_symbol_pnl_max_residual": 0,
+    "held_or_traded_rows": 241,
+    "daily_raw_mismatches": 0,
+    "minute_scans": 36,
+    "missing_requested_minutes": 0,
+    "invalid_minute_scans": 0,
+    "duplicate_minutes": 0,
+    "anchor_requests": 57,
+    "bad_anchors": 0,
+    "execution_failures": 0
+  },
+  "input_count": 6447,
+  "input_sha_mismatches": [],
+  "proofs": 67,
+  "proof_rows": 356805,
+  "source_hash_or_frozen_mismatches": [],
+  "overlay_conflicting_patches": 0,
+  "overlay_duplicate_minutes": 0,
+  "weekly": {
+    "exported_bars": 23677,
+    "weekly_raw_mismatches": [],
+    "readiness_days": 1647,
+    "zero_ready_target_days": 102,
+    "median_ready_targets": 3.0,
+    "max_ready_targets": 19,
+    "coverage": {
+      "symbols": 809,
+      "max_week_count": 56,
+      "symbols_ever_ready": 428,
+      "rejected_incomplete_weeks": 649
+    }
+  },
+  "exposure_context": {
+    "mapped_products_median": 17,
+    "ready_target_mean": 5.630843958712811,
+    "A_margin_days": 892,
+    "C_margin_days": 148,
+    "A_mean_broker10_margin_pct": 14.066556202518116,
+    "C_mean_broker10_margin_pct": 2.3479742567050423
+  },
+  "actual_C": {
+    "strategy_class": "WeeklyIndicatorsStrategy",
+    "half_r_enabled": false,
+    "C2_enabled": true,
+    "exact_AM_size": 41,
+    "shape_mode": "target_contract_only",
+    "rollover_delay_trading_days": 5,
+    "half_r_event_rows": 0,
+    "C2_intraday_event_rows": 15
+  }
+}

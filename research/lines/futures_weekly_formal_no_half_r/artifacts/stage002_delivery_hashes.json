@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-10-22T20:26:13.688660+08:00",
+  "dependencies": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage249_prepare_replay.py": "549955e20be81bb1ceb90e4441592b267d9d41aa3bde9bfc143dcda5d1008b2d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage249_download_minutes.py": "8395c576be7f44b281167c291b9dfdb6e3e7941e8adbca9b8b70e117e3dc8b31",
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/__init__.py": "e4853e277786e8c359942f74c62d7eac81355b54a31ae8f06a0be812301fe04b",
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/backtesting.py": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2",
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/template.py": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a",
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/base.py": "e2cebc5a8648143a5492c07283b96286f13cbc788386f4f41bcfffe31c1466ca"
+  },
+  "repository_helpers_match_base_commit": {
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/stage249_prepare_replay.py": true,
+    "research/lines/futures_trend_rollover_shape_same_volume/tools/stage249_download_minutes.py": true
+  },
+  "frozen_input_manifest": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/C_attempt045/input_manifest.json",
+  "frozen_input_manifest_sha256": "beb46a05085255f5ecec64d9f012f5d3fd65e44127a35a56a4f359f865c352b5",
+  "A_input_manifest_sha256": "c819927c714e1d84612cb8e97fb979f2cadd3778021afe638d23725c725f4693",
+  "source_root": "/Users/mac/Desktop/fian",
+  "production_qualified": false,
+  "artifacts": {
+    "research/lines/futures_weekly_formal_no_half_r/stages/20261022_2026_stage002_weekly_2020_result.md": "6465eec2b25a0f3c0a803ad589fcb477e995bba5e19799d900aa8bdad12ac641",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage002_dependency_manifest.json": "7673905933c9222b3e378f8db52ee14fec9ac5432856a5b358c596cc9e5bc634",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage002_comparison_summary.json": "f95709920bcf0dcb02fff18f8db32985194182af767255c43922d3a2d7c16e4d",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage002_annual_results.csv": "d96a42d685397cfa6399c8611a7855782e6b62e901a5f2d730d42ef8588bf705",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage002_equity_drawdown.png": "64c15a06d29cc685585b2c24e87167afbe8e7b0ef0d10809cfc390aaf9a14c31",
+    "research/lines/futures_weekly_formal_no_half_r/stages/stage002_independent_audit.json": "bf7e9c32100ecebb95ac2cb93ebeede33ec486459e3e02099faa443f3a547e22"
+  }
+}
