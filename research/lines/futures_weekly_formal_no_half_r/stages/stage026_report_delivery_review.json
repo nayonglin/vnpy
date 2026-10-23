@@ -1,0 +1,72 @@
+{
+  "schema": "stage026_report_delivery_review_v1",
+  "reviewer": "/root/stage023_fresh_independent_review",
+  "frozen_at": "2026-10-23T20:31:20.550052+08:00",
+  "verdict": "PASS_DERIVED_REPORT_DELIVERY",
+  "promotion_decision": "NO_PROMOTION",
+  "production_qualified": false,
+  "financial_replays": 0,
+  "data_mutations": 0,
+  "prior_review_and_all181_bindings_unchanged": true,
+  "diff_review": "仅helper facade路径base.math_report._direction、entry_attribution之后补收集sources、独立v2输出命名；未改变金融或报告数学。",
+  "fixture_tests_independently_rerun": 2,
+  "fixture_tests_passed": 2,
+  "fixture_coverage": [
+    "真实1.65与旧1.10区分",
+    "成交后最多2品种与日终1品种区分",
+    "两种实际保证金参数冲突拒绝"
+  ],
+  "failed_first_report_preserved": true,
+  "report_source_file_count": 63,
+  "report_output_file_count": 4,
+  "summary_and_table_checks": {
+    "N": {
+      "core_summary_fields_match_frozen_independent_review": true,
+      "annual_rows": 12,
+      "product_rows": 19,
+      "closed_segment_rows": 471,
+      "all_table_totals_match": true,
+      "entry_risk_direct_source_SHA_present": true,
+      "actual165_margin_and_legacy110_distinguished": true
+    },
+    "P": {
+      "core_summary_fields_match_frozen_independent_review": true,
+      "annual_rows": 7,
+      "product_rows": 19,
+      "closed_segment_rows": 307,
+      "all_table_totals_match": true,
+      "entry_risk_direct_source_SHA_present": true,
+      "actual165_margin_and_legacy110_distinguished": true
+    }
+  },
+  "bridge_matches_frozen_independent_review": true,
+  "figure_visual_review": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2_history_equity_drawdown.png",
+    "viewed": true,
+    "readable": true,
+    "date_aware_starts": true,
+    "distinct_N2015_P2020_labels": true,
+    "offline_no_promotion_daily_open_zero_commission_labels": true,
+    "drawdown_formula_includes_initial_capital": true,
+    "nominal_equity_not_normalized_same2020_start": true
+  },
+  "unresolved_P0": [],
+  "unresolved_P1": [],
+  "limits": "仅派生交付复核，不改变Stage023对历史映射/供应商差异/非PIT-OOS/零佣金/容量不足和真实保证金超100%的既有限制。",
+  "sha256_bindings": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage026_build_artifacts.py": "51a301792b338b3d2329075c210c1a7146dd353e9912bfd159cad982d99eb8f1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage026_build_artifacts_v2.py": "c112eaba554688a0a2ac5bb402a68254a28e06edf98df5b36145c48c903bae91",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage026_risk_report.py": "f4919e748b654d7bb060e10773001f6ce07d13bf85cd541e75829f3f666c5bde",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage026_artifact_attempt001_failure.json": "bfb93e4e59beb9af044e610352321891c18a6eb46c0123914350cc86f86bb391",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage026_report_red.log": "0762649f1d2026b8a6434b2788265dffcfea3f5ecf952272b7b0dbbc5a8f4354",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage026_report_green.log": "bdadea29f4ea377a28f4938763fcd78dc3e36e2047589861c034ae7c412a3ef3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage026_report_v2_build.log": "c3dfb913628ad12ed9fc943587971f94fa9061266ce1fbb204523a24e9297517",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2/comparison.json": "ed33bf90c6077cd345fac8f882b1fc6843a3d8fa5d18de074b9cf4de48c3847f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage023_fresh_independent_review.json": "772686efebb6d4472360314948d51c0129fa36e57959e79554448a4dc27e6398",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage023_fresh_independent_review.md": "c151514978c2350658def2974cd23ae350ff1c0c1a3a7f4e4cf5567c0ffb01e1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2_history_equity_drawdown.png": "14b43fae9bb8829816f7c89fd784a8e8a3044c1a91e0572337635f68e6ca2ab8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2/products.csv": "f9cdcb279de2aa191538daf8eb6ada7dcc694aaffe713dc7ae0f26697e583d43",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2/closed_fifo_segments.csv": "0f7658e82f4f1f937309f6017391c92ec360046e6d1baa82ae3119687040d606",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage026_v2/annual.csv": "93b6cb64c2bd6f37acd3b5271e276fe78ec65d2f89ea805110bf961ec51ade81"
+  }
+}
