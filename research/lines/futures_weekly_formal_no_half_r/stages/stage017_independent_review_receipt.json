@@ -1,0 +1,14 @@
+{
+  "schema": "stage017_independent_review_receipt_v1",
+  "recorded_by": "root",
+  "reviewer": "/root/fullmarket_data_audit",
+  "evidence_channel": "collaboration message and final answer",
+  "recorded_at": "2026-10-23T18:34:54.243849+08:00",
+  "verdict": "PASS_COUNTS_AND_CAP_SEMANTICS",
+  "K_actual_cap": 4,
+  "K_concurrent_limit_candidates": 4,
+  "H_concurrent_limit_candidates": 4,
+  "K_close_at_four_days": 22,
+  "K_max_close_position_count": 4,
+  "limitations": "Final candidate skip reason only; not full raw signal panel; no strategy rerun or counterfactual performance."
+}

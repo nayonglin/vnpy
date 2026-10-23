@@ -1,0 +1,9 @@
+arm,signal_date,product_vt_symbol,contract_vt_symbol,direction,signal,active_positions_before,remaining_slots,candidate_index
+K,2020-07-10,ru.SHFE,ru2009.SHFE,long,long_case2,4,0,28
+K,2021-02-26,rb.SHFE,rb2105.SHFE,long,long_case1a,4,0,52
+K,2023-09-01,ru.SHFE,ru2401.SHFE,long,long_case2,4,0,178
+K,2025-03-21,ru.SHFE,ru2505.SHFE,short,short_case1a,4,0,265
+H,2020-07-10,ru.SHFE,ru2009.SHFE,long,long_case2,4,0,29
+H,2020-11-20,sp.SHFE,sp2101.SHFE,long,long_case1a,4,0,42
+H,2021-02-26,rb.SHFE,rb2105.SHFE,long,long_case1a,4,0,53
+H,2021-02-26,ru.SHFE,ru2105.SHFE,long,long_case3,4,0,54

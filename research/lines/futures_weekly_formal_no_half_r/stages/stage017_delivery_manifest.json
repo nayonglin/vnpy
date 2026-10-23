@@ -1,0 +1,19 @@
+{
+  "schema": "stage017_four_position_limit_delivery_v1",
+  "financial_replays": 0,
+  "strategy_changes": 0,
+  "independent_verdict": "PASS_COUNTS_AND_CAP_SEMANTICS",
+  "file_count": 10,
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/actual_strategy_settings.json": "72539839e9243d49ca82beee24bb2f81e74ec88677c0f828888e0e851e90e784",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/entry_candidates.csv": "0c796fb4f2e99411c6dbd2c77514e7258363c31297e9be885d84ac036ea3a382",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/positions.csv": "c4e11525d1cfb1b52dd503137fffafb88123f74e182f6ff672b7c2f674b5dac2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/actual_strategy_settings.json": "425d7010b151ffe676b8469e4cdea4c1d8655137f40229e464723de9d726fc91",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/entry_candidates.csv": "9cbf14d91627c5aab85fbd769fb516e682d9b0dccfb596504fed1f8d7c9af9bf",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/positions.csv": "242c3b6a8cc303207cc92b5bb7cc8206b06949ef3e67dfc24822273ec933f586",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage017/concurrent_limit_rejections.csv": "b6a022466545683d873ddef775bccb5636279574db34c714719d1d2792d69efd",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage017/source_manifest.json": "84770e84ce90e30683c0ec84649f58460416303c900669a7c80a82be9badf919",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage017_independent_review_receipt.json": "a12d92fffdf6914726778aa510bfbb95682212899f2a88acd92c20a74d0faf13",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261023_1834_stage017_four_position_limit_audit.md": "20beba4d65bf27d7c5a144a3b416a49ba609d5e8c2ec07f61880d18008644c22"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-23T18:34:16.684376+08:00",
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/actual_strategy_settings.json": "72539839e9243d49ca82beee24bb2f81e74ec88677c0f828888e0e851e90e784",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/entry_candidates.csv": "0c796fb4f2e99411c6dbd2c77514e7258363c31297e9be885d84ac036ea3a382",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/positions.csv": "c4e11525d1cfb1b52dd503137fffafb88123f74e182f6ff672b7c2f674b5dac2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/actual_strategy_settings.json": "425d7010b151ffe676b8469e4cdea4c1d8655137f40229e464723de9d726fc91",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/entry_candidates.csv": "9cbf14d91627c5aab85fbd769fb516e682d9b0dccfb596504fed1f8d7c9af9bf",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/positions.csv": "242c3b6a8cc303207cc92b5bb7cc8206b06949ef3e67dfc24822273ec933f586"
+  },
+  "new_financial_replays": 0
+}
