@@ -1,0 +1,999 @@
+{
+  "schema": "stage016_surge_independent_review_v1",
+  "verdict": "PASS_FROZEN_LEDGER_ATTRIBUTION",
+  "financial_strategy_replays": 0,
+  "new_downloads": 0,
+  "end_date": "2026-10-22",
+  "window_start_dates": [
+    "2026-09-01",
+    "2026-09-28"
+  ],
+  "boundary": "Inclusive trading-date windows; baseline is the preceding actual account trading day close. Daily positions.net_pnl contains mark-to-market change less modeled slippage and commission. This is an accounting decomposition, not marginal causal alpha or a re-funded standalone strategy.",
+  "arms": {
+    "K": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001",
+      "windows": {
+        "2026-09-01": {
+          "start_inclusive": "2026-09-01",
+          "end_inclusive": "2026-10-22",
+          "baseline_close_date": "2026-08-31",
+          "baseline_equity": 868250.0,
+          "end_equity": 1544580.0,
+          "equity_gain": 676330.0,
+          "window_return_pct": 77.89576734811402,
+          "daily_net_sum": 676330.0,
+          "contract_net_sum": 676330.0,
+          "episode_net_sum": 676330.0,
+          "baseline_open_positions": 0,
+          "trading_days": 32,
+          "closed_episode_count": 4,
+          "open_episode_count": 3,
+          "all_episode_count": 7,
+          "closed_episode_window_net": 91500.0,
+          "open_episode_window_net": 584830.0,
+          "lc_net": 473120.0,
+          "lc_share_of_net_gain_pct": 69.95401653039197,
+          "per_product": [
+            {
+              "product": "lc.GFEX",
+              "net_pnl": 473120.0,
+              "share_of_total_net_pct": 69.95401653039197
+            },
+            {
+              "product": "SA.CZCE",
+              "net_pnl": 100640.0,
+              "share_of_total_net_pct": 14.880309907885202
+            },
+            {
+              "product": "fu.SHFE",
+              "net_pnl": 71940.0,
+              "share_of_total_net_pct": 10.636819304185826
+            },
+            {
+              "product": "MA.CZCE",
+              "net_pnl": 41160.0,
+              "share_of_total_net_pct": 6.085786524329839
+            },
+            {
+              "product": "rb.SHFE",
+              "net_pnl": 11070.0,
+              "share_of_total_net_pct": 1.6367749471411885
+            },
+            {
+              "product": "SH.CZCE",
+              "net_pnl": -3600.0,
+              "share_of_total_net_pct": -0.5322845356556711
+            },
+            {
+              "product": "AP.CZCE",
+              "net_pnl": -18000.0,
+              "share_of_total_net_pct": -2.661422678278355
+            }
+          ],
+          "per_contract": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "net_pnl": 473120.0,
+              "share_of_total_net_pct": 69.95401653039197
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "net_pnl": 100640.0,
+              "share_of_total_net_pct": 14.880309907885202
+            },
+            {
+              "vt_symbol": "fu2611.SHFE",
+              "net_pnl": 71940.0,
+              "share_of_total_net_pct": 10.636819304185826
+            },
+            {
+              "vt_symbol": "MA610.CZCE",
+              "net_pnl": 41160.0,
+              "share_of_total_net_pct": 6.085786524329839
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "net_pnl": 11070.0,
+              "share_of_total_net_pct": 1.6367749471411885
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "net_pnl": -3600.0,
+              "share_of_total_net_pct": -0.5322845356556711
+            },
+            {
+              "vt_symbol": "AP701.CZCE",
+              "net_pnl": -18000.0,
+              "share_of_total_net_pct": -2.661422678278355
+            }
+          ]
+        },
+        "2026-09-28": {
+          "start_inclusive": "2026-09-28",
+          "end_inclusive": "2026-10-22",
+          "baseline_close_date": "2026-09-24",
+          "baseline_equity": 963350.0,
+          "end_equity": 1544580.0,
+          "equity_gain": 581230.0,
+          "window_return_pct": 60.334250272486635,
+          "daily_net_sum": 581230.0,
+          "contract_net_sum": 581230.0,
+          "episode_net_sum": 581230.0,
+          "baseline_open_positions": 0,
+          "trading_days": 14,
+          "closed_episode_count": 1,
+          "open_episode_count": 3,
+          "all_episode_count": 4,
+          "closed_episode_window_net": -3600.0,
+          "open_episode_window_net": 584830.0,
+          "lc_net": 473120.0,
+          "lc_share_of_net_gain_pct": 81.39979010030453,
+          "per_product": [
+            {
+              "product": "lc.GFEX",
+              "net_pnl": 473120.0,
+              "share_of_total_net_pct": 81.39979010030453
+            },
+            {
+              "product": "SA.CZCE",
+              "net_pnl": 100640.0,
+              "share_of_total_net_pct": 17.315004387247733
+            },
+            {
+              "product": "rb.SHFE",
+              "net_pnl": 11070.0,
+              "share_of_total_net_pct": 1.9045816630249643
+            },
+            {
+              "product": "SH.CZCE",
+              "net_pnl": -3600.0,
+              "share_of_total_net_pct": -0.6193761505772242
+            }
+          ],
+          "per_contract": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "net_pnl": 473120.0,
+              "share_of_total_net_pct": 81.39979010030453
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "net_pnl": 100640.0,
+              "share_of_total_net_pct": 17.315004387247733
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "net_pnl": 11070.0,
+              "share_of_total_net_pct": 1.9045816630249643
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "net_pnl": -3600.0,
+              "share_of_total_net_pct": -0.6193761505772242
+            }
+          ]
+        }
+      },
+      "episodes": [
+        {
+          "episode_id": "AP701.CZCE#1",
+          "vt_symbol": "AP701.CZCE",
+          "product": "AP.CZCE",
+          "direction": -1,
+          "entry_date": "2026-09-07",
+          "close_date": "2026-09-08",
+          "position": 0.0,
+          "cash_delta": -18000.0,
+          "total_slippage": 480.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.443",
+              "order_id": "BACKTESTING.476",
+              "trading_date": "2026-09-07",
+              "datetime": "2026-09-07 09:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 7375.0,
+              "volume": 24.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.444",
+              "order_id": "BACKTESTING.477",
+              "trading_date": "2026-09-08",
+              "datetime": "2026-09-08 09:00:00+08:00",
+              "direction": "多",
+              "offset": "平",
+              "price": 7448.0,
+              "volume": 24.0,
+              "exit_reason": "short_base_stop"
+            }
+          ],
+          "closed_net": -18000.0,
+          "closed_volume": 24.0,
+          "status": "closed",
+          "end_date": "2026-09-08",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 24.0,
+          "remaining_volume": 0.0,
+          "last_mark": 7475.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": -18000.0,
+          "trade_cash_plus_mark_net": -18000.0,
+          "positions_daily_rows": 2,
+          "window_net_contributions": {
+            "2026-09-01": -18000.0,
+            "2026-09-28": 0.0
+          }
+        },
+        {
+          "episode_id": "MA610.CZCE#1",
+          "vt_symbol": "MA610.CZCE",
+          "product": "MA.CZCE",
+          "direction": 1,
+          "entry_date": "2026-09-14",
+          "close_date": "2026-09-21",
+          "position": 0.0,
+          "cash_delta": 41160.0,
+          "total_slippage": 840.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.445",
+              "order_id": "BACKTESTING.478",
+              "trading_date": "2026-09-14",
+              "datetime": "2026-09-11 21:00:00+08:00",
+              "direction": "多",
+              "offset": "开",
+              "price": 3361.0,
+              "volume": 42.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.448",
+              "order_id": "BACKTESTING.481",
+              "trading_date": "2026-09-21",
+              "datetime": "2026-09-18 21:00:00+08:00",
+              "direction": "空",
+              "offset": "平",
+              "price": 3461.0,
+              "volume": 42.0,
+              "exit_reason": "long_base_stop"
+            }
+          ],
+          "closed_net": 41160.0,
+          "closed_volume": 42.0,
+          "status": "closed",
+          "end_date": "2026-09-21",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 42.0,
+          "remaining_volume": 0.0,
+          "last_mark": 3488.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": 41160.0,
+          "trade_cash_plus_mark_net": 41160.0,
+          "positions_daily_rows": 6,
+          "window_net_contributions": {
+            "2026-09-01": 41160.0,
+            "2026-09-28": 0.0
+          }
+        },
+        {
+          "episode_id": "fu2611.SHFE#1",
+          "vt_symbol": "fu2611.SHFE",
+          "product": "fu.SHFE",
+          "direction": 1,
+          "entry_date": "2026-09-14",
+          "close_date": "2026-09-15",
+          "position": 0.0,
+          "cash_delta": 71940.0,
+          "total_slippage": 660.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.446",
+              "order_id": "BACKTESTING.479",
+              "trading_date": "2026-09-14",
+              "datetime": "2026-09-11 21:00:00+08:00",
+              "direction": "多",
+              "offset": "开",
+              "price": 4230.0,
+              "volume": 33.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.447",
+              "order_id": "BACKTESTING.480",
+              "trading_date": "2026-09-15",
+              "datetime": "2026-09-14 21:00:00+08:00",
+              "direction": "空",
+              "offset": "平",
+              "price": 4450.0,
+              "volume": 33.0,
+              "exit_reason": "long_risk_cluster_heat_deleverage"
+            }
+          ],
+          "closed_net": 71940.0,
+          "closed_volume": 33.0,
+          "status": "closed",
+          "end_date": "2026-09-15",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 33.0,
+          "remaining_volume": 0.0,
+          "last_mark": 4476.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": 71940.0,
+          "trade_cash_plus_mark_net": 71940.0,
+          "positions_daily_rows": 2,
+          "window_net_contributions": {
+            "2026-09-01": 71940.0,
+            "2026-09-28": 0.0
+          }
+        },
+        {
+          "episode_id": "lc2701.GFEX#1",
+          "vt_symbol": "lc2701.GFEX",
+          "product": "lc.GFEX",
+          "direction": -1,
+          "entry_date": "2026-09-28",
+          "close_date": null,
+          "position": -16.0,
+          "cash_delta": 1980000.0,
+          "total_slippage": 800.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.449",
+              "order_id": "BACKTESTING.482",
+              "trading_date": "2026-09-28",
+              "datetime": "2026-09-28 09:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 123800.0,
+              "volume": 16.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 16.0,
+          "remaining_volume": 16.0,
+          "last_mark": 94180.0,
+          "unrealized_gross": 473920.0,
+          "remaining_entry_slippage": 800.0,
+          "unrealized_net": 473120.0,
+          "lifetime_net_pnl": 473120.0,
+          "trade_cash_plus_mark_net": 473120.0,
+          "positions_daily_rows": 14,
+          "window_net_contributions": {
+            "2026-09-01": 473120.0,
+            "2026-09-28": 473120.0
+          }
+        },
+        {
+          "episode_id": "SH611.CZCE#1",
+          "vt_symbol": "SH611.CZCE",
+          "product": "SH.CZCE",
+          "direction": -1,
+          "entry_date": "2026-10-08",
+          "close_date": "2026-10-20",
+          "position": 0.0,
+          "cash_delta": -3600.0,
+          "total_slippage": 1200.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.450",
+              "order_id": "BACKTESTING.483",
+              "trading_date": "2026-10-08",
+              "datetime": "2026-10-08 09:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 1800.0,
+              "volume": 20.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.453",
+              "order_id": "BACKTESTING.486",
+              "trading_date": "2026-10-20",
+              "datetime": "2026-10-19 21:00:00+08:00",
+              "direction": "多",
+              "offset": "平",
+              "price": 1804.0,
+              "volume": 20.0,
+              "exit_reason": "short_base_stop"
+            }
+          ],
+          "closed_net": -3600.0,
+          "closed_volume": 20.0,
+          "status": "closed",
+          "end_date": "2026-10-20",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 20.0,
+          "remaining_volume": 0.0,
+          "last_mark": 1791.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": -3600.0,
+          "trade_cash_plus_mark_net": -3600.0,
+          "positions_daily_rows": 9,
+          "window_net_contributions": {
+            "2026-09-01": -3600.0,
+            "2026-09-28": -3600.0
+          }
+        },
+        {
+          "episode_id": "SA701.CZCE#1",
+          "vt_symbol": "SA701.CZCE",
+          "product": "SA.CZCE",
+          "direction": -1,
+          "entry_date": "2026-10-12",
+          "close_date": null,
+          "position": -68.0,
+          "cash_delta": 1372240.0,
+          "total_slippage": 1360.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.451",
+              "order_id": "BACKTESTING.484",
+              "trading_date": "2026-10-12",
+              "datetime": "2026-10-09 21:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 1010.0,
+              "volume": 68.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 68.0,
+          "remaining_volume": 68.0,
+          "last_mark": 935.0,
+          "unrealized_gross": 102000.0,
+          "remaining_entry_slippage": 1360.0,
+          "unrealized_net": 100640.0,
+          "lifetime_net_pnl": 100640.0,
+          "trade_cash_plus_mark_net": 100640.0,
+          "positions_daily_rows": 9,
+          "window_net_contributions": {
+            "2026-09-01": 100640.0,
+            "2026-09-28": 100640.0
+          }
+        },
+        {
+          "episode_id": "rb2701.SHFE#1",
+          "vt_symbol": "rb2701.SHFE",
+          "product": "rb.SHFE",
+          "direction": -1,
+          "entry_date": "2026-10-19",
+          "close_date": null,
+          "position": -123.0,
+          "cash_delta": 3773640.0,
+          "total_slippage": 1230.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.452",
+              "order_id": "BACKTESTING.485",
+              "trading_date": "2026-10-19",
+              "datetime": "2026-10-16 21:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 3069.0,
+              "volume": 123.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 123.0,
+          "remaining_volume": 123.0,
+          "last_mark": 3059.0,
+          "unrealized_gross": 12300.0,
+          "remaining_entry_slippage": 1230.0,
+          "unrealized_net": 11070.0,
+          "lifetime_net_pnl": 11070.0,
+          "trade_cash_plus_mark_net": 11070.0,
+          "positions_daily_rows": 4,
+          "window_net_contributions": {
+            "2026-09-01": 11070.0,
+            "2026-09-28": 11070.0
+          }
+        }
+      ]
+    },
+    "H": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001",
+      "windows": {
+        "2026-09-01": {
+          "start_inclusive": "2026-09-01",
+          "end_inclusive": "2026-10-22",
+          "baseline_close_date": "2026-08-31",
+          "baseline_equity": 541470.0000000001,
+          "end_equity": 979390.0,
+          "equity_gain": 437919.9999999999,
+          "window_return_pct": 80.87613348846654,
+          "daily_net_sum": 437920.0,
+          "contract_net_sum": 437920.0,
+          "episode_net_sum": 437920.0,
+          "baseline_open_positions": 0,
+          "trading_days": 32,
+          "closed_episode_count": 3,
+          "open_episode_count": 3,
+          "all_episode_count": 6,
+          "closed_episode_window_net": 70080.0,
+          "open_episode_window_net": 367840.0,
+          "lc_net": 295700.0,
+          "lc_share_of_net_gain_pct": 67.52374862988675,
+          "per_product": [
+            {
+              "product": "lc.GFEX",
+              "net_pnl": 295700.0,
+              "share_of_total_net_pct": 67.52374862988675
+            },
+            {
+              "product": "SA.CZCE",
+              "net_pnl": 65120.0,
+              "share_of_total_net_pct": 14.870295944464745
+            },
+            {
+              "product": "fu.SHFE",
+              "net_pnl": 45780.0,
+              "share_of_total_net_pct": 10.453964194373404
+            },
+            {
+              "product": "MA.CZCE",
+              "net_pnl": 26460.0,
+              "share_of_total_net_pct": 6.0421994884910495
+            },
+            {
+              "product": "rb.SHFE",
+              "net_pnl": 7020.0,
+              "share_of_total_net_pct": 1.6030325173547684
+            },
+            {
+              "product": "SH.CZCE",
+              "net_pnl": -2160.0,
+              "share_of_total_net_pct": -0.4932407745706979
+            }
+          ],
+          "per_contract": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "net_pnl": 295700.0,
+              "share_of_total_net_pct": 67.52374862988675
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "net_pnl": 65120.0,
+              "share_of_total_net_pct": 14.870295944464745
+            },
+            {
+              "vt_symbol": "fu2611.SHFE",
+              "net_pnl": 45780.0,
+              "share_of_total_net_pct": 10.453964194373404
+            },
+            {
+              "vt_symbol": "MA610.CZCE",
+              "net_pnl": 26460.0,
+              "share_of_total_net_pct": 6.0421994884910495
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "net_pnl": 7020.0,
+              "share_of_total_net_pct": 1.6030325173547684
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "net_pnl": -2160.0,
+              "share_of_total_net_pct": -0.4932407745706979
+            }
+          ]
+        },
+        "2026-09-28": {
+          "start_inclusive": "2026-09-28",
+          "end_inclusive": "2026-10-22",
+          "baseline_close_date": "2026-09-24",
+          "baseline_equity": 613710.0000000001,
+          "end_equity": 979390.0,
+          "equity_gain": 365679.9999999999,
+          "window_return_pct": 59.58514607876681,
+          "daily_net_sum": 365680.0,
+          "contract_net_sum": 365680.0,
+          "episode_net_sum": 365680.0,
+          "baseline_open_positions": 0,
+          "trading_days": 14,
+          "closed_episode_count": 1,
+          "open_episode_count": 3,
+          "all_episode_count": 4,
+          "closed_episode_window_net": -2160.0,
+          "open_episode_window_net": 367840.0,
+          "lc_net": 295700.0,
+          "lc_share_of_net_gain_pct": 80.86304966090574,
+          "per_product": [
+            {
+              "product": "lc.GFEX",
+              "net_pnl": 295700.0,
+              "share_of_total_net_pct": 80.86304966090574
+            },
+            {
+              "product": "SA.CZCE",
+              "net_pnl": 65120.0,
+              "share_of_total_net_pct": 17.807919492452424
+            },
+            {
+              "product": "rb.SHFE",
+              "net_pnl": 7020.0,
+              "share_of_total_net_pct": 1.91971122292715
+            },
+            {
+              "product": "SH.CZCE",
+              "net_pnl": -2160.0,
+              "share_of_total_net_pct": -0.5906803762852769
+            }
+          ],
+          "per_contract": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "net_pnl": 295700.0,
+              "share_of_total_net_pct": 80.86304966090574
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "net_pnl": 65120.0,
+              "share_of_total_net_pct": 17.807919492452424
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "net_pnl": 7020.0,
+              "share_of_total_net_pct": 1.91971122292715
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "net_pnl": -2160.0,
+              "share_of_total_net_pct": -0.5906803762852769
+            }
+          ]
+        }
+      },
+      "episodes": [
+        {
+          "episode_id": "MA610.CZCE#1",
+          "vt_symbol": "MA610.CZCE",
+          "product": "MA.CZCE",
+          "direction": 1,
+          "entry_date": "2026-09-14",
+          "close_date": "2026-09-21",
+          "position": 0.0,
+          "cash_delta": 26460.0,
+          "total_slippage": 540.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.400",
+              "order_id": "BACKTESTING.424",
+              "trading_date": "2026-09-14",
+              "datetime": "2026-09-11 21:00:00+08:00",
+              "direction": "多",
+              "offset": "开",
+              "price": 3361.0,
+              "volume": 27.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.403",
+              "order_id": "BACKTESTING.427",
+              "trading_date": "2026-09-21",
+              "datetime": "2026-09-18 21:00:00+08:00",
+              "direction": "空",
+              "offset": "平",
+              "price": 3461.0,
+              "volume": 27.0,
+              "exit_reason": "long_base_stop"
+            }
+          ],
+          "closed_net": 26460.0,
+          "closed_volume": 27.0,
+          "status": "closed",
+          "end_date": "2026-09-21",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 27.0,
+          "remaining_volume": 0.0,
+          "last_mark": 3488.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": 26460.0,
+          "trade_cash_plus_mark_net": 26460.0,
+          "positions_daily_rows": 6,
+          "window_net_contributions": {
+            "2026-09-01": 26460.0,
+            "2026-09-28": 0.0
+          }
+        },
+        {
+          "episode_id": "fu2611.SHFE#1",
+          "vt_symbol": "fu2611.SHFE",
+          "product": "fu.SHFE",
+          "direction": 1,
+          "entry_date": "2026-09-14",
+          "close_date": "2026-09-15",
+          "position": 0.0,
+          "cash_delta": 45780.0,
+          "total_slippage": 420.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.401",
+              "order_id": "BACKTESTING.425",
+              "trading_date": "2026-09-14",
+              "datetime": "2026-09-11 21:00:00+08:00",
+              "direction": "多",
+              "offset": "开",
+              "price": 4230.0,
+              "volume": 21.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.402",
+              "order_id": "BACKTESTING.426",
+              "trading_date": "2026-09-15",
+              "datetime": "2026-09-14 21:00:00+08:00",
+              "direction": "空",
+              "offset": "平",
+              "price": 4450.0,
+              "volume": 21.0,
+              "exit_reason": "long_risk_cluster_heat_deleverage"
+            }
+          ],
+          "closed_net": 45780.0,
+          "closed_volume": 21.0,
+          "status": "closed",
+          "end_date": "2026-09-15",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 21.0,
+          "remaining_volume": 0.0,
+          "last_mark": 4476.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": 45780.0,
+          "trade_cash_plus_mark_net": 45780.0,
+          "positions_daily_rows": 2,
+          "window_net_contributions": {
+            "2026-09-01": 45780.0,
+            "2026-09-28": 0.0
+          }
+        },
+        {
+          "episode_id": "lc2701.GFEX#1",
+          "vt_symbol": "lc2701.GFEX",
+          "product": "lc.GFEX",
+          "direction": -1,
+          "entry_date": "2026-09-28",
+          "close_date": null,
+          "position": -10.0,
+          "cash_delta": 1237500.0,
+          "total_slippage": 500.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.404",
+              "order_id": "BACKTESTING.428",
+              "trading_date": "2026-09-28",
+              "datetime": "2026-09-28 09:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 123800.0,
+              "volume": 10.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 10.0,
+          "remaining_volume": 10.0,
+          "last_mark": 94180.0,
+          "unrealized_gross": 296200.0,
+          "remaining_entry_slippage": 500.0,
+          "unrealized_net": 295700.0,
+          "lifetime_net_pnl": 295700.0,
+          "trade_cash_plus_mark_net": 295700.0,
+          "positions_daily_rows": 14,
+          "window_net_contributions": {
+            "2026-09-01": 295700.0,
+            "2026-09-28": 295700.0
+          }
+        },
+        {
+          "episode_id": "SH611.CZCE#1",
+          "vt_symbol": "SH611.CZCE",
+          "product": "SH.CZCE",
+          "direction": -1,
+          "entry_date": "2026-10-08",
+          "close_date": "2026-10-20",
+          "position": 0.0,
+          "cash_delta": -2160.0,
+          "total_slippage": 720.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.405",
+              "order_id": "BACKTESTING.429",
+              "trading_date": "2026-10-08",
+              "datetime": "2026-10-08 09:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 1800.0,
+              "volume": 12.0,
+              "exit_reason": null
+            },
+            {
+              "trade_id": "BACKTESTING.408",
+              "order_id": "BACKTESTING.432",
+              "trading_date": "2026-10-20",
+              "datetime": "2026-10-19 21:00:00+08:00",
+              "direction": "多",
+              "offset": "平",
+              "price": 1804.0,
+              "volume": 12.0,
+              "exit_reason": "short_base_stop"
+            }
+          ],
+          "closed_net": -2160.0,
+          "closed_volume": 12.0,
+          "status": "closed",
+          "end_date": "2026-10-20",
+          "entry_fill_count": 1,
+          "exit_fill_count": 1,
+          "opened_volume": 12.0,
+          "remaining_volume": 0.0,
+          "last_mark": 1791.0,
+          "unrealized_gross": 0,
+          "remaining_entry_slippage": 0.0,
+          "unrealized_net": 0.0,
+          "lifetime_net_pnl": -2160.0,
+          "trade_cash_plus_mark_net": -2160.0,
+          "positions_daily_rows": 9,
+          "window_net_contributions": {
+            "2026-09-01": -2160.0,
+            "2026-09-28": -2160.0
+          }
+        },
+        {
+          "episode_id": "SA701.CZCE#1",
+          "vt_symbol": "SA701.CZCE",
+          "product": "SA.CZCE",
+          "direction": -1,
+          "entry_date": "2026-10-12",
+          "close_date": null,
+          "position": -44.0,
+          "cash_delta": 887920.0,
+          "total_slippage": 880.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.406",
+              "order_id": "BACKTESTING.430",
+              "trading_date": "2026-10-12",
+              "datetime": "2026-10-09 21:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 1010.0,
+              "volume": 44.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 44.0,
+          "remaining_volume": 44.0,
+          "last_mark": 935.0,
+          "unrealized_gross": 66000.0,
+          "remaining_entry_slippage": 880.0,
+          "unrealized_net": 65120.0,
+          "lifetime_net_pnl": 65120.0,
+          "trade_cash_plus_mark_net": 65120.0,
+          "positions_daily_rows": 9,
+          "window_net_contributions": {
+            "2026-09-01": 65120.0,
+            "2026-09-28": 65120.0
+          }
+        },
+        {
+          "episode_id": "rb2701.SHFE#1",
+          "vt_symbol": "rb2701.SHFE",
+          "product": "rb.SHFE",
+          "direction": -1,
+          "entry_date": "2026-10-19",
+          "close_date": null,
+          "position": -78.0,
+          "cash_delta": 2393040.0,
+          "total_slippage": 780.0,
+          "trades": [
+            {
+              "trade_id": "BACKTESTING.407",
+              "order_id": "BACKTESTING.431",
+              "trading_date": "2026-10-19",
+              "datetime": "2026-10-16 21:00:00+08:00",
+              "direction": "空",
+              "offset": "开",
+              "price": 3069.0,
+              "volume": 78.0,
+              "exit_reason": null
+            }
+          ],
+          "closed_net": 0.0,
+          "closed_volume": 0.0,
+          "status": "open_at_end",
+          "end_date": "2026-10-22",
+          "entry_fill_count": 1,
+          "exit_fill_count": 0,
+          "opened_volume": 78.0,
+          "remaining_volume": 78.0,
+          "last_mark": 3059.0,
+          "unrealized_gross": 7800.0,
+          "remaining_entry_slippage": 780.0,
+          "unrealized_net": 7020.0,
+          "lifetime_net_pnl": 7020.0,
+          "trade_cash_plus_mark_net": 7020.0,
+          "positions_daily_rows": 4,
+          "window_net_contributions": {
+            "2026-09-01": 7020.0,
+            "2026-09-28": 7020.0
+          }
+        }
+      ]
+    }
+  },
+  "sources_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/daily.csv": "6ac1a4d9c83e8ed5730f67f5b9855532fd6089780fc90d222fbda276a1723902",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/trades.csv": "84620e2bce029238c0b3d55a04c5bd70ce56e8bdf466aa4aa504625f552f61e3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/positions.csv": "c4e11525d1cfb1b52dd503137fffafb88123f74e182f6ff672b7c2f674b5dac2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/effective_parameters.json": "aecbeae238fad8e86083db33d39bf5619c7c2d1831b250242fcd96c7d7e4e48d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/terminal.json": "d749c8b7202f32033ae46dcd583d436ab9e81429d64adf97628ccd5288e8c682",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/daily.csv": "a7620ab856f28ea0b72e8eb42aea4b9f6602679de2b66524fbd9ee45dd076b9d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/trades.csv": "d0b1b33eed0052aca52d55973650988b82394f799404de5231202f97a8daecc4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/positions.csv": "242c3b6a8cc303207cc92b5bb7cc8206b06949ef3e67dfc24822273ec933f586",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/effective_parameters.json": "aecbeae238fad8e86083db33d39bf5619c7c2d1831b250242fcd96c7d7e4e48d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/terminal.json": "5735f6e169092907592d941ac44c91dbba821f03c25cbd2ac051c066b4da384e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage015_HK_independent_review.json": "a13ecbef4b457e3497a8d723ad307d757613f69f9c0ffd8cfb74898e93e64d03",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage013_JH_independent_review.json": "ff4bedf51265d77e8ad9f4717633b2a6f2dd4ce04159f8a56476fc0ad80557d4"
+  },
+  "generated_at_CST": "2026-10-23T16:50:21.936246+08:00",
+  "audit_script_sha256": "defaba3277d900358526af6f62e6bc2ec94e3e96eefd794e71315d623ca0fafd",
+  "primary_conclusion": "The late rise comprises multiple episodes; K is dominated by one lc2701 short entry16lots on2026-09-28, with no add or close through10-22, alongside SA/rb open shorts and a losing SH closed episode. Broader September window also includes completed MA/fu profits and an AP loss. Accounting attribution is not standalone marginal alpha.",
+  "prior_delivery_source_check": {
+    "archives_sha256": {
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage013_delivery_manifest.json": "e871d9a2dedf50bd749cc8990ff828476efdf0db98b00f32b0ef1ee62ade1039",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage015_delivery_manifest.json": "9ea884d9c42e5861185820d98ea4755159a2165ec67eec5b0f5f56d7b1133018"
+    },
+    "checked_source_files": 12,
+    "mismatches": []
+  }
+}

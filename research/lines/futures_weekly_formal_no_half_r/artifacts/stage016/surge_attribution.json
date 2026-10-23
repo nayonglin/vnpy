@@ -1,0 +1,572 @@
+{
+  "scope": "existing frozen ledger attribution only",
+  "new_financial_replays": 0,
+  "arms": {
+    "K": {
+      "windows": {
+        "2026-09-01": {
+          "start": "2026-09-01",
+          "end": "2026-10-22",
+          "baseline_date": "2026-08-31",
+          "start_equity": 868250.0,
+          "end_equity": 1544580.0,
+          "net_pnl": 676330.0,
+          "return_pct": 77.89576734811403,
+          "episode_count": 7,
+          "fill_count": 11,
+          "closed_episodes": 4,
+          "open_episodes": 3,
+          "closed_net": 91500.0,
+          "open_net": 584830.0,
+          "contracts": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "direction": "short",
+              "entry_date": "2026-09-28",
+              "entry_price": 123800.0,
+              "quantity": 16.0,
+              "multiplier": 1.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 94180.0,
+              "terminal_quantity": -16.0,
+              "gross_pnl": 473920.0,
+              "net_pnl": 473120.0,
+              "slippage": 800.0,
+              "net_share_pct": 69.95401653039197,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-12",
+              "entry_price": 1010.0,
+              "quantity": 68.0,
+              "multiplier": 20.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 935.0,
+              "terminal_quantity": -68.0,
+              "gross_pnl": 102000.0,
+              "net_pnl": 100640.0,
+              "slippage": 1360.0,
+              "net_share_pct": 14.880309907885202,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "fu2611.SHFE",
+              "direction": "long",
+              "entry_date": "2026-09-14",
+              "entry_price": 4230.0,
+              "quantity": 33.0,
+              "multiplier": 10.0,
+              "exit_date": "2026-09-15",
+              "exit_price": 4450.0,
+              "terminal_mark": 5868.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": 72600.0,
+              "net_pnl": 71940.0,
+              "slippage": 660.0,
+              "net_share_pct": 10.636819304185826,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "MA610.CZCE",
+              "direction": "long",
+              "entry_date": "2026-09-14",
+              "entry_price": 3361.0,
+              "quantity": 42.0,
+              "multiplier": 10.0,
+              "exit_date": "2026-09-21",
+              "exit_price": 3461.0,
+              "terminal_mark": 3550.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": 42000.0,
+              "net_pnl": 41160.0,
+              "slippage": 840.0,
+              "net_share_pct": 6.085786524329839,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "direction": "short",
+              "entry_date": "2026-10-19",
+              "entry_price": 3069.0,
+              "quantity": 123.0,
+              "multiplier": 10.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 3059.0,
+              "terminal_quantity": -123.0,
+              "gross_pnl": 12300.0,
+              "net_pnl": 11070.0,
+              "slippage": 1230.0,
+              "net_share_pct": 1.6367749471411885,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-08",
+              "entry_price": 1800.0,
+              "quantity": 20.0,
+              "multiplier": 30.0,
+              "exit_date": "2026-10-20",
+              "exit_price": 1804.0,
+              "terminal_mark": 1743.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": -2400.0,
+              "net_pnl": -3600.0,
+              "slippage": 1200.0,
+              "net_share_pct": -0.5322845356556711,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "AP701.CZCE",
+              "direction": "short",
+              "entry_date": "2026-09-07",
+              "entry_price": 7375.0,
+              "quantity": 24.0,
+              "multiplier": 10.0,
+              "exit_date": "2026-09-08",
+              "exit_price": 7448.0,
+              "terminal_mark": 5704.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": -17520.0,
+              "net_pnl": -18000.0,
+              "slippage": 480.0,
+              "net_share_pct": -2.661422678278355,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            }
+          ]
+        },
+        "2026-09-28": {
+          "start": "2026-09-28",
+          "end": "2026-10-22",
+          "baseline_date": "2026-09-24",
+          "start_equity": 963350.0,
+          "end_equity": 1544580.0,
+          "net_pnl": 581230.0,
+          "return_pct": 60.33425027248664,
+          "episode_count": 4,
+          "fill_count": 5,
+          "closed_episodes": 1,
+          "open_episodes": 3,
+          "closed_net": -3600.0,
+          "open_net": 584830.0,
+          "contracts": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "direction": "short",
+              "entry_date": "2026-09-28",
+              "entry_price": 123800.0,
+              "quantity": 16.0,
+              "multiplier": 1.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 94180.0,
+              "terminal_quantity": -16.0,
+              "gross_pnl": 473920.0,
+              "net_pnl": 473120.0,
+              "slippage": 800.0,
+              "net_share_pct": 81.39979010030453,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-12",
+              "entry_price": 1010.0,
+              "quantity": 68.0,
+              "multiplier": 20.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 935.0,
+              "terminal_quantity": -68.0,
+              "gross_pnl": 102000.0,
+              "net_pnl": 100640.0,
+              "slippage": 1360.0,
+              "net_share_pct": 17.315004387247733,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "direction": "short",
+              "entry_date": "2026-10-19",
+              "entry_price": 3069.0,
+              "quantity": 123.0,
+              "multiplier": 10.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 3059.0,
+              "terminal_quantity": -123.0,
+              "gross_pnl": 12300.0,
+              "net_pnl": 11070.0,
+              "slippage": 1230.0,
+              "net_share_pct": 1.9045816630249643,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-08",
+              "entry_price": 1800.0,
+              "quantity": 20.0,
+              "multiplier": 30.0,
+              "exit_date": "2026-10-20",
+              "exit_price": 1804.0,
+              "terminal_mark": 1743.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": -2400.0,
+              "net_pnl": -3600.0,
+              "slippage": 1200.0,
+              "net_share_pct": -0.6193761505772242,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            }
+          ]
+        }
+      },
+      "largest_up_days": [
+        {
+          "date": "2026-10-12",
+          "net_pnl": 232400.0,
+          "account_fill_count": 1,
+          "contributions": {
+            "lc2701.GFEX": 196160.0,
+            "SA701.CZCE": 32640.0,
+            "SH611.CZCE": 3600.0
+          }
+        },
+        {
+          "date": "2026-10-14",
+          "net_pnl": 124680.0,
+          "account_fill_count": 0,
+          "contributions": {
+            "lc2701.GFEX": 98560.0,
+            "SA701.CZCE": 23120.0,
+            "SH611.CZCE": 3000.0
+          }
+        },
+        {
+          "date": "2026-09-14",
+          "net_pnl": 82110.0,
+          "account_fill_count": 2,
+          "contributions": {
+            "fu2611.SHFE": 53130.0,
+            "MA610.CZCE": 28980.0
+          }
+        },
+        {
+          "date": "2026-09-28",
+          "net_pnl": 75360.0,
+          "account_fill_count": 1,
+          "contributions": {
+            "lc2701.GFEX": 75360.0
+          }
+        },
+        {
+          "date": "2026-10-15",
+          "net_pnl": 68800.0,
+          "account_fill_count": 0,
+          "contributions": {
+            "lc2701.GFEX": 33280.0,
+            "SH611.CZCE": 19200.0,
+            "SA701.CZCE": 16320.0
+          }
+        }
+      ],
+      "source_files_sha256": {
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/daily.csv": "6ac1a4d9c83e8ed5730f67f5b9855532fd6089780fc90d222fbda276a1723902",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/trades.csv": "84620e2bce029238c0b3d55a04c5bd70ce56e8bdf466aa4aa504625f552f61e3",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/positions.csv": "c4e11525d1cfb1b52dd503137fffafb88123f74e182f6ff672b7c2f674b5dac2",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/effective_parameters.json": "aecbeae238fad8e86083db33d39bf5619c7c2d1831b250242fcd96c7d7e4e48d",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/K_attempt001/metrics.json": "eca4b40a2de6ba1164eb9a894e96a950a0372b588da7f95a7dd91f6d59be7968"
+      }
+    },
+    "H": {
+      "windows": {
+        "2026-09-01": {
+          "start": "2026-09-01",
+          "end": "2026-10-22",
+          "baseline_date": "2026-08-31",
+          "start_equity": 541470.0000000001,
+          "end_equity": 979390.0,
+          "net_pnl": 437920.0,
+          "return_pct": 80.87613348846654,
+          "episode_count": 6,
+          "fill_count": 9,
+          "closed_episodes": 3,
+          "open_episodes": 3,
+          "closed_net": 70080.0,
+          "open_net": 367840.0,
+          "contracts": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "direction": "short",
+              "entry_date": "2026-09-28",
+              "entry_price": 123800.0,
+              "quantity": 10.0,
+              "multiplier": 1.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 94180.0,
+              "terminal_quantity": -10.0,
+              "gross_pnl": 296200.0,
+              "net_pnl": 295700.0,
+              "slippage": 500.0,
+              "net_share_pct": 67.52374862988674,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-12",
+              "entry_price": 1010.0,
+              "quantity": 44.0,
+              "multiplier": 20.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 935.0,
+              "terminal_quantity": -44.0,
+              "gross_pnl": 66000.0,
+              "net_pnl": 65120.0,
+              "slippage": 880.0,
+              "net_share_pct": 14.870295944464743,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "fu2611.SHFE",
+              "direction": "long",
+              "entry_date": "2026-09-14",
+              "entry_price": 4230.0,
+              "quantity": 21.0,
+              "multiplier": 10.0,
+              "exit_date": "2026-09-15",
+              "exit_price": 4450.0,
+              "terminal_mark": 5868.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": 46200.0,
+              "net_pnl": 45780.0,
+              "slippage": 420.0,
+              "net_share_pct": 10.453964194373402,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "MA610.CZCE",
+              "direction": "long",
+              "entry_date": "2026-09-14",
+              "entry_price": 3361.0,
+              "quantity": 27.0,
+              "multiplier": 10.0,
+              "exit_date": "2026-09-21",
+              "exit_price": 3461.0,
+              "terminal_mark": 3550.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": 27000.0,
+              "net_pnl": 26460.0,
+              "slippage": 540.0,
+              "net_share_pct": 6.042199488491049,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "direction": "short",
+              "entry_date": "2026-10-19",
+              "entry_price": 3069.0,
+              "quantity": 78.0,
+              "multiplier": 10.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 3059.0,
+              "terminal_quantity": -78.0,
+              "gross_pnl": 7800.0,
+              "net_pnl": 7020.0,
+              "slippage": 780.0,
+              "net_share_pct": 1.6030325173547681,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-08",
+              "entry_price": 1800.0,
+              "quantity": 12.0,
+              "multiplier": 30.0,
+              "exit_date": "2026-10-20",
+              "exit_price": 1804.0,
+              "terminal_mark": 1743.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": -1440.0,
+              "net_pnl": -2160.0,
+              "slippage": 720.0,
+              "net_share_pct": -0.49324077457069787,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            }
+          ]
+        },
+        "2026-09-28": {
+          "start": "2026-09-28",
+          "end": "2026-10-22",
+          "baseline_date": "2026-09-24",
+          "start_equity": 613710.0000000001,
+          "end_equity": 979390.0,
+          "net_pnl": 365680.0,
+          "return_pct": 59.58514607876681,
+          "episode_count": 4,
+          "fill_count": 5,
+          "closed_episodes": 1,
+          "open_episodes": 3,
+          "closed_net": -2160.0,
+          "open_net": 367840.0,
+          "contracts": [
+            {
+              "vt_symbol": "lc2701.GFEX",
+              "direction": "short",
+              "entry_date": "2026-09-28",
+              "entry_price": 123800.0,
+              "quantity": 10.0,
+              "multiplier": 1.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 94180.0,
+              "terminal_quantity": -10.0,
+              "gross_pnl": 296200.0,
+              "net_pnl": 295700.0,
+              "slippage": 500.0,
+              "net_share_pct": 80.8630496609057,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SA701.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-12",
+              "entry_price": 1010.0,
+              "quantity": 44.0,
+              "multiplier": 20.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 935.0,
+              "terminal_quantity": -44.0,
+              "gross_pnl": 66000.0,
+              "net_pnl": 65120.0,
+              "slippage": 880.0,
+              "net_share_pct": 17.807919492452417,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "rb2701.SHFE",
+              "direction": "short",
+              "entry_date": "2026-10-19",
+              "entry_price": 3069.0,
+              "quantity": 78.0,
+              "multiplier": 10.0,
+              "exit_date": null,
+              "exit_price": null,
+              "terminal_mark": 3059.0,
+              "terminal_quantity": -78.0,
+              "gross_pnl": 7800.0,
+              "net_pnl": 7020.0,
+              "slippage": 780.0,
+              "net_share_pct": 1.9197112229271494,
+              "fill_count": 1,
+              "independent_entry_episodes": 1
+            },
+            {
+              "vt_symbol": "SH611.CZCE",
+              "direction": "short",
+              "entry_date": "2026-10-08",
+              "entry_price": 1800.0,
+              "quantity": 12.0,
+              "multiplier": 30.0,
+              "exit_date": "2026-10-20",
+              "exit_price": 1804.0,
+              "terminal_mark": 1743.0,
+              "terminal_quantity": 0.0,
+              "gross_pnl": -1440.0,
+              "net_pnl": -2160.0,
+              "slippage": 720.0,
+              "net_share_pct": -0.5906803762852767,
+              "fill_count": 2,
+              "independent_entry_episodes": 1
+            }
+          ]
+        }
+      },
+      "largest_up_days": [
+        {
+          "date": "2026-10-12",
+          "net_pnl": 145880.0,
+          "account_fill_count": 1,
+          "contributions": {
+            "lc2701.GFEX": 122600.0,
+            "SA701.CZCE": 21120.0,
+            "SH611.CZCE": 2160.0
+          }
+        },
+        {
+          "date": "2026-10-14",
+          "net_pnl": 78360.0,
+          "account_fill_count": 0,
+          "contributions": {
+            "lc2701.GFEX": 61600.0,
+            "SA701.CZCE": 14960.0,
+            "SH611.CZCE": 1800.0
+          }
+        },
+        {
+          "date": "2026-09-14",
+          "net_pnl": 52440.0,
+          "account_fill_count": 2,
+          "contributions": {
+            "fu2611.SHFE": 33810.0,
+            "MA610.CZCE": 18630.0
+          }
+        },
+        {
+          "date": "2026-09-28",
+          "net_pnl": 47100.0,
+          "account_fill_count": 1,
+          "contributions": {
+            "lc2701.GFEX": 47100.0
+          }
+        },
+        {
+          "date": "2026-10-15",
+          "net_pnl": 42880.0,
+          "account_fill_count": 0,
+          "contributions": {
+            "lc2701.GFEX": 20800.0,
+            "SH611.CZCE": 11520.0,
+            "SA701.CZCE": 10560.0
+          }
+        }
+      ],
+      "source_files_sha256": {
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/daily.csv": "a7620ab856f28ea0b72e8eb42aea4b9f6602679de2b66524fbd9ee45dd076b9d",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/trades.csv": "d0b1b33eed0052aca52d55973650988b82394f799404de5231202f97a8daecc4",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/positions.csv": "242c3b6a8cc303207cc92b5bb7cc8206b06949ef3e67dfc24822273ec933f586",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/effective_parameters.json": "aecbeae238fad8e86083db33d39bf5619c7c2d1831b250242fcd96c7d7e4e48d",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/H_attempt001/metrics.json": "8d9f0b3f37d706ba8e7c8bf5d9825d324edbfceb929cf31101d9ab823d8ebd69"
+      }
+    }
+  }
+}
