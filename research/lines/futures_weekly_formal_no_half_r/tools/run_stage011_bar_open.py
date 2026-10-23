@@ -1,0 +1,158 @@
+"""Frozen weekly J(4MA)/H(3MA) original19 next-daily-bar open model; zero minute dependency."""
+from pathlib import Path
+from datetime import datetime
+from dataclasses import asdict
+from zoneinfo import ZoneInfo
+import argparse,hashlib,json,os,sqlite3,sys,time,subprocess
+ROOT=Path(__file__).resolve().parents[4];LINE=ROOT/'research/lines/futures_weekly_formal_no_half_r';DATA=LINE/'outputs/stage005_data';SOURCE=Path('/Users/mac/Desktop/fian')
+VENDOR=Path('/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor')
+os.chdir(ROOT);sys.path[:0]=[str(ROOT),str(VENDOR),str(ROOT/'examples/portfolio_backtesting'),str(Path(__file__).parent)]
+os.environ.update(TZ='Asia/Shanghai',OFFICIAL_LIVE_PHASE_D_REAL_SUBMIT_ENABLED='0',OFFICIAL_LIVE_PHASE_D_SESSION_DAEMON_ENABLED='0',OFFICIAL_LIVE_SIGNAL_INPUT_DIR=str(LINE/'outputs/empty_signals'),OFFICIAL_LIVE_OUTPUT_DIR=str(LINE/'outputs/empty_signals'),MPLCONFIGDIR='/private/tmp/weekly-research-mpl');time.tzset()
+MODEL='declared_daily_bar_open_next_bar_v1'
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def dump(p,obj):Path(p).write_text(json.dumps(obj,ensure_ascii=False,indent=2,default=str)+'\n')
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--arm',choices=['J','H'],required=True);ap.add_argument('--attempt',required=True);args=ap.parse_args()
+ out=LINE/'outputs'/(args.arm+'_attempt'+args.attempt)
+ if out.exists():raise ValueError('immutable_output_exists')
+ out.mkdir(parents=True)
+ manifest=json.loads((DATA/'completed_manifest.json').read_text());inputs={**manifest['files'],str(DATA/'completed_manifest.json'):sha(DATA/'completed_manifest.json')}
+ for p,d in inputs.items():
+  if sha(p)!=d:raise ValueError('daily_data_source_changed:'+p)
+ from qmt_roll_official_baseline_identity import assert_official_checkout_matches_active_material
+ identity=asdict(assert_official_checkout_matches_active_material(ROOT))
+ if identity!=asdict(assert_official_checkout_matches_active_material(SOURCE)):raise ValueError('material_identity_drift')
+ import pandas as pd
+ from vnpy.trader.setting import SETTINGS
+ SETTINGS.update({'log.active':False,'log.file':False,'log.console':False})
+ import vnpy_sqlite.sqlite_database as driver
+ if not driver.db.is_closed():driver.db.close()
+ driver.db.init(str(DATA/'daily.sqlite'))
+ import vnpy.trader.database as database_module
+ database_module.database=driver.SqliteDatabase()
+ binding=driver.db.execute_sql('pragma database_list').fetchall()
+ if Path(binding[0][2]).resolve()!=(DATA/'daily.sqlite').resolve():raise ValueError('daily_database_binding_mismatch')
+ dump(out/'actual_database_binding.json',dict(database_list=binding,expected=str(DATA/'daily.sqlite')))
+ import contract_metadata as cm
+ cm.ALL_FUTURES_CONTRACT_METADATA_PATH=DATA/'metadata.csv'
+ import replay_audit_helpers as audit
+ accepted_path=SOURCE/'research/lines/futures_trend_rollover_shape_same_volume/outputs/stage251_half_r_ab/accepted_common_patch_manifest.json'
+ accepted=json.loads(accepted_path.read_text());inputs[str(accepted_path)]=sha(accepted_path)
+ for name,digest in accepted['source_files'].items():
+  if sha(ROOT/name)!=digest:raise ValueError('formal_source_changed:'+name)
+  inputs[str(ROOT/name)]=digest
+ from qmt_roll_official_strategy_material_resolver import load_active_material_release,verify_material_file
+ active=load_active_material_release(ROOT/'official_strategy_materials/CURRENT.json',repo_root=ROOT)
+ for row in active.manifest['files']:
+  name=str(row.get('source_path',''))
+  if row.get('role') not in {'runtime_code','strategy_config','operational_config'} or name.startswith('promotion_source:') or name in audit.ALLOWED_PATCHES or name=='skills/futures-live-execution-sop/SKILL.md':continue
+  verify_material_file(ROOT/name,row);inputs[str(ROOT/name)]=sha(ROOT/name)
+ for receipt in json.loads((DATA/'daily_download_progress.json').read_text()):
+  if receipt.get('status')!='complete':continue
+  if sha(receipt['raw_path'])!=receipt['raw_sha256']:raise ValueError('daily_raw_source_changed')
+  inputs[receipt['raw_path']]=receipt['raw_sha256']
+ inputs[str(DATA/'daily_download_progress.json')]=sha(DATA/'daily_download_progress.json')
+ import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901
+ import main_contract_mapping as mm
+ from weekly_adapter import completed_weeks,weekly_strategy_class
+ from stage008_three_ma import three_ma_weekly_strategy_class
+ from stage011_bar_open_execution import bar_open_order_context
+ from stage011_bar_open_audit import audit_bar_open_records
+ from stage012_ai_selection_off import disable_ai_selection,audit_ai_selection_off,AI_FLAGS
+ mapping=DATA/'mapping.csv';original=s901.build_official_live_strategy_overrides
+ def overrides():return disable_ai_selection({**original(),'mapping_csv_path':str(mapping),'enable_stage847_half_r_stop_retry':False,'enable_stage827_intraday_c2_stop':False})
+ s901.build_official_live_strategy_overrides=overrides;s901.ALL_FUTURES_MAPPING_PATH=mapping
+ settings=overrides();products=mm.load_product_universe_symbols(settings['product_universe_csv_path'])
+ reference=json.loads((LINE/'outputs/E_attempt009/preflight.json').read_text())
+ if len(products)!=19 or set(products)!=set(reference['universe_products']):raise ValueError('original19_universe_mismatch')
+ inputs[str(Path(settings['product_universe_csv_path']))]=sha(settings['product_universe_csv_path'])
+ metadata=mm.build_contract_metadata(mapping_path=mapping,supported_symbols=products)
+ calendar=sorted(pd.read_csv(mapping).date.astype(str).unique());weeks=completed_weeks(calendar)
+ counts=dict(minute_reads=0,proxy_reads=0,ai_selection_model_load_attempts=0,empty_minute_initializer_calls=0,empty_proxy_initializer_calls=0)
+ import qmt_roll_portfolio_strategy as strategy_module
+ def forbidden_ai(*a,**kw):counts['ai_selection_model_load_attempts']+=1;raise ValueError('AI_selection_model_load_forbidden')
+ strategy_module.SelectionPairwiseRuntimeModel=forbidden_ai
+ def forbidden_minute(*a,**kw):counts['minute_reads']+=1;raise ValueError('minute_read_forbidden_in_bar_open_model')
+ def empty_minute(_):
+  counts['empty_minute_initializer_calls']+=1;s901.s847.s827._GLOBAL_MINUTE_BY_SYMBOL={}
+  return dict(source=MODEL,loaded_symbol_count=0,requested_symbol_count=len(metadata['vt_symbols']),minute_quote_confirmed=False)
+ s901._load_stage861_full_minute_bars=forbidden_minute;s901._ensure_c9_minute_bars=empty_minute
+ def empty_proxy():counts['empty_proxy_initializer_calls']+=1;return {},{}
+ s901.s847.s827.s778.s653.s517.s506.s501._seed_proxy_maps=empty_proxy
+ from stage005_sessions import execution
+ execution.EXECUTION_POLICY=MODEL
+ engines=[];base_engine=s901.s847.Stage847StopRetryEngine
+ class Engine(base_engine):
+  def __init__(self,*a,**kw):super().__init__(*a,**kw);engines.append(self)
+  def _resolve_trade_price(self,*a,**kw):counts['proxy_reads']+=1;raise ValueError('proxy_read_forbidden_in_bar_open_model')
+  def _stage827_order_context(self,order,bar):return bar_open_order_context(self,order,bar,calendar)
+ s901.s847.Stage847StopRetryEngine=Engine
+ old_profile=s901.s847._c9_profile
+ def profile(meta):
+  value=dict(old_profile(meta));factory=weekly_strategy_class if args.arm=='J' else three_ma_weekly_strategy_class
+  value['strategy_cls']=factory(value['strategy_cls'],weeks);return value
+ s901.s847._c9_profile=profile
+ pointer=LINE/'outputs/stage011_contract_pointer.json';contract=json.loads(pointer.read_text())
+ for p in [pointer,Path(contract['path']),*Path(__file__).parent.glob('*.py')]:inputs[str(p)]=sha(p)
+ if sha(contract['path'])!=contract['sha256']:raise ValueError('bar_open_contract_changed')
+ ai_pointer=LINE/'outputs/stage012_ai_off_contract_pointer.json';ai_contract=json.loads(ai_pointer.read_text())
+ if not ai_contract['all_ai_selection_disabled'] or sha(ai_contract['path'])!=ai_contract['sha256']:raise ValueError('AI_off_contract_changed')
+ for p in [ai_pointer,Path(ai_contract['path'])]:inputs[str(p)]=sha(p)
+ dump(out/'input_manifest.json',inputs)
+ dump(out/'preflight.json',dict(arm=args.arm,head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),identity=identity,start='2020-01-01',end='2026-10-22',execution_model=MODEL,minute_quote_confirmed=False,universe_products=products,universe_product_count=19,storage_capacity=41,ready_need=41 if args.arm=='J' else 21,production_qualified=False))
+ started=datetime.now(ZoneInfo('Asia/Shanghai')).isoformat();state='failed';error=None;captured={};actual=[]
+ try:
+  with audit.capture_actual_settings(Engine) as actual,audit.capture_execution_proxy_usage(Engine) as captured:
+   daily,frames,spec=s901._run_live_c9(metadata,pd.Timestamp('2020-01-01'),pd.Timestamp('2026-10-22'))
+  if len(actual)!=1 or any(actual[0]['actual'][key] is not False for key in ['enable_stage847_half_r_stop_retry','enable_stage827_intraday_c2_stop',*AI_FLAGS]):raise ValueError('disabled_flags_mismatch')
+  if engines[0].strategy.ai_product_pool_load_status!='disabled' or engines[0].strategy.ai_product_pool_eval_dates:raise ValueError('AI_not_disabled')
+  ai_quality=audit_ai_selection_off(engines[0].strategy,frames,counts['ai_selection_model_load_attempts'])
+  dump(out/'ai_selection_acceptance.json',ai_quality)
+  if not ai_quality['accepted']:raise ValueError('all_AI_selection_off_gate_failed')
+  if captured['minute_requests'] or any(not frames[k].empty for k in ['intraday_events','stop_retry_events','c2_events']):raise ValueError('disabled_module_events')
+  if engines[0].strategy.stage827_minute_by_symbol:raise ValueError('minute_data_unexpectedly_loaded')
+  clock=audit.canonical_trade_enums(pd.DataFrame(captured['trades']))
+  frames['trades']=audit.attach_trading_dates(audit.canonical_trade_enums(frames['trades']),clock)
+  scope='weekly_bar_open_original19'
+  for name,frame in [('daily',daily),*frames.items(),('execution_clock',clock),('internal_equity_daily',pd.DataFrame(captured['equity'])),('execution_proxy_usage',pd.DataFrame(captured['usage'])),('execution_anchor_requests',pd.DataFrame(captured['anchor_requests']))]:
+   if not len(frame.columns):frame=pd.DataFrame(columns=['date','vt_symbol','event','reason'])
+   frame['result_scope']=scope;frame['profile']='research_'+args.arm
+   frame.to_csv(out/(name+'.csv'),index=False)
+  dump(out/'effective_parameters.json',s901._json_safe(dict(spec=asdict(spec),sizes=metadata['sizes'],slippages=metadata['slippages'],rates=metadata['rates'])))
+  from daily_coverage import daily_coverage_gaps
+  with sqlite3.connect(f'file:{DATA/"daily.sqlite"}?mode=ro',uri=True) as db:
+   gaps=daily_coverage_gaps(frames['positions'].to_dict('records'),db)
+   def lookup(symbol,day):
+    code,exchange=symbol.split('.')
+    rows=db.execute("select open_price,high_price,low_price,close_price,volume from dbbardata where symbol=? and exchange=? and interval='d' and substr(datetime,1,10)=?",(code,exchange,day)).fetchall()
+    return [dict(zip(['open','high','low','close','volume'],row)) for row in rows]
+   quality=audit_bar_open_records(clock.to_dict('records'),captured['anchor_requests'],lookup,calendar,counts)
+   zero_days=[]
+   for row in frames['positions'].to_dict('records'):
+    if not any(float(row[k]) for k in ['start_pos','end_pos','trade_count']):continue
+    source=lookup(row['vt_symbol'],str(row['date'])[:10])
+    if len(source)!=1 or not source[0]['volume']>0:zero_days.append(dict(vt_symbol=row['vt_symbol'],date=str(row['date'])[:10]))
+  dump(out/'bar_open_acceptance.json',quality)
+  dump(out/'data_quality.json',dict(held_or_traded_daily_gaps=gaps,held_or_traded_zero_volume=zero_days,captured_bar_failures=captured['failures']))
+  if gaps or zero_days:raise ValueError('held_or_traded_daily_data_gate_failed')
+  strategy=engines[0].strategy
+  pd.DataFrame(strategy.weekly_readiness).to_csv(out/'weekly_readiness.csv',index=False)
+  pd.DataFrame([dict(vt_symbol=s,**row) for s,am in strategy.ams.items() for row in am.completed]).to_csv(out/'weekly_bars.csv',index=False)
+  dump(out/'weekly_coverage.json',dict(symbols=len(strategy.ams),ready_need=41 if args.arm=='J' else 21,max_week_count=max(am.max_count for am in strategy.ams.values()),symbols_ever_ready=sum(am.max_count>=(41 if args.arm=='J' else 21) for am in strategy.ams.values()),rejected_incomplete_weeks=sum(len(am.rejected) for am in strategy.ams.values())))
+  metrics=s901.s650._metrics(daily,spec.capital,1.)
+  metrics.update(arm=args.arm,result_scope=scope,start='2020-01-01',end='2026-10-22',actual_start=str(daily.date.min())[:10],actual_end=str(daily.date.max())[:10],execution_model=MODEL,production_qualified=False)
+  dump(out/'metrics.json',s901._json_safe(metrics));state='completed_pending_independent_review' if quality['accepted'] else 'rejected_execution_bar_open'
+ except BaseException as exc:error=repr(exc);raise
+ finally:
+  dump(out/'actual_strategy_settings.json',s901._json_safe(actual));dump(out/'execution_audit.json',captured);dump(out/'data_read_counts.json',counts)
+  bad=[p for p,d in inputs.items() if sha(p)!=d];dump(out/'postflight.json',dict(inputs_unchanged=not bad,mismatches=bad))
+  if bad:state='rejected_input_changed'
+  dump(out/'terminal.json',dict(status=state,error=error,started_at=started,completed_at=datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(),production_qualified=False,order_api_count=0))
+ if state in ['completed_pending_independent_review','rejected_execution_bar_open']:
+  dump(LINE/'outputs'/(args.arm+'_completed_attempt.json'),dict(path=str(out),review_status='pending_independent_review',execution_model=MODEL))
+ print(json.dumps(s901._json_safe(metrics),ensure_ascii=False))
+if __name__=='__main__':main()
