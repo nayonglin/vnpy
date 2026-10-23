@@ -1,0 +1,778 @@
+{
+  "schema": "stage022_lifecycle_rule_review_v1",
+  "timestamp": "2026-10-23T19:46:06.345165+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "scope": "eight_predeclared_missing_clean_keys_only_no_financial_outcomes",
+  "verdict": "ACCEPT_7_NEW_TQ_ROWS_REJECT_FU_OLD_180_IDENTITY_UNRESOLVED",
+  "accepted_keys": [
+    {
+      "vt_symbol": "jm2005.DCE",
+      "date": "2020-05-19"
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "date": "2026-05-19"
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "date": "2026-09-14"
+    },
+    {
+      "vt_symbol": "lc2609.GFEX",
+      "date": "2026-09-14"
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "date": "2026-09-24"
+    },
+    {
+      "vt_symbol": "si2609.GFEX",
+      "date": "2026-09-09"
+    },
+    {
+      "vt_symbol": "si2609.GFEX",
+      "date": "2026-09-14"
+    }
+  ],
+  "rejected_keys": [
+    {
+      "vt_symbol": "fu1905.SHFE",
+      "date": "2018-05-09"
+    }
+  ],
+  "rows": [
+    {
+      "vt_symbol": "jm2005.DCE",
+      "date": "2020-05-19",
+      "contract_epoch_id": "DCE.JM.202005",
+      "contracts_metadata": {
+        "contract_epoch_id": "DCE.JM.202005",
+        "exchange": "DCE",
+        "product": "JM",
+        "contract_yyyymm": "202005",
+        "listed_date": "2019-05-20",
+        "delisted_date": "2020-05-19",
+        "maturity_date": "2020-05-19",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2020-05-06",
+        "2020-05-07",
+        "2020-05-08",
+        "2020-05-11",
+        "2020-05-12",
+        "2020-05-13",
+        "2020-05-14",
+        "2020-05-15",
+        "2020-05-18",
+        "2020-05-19",
+        "2020-05-20",
+        "2020-05-21",
+        "2020-05-22",
+        "2020-05-25",
+        "2020-05-26",
+        "2020-05-27",
+        "2020-05-28",
+        "2020-05-29"
+      ],
+      "month_trading_day_rank": 10,
+      "month_reverse_rank": 9,
+      "new_tq_daily": {
+        "open": 1234.5,
+        "high": 1234.5,
+        "low": 1234.5,
+        "close": 1234.5,
+        "volume": 101.0,
+        "open_oi": 2001.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 243,
+      "raw_timestamp_ns": 1589817600000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2005.DCE.csv",
+      "raw_sha256": "35c200164a4d93b76d90c62653c65b8f90074cfc61696cddb89463ec0fbd79b9",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2005.DCE.json",
+      "receipt_sha256": "4a35ec2d66d50a7226e578b7737627b89973ec3bf25b26ce2955aea1d20edd90",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 2001.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "DCE.JM.202005",
+          "trade_date": "2020-05-19",
+          "reason": "no_trade",
+          "source_locator": "{\"key\": \"JM2005\", \"row\": 243}",
+          "raw_values": "{\"open\": 1234.5, \"high\": 1234.5, \"low\": 1234.5, \"close\": 1234.5, \"volume\": 0.0, \"close_oi\": 2001.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "date": "2026-05-19",
+      "contract_epoch_id": "DCE.JM.202605",
+      "contracts_metadata": {
+        "contract_epoch_id": "DCE.JM.202605",
+        "exchange": "DCE",
+        "product": "JM",
+        "contract_yyyymm": "202605",
+        "listed_date": "2025-05-20",
+        "delisted_date": "2026-05-19",
+        "maturity_date": "2026-05-19",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-05-06",
+        "2026-05-07",
+        "2026-05-08",
+        "2026-05-11",
+        "2026-05-12",
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-15",
+        "2026-05-18",
+        "2026-05-19",
+        "2026-05-20",
+        "2026-05-21",
+        "2026-05-22",
+        "2026-05-25",
+        "2026-05-26",
+        "2026-05-27",
+        "2026-05-28",
+        "2026-05-29"
+      ],
+      "month_trading_day_rank": 10,
+      "month_reverse_rank": 9,
+      "new_tq_daily": {
+        "open": 1148.0,
+        "high": 1148.0,
+        "low": 1148.0,
+        "close": 1148.0,
+        "volume": 43.0,
+        "open_oi": 243.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 241,
+      "raw_timestamp_ns": 1779120000000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2605.DCE.csv",
+      "raw_sha256": "45423944e5674c27379aa974fc28830d1a515c3b659806a55089cfc4b1ce699b",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2605.DCE.json",
+      "receipt_sha256": "713db371ff71fff310674292a536f2d874df178d121062bd76c2216ae5052724",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 243.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "DCE.JM.202605",
+          "trade_date": "2026-05-19",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"JM2605\", \"row\": 241}",
+          "raw_values": "{\"open\": 1100.0, \"high\": 1100.0, \"low\": 1100.0, \"close\": 1148.0, \"volume\": 43.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "date": "2026-09-14",
+      "contract_epoch_id": "DCE.JM.202609",
+      "contracts_metadata": {
+        "contract_epoch_id": "DCE.JM.202609",
+        "exchange": "DCE",
+        "product": "JM",
+        "contract_yyyymm": "202609",
+        "listed_date": "2025-09-15",
+        "delisted_date": "2026-09-14",
+        "maturity_date": "2026-09-14",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "month_trading_day_rank": 10,
+      "month_reverse_rank": 12,
+      "new_tq_daily": {
+        "open": 1711.5,
+        "high": 1711.5,
+        "low": 1711.5,
+        "close": 1711.5,
+        "volume": 102.0,
+        "open_oi": 688.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 241,
+      "raw_timestamp_ns": 1789315200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2609.DCE.csv",
+      "raw_sha256": "438edca34725e7879cd74132c2679c93e0b8d1ea9c3509a53219f253456ab2e6",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2609.DCE.json",
+      "receipt_sha256": "b78f2dca1413d0729c5f0aaa09380cb79acd46cfe64ed28cb90be9546040c769",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 688.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "DCE.JM.202609",
+          "trade_date": "2026-09-14",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"JM2609\", \"row\": 241}",
+          "raw_values": "{\"open\": 1585.0, \"high\": 1585.0, \"low\": 1585.0, \"close\": 1711.5, \"volume\": 102.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "lc2609.GFEX",
+      "date": "2026-09-14",
+      "contract_epoch_id": "GFEX.LC.202609",
+      "contracts_metadata": {
+        "contract_epoch_id": "GFEX.LC.202609",
+        "exchange": "GFEX",
+        "product": "LC",
+        "contract_yyyymm": "202609",
+        "listed_date": "2025-09-15",
+        "delisted_date": "2026-09-14",
+        "maturity_date": "2026-09-14",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "month_trading_day_rank": 10,
+      "month_reverse_rank": 12,
+      "new_tq_daily": {
+        "open": 150440.0,
+        "high": 150440.0,
+        "low": 150440.0,
+        "close": 150440.0,
+        "volume": 129.0,
+        "open_oi": 936.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 241,
+      "raw_timestamp_ns": 1789315200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/lc2609.GFEX.csv",
+      "raw_sha256": "b96bbad0d7bf53de70017973da1184bdde5965dabdcc5ceed77f04b0e062353b",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/lc2609.GFEX.json",
+      "receipt_sha256": "0df74ea8527ca56767c7a2cedcd376483d7a5d7e33998aa0557d6f4b6aa59aee",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 936.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "GFEX.LC.202609",
+          "trade_date": "2026-09-14",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"LC2609\", \"row\": 241}",
+          "raw_values": "{\"open\": 135500.0, \"high\": 135500.0, \"low\": 135500.0, \"close\": 150440.0, \"volume\": 129.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "date": "2026-09-24",
+      "contract_epoch_id": "DCE.LH.202609",
+      "contracts_metadata": {
+        "contract_epoch_id": "DCE.LH.202609",
+        "exchange": "DCE",
+        "product": "LH",
+        "contract_yyyymm": "202609",
+        "listed_date": "2025-09-26",
+        "delisted_date": "2026-09-24",
+        "maturity_date": "2026-09-24",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "month_trading_day_rank": 18,
+      "month_reverse_rank": 4,
+      "new_tq_daily": {
+        "open": 10300.0,
+        "high": 10300.0,
+        "low": 10300.0,
+        "close": 10300.0,
+        "volume": 9.0,
+        "open_oi": 9.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 240,
+      "raw_timestamp_ns": 1790179200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/lh2609.DCE.csv",
+      "raw_sha256": "5919d57b6bdc4f18e24378cb459e7cd6c04aeb2807a0618c12693483e094dd83",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/lh2609.DCE.json",
+      "receipt_sha256": "180f17ffc2c4e7f4e0e7a493e62e8e5c00ea2d0fcded00dbf1016b9a8f68d3b5",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 9.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "DCE.LH.202609",
+          "trade_date": "2026-09-24",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"LH2609\", \"row\": 240}",
+          "raw_values": "{\"open\": 10230.0, \"high\": 10230.0, \"low\": 10230.0, \"close\": 10300.0, \"volume\": 9.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "si2609.GFEX",
+      "date": "2026-09-09",
+      "contract_epoch_id": "GFEX.SI.202609",
+      "contracts_metadata": {
+        "contract_epoch_id": "GFEX.SI.202609",
+        "exchange": "GFEX",
+        "product": "SI",
+        "contract_yyyymm": "202609",
+        "listed_date": "2025-09-15",
+        "delisted_date": "2026-09-14",
+        "maturity_date": "2026-09-14",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "month_trading_day_rank": 7,
+      "month_reverse_rank": 15,
+      "new_tq_daily": {
+        "open": 8780.0,
+        "high": 8780.0,
+        "low": 8780.0,
+        "close": 8780.0,
+        "volume": 16.0,
+        "open_oi": 832.0,
+        "close_oi": 82.0
+      },
+      "raw_id": 238,
+      "raw_timestamp_ns": 1788883200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/si2609.GFEX.csv",
+      "raw_sha256": "44b4abc2a1023fcd485e3fcbd19defb6ddd9d8e45436d3ed9b8ec4e40d74cd9e",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/si2609.GFEX.json",
+      "receipt_sha256": "cfe709de0de271ab38fa4359f3da45697efcf9c2e1cf158092e4011ac388f275",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 832.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "GFEX.SI.202609",
+          "trade_date": "2026-09-09",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"SI2609\", \"row\": 238}",
+          "raw_values": "{\"open\": 8800.0, \"high\": 8800.0, \"low\": 8800.0, \"close\": 8780.0, \"volume\": 16.0, \"close_oi\": 82.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "si2609.GFEX",
+      "date": "2026-09-14",
+      "contract_epoch_id": "GFEX.SI.202609",
+      "contracts_metadata": {
+        "contract_epoch_id": "GFEX.SI.202609",
+        "exchange": "GFEX",
+        "product": "SI",
+        "contract_yyyymm": "202609",
+        "listed_date": "2025-09-15",
+        "delisted_date": "2026-09-14",
+        "maturity_date": "2026-09-14",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": true,
+      "observed_exchange_calendar_month": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "month_trading_day_rank": 10,
+      "month_reverse_rank": 12,
+      "new_tq_daily": {
+        "open": 8695.0,
+        "high": 8695.0,
+        "low": 8695.0,
+        "close": 8695.0,
+        "volume": 32.0,
+        "open_oi": 73.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 241,
+      "raw_timestamp_ns": 1789315200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/si2609.GFEX.csv",
+      "raw_sha256": "44b4abc2a1023fcd485e3fcbd19defb6ddd9d8e45436d3ed9b8ec4e40d74cd9e",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/si2609.GFEX.json",
+      "receipt_sha256": "cfe709de0de271ab38fa4359f3da45697efcf9c2e1cf158092e4011ac388f275",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 73.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "GFEX.SI.202609",
+          "trade_date": "2026-09-14",
+          "reason": "invalid_ohlc",
+          "source_locator": "{\"key\": \"SI2609\", \"row\": 241}",
+          "raw_values": "{\"open\": 8540.0, \"high\": 8540.0, \"low\": 8540.0, \"close\": 8695.0, \"volume\": 32.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": true,
+      "decision": "ACCEPT_NEW_TQ_SOURCE_WITH_DECLARED_CLOSE_OI"
+    },
+    {
+      "vt_symbol": "fu1905.SHFE",
+      "date": "2018-05-09",
+      "contract_epoch_id": "SHFE.FU.201905",
+      "contracts_metadata": {
+        "contract_epoch_id": "SHFE.FU.201905",
+        "exchange": "SHFE",
+        "product": "FU",
+        "contract_yyyymm": "201905",
+        "listed_date": "2018-07-16",
+        "delisted_date": "2019-04-30",
+        "maturity_date": "2019-04-30",
+        "metadata_status": "rq_vendor_metadata"
+      },
+      "within_inclusive_metadata": false,
+      "observed_exchange_calendar_month": [
+        "2018-05-02",
+        "2018-05-03",
+        "2018-05-04",
+        "2018-05-07",
+        "2018-05-08",
+        "2018-05-09",
+        "2018-05-10",
+        "2018-05-11",
+        "2018-05-14",
+        "2018-05-15",
+        "2018-05-16",
+        "2018-05-17",
+        "2018-05-18",
+        "2018-05-21",
+        "2018-05-22",
+        "2018-05-23",
+        "2018-05-24",
+        "2018-05-25",
+        "2018-05-28",
+        "2018-05-29",
+        "2018-05-30",
+        "2018-05-31"
+      ],
+      "month_trading_day_rank": 6,
+      "month_reverse_rank": 17,
+      "new_tq_daily": {
+        "open": 3693.0,
+        "high": 4000.0,
+        "low": 3693.0,
+        "close": 4000.0,
+        "volume": 2.0,
+        "open_oi": 0.0,
+        "close_oi": 0.0
+      },
+      "raw_id": 5,
+      "raw_timestamp_ns": 1525795200000000000,
+      "raw_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/fu1905.SHFE.csv",
+      "raw_sha256": "2c5a31946b997eb1907444e34a57838b0c49ce062138380796f9163f5f19c346",
+      "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/fu1905.SHFE.json",
+      "receipt_sha256": "7603311fdec558f1734f49d00b9c66ec392e3d77738c7b055aaf5ce80bb6edae",
+      "raw_valid": true,
+      "old_main_mapping": false,
+      "m_price_equal": true,
+      "m_volume_equal": true,
+      "old_m_open_interest": 0.0,
+      "old_m_equals_tq_open_oi": true,
+      "prior_clean_exclusions": [
+        {
+          "source_id": "rqalpha",
+          "contract_epoch_id": "SHFE.FU.201905",
+          "trade_date": "2018-05-09",
+          "reason": "before_candidate_listing",
+          "source_locator": "{\"key\": \"FU1905\", \"row\": 5}",
+          "raw_values": "{\"open\": 3693.0, \"high\": 4000.0, \"low\": 3693.0, \"close\": 4000.0, \"volume\": 4.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        },
+        {
+          "source_id": "official:SHFE_futures_2018",
+          "contract_epoch_id": "SHFE.FU.201905",
+          "trade_date": "2018-05-09",
+          "reason": "before_candidate_listing",
+          "source_locator": "{\"row\": 11682, \"source_member\": \"2018╦∙─┌║╧╘╝╨╨╟Θ▒¿▒φ.xls\", \"raw_row\": \"15311\"}",
+          "raw_values": "{\"open\": 3693.0, \"high\": 4000.0, \"low\": 3693.0, \"close\": 4000.0, \"volume\": 4.0, \"close_oi\": 0.0, \"open_oi\": null}"
+        }
+      ],
+      "probe_original_status": "REJECT_UNRESOLVED_LIFECYCLE",
+      "lifecycle_review_accepted": false,
+      "decision": "REJECT_OLD_180_NEW_380_PHYSICAL_IDENTITY_UNRESOLVED"
+    }
+  ],
+  "official_sources": [
+    {
+      "id": "DCE_JM_rule",
+      "title": "大连商品交易所焦煤期货合约制度设计说明（二〇一三年二月）",
+      "url": "https://www.dce.com.cn/dalianshangpin/resource/cms/2016/11/焦煤期货合约制度设计说明.pdf",
+      "claim": "交割月第10个交易日；历史JM2005规则依据",
+      "access": "official_domain_search_index; direct PDF fetch unavailable"
+    },
+    {
+      "id": "DCE_JM_current",
+      "title": "DCE 焦煤/焦炭官方 FACTSHEET",
+      "url": "https://www.dce.com.cn/dce/file/2026-01-15/17684624156122c9a882b9ae6dcbb289019bc092f6fc1681.pdf",
+      "claim": "焦煤最后交易日合约月份第10个交易日",
+      "access": "official_domain_search_index"
+    },
+    {
+      "id": "GFEX_SI_rule",
+      "title": "广州期货交易所工业硅期货合约（2022年12月12日版）",
+      "url": "https://www.gfex.com.cn/gfex/llbb/202402/73cd6f4cc26b4dd5b3d127b5462b59a7/files/广州期货交易所工业硅期货合约（2022年12月12日版）.pdf",
+      "claim": "合约月份第10个交易日",
+      "access": "official_domain_search_index; direct PDF fetch unavailable"
+    },
+    {
+      "id": "GFEX_LC_rule",
+      "title": "广州期货交易所碳酸锂期货合约",
+      "url": "https://www.gfex.com.cn/gfex/sytslqhhy/202307/9ad927b8ec4c458594e172fd1ada2a9b.shtml",
+      "claim": "合约月份第10个交易日",
+      "access": "official_domain_search_index; direct page timeout"
+    },
+    {
+      "id": "DCE_LH_rule",
+      "title": "大连商品交易所生猪期货业务细则（2025年6月24日修改）第十三条",
+      "url": "https://www.dce.com.cn/dalianshangpin/fgfz/6142914/6142926/6262877/大连商品交易所生猪期货业务细则（根据2025年6月24日〔2025〕59号文件修改）.pdf",
+      "claim": "合约月份倒数第4个交易日",
+      "access": "official_domain_search_index with article13; direct PDF fetch unavailable"
+    },
+    {
+      "id": "GFEX_calendar_2026",
+      "title": "Notice on 2026 GFEX Market Holiday Arrangements",
+      "url": "https://www.gfex.com.cn/en/Notices/202601/ecd5e39ce8a04d2eb0a88d47ba2abd26.shtml",
+      "claim": "5月1至5日/9月25至27日休市，5月6日/9月28日复市；调休周末不开市",
+      "access": "official_domain_search_index_full_notice; English reference translation, Chinese original prevails"
+    },
+    {
+      "id": "SHFE_calendar_2026",
+      "title": "上期所2026年休市安排",
+      "url": "https://www.shfe.com.cn/services/calenderandholidays/holiday/",
+      "claim": "同上2026劳动节及中秋日历；交叉核验",
+      "access": "official_page_body_read"
+    },
+    {
+      "id": "DCE_calendar_2026_locator",
+      "title": "大商所发〔2025〕437号：2026年部分节假日休市安排",
+      "url": "https://www.dce.com.cn/dce/content/2025/ywggytz/18625615.html",
+      "claim": "DCE自身公告定位；直取超时，不声称读取原站全文",
+      "access": "locator_only; NOT sole calendar evidence"
+    },
+    {
+      "id": "SSE_calendar_2020_crosscheck",
+      "title": "关于2020年劳动节休市安排的公告",
+      "url": "https://big5.sse.com.cn/site/cht/www.sse.com.cn/disclosure/announcement/general/c/c_20200416_5040105.shtml",
+      "claim": "5月1至5日休市/5月6日复市及5月9日周末休市；仅同年国内市场日历交叉核，不替代DCE实测日历",
+      "access": "official_page_search_body_read"
+    },
+    {
+      "id": "SHFE_FU_epoch",
+      "title": "关于180燃料油期货合约终止交易以及保税380燃料油期货合约挂牌有关事项的通知",
+      "url": "https://www.shfe.com.cn/publicnotice/notice/201806/t20180626_793285.html",
+      "claim": "旧180 FU1905等自2018-06-27终止；新380 FU1905等2018-07-16重挂牌",
+      "access": "official_page_body_read"
+    }
+  ],
+  "policy": {
+    "source_priority": "existing accepted-clean retained; missing keys use validated completed Tq raw with no volume transform and close_oi only",
+    "lifecycle_inclusive": true,
+    "old_bad_rq_values_never_restored": true,
+    "probe_bytes_unchanged": true,
+    "old_metadata_not_rewritten": true,
+    "old_tools_unchanged": true,
+    "fu_same_name_not_same_physical_epoch": true,
+    "selection_uses_returns": false
+  },
+  "limitations": [
+    "本审查不认证其他448条旧quarantine，也不擅自释放其旧源。",
+    "未抓取新的quote生命周期；生命周期证据为冻结contracts元数据、交易所规则及真实交易日历。",
+    "部分DCE/GFEX官网直取超时，规则来自官方域名搜索索引；已精确标明，不声称原页面正文/hash全部保存。",
+    "FU单条仍是源缺口；非旧main映射不等于未进入指标/候选/订单/持仓，需runner后续路径审计，不能先称不影响。",
+    "未运行金融回放；无收益结果，不能据此称策略通过或正式晋级。"
+  ],
+  "research_reflection": {
+    "overfit": false,
+    "reason": "固定8键以来源/规则/身份统一审查，不看收益；不是参数寻优。",
+    "worth_continuing": true,
+    "next": "固定7键新源政策、保留FU缺口，冻结数据后审计实际路径。"
+  },
+  "input_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/progress.json": "966ddd6f645a4639ee99821717eb2c38f467c7425a96fca38f4bb672f63a2079",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/matched_requested.csv": "0835e3118da01033bffb156bea7a3d4123b82dff11bf98bafcd97dd63256236e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/prior_excluded_observations.csv": "d2858665cb5f48d5575b35e6ba3bb8e1e6c78d45498316f4b18027d105eb0b2e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/requested.csv": "df94e0163b2788bab0711725fb23755af5f22da1b529a543c9f9edf745653066",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/inputs_freeze.json": "584c83675673de4b96cfb3a0a68428fdd654f2f3c8bc66639b9d4488284991f7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/receipt.json": "66a97f822157a0e67db84f391abb2446cf6ac4737bc811946f3e286cc98111af",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/lifecycle_rejected.csv": "59f72b9f86a4a2e96cae29df7081f43ce0d5ee4ed2c822c48b07bb2f62efc052",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage005_data/mapping.csv": "873d2bfa6900557616993896c9a0b13faabfb09e0899bd5beaafe000d78532cb",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage022_historical_safety.py": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2005.DCE.json": "4a35ec2d66d50a7226e578b7737627b89973ec3bf25b26ce2955aea1d20edd90",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2005.DCE.csv": "35c200164a4d93b76d90c62653c65b8f90074cfc61696cddb89463ec0fbd79b9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2605.DCE.json": "713db371ff71fff310674292a536f2d874df178d121062bd76c2216ae5052724",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2605.DCE.csv": "45423944e5674c27379aa974fc28830d1a515c3b659806a55089cfc4b1ce699b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/jm2609.DCE.json": "b78f2dca1413d0729c5f0aaa09380cb79acd46cfe64ed28cb90be9546040c769",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/jm2609.DCE.csv": "438edca34725e7879cd74132c2679c93e0b8d1ea9c3509a53219f253456ab2e6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/lc2609.GFEX.json": "0df74ea8527ca56767c7a2cedcd376483d7a5d7e33998aa0557d6f4b6aa59aee",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/lc2609.GFEX.csv": "b96bbad0d7bf53de70017973da1184bdde5965dabdcc5ceed77f04b0e062353b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/lh2609.DCE.json": "180f17ffc2c4e7f4e0e7a493e62e8e5c00ea2d0fcded00dbf1016b9a8f68d3b5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/lh2609.DCE.csv": "5919d57b6bdc4f18e24378cb459e7cd6c04aeb2807a0618c12693483e094dd83",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/si2609.GFEX.json": "cfe709de0de271ab38fa4359f3da45697efcf9c2e1cf158092e4011ac388f275",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/si2609.GFEX.csv": "44b4abc2a1023fcd485e3fcbd19defb6ddd9d8e45436d3ed9b8ec4e40d74cd9e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/contract_receipts/fu1905.SHFE.json": "7603311fdec558f1734f49d00b9c66ec392e3d77738c7b055aaf5ce80bb6edae",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage022_quarantine_probe/raw/fu1905.SHFE.csv": "2c5a31946b997eb1907444e34a57838b0c49ce062138380796f9163f5f19c346"
+  },
+  "probe_terminal": {
+    "status": "all_fixed_contracts_probed",
+    "contracts": 239,
+    "keys": 456,
+    "missing": 0,
+    "completed_at": "2026-10-23T19:44:14.157919+08:00"
+  },
+  "financial_replay_runs": 0,
+  "new_downloads": 0
+}

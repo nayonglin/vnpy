@@ -1,0 +1,91 @@
+{
+  "schema": "stage022_history_design_review_v1",
+  "created_at": "2026-10-23T19:27:34.742260+08:00",
+  "requested_start": "2015-01-01",
+  "requested_end": "2026-10-23",
+  "review_scope": "pure logic and read-only local availability pre-audit; no strategy replay",
+  "verdict": "CONDITIONAL_DESIGN_PASS_OLD_M_ENTRY_NOT_READY_FOR_EXTENDED_HISTORY",
+  "financial_replays": 0,
+  "downloads": 0,
+  "old_tools_modified": false,
+  "observations": {
+    "M_mapping": [
+      "2010-01-04",
+      "2026-10-22"
+    ],
+    "M_daily": [
+      "2015-01-05",
+      "2026-10-22",
+      1257339
+    ],
+    "source_daily": [
+      "2015-01-05",
+      "2026-10-14",
+      1001334
+    ],
+    "clean_accepted": [
+      "2010-01-04",
+      "2026-10-16",
+      1552456
+    ],
+    "clean_2014": [
+      "2014-01-02",
+      "2014-12-31",
+      57549,
+      790
+    ],
+    "clean_2014_scope": "all markets; not an original19 readiness guarantee",
+    "clean_original8_CZCE_epoch_pairs": 145,
+    "min_observed_native_epoch_gap_days": 3282,
+    "epoch_pairs_overlap_or_gap_le366": 0,
+    "epoch_pair_scope": "accepted original8 CZCE products, crop2014-01-01..2026-10-23, accepted source ends2026-10-16; merged new snapshot must revalidate",
+    "M_actual_warmup_days": 90,
+    "base_class_default_warmup_days": 80,
+    "M_actual_trade_start_date": "2020-01-01",
+    "M_spec_date_overrides": {}
+  },
+  "severity": {
+    "P0": [],
+    "P1": [
+      "old M runner hardcoded2020/2026-10-22 and incomplete account-date diagnostics",
+      "physical-epoch mapping and pre-fill flat/order guard required before using repeated native names",
+      "fresh 2026-10-23 daily/mapping and per-target2014 warmup coverage must be proved"
+    ],
+    "P2": [
+      "calendar-only 2020+ schedule is a declared model clock, not historically verified minute execution",
+      "target-only cleanup does not validate physical epoch ownership or remove actual expired positions",
+      "21 completed weeks are per physical contract; listing-limited contracts may legitimately remain unready"
+    ]
+  },
+  "decision": "Use new isolated history runner/wrapper; retain native symbols if merged physical-ledger nonoverlap/gap>366 is proved, keep existing AM gap-reset, add pre-fill epoch guard and universal target authorization cleanup only; do not borrow deferred execution.",
+  "required_invariants": [
+    "engine.preload_start=2014-01-01 and actual2014 positive bars loaded",
+    "actual global inited/trading date before requested2015 start if adequate2014 data; trade_start_date=2015-01-01; no2014 fills",
+    "all2015+ account calendar dates recorded; diagnostic readiness starts2015, no duplicate2020+ rows",
+    "all weekly source days belong to exactly one physical epoch; no alias/date ambiguities",
+    "before first new epoch fills: old position=0, target=0, no stale active order; stale old planned layers documented/fail closed",
+    "same native physical epochs disjoint with real gap>366 in final merged source",
+    "complete valid2014 target observations; preserve M2015+ values and validate volume/OI unit continuity",
+    "final calendar and real bars include2026-10-23; close only fully completed weeks; retain unfilled final-week orders",
+    "held/traded daily mark/fill coverage remains strict; no expired-position carry rescue",
+    "same 19 universe/cap19/capital150000/21ready/41storage/threeMA/noMACD/allAIoff/halfRoff/C2off; all other numerical parameters unchanged",
+    "preserve actual M warmup_days=90, not base default80; final new trade_start_date=2015-01-01"
+  ],
+  "source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/weekly_adapter.py": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage008_three_ma.py": "5f5554eb35033912658a2db6182b97418eafa5253ede88cf27caf09c47dc3061",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage011_bar_open_execution.py": "ceba51f9dd8edbb1e2cd42ce74212208e9866e5f0d84d12183a356d37162a3c0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage020_no_position_cap.py": "e65b1e450c26f3828f0b6415d852974bf81c2ab2fbdf6a408858ce25986c418e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+    "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_portfoliostrategy/backtesting.py": "543be175773cc6b670f7ba1730e5164708ad8425ed7b80da4bc9cce0862e61e2",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/tools/stage278_daily_engine.py": "8af02147e976c4642d0dc04cadee00b5881bfe19c0b6fbd8f1ac591d43f2a50d",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/unit_contract.json": "2b9d41dffd094457843d791e5d9ca611f6878d569168b1d1c439f31099a3359c",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/dataset_manifest.json": "d77145c2b17fa115e3aa5f4a9689955447c09139dfb734f6fdde7376cc7c3ebd",
+    "/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily/clean_daily.sqlite": "a63f92ce7e1d51080ba92f7214fc493f1e6a69aa0079d6ecef7190eea9b58711",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/M_attempt001/actual_strategy_settings.json": "6da0105a0f258c36844107619a1e18f0cd2d9accd5d74f29a826ffd811808d94",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/M_attempt001/effective_parameters.json": "07eb6d5ec06ab629894a800dc8654ae5ff67b53a9e83b2e8e12f1088b84e3486"
+  },
+  "actual_parameters_verified_at": "2026-10-23T19:28:25.119702+08:00"
+}
