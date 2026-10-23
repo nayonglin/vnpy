@@ -1,0 +1,222 @@
+{
+  "schema": "stage023_data_preparation_record_v1",
+  "created_at": "2026-10-23T19:59:49.991952+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "decision": "DATA_PREPARATION_ONLY_BOUNDED_REPLAY",
+  "important_breakthrough": false,
+  "financial_replays_by_builder": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "independent_financial_reviewer": "stage023_fresh_independent_review; builder does not independently audit N/P",
+  "data_directory": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved",
+  "data_receipt": {
+    "schema": "stage023_history_data_receipt_v1",
+    "status": "prepared_approved_supplement",
+    "data_ready": true,
+    "data_ready_for_bounded_replay": true,
+    "historical_main_reconstruction_complete": false,
+    "date_start": "2014-01-01",
+    "financial_start": "2015-01-01",
+    "date_end": "2026-10-23",
+    "units": "single_sided_volume_close_oi",
+    "quantity_fields": {
+      "volume": "accepted single-sided contracts",
+      "open_interest": "same completed day close_oi; never open_oi"
+    },
+    "products": [
+      "AP.CZCE",
+      "CF.CZCE",
+      "FG.CZCE",
+      "MA.CZCE",
+      "OI.CZCE",
+      "SA.CZCE",
+      "SH.CZCE",
+      "SM.CZCE",
+      "au.SHFE",
+      "cu.SHFE",
+      "fu.SHFE",
+      "hc.SHFE",
+      "jm.DCE",
+      "lc.GFEX",
+      "lh.DCE",
+      "rb.SHFE",
+      "ru.SHFE",
+      "si.GFEX",
+      "sp.SHFE"
+    ],
+    "financial_replays": 0,
+    "source_layers_rows": [
+      391475,
+      95,
+      40,
+      455
+    ],
+    "accepted_rows": 392065,
+    "exact_duplicate_rows_not_overwritten": 0,
+    "main_missing_before_no_trade_classification": 591,
+    "known_no_trade_main": 573,
+    "structural_unavailable_main": 18,
+    "structural_unavailable_not_in_bars": true,
+    "structural_policy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/structural_policy.json",
+    "unknown_missing_main": 0,
+    "known_no_trade_not_in_bars": true,
+    "known_no_trade_policy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/no_trade_policy.json",
+    "main_missing_2015_onward": 0,
+    "warmup_missing_main_2014": 228,
+    "known_lifecycle_excluded_rows": 0,
+    "epochs_with_unknown_full_lifecycle": 6,
+    "native_reused_epoch_pairs": 145,
+    "old_original19_rows_isolated": 326549,
+    "old_keys_not_restored_no_fallback": 13787,
+    "common_old_new_rows": 312762,
+    "common_OHLC_differences": 0,
+    "common_volume_differences": 14570,
+    "common_close_OI_differences": 250665,
+    "old_M_sha256_before": "b439081d0408eeafd2e8596a6948db49c2e64220416c1973b354f03c7b1214b0",
+    "old_M_sha256_after": "b439081d0408eeafd2e8596a6948db49c2e64220416c1973b354f03c7b1214b0",
+    "old_M_unchanged": true,
+    "canonical_DB_lookup_parity": true,
+    "risk_metadata_unchanged": true,
+    "Stage278_patch259": "not layered:257 already accepted clean,2 zero-volume nontradable; existing oldM259 evidence only",
+    "readiness_limitations": [
+      "2014 MA aliases have228 missing mapped days; hc1505 first2015 target has only13 complete2014 weeks; actual21-ready state must be exported by replay.",
+      "Unknown full future lifecycle is labeled; never infer expiry from observed last row.",
+      "Frozen mapping has explicit18 structural defects, not a reconstructed historical main series; no substitute contracts inferred. data_ready requires unknown main gaps0; approved real zero-volume keys are classification-only, never bars/week inputs/fills. Every held/traded/week-source positive-data and execution/accounting gate remains mandatory."
+    ],
+    "stage022_lifecycle_label_correction": "Initial8 cohort is not8 lifecycle failures:7 are within clean vendor inclusive listing/delisting; only FU1905/2018-05-09 precedes2018-07-16 new contract listing. No metadata amendment performed.",
+    "approved_supplement_used": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/approved_supplement.csv",
+    "completed_at": "2026-10-23T19:57:20.244166+08:00"
+  },
+  "source_manifest_file_count": 1774,
+  "key_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/receipt.json": "bc285973f73fb656846a7b44d78af9f75ebefaa14f64453fd704d3b1271d3f37",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/source_manifest.json": "8a4a02fbf89029d2471e3785b6ddb5d806e29bcd2fcc281fb05cca4c2329e4b6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/daily.sqlite": "f27a0af7604d8df4ed07a5d69573467ae8ca77f947d3717220d4869cd24ebb7a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/mapping.csv": "3b1001062b411426098d38f9ecfb160bf7167b905407da9ec8b5f15fb4362ac3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/physical_epoch_daily.csv": "0b18e6c03302b0781acb351d10d1cc15c149a259d34bb8fc8589c5ff85ec2a67",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/known_no_trade_main.csv": "2a8f34188548e1f46f4954ce64e95a001d34b7e6afd7c282845d179ad0c58bf2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/structural_unavailable_main.csv": "43fe013d5aa417de9281438cafd2970b1e4d5f0055737758713790bb5f0dce69",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_approved/missing_main.csv": "ad1a30bc77a6c2f69a0fc0bcef67fc5e8497f5fa0a618e13a5fe8fc0068bfe76",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage023_prepare_history.py": "08a3eb8ff134ff2d4c129de826977e4b1beb707bc30738f7a812f0298d64a79a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage023_prepare_history.py": "672a7d30bea2d44bbad58cb09897936e5b4046af37a628d1366ddf22d1a91351",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/approval_policy.json": "4146a2a5fd58da24d6bb95cc881fe31fde14385bf86937cbc8927e2921eb6658",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/approved_supplement.csv": "b259818b5bbdb0d0cebea266a21e2f041b9c3397a88cb25bfb01ac14d9fead7e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/no_trade_policy.json": "1cff63e150ac654631412cd34109534b78a5d5a987afc1fda2cf579732f72cd7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_source_approval/structural_policy.json": "e395ed8ead40526e739545416379c511696489b01bbe196e15945b4912d76a10",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_assembler_tests/raw_nan_red.log": "dff950fa73a29b4b97d48dbd2bcf04204b0b7fa8fb8659b1b7eb6c2d5a084c75",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_assembler_tests/stage023_no_trade_semantic_red.log": "aa876974bffc82b0312f348658ae8953489ba42e4008cb2f0912787012708875",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_assembler_tests/stage023_structural_red.log": "5d5a0d2b437ec715f2834a082d8d0d97e95f5769142b24f2ac0aaca41982ecba",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_assembler_tests/stage023_final36_green.log": "765f5f78807ed0ba8b4ba411ba4dd0ed87806e8eba2ece816340160f0f9a5b17"
+  },
+  "tests": {
+    "pure_data_tests_passed": 36,
+    "raw_nonfinite_red_then_green": true,
+    "no_trade_structural_red_then_green": true,
+    "scope": "数据字段、来源hash/精确join、物理代、旧库隔离、缺口分类、真实backup集成；不含金融回放。"
+  },
+  "failed_preparations_preserved": [
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data",
+      "receipt": {
+        "schema": "stage023_history_data_receipt_v1",
+        "status": "failed_preparation",
+        "data_ready": false,
+        "date_end": "2026-10-23",
+        "units": "single_sided_volume_close_oi",
+        "error": "ValueError('invalid_epoch_month:199907')",
+        "financial_replays": 0
+      },
+      "explanation": "199907为合法1999年7月metadata；原校验仅接受20xx，预数据准备即拒绝。修正为四位年份及合法月份，不改变物理身份。",
+      "frozen_evidence_sha256": {
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data/tests_century_fieldmap_red.log": "7947eae71415fd14f7854b5ec988d377439a824cc8b2ce694a549e6c700c6e5a",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data/assembler_source_at_failure.py": "e35ad669e6dc5b1aea2c78643fc01273b1b631d37d36468923aceaf36e9cc6ff",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data/tests_initial_red.log": "af6245a850f057115a756fcdb8472590fbb02ea0aad9bd6834e01cbf7c4b713a",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data/receipt.json": "c760e3943688db09a74dce25963ebc79d7be7fb76a973d7894e5fb1ea798a3f8"
+      }
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_base_v2",
+      "receipt": {
+        "schema": "stage023_history_data_receipt_v1",
+        "status": "failed_preparation",
+        "data_ready": false,
+        "date_end": "2026-10-23",
+        "units": "single_sided_volume_close_oi",
+        "error": "FileNotFoundError(2, 'No such file or directory')",
+        "financial_replays": 0
+      },
+      "explanation": "clean源raw_path为相对主仓的归档路径，原按worktree解析导致找不到文件。修正为以源clean所在仓库根目录解析，未替换或省略原始证据。",
+      "frozen_evidence_sha256": {
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_base_v2/tests_rawpath_epoch_red.log": "485c281357e415fcba28ec6c97a52026fdee6318c376fec7e6a1e885a092c76c",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_base_v2/assembler_source_at_failure.py": "361881c52415cd80684273ac79912fb3c0cdba906dab6fda69890cb1b3fab5df",
+        "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_base_v2/receipt.json": "2a18eeed27b70933fa2f88c21a8816d4f80fcfb12b80f9772f40987f09fdd511"
+      }
+    }
+  ],
+  "base_v3_preserved": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage023_history_data_base_v3",
+    "role": "预冻结accepted-base诊断，data_ready=False；源码快照保留，不作为最终数据合同。"
+  },
+  "data_contract_changes": {
+    "strategy_changes": [],
+    "new_data_parameters": [
+      "原19 accepted clean单边volume+当日close_oi",
+      "2014预热来源",
+      "455条审批真实Tq补数",
+      "573条真实zero分类",
+      "18条结构性无效mapping分类"
+    ],
+    "modified_data_parameters": [
+      "原19真实日K在新副本规范重建，不能把N相对M变化仅称延长时间。"
+    ],
+    "removed_data_parameters": [
+      "禁止旧M非认证数量/开盘OI作为消费fallback；旧M源及旧结果保留。"
+    ]
+  },
+  "limitations": [
+    "非PIT历史研究，不代表交易时点完整可得信息。",
+    "18处冻结主力mapping结构缺陷仍原样保留，无替代主力推断；bounded_ready不是历史主力重建完整。",
+    "573零量与18无源/无效mapping分类都不是行情bar，不进入周指标/撮合；后续必须核实际订单/持仓/周源零触及18，held/traded始终要求真实正量。",
+    "2014主力映射缺228天，hc1505首2015目标仅13个已完成观察周；不能声称起点21周已ready。",
+    "6个未来物理代真实bar存在但完整上市/退市元数据未知；145组同native跨代观察间隔均>366天，观察首末不是生命周期。",
+    "单边volume/closeOI规范会改变旧信号和仓位，需要同新副本P2020桥接与N2015分开解释。",
+    "无金融结论；零佣金、执行容量及跨样本有效性等仍由后续独审披露。"
+  ],
+  "overfitting_reflection": {
+    "is_parameter_search": false,
+    "judgment": "否；本次只做看收益前固定的数据口径与证据修复，不按收益筛选source或补策略参数。",
+    "continuation_value": "有；解决2014预热、closeOI/volume混口径与native跨十年身份问题，才能解释固定N/P窗口。"
+  },
+  "prior_delivery_check": {
+    "deliveries": {
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage015_delivery_manifest.json": {
+        "manifest_sha256": "9ea884d9c42e5861185820d98ea4755159a2165ec67eec5b0f5f56d7b1133018",
+        "declared_files": 172,
+        "changed_files": []
+      },
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage016_delivery_manifest.json": {
+        "manifest_sha256": "bdddb73009bed722addf1760904d2adbc353718e176008a20cf845a84b3b6d2d",
+        "declared_files": 24,
+        "changed_files": []
+      },
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage017_delivery_manifest.json": {
+        "manifest_sha256": "b18e24b71aa3842ef738991a0873c223bbaa7a15427a578edff96be688a5871f",
+        "declared_files": 10,
+        "changed_files": []
+      },
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage019_delivery_manifest.json": {
+        "manifest_sha256": "312882dfd59ad3b1120dd3c20a0cdfa954b77610ad6a2a1bcef18f7afd85ac8f",
+        "declared_files": 88,
+        "changed_files": []
+      },
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage021_delivery_manifest.json": {
+        "manifest_sha256": "e341e566260c44625b3d0e40a38b7a24ec0d502907e69aee3ecfeb62368032dc",
+        "declared_files": 93,
+        "changed_files": []
+      }
+    },
+    "unique_files_checked": 300,
+    "all_unchanged": true
+  },
+  "old_results_policy": "Stage015/016/017/019/021旧交付不撤回、不改写；旧M数据库及风险metadata均不变。"
+}
