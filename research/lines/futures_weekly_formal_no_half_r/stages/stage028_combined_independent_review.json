@@ -1,0 +1,709 @@
+{
+  "schema": "stage028_combined_independent_review_v1",
+  "frozen_at": "2026-10-23T22:02:02.945449+08:00",
+  "reviewer": "/root/stage028_combined_review",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "verdict": "PASS_BOUNDED_READONLY_AUDIT_DELIVERY_WITH_MATERIAL_DATA_LIMITATIONS",
+  "all_historical_market_data_accuracy_proven": false,
+  "all_historical_main_accuracy_proven": false,
+  "PIT_proven": false,
+  "standard_continuous_calendar_week_MA_proven": false,
+  "production_qualified": false,
+  "promotion_verdict": "NO_PROMOTION",
+  "financial_replays": 0,
+  "downloads": 0,
+  "old_files_written": 0,
+  "unresolved_delivery_implementation_P0": 0,
+  "unresolved_delivery_implementation_P1": 0,
+  "resolved_P2": {
+    "problem": "Substring authority classifier missed exact Stage025 real-roll-tail approvals",
+    "keys": [
+      [
+        "ru1909.SHFE",
+        "2019-08-08",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-12",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-13",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-14",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-15",
+        "SHFE.RU.201909"
+      ]
+    ],
+    "conflict_observations": 8,
+    "remedy": "Frozen original artifacts retained; new exact-approved-membership overlay independently verified",
+    "receipt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_kline_authority_flag_erratum_v1/receipt.json",
+    "receipt_sha256": "bbd669e725b656e43b69a8eed4be9af2b8c1e731d3cc5f622ad6be2d88a4b4e8",
+    "numeric_data_changed": false,
+    "conflict_counts_changed": false
+  },
+  "independent_statistics_reconstruction": {
+    "method": "Independent Decimal reconstruction from raw trades, settings, execution_clock; no replay/report imports",
+    "full_counts": {
+      "fills": 934,
+      "segments": 471,
+      "episodes": 463,
+      "closed_episodes": 460,
+      "terminal_active": 3
+    },
+    "statistics": {
+      "2019-12-31": {
+        "fills": 311,
+        "open_fills": 155,
+        "close_fills": 156,
+        "exit_date": {
+          "fifo": {
+            "count": 156,
+            "win": 57,
+            "loss": 97,
+            "flat": 2,
+            "win_rate_pct": 36.53846153846154,
+            "average_win": 6909.210526315789,
+            "average_loss_abs": 3668.1958762886597,
+            "payoff": 1.883544597761847,
+            "profit_factor": 1.1068251760043843,
+            "net_pnl": 38010.0
+          },
+          "episodes": {
+            "count": 154,
+            "win": 56,
+            "loss": 96,
+            "flat": 2,
+            "win_rate_pct": 36.36363636363637,
+            "average_win": 7029.017857142857,
+            "average_loss_abs": 3704.3229166666665,
+            "payoff": 1.8975175802081303,
+            "profit_factor": 1.1068852551214095,
+            "net_pnl": 38010.0
+          }
+        },
+        "entry_date": {
+          "fifo": {
+            "count": 157,
+            "win": 58,
+            "loss": 97,
+            "flat": 2,
+            "win_rate_pct": 36.94267515923567,
+            "average_win": 6894.568965517241,
+            "average_loss_abs": 3668.1958762886597,
+            "payoff": 1.8795531094955873,
+            "profit_factor": 1.123856498461279,
+            "net_pnl": 44070.0
+          },
+          "episodes": {
+            "count": 155,
+            "win": 57,
+            "loss": 96,
+            "flat": 2,
+            "win_rate_pct": 36.774193548387096,
+            "average_win": 7012.017543859649,
+            "average_loss_abs": 3704.3229166666665,
+            "payoff": 1.892928262898152,
+            "profit_factor": 1.1239261560957778,
+            "net_pnl": 44070.0
+          }
+        }
+      },
+      "2020-12-31": {
+        "fills": 407,
+        "open_fills": 201,
+        "close_fills": 206,
+        "exit_date": {
+          "fifo": {
+            "count": 206,
+            "win": 87,
+            "loss": 117,
+            "flat": 2,
+            "win_rate_pct": 42.23300970873787,
+            "average_win": 8691.724137931034,
+            "average_loss_abs": 4040.7264957264956,
+            "payoff": 2.1510300553931256,
+            "profit_factor": 1.5994838873436061,
+            "net_pnl": 283415.0
+          },
+          "episodes": {
+            "count": 200,
+            "win": 82,
+            "loss": 116,
+            "flat": 2,
+            "win_rate_pct": 41.0,
+            "average_win": 9219.268292682927,
+            "average_loss_abs": 4073.8362068965516,
+            "payoff": 2.2630434373075015,
+            "profit_factor": 1.5997376022346133,
+            "net_pnl": 283415.0
+          }
+        },
+        "entry_date": {
+          "fifo": {
+            "count": 207,
+            "win": 87,
+            "loss": 118,
+            "flat": 2,
+            "win_rate_pct": 42.028985507246375,
+            "average_win": 8691.724137931034,
+            "average_loss_abs": 4039.1101694915255,
+            "payoff": 2.151890830703738,
+            "profit_factor": 1.5865635785697052,
+            "net_pnl": 279565.0
+          },
+          "episodes": {
+            "count": 201,
+            "win": 82,
+            "loss": 117,
+            "flat": 2,
+            "win_rate_pct": 40.79601990049751,
+            "average_win": 9219.268292682927,
+            "average_loss_abs": 4071.923076923077,
+            "payoff": 2.2641066932063483,
+            "profit_factor": 1.5868098191702613,
+            "net_pnl": 279565.0
+          }
+        }
+      }
+    },
+    "checks": {
+      "all471segments_match": true,
+      "all463episodes_match": true,
+      "input_sha_unchanged": true
+    },
+    "source_sha256": {
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/N_attempt002/trades.csv": "6aa09c079571629f8884b1f38de293960d50cea3d71c7217541fe4b9d242d202",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/N_attempt002/effective_parameters.json": "b034cdaee4eb15f0f56a47b06e1ea6f973c392604dd500a0a40f5c9c855cefe4",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/N_attempt002/execution_clock.csv": "345a35d05a11513b2def3e2cdb9bee3fee6e94423aaf0fdc87192e92a67e1fbd"
+    },
+    "script_sha256": "3c1c826d473aa976c175c75bf71174e20df265dc0953103c22ed033debf53d34"
+  },
+  "independent_field_and_join_reconstruction": {
+    "comparison_observations": 59947,
+    "field_comparison_rows": 359682,
+    "all29993_per_key_classifications_recomputed": true,
+    "all29993_selected_six_fields_match_SQLite": true,
+    "all201_episode_rollups_recomputed": true,
+    "all201_master_prefixed_evidence_exact": true,
+    "all201_coverage_counters_match": true,
+    "full_cohort_net": 279565,
+    "closed_window_net": 283415,
+    "per_key_component_counts": {
+      "open": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+        "PASS_agreement": 19229
+      },
+      "high": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+        "PASS_agreement": 19229
+      },
+      "low": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+        "PASS_agreement": 19229
+      },
+      "close": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+        "PASS_agreement": 19227,
+        "CONFLICT": 2
+      },
+      "volume": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+        "PASS_agreement": 17017,
+        "CONFLICT": 40
+      },
+      "close_oi": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+        "PASS_agreement": 17000,
+        "CONFLICT": 57
+      },
+      "price": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+        "PASS_agreement": 19227,
+        "CONFLICT": 2
+      },
+      "kline": {
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+        "PASS_agreement": 16979,
+        "CONFLICT": 78
+      }
+    },
+    "episode_field_counts": {
+      "price_verdict": {
+        "PASS_agreement": 120,
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 79,
+        "CONFLICT": 2
+      },
+      "kline_verdict": {
+        "PASS_agreement": 95,
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 97,
+        "CONFLICT": 9
+      },
+      "episode_all_inputs_verdict": {
+        "PASS_agreement": 92,
+        "INSUFFICIENT_INDEPENDENT_SOURCE": 100,
+        "CONFLICT": 9
+      }
+    },
+    "qualified_conflict_observations": 99,
+    "conflict_keys": 78,
+    "all_conflict_keys_prior_quarantine_and_fixed_Tq_admission": true,
+    "manifests": [
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/final_manifest.json",
+        "sha256": "0b55bc915cd33b7ef6a566accb96d6f9e053e2f79fb2580f89a6c55a0c6f8442",
+        "declarations_checked": 186,
+        "mismatches": 0
+      },
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_mapping_audit/audit_manifest.json",
+        "sha256": "0896469767f8b8f2bdf1872cd878af0fbd7570482a26f43045105c9972131644",
+        "declarations_checked": 247,
+        "mismatches": 0
+      },
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_trade_audit/statistics_summary.json",
+        "sha256": "495388feca491d4b5f50300edd7a5dae2cb61820da9541049026e8fe07c6313b",
+        "declarations_checked": 33,
+        "mismatches": 0
+      },
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_combined_audit_v1/join_manifest.json",
+        "sha256": "713266397048786a6df2a80f2d6f1d2d75ae4968d5da4a18dc4aad0aa9b0fd5f",
+        "declarations_checked": 16,
+        "mismatches": 0
+      }
+    ],
+    "script_sha256": "fe3be72cb4574cff8ab420112b26890022be9538d97946bcb7f91afacf756283"
+  },
+  "independent_RQ_raw_main_inference": {
+    "independent_raw_H5_entry_inferences": 201,
+    "matches_Tq_entry_contract": 195,
+    "vendor_differences": [
+      [
+        "BACKTESTING.48",
+        "cu1603.SHFE",
+        [
+          "cu1604.SHFE"
+        ]
+      ],
+      [
+        "BACKTESTING.62",
+        "ru1605.SHFE",
+        [
+          "ru1609.SHFE"
+        ]
+      ],
+      [
+        "BACKTESTING.103",
+        "FG705.CZCE",
+        [
+          "FG701.CZCE"
+        ]
+      ],
+      [
+        "BACKTESTING.171",
+        "cu1802.SHFE",
+        [
+          "cu1803.SHFE"
+        ]
+      ],
+      [
+        "BACKTESTING.228",
+        "rb1901.SHFE",
+        [
+          "rb1905.SHFE"
+        ]
+      ],
+      [
+        "BACKTESTING.335",
+        "fu2005.SHFE",
+        [
+          "fu2009.SHFE"
+        ]
+      ]
+    ],
+    "author_inference_mismatches": []
+  },
+  "independent_whole_week_review_summary": {
+    "owner_weeks": 34,
+    "unique_contract_weeks": 33,
+    "entries": 13,
+    "MA21_span_owner_weeks": 9,
+    "MA21_span_entries": 4,
+    "raw_days_unique": 111,
+    "selected_DB_present_raw_day_keys": 103,
+    "root_omission_set_matches": true
+  },
+  "whole_week_entry_owner_keys": [
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-05-25",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-06-01",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-06-08",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-06-15",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-06-22",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-06-29",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-07-13",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-07-20",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-07-27",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-08-03",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-08-10",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-08-31",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-09-07",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.49",
+      "episode_id": "NE0026",
+      "vt_symbol": "hc1605.SHFE",
+      "monday": "2015-09-14",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.75",
+      "episode_id": "NE0038",
+      "vt_symbol": "jm1609.DCE",
+      "monday": "2015-09-28",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.75",
+      "episode_id": "NE0038",
+      "vt_symbol": "jm1609.DCE",
+      "monday": "2015-10-05",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.75",
+      "episode_id": "NE0038",
+      "vt_symbol": "jm1609.DCE",
+      "monday": "2015-10-19",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.112",
+      "episode_id": "NE0057",
+      "vt_symbol": "jm1705.DCE",
+      "monday": "2016-05-30",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.211",
+      "episode_id": "NE0105",
+      "vt_symbol": "jm1901.DCE",
+      "monday": "2018-01-29",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.211",
+      "episode_id": "NE0105",
+      "vt_symbol": "jm1901.DCE",
+      "monday": "2018-02-26",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.215",
+      "episode_id": "NE0107",
+      "vt_symbol": "SM901.CZCE",
+      "monday": "2018-02-19",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.271",
+      "episode_id": "NE0135",
+      "vt_symbol": "ru1909.SHFE",
+      "monday": "2019-03-11",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.271",
+      "episode_id": "NE0135",
+      "vt_symbol": "ru1909.SHFE",
+      "monday": "2019-03-25",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.272",
+      "episode_id": "NE0136",
+      "vt_symbol": "SM909.CZCE",
+      "monday": "2018-09-24",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.272",
+      "episode_id": "NE0136",
+      "vt_symbol": "SM909.CZCE",
+      "monday": "2018-10-08",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.292",
+      "episode_id": "NE0146",
+      "vt_symbol": "jm2001.DCE",
+      "monday": "2019-06-10",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.292",
+      "episode_id": "NE0146",
+      "vt_symbol": "jm2001.DCE",
+      "monday": "2019-07-29",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.296",
+      "episode_id": "NE0148",
+      "vt_symbol": "ru2001.SHFE",
+      "monday": "2019-07-01",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.296",
+      "episode_id": "NE0148",
+      "vt_symbol": "ru2001.SHFE",
+      "monday": "2019-07-29",
+      "within_selected_MA21_calendar_span": true
+    },
+    {
+      "entry_trade_id": "BACKTESTING.319",
+      "episode_id": "NE0159",
+      "vt_symbol": "SM005.CZCE",
+      "monday": "2019-06-17",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.323",
+      "episode_id": "NE0162",
+      "vt_symbol": "sp2005.SHFE",
+      "monday": "2019-06-10",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.323",
+      "episode_id": "NE0162",
+      "vt_symbol": "sp2005.SHFE",
+      "monday": "2019-06-17",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.338",
+      "episode_id": "NE0170",
+      "vt_symbol": "SM005.CZCE",
+      "monday": "2019-06-17",
+      "within_selected_MA21_calendar_span": false
+    },
+    {
+      "entry_trade_id": "BACKTESTING.368",
+      "episode_id": "NE0184",
+      "vt_symbol": "SA101.CZCE",
+      "monday": "2020-03-23",
+      "within_selected_MA21_calendar_span": false
+    }
+  ],
+  "all_N_weekly_reaggregation": {
+    "checked_all_N_weekly_rows": 36291,
+    "selected_native_daily_rows": 177015,
+    "reaggregation_differences": []
+  },
+  "all_N_weekly_internal_positive_day_set_check": {
+    "weekly_rows": 36291,
+    "differences": []
+  },
+  "all_N_fill_selected_open_check": {
+    "all_N_fills_checked": 934,
+    "daily_open_mismatch_or_missing_or_zero_volume": []
+  },
+  "authority_flag_erratum_reverification": {
+    "erratum_manifest_declarations_checked": 19,
+    "all29993_corrected_flags_exact_470_membership": true,
+    "approval_raw_values_provenance_and_policy_exact": true,
+    "changed_keys": [
+      [
+        "ru1909.SHFE",
+        "2019-08-08",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-12",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-13",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-14",
+        "SHFE.RU.201909"
+      ],
+      [
+        "ru1909.SHFE",
+        "2019-08-15",
+        "SHFE.RU.201909"
+      ]
+    ],
+    "changed_conflict_observations": 8,
+    "receipt_sha256": "bbd669e725b656e43b69a8eed4be9af2b8c1e731d3cc5f622ad6be2d88a4b4e8"
+  },
+  "old_stage027_bound_files_checked": 2776,
+  "old_stage027_bound_files_changed": 0,
+  "new_manifest_declarations_checked": 501,
+  "manifest_declarations_count_note": "482 component/join plus19 erratum, declarations not unique files or independent sources",
+  "confidence": {
+    "bookkeeping_and_statistics": "HIGH_WITHIN_FROZEN_MODEL",
+    "selected_daily_to_weekly_and_fill_consistency": "HIGH_WITHIN_DECLARED_NONCONTIGUOUS_COMPLETE_WEEK_MODEL",
+    "market_data_ground_truth": "LIMITED_QUALIFIED_SOURCE_CONFLICTS_AND_COVERAGE_GAPS_REMAIN",
+    "main_recorded_mechanics": "HIGH_WITHIN_FROZEN_MAPPING",
+    "historical_main_correctness_and_PIT": "NOT_PROVEN"
+  },
+  "limitations": [
+    "Actual201 entry cohorts only; rejected/unfilled and counterfactual paths not re-evaluated.",
+    "Independent group means separate delivery provenance, not statistically independent upstream errors.",
+    "Qualified source conflicts remain78 daily keys/99 field observations; Tq authority choice is not consensus.",
+    "Many CZCE keys lack qualified independent second source; DCE quantity-unit proof absent; Work upstream/OI clock unqualified.",
+    "13 entry storage spans are noncontiguous calendar weeks; 4 MA21 spans contain9 excluded weeks.",
+    "Raw RQ positive-price scan is not blanket validOHLC proof; 6 quantity quarantines and2 invalidOHLC rows separately classified.",
+    "6 Tq/RQ entry main differences and75 nonjoint-max prior-close switch diagnostics are not proven errors or fully explained by rules.",
+    "Original historical mapping acquisition timestamp/responseSHA/version/PIT unavailable.",
+    "No OOS, realistic commissions/capacity or historical variable contract/margin qualification was added."
+  ],
+  "web_judgment": {
+    "references": [
+      "https://doc.shinnytech.com/tqsdk/latest/usage/mddatas.html",
+      "https://github.com/shinnytech/tqsdk-python/blob/master/tqsdk/api.py",
+      "https://forum.shinnytech.com/question/26536/"
+    ],
+    "judgment": "Vendor definitions and code prove mechanism, not frozen historical PIT truth; original archive footnotes qualify historical units."
+  },
+  "overfitting_reflection": "No new fitting: fixed-source/ledger audit, no tuning, data patching, performance replay or source choice based on return. Existing repeated historical use remains in-sample.",
+  "continuation_reflection": "Continue precise source and weekly-definition qualification before any fixed new replay; no alpha tuning or promotion supported.",
+  "reviewed_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261023_2152_stage028_2015_2020_review_result.md": "2ce9c8f55cfaa173d7cb120662cb8b42d2f25063e912c762cdfb39bcf649a7dc",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_stats_review.md": "886ba81d375295765fbadccadcc85f207fa200c1feff06df39cb32ee1ea94662",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_stats_review.json": "495388feca491d4b5f50300edd7a5dae2cb61820da9541049026e8fe07c6313b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_kline_source_review.md": "3bd4f1dd5da79ead944064422f47f70289dea2512f43e52597cb11a83aeaa5cb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_kline_source_review.json": "9297b82b70184174168cd083c85eb7d054a201d0931dd0c9fb0482c984742647",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_mapping_independent_review.md": "51f761520fdc4bb84cfce771645077717d4ba936b93ac4d7b6c7d6ef034f116d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_mapping_independent_review.json": "e0f69d1ac240e357b3088da7588cd3018f84b2333166aa3ad4c1c42edc537e77",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage027_history_delivery_manifest.json": "4203eadcc6df478cbb3bce281e4f480f571b95b2cd9b27ac5f6f46ffcc61fdc0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_combined_audit_v1/join_manifest.json": "713266397048786a6df2a80f2d6f1d2d75ae4968d5da4a18dc4aad0aa9b0fd5f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_combined_audit_v1/all_201_episode_combined_review.csv": "540698090dd8d505b31b788f8d241ee0575f66ff6ce12d232492add7c7b302ea",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage028_per_episode_review.md": "171189ffc8484efcea3c3ad0bc2bc5be184bde72e353d0e3f100d9bb7e56afe2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage028_build_combined_audit.py": "0d7219042ae4ac911b7b7fca7b2888865598493583857462fd26b1e65b81c662",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_root_whole_week_audit.json": "b8eeb4b6dedd6657b6d32817c7a1189c0d0be1c2690770141f2e5b8f63ec4789",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage028_check_whole_weeks.py": "22bdc54593c68ba93e8bf75ea770e61ee70cfe47b44e7113043e634b9d1537de",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/final_manifest.json": "0b55bc915cd33b7ef6a566accb96d6f9e053e2f79fb2580f89a6c55a0c6f8442",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_mapping_audit/audit_manifest.json": "0896469767f8b8f2bdf1872cd878af0fbd7570482a26f43045105c9972131644",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_trade_audit/statistics_summary.json": "495388feca491d4b5f50300edd7a5dae2cb61820da9541049026e8fe07c6313b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_kline_authority_flag_erratum_v1/receipt.json": "bbd669e725b656e43b69a8eed4be9af2b8c1e731d3cc5f622ad6be2d88a4b4e8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_kline_authority_flag_erratum_v1/receipt.md": "8798f7efcd8303a0ba4bb44fd18356550c5b652e842c41f309558f988fa8abfb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_kline_authority_flag_erratum_v1/per_key_authority_flag_overlay.csv": "6d69dd259436bbcd5899b3ffa214bf3c37a0d4975b3b8d544a023c08a98ebda5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_kline_authority_flag_erratum_v1/qualified_conflict_authority_flag_overlay.csv": "44322cd174d0a29e32e682d59b378eab87e098f9feabf496cf8f1eadbcfbb9c8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/weekly_adapter.py": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261022_1925_stage001_independent_review.md": "3a256af5736e0441f7f0fad91437838e21586750e922e27c5b1352d842f928d5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261022_2026_stage002_weekly_2020_result.md": "6465eec2b25a0f3c0a803ad589fcb477e995bba5e19799d900aa8bdad12ac641",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261023_1446_stage008_three_ma_19_contract.md": "958d33951bc47598e52626a5135a3f6c6719780f5d549a3c1c11234a6a003fde",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261023_2117_stage028_2015_2020_data_audit_contract.md": "1db8ef8c67e5fba1a0e0f8203d0c19317f089203a1ea5f6038e56ff0dd96c57e"
+  },
+  "review_inputs_unchanged_during_report_write": true,
+  "narrative_sha256": "d9e93e3fdf1cb6ffa5d8237beb4258c6a7076d7b40ca2d84c4c2173f64f8faeb",
+  "independent_reproduction_sources": [
+    {
+      "name": "stage028_combined_review_stats.py",
+      "sha256": "3c1c826d473aa976c175c75bf71174e20df265dc0953103c22ed033debf53d34",
+      "source": "import csv,json,hashlib\nfrom pathlib import Path\nfrom decimal import Decimal as D\nfrom collections import defaultdict,deque\nROOT=Path('/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian')\nL=ROOT/'research/lines/futures_weekly_formal_no_half_r'\nP=L/'outputs/N_attempt002'\nR=L/'outputs/stage028_2015_2020_trade_audit'\ndef read(p): return list(csv.DictReader(p.open()))\ndef sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()\nsource_paths=[P/'trades.csv',P/'effective_parameters.json',P/'execution_clock.csv']\npre={str(p):sha(p) for p in source_paths}\nsettings=json.loads((P/'effective_parameters.json').read_text())\nclock={r['trade_id']:r for r in read(P/'execution_clock.csv')}\ntrades=read(P/'trades.csv'); assert len(clock)==len(trades)==934\nassert len({r['trade_id'] for r in trades})==len(trades)\nqueues=defaultdict(deque); active={}; episodes=[]; segments=[]\nfor t in trades:\n sym=t['vt_symbol']; tid=t['trade_id']; date=clock[tid]['trading_date']; q=D(t['volume']); price=D(t['price']); sz=D(str(settings['sizes'][sym])); slip=D(str(settings['slippages'][sym])); rate=D(str(settings['rates'][sym])); cost=slip*q*sz+abs(price*q*sz)*rate\n assert date==t['trading_date']; assert D(clock[tid]['price'])==price; assert D(clock[tid]['volume'])==q\n direction=1 if t['direction']=='多' else -1\n if t['offset']=='开':\n  if sym not in active:\n   e={'episode_id':f'NE{len(episodes)+1:04d}','vt_symbol':sym,'direction':direction,'entry_date':date,'entry_trade_id':tid,'exit_date':None,'net_pnl':D(0),'fill_ids':[],'balance':D(0)}; episodes.append(e); active[sym]=e\n  e=active[sym]; assert e['direction']==direction\n  e['fill_ids'].append(tid);e['balance']+=q\n  queues[sym].append({'q':q,'price':price,'direction':direction,'id':tid,'date':date,'unit_cost':cost/q,'episode':e})\n else:\n  e=active[sym]; assert e['direction']==-direction;e['fill_ids'].append(tid);e['balance']-=q\n  left=q\n  while left:\n   lot=queues[sym][0]; n=min(left,lot['q']); gross=(price-lot['price'])*n*sz*lot['direction']; net=gross-n*lot['unit_cost']-cost*n/q\n   s={'episode_id':e['episode_id'],'vt_symbol':sym,'entry_trade_id':lot['id'],'exit_trade_id':tid,'entry_date':lot['date'],'exit_date':date,'volume':n,'net_pnl':net};segments.append(s);e['net_pnl']+=net;left-=n;lot['q']-=n\n   if not lot['q']:queues[sym].popleft()\n  if not e['balance']:e['exit_date']=date;del active[sym]\n assert active.get(sym,{}).get('balance',D(0))>=0\norigseg=read(R/'full_N_closed_fifo_segments.csv');assert len(origseg)==len(segments)==471\norigep=read(R/'full_N_contract_episode_inventory.csv');assert len(origep)==len(episodes)==463\nslookup={(s['entry_trade_id'],s['exit_trade_id'],s['volume']):s for s in segments};assert len(slookup)==471\nfor row in origseg:\n key=row['entry_trade_id'],row['exit_trade_id'],D(row['quantity']);s=slookup[key]\n assert abs(s['net_pnl']-D(row['net_pnl']))<D('0.000001'),(key,s['net_pnl'],row['net_pnl'])\n assert s['episode_id']==row['episode_id'];assert s['exit_date']==row['exit_date']; assert s['entry_date']==row['entry_date']\nelookup={e['episode_id']:e for e in episodes}\nfor row in origep:\n e=elookup[row['episode_id']]\n assert e['vt_symbol']==row['vt_symbol'];assert e['fill_ids']==json.loads(row['fill_trade_ids'])\n assert e['entry_date']==row['entry_date'];assert (e['exit_date'] or '')==row['exit_date']\n assert abs(e['net_pnl']-D(row['realized_closed_net_pnl']))<D('0.000001')\ndef stat(rows):\n vals=[r['net_pnl'] for r in rows];wins=[n for n in vals if n>0];loss=[-n for n in vals if n<0]\n return {'count':len(vals),'win':len(wins),'loss':len(loss),'flat':len(vals)-len(wins)-len(loss),'win_rate_pct':float(D(len(wins))/len(vals)*100),'average_win':float(sum(wins)/len(wins)),'average_loss_abs':float(sum(loss)/len(loss)),'payoff':float((sum(wins)/len(wins))/(sum(loss)/len(loss))),'profit_factor':float(sum(wins)/sum(loss)),'net_pnl':float(sum(vals))}\nresults={}\nfor end in ('2019-12-31','2020-12-31'):\n fills=[t for t in trades if '2015-01-01'<=t['trading_date']<=end]\n results[end]={'fills':len(fills),'open_fills':sum(t['offset']=='开' for t in fills),'close_fills':sum(t['offset']!='开' for t in fills)}\n for scope in ('exit_date','entry_date'):\n  results[end][scope]={'fifo':stat([s for s in segments if '2015-01-01'<=s[scope]<=end]),'episodes':stat([e for e in episodes if e['exit_date'] and '2015-01-01'<=e[scope]<=end])}\npost={str(p):sha(p) for p in source_paths};assert pre==post\nout={'method':'Independent Decimal reconstruction from raw trades, settings, execution_clock; no replay/report imports','full_counts':{'fills':len(trades),'segments':len(segments),'episodes':len(episodes),'closed_episodes':sum(e['exit_date'] is not None for e in episodes),'terminal_active':len(active)},'statistics':results,'checks':{'all471segments_match':True,'all463episodes_match':True,'input_sha_unchanged':pre==post},'source_sha256':pre,'script_sha256':sha(Path(__file__))}\nPath('/private/tmp/stage028_combined_review_stats_result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps(out,ensure_ascii=False,indent=2))\n"
+    },
+    {
+      "name": "stage028_verify_final_artifacts.py",
+      "sha256": "fe3be72cb4574cff8ab420112b26890022be9538d97946bcb7f91afacf756283",
+      "source": "import csv,gzip,json,hashlib,math,sqlite3\nfrom pathlib import Path\nfrom collections import defaultdict,Counter\nL=Path('/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r');K=L/'outputs/stage028_2015_2020_kline_audit';M=L/'outputs/stage028_2015_2020_mapping_audit';S=L/'outputs/stage028_2015_2020_trade_audit';J=L/'outputs/stage028_combined_audit_v1'\ndef read(p):\n with (gzip.open(p,'rt',encoding='utf-8-sig') if str(p).endswith('.gz') else p.open(encoding='utf-8-sig',newline='')) as f:return list(csv.DictReader(f))\ndef digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()\ndef key(r):return r['vt_symbol'],r['date'],r['contract_epoch_id']\nrank={'PASS_agreement':0,'INSUFFICIENT_INDEPENDENT_SOURCE':1,'CONFLICT':2}\ndef worst(values):return max(values,key=rank.get) if values else 'INSUFFICIENT_INDEPENDENT_SOURCE'\nfields=['open','high','low','close','volume','close_oi'];per={key(r):r for r in read(K/'per_key_audit.csv')};assert len(per)==29993\nagree=defaultdict(set);conf=Counter();ngroups=defaultdict(set);observations=set();qualified_dissent_rows=[];comparison_bad=[]\nfor r in read(K/'field_source_comparisons.csv.gz'):\n observations.add(r['observation_id']); idx=(*key(r),r['field'])\n if r['qualified']=='True':\n  diff=abs(float(r['normalized_value'])-float(r['selected_value']))>1e-6;assert (r['comparison']=='CONFLICT')==diff\n  if diff:conf[idx]+=1;qualified_dissent_rows.append(r)\n  else:agree[idx].add(r['independent_group'])\n  ngroups[idx].add(r['independent_group'])\n  assert r['channel']!='WORK_GITHUB'\n  assert not (r['channel']=='DCE_OFFICIAL' and r['field'] in ['volume','close_oi'])\nfor k,r in per.items():\n for f in fields:\n  idx=(*k,f);expected='CONFLICT' if conf[idx] else 'PASS_agreement' if len(agree[idx])>=2 else 'INSUFFICIENT_INDEPENDENT_SOURCE'\n  assert r[f+'_verdict']==expected,(k,f,r[f+'_verdict'],expected)\n  assert int(float(r[f+'_agree_independent_groups']))==len(agree[idx])\n assert r['price_verdict']==worst([r[f+'_verdict'] for f in fields[:4]])\n assert r['kline_verdict']==worst([r[f+'_verdict'] for f in fields])\nassert len(qualified_dissent_rows)==99\nassert len({key(r) for r in qualified_dissent_rows})==78\nqpaths=Path('/Users/mac/Desktop/fian/research/lines/futures_trend_rollover_shape_same_volume/outputs/stage266_clean_daily')\nqkeys={(r['contract_epoch_id'],r['trade_date']) for r in read(qpaths/'stage266_units_quarantine.csv')}\nfor r in qualified_dissent_rows:\n p=per[key(r)];assert (r['contract_epoch_id'],r['date']) in qkeys;assert p['fixed_Tq_authority_supplement']=='True' or p['admission_reason']=='root_fixed_pre_financial_rule_stage025_real_roll_tail'\n# Independently compare selected scope six values to raw frozen selected daily database, including eight additional signal days.\nc=sqlite3.connect((L/'outputs/stage025_history_data_approved/daily.sqlite').as_uri()+'?mode=ro',uri=True)\nfor k,r in per.items():\n sym,ex=r['vt_symbol'].split('.');a=c.execute(\"select open_price,high_price,low_price,close_price,volume,open_interest from dbbardata where symbol=? and exchange=? and interval='d' and datetime=?\",(sym,ex,r['date']+' 00:00:00')).fetchall();assert len(a)==1\n assert all(abs(float(r[f])-v)<1e-6 for f,v in zip(fields,a[0]))\nfills={r['trade_id']:r for r in read(K/'scoped_fills.csv')};eps=read(K/'scoped_episodes.csv');epfirst={r['episode_id']:r['first_trade_id'] for r in eps};epkeys=defaultdict(set);epfillids=defaultdict(list)\nfor r in fills.values():epfillids[r['episode_id']].append(r['trade_id'])\nfor r in read(K/'key_membership_final.csv'):\n ep=r['owner_id'] if r['owner_type']=='episode' else fills[r['owner_id']]['episode_id'];epkeys[ep].add(key(r));p=per[key(r)]\n for f in ['price','volume','close_oi','kline','open']:assert r[f+'_verdict']==p[f+'_verdict']\nentry={r['first_entry_trade_id']:r for r in read(K/'per_episode_audit.csv')}\nfor ep,keys in epkeys.items():\n e=entry[epfirst[ep]];assert int(e['daily_key_count'])==len(keys)\n for f in ['price','volume','close_oi','kline']:assert e[f+'_verdict']==worst([per[k][f+'_verdict'] for k in keys])\n expected=worst([e['kline_verdict'],'INSUFFICIENT_INDEPENDENT_SOURCE']) if int(e['omitted_interval_weeks']) else e['kline_verdict'];assert e['episode_all_inputs_verdict']==expected\n fv=[]\n for tid in epfillids[ep]:\n  t=fills[tid];pkeys=[k for k in per if k[0]==t['vt_symbol'] and k[1]==t['trading_date']];assert len(pkeys)==1;fv.append(per[pkeys[0]]['open_verdict'])\n assert e['fill_open_verdict']==worst(fv)\n# Root final join compared to component dictionaries by actual entry trade, never by the Kline's independent EP prefix.\nstats={r['first_entry_trade_id']:r for r in read(S/'episodes_entry_cohort_2015_2020.csv')};main={r['entry_trade_id']:r for r in read(M/'all_201_entry_episodes_main_audit.csv')};master={r['entry_trade_id']:r for r in read(J/'all_201_episode_combined_review.csv')};assert set(master)==set(stats)==set(entry)==set(main) and len(master)==201\nfor tid,r in master.items():\n for prefix,source in [('stats_',stats[tid]),('kline_',entry[tid]),('mapping_',main[tid])]:\n  for field,value in source.items():assert r[prefix+field]==value,(tid,prefix+field)\n assert float(r['net_pnl'])==float(stats[tid]['net_pnl'])\n assert int(r['root_positive_whole_week_gaps'])==int(entry[tid]['omitted_interval_weeks'])\n assert int(r['root_ma21_positive_whole_week_gaps'])==int(entry[tid]['omitted_ma21_span_weeks'])\nassert sum(float(r['net_pnl']) for r in master.values())==279565\nassert sum(float(r['net_pnl']) for r in master.values() if r['closed_by_2020_12_31']=='True')==283415\n# Verify all newly frozen manifest declarations.\nmanifest_results=[]\nfor path,sections in [(K/'final_manifest.json',['files','source_files_sha256']),(M/'audit_manifest.json',['input_files_sha256','output_files_sha256']),(S/'statistics_summary.json',['source_files_sha256','output_files_sha256']),(J/'join_manifest.json',['source_files_sha256','output_files_sha256'])]:\n d=json.loads(path.read_text());n=0\n for section in sections:\n  for p,h in d[section].items():assert digest(p)==h,(path,p);n+=1\n manifest_results.append({'path':str(path),'sha256':digest(path),'declarations_checked':n,'mismatches':0})\nresult={'comparison_observations':len(observations),'field_comparison_rows':len(observations)*6,'all29993_per_key_classifications_recomputed':True,'all29993_selected_six_fields_match_SQLite':True,'all201_episode_rollups_recomputed':True,'all201_master_prefixed_evidence_exact':True,'all201_coverage_counters_match':True,'full_cohort_net':279565,'closed_window_net':283415,'per_key_component_counts':{f:dict(Counter(r[f+'_verdict'] for r in per.values())) for f in fields+['price','kline']},'episode_field_counts':{f:dict(Counter(r[f] for r in entry.values())) for f in ['price_verdict','kline_verdict','episode_all_inputs_verdict']},'qualified_conflict_observations':99,'conflict_keys':78,'all_conflict_keys_prior_quarantine_and_fixed_Tq_admission':True,'manifests':manifest_results,'script_sha256':digest(Path(__file__))}\nPath('/private/tmp/stage028_verify_final_artifacts_result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\\n');print(json.dumps(result,ensure_ascii=False,indent=2))\n"
+    }
+  ],
+  "self_reference_policy": "JSON excludes its own SHA; narrative SHA included; root final delivery may bind both. Root future delivery manifest intentionally not an input."
+}

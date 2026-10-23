@@ -1,0 +1,445 @@
+{
+  "schema": "stage028_kline_source_review_v1",
+  "verdict": "SOURCE_CONFLICTS_AND_INDEPENDENT_COVERAGE_LIMITATIONS",
+  "financial_replays": 0,
+  "downloads": 0,
+  "frozen_N_attempt_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/N_attempt002",
+  "scope": {
+    "actual_entry_cohorts": 201,
+    "episodes": 201,
+    "period_fills": 407,
+    "scoped_fills": 408,
+    "boundary_fill": "2021-01-04",
+    "unique_daily_keys": 29993,
+    "original_scope_keys": 29985,
+    "extra_actual_entry_signal_days": 8,
+    "unique_completed_week_keys": 5997,
+    "weekly_source_days_exact_aggregation_pass": 5997,
+    "within_consumed_weeks_available_raw_omitted_positive_days": 0
+  },
+  "per_key_component_counts": {
+    "open": {
+      "PASS_agreement": 19229,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 10764
+    },
+    "high": {
+      "PASS_agreement": 19229,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 10764
+    },
+    "low": {
+      "PASS_agreement": 19229,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 10764
+    },
+    "close": {
+      "PASS_agreement": 19227,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+      "CONFLICT": 2
+    },
+    "volume": {
+      "PASS_agreement": 17017,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+      "CONFLICT": 40
+    },
+    "close_oi": {
+      "PASS_agreement": 17000,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+      "CONFLICT": 57
+    },
+    "price": {
+      "PASS_agreement": 19227,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 10764,
+      "CONFLICT": 2
+    },
+    "kline": {
+      "PASS_agreement": 16979,
+      "INSUFFICIENT_INDEPENDENT_SOURCE": 12936,
+      "CONFLICT": 78
+    }
+  },
+  "source_channel_observations": {
+    "RQ": 29993,
+    "SHFE_OFFICIAL": 15526,
+    "TQ": 6002,
+    "WORK_GITHUB": 5890,
+    "DCE_OFFICIAL": 2536
+  },
+  "source_field_summary": {
+    "DCE_OFFICIAL": {
+      "close": {
+        "observations": 2536,
+        "qualified": 2536,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "close_oi": {
+        "observations": 2536,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "high": {
+        "observations": 2536,
+        "qualified": 2536,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "low": {
+        "observations": 2536,
+        "qualified": 2536,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "open": {
+        "observations": 2536,
+        "qualified": 2536,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "volume": {
+        "observations": 2536,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      }
+    },
+    "RQ": {
+      "close": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 2,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 2
+      },
+      "close_oi": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 55,
+        "one_lot": 21,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 55
+      },
+      "high": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "low": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "open": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "volume": {
+        "observations": 29993,
+        "qualified": 29993,
+        "conflicts": 40,
+        "one_lot": 9,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 40
+      }
+    },
+    "SHFE_OFFICIAL": {
+      "close": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "close_oi": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 2,
+        "one_lot": 2,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 2
+      },
+      "high": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "low": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "open": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "volume": {
+        "observations": 15526,
+        "qualified": 15526,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      }
+    },
+    "TQ": {
+      "close": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "close_oi": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "high": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "low": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "open": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "volume": {
+        "observations": 6002,
+        "qualified": 6002,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      }
+    },
+    "WORK_GITHUB": {
+      "close": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "close_oi": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "high": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "low": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "open": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      },
+      "volume": {
+        "observations": 5890,
+        "qualified": 0,
+        "conflicts": 0,
+        "one_lot": 0,
+        "raw_zero_vs_positive": 0,
+        "qualified_dissent_keys": 0
+      }
+    }
+  },
+  "per_entry_verdicts": {
+    "INSUFFICIENT_INDEPENDENT_SOURCE": 100,
+    "PASS_agreement": 92,
+    "CONFLICT": 9
+  },
+  "fill_open_verdicts": {
+    "PASS_agreement": 247,
+    "INSUFFICIENT_INDEPENDENT_SOURCE": 161
+  },
+  "all_fill_prices_match_frozen_daily_open": true,
+  "whole_week_coverage": {
+    "owner_weeks": 34,
+    "unique_weeks": 33,
+    "entries": 13,
+    "reasons": {
+      "PARTIAL_POSITIVE_WEEK_REJECTED_BY_GLOBAL_FULL_WEEK_POLICY": 26,
+      "RAW_FULL_POSITIVE_WEEK_REJECTED_AFTER_SELECTED_DAILY_GAP": 8
+    },
+    "owner_weeks_in_ma21_span": 9,
+    "entries_ma21_span": [
+      "BACKTESTING.49",
+      "BACKTESTING.271",
+      "BACKTESTING.292",
+      "BACKTESTING.296"
+    ],
+    "raw_positive_missing_selected": 8,
+    "policy": "WeeklyArrayManager requires positive-real bars for every global trading-calendar day; otherwise entire week excluded. Observations are not necessarily consecutive natural weeks."
+  },
+  "limitations": [
+    "No new data or financial replay. Accepted status is not accuracy proof.",
+    "RQ single source for many dates; no available usable official CZCE daily archive. Work mirror upstream/units/adjustment/OI clock unproven and not independent second vote.",
+    "DCE original prices independently verifiable; native quantity units unproved in these original packs, so quantities retained but not silently normalized.",
+    "SHFE original yearly XLS footer independently proves double/single units per archive, not date guess. RQ source-specific unit rule declared in preexisting contract.",
+    "Tq duplicate snapshots are one independent delivery channel. Tq supplements are authority choices, not consensus.",
+    "Neither small quantity differences nor storage41-only close differences prove absent strategy/PnL effect.",
+    "Whole consumed-week zero omissions does not prove continuous standard calendar-week inputs; 13 entry cohorts have explicit noncontiguous-week coverage flags.",
+    "No PIT/OOS/fee/capacity validation or production promotion."
+  ],
+  "public_reference_judgment": {
+    "Tq_close_oi_docs": "https://doc.shinnytech.com/tqsdk/latest/reference/tqsdk.api.html",
+    "SHFE_official_archive": "https://www.shfe.com.cn/reports/tradedata/datadownload/",
+    "judgment": "API docs identify close_oi vs open_oi; historical original annual XLS footnotes establish units. Current website cannot retrospectively prove old unit conventions."
+  },
+  "definitions": {
+    "PASS_agreement": "All required qualified fields have at least two separately delivered source groups agreeing and no qualified dissent in this scoped evidence; not exchange ground-truth/PIT certification.",
+    "CONFLICT": "At least one qualified source field differs; no majority voting removes dissent.",
+    "INSUFFICIENT_INDEPENDENT_SOURCE": "Missing independent second qualified source for at least one field, or explicit calendar-week coverage-policy limitation.",
+    "independent_group": "Distinct delivery channel/provider/archive provenance; not proof that market-data upstream or errors are statistically independent.",
+    "signal_storage41_verdict": "All actual available storage weeks (up to41), including MA21; extra22..41 is separate column.",
+    "fill_open_verdict": "All entry/exit fill opens of complete overlapping episode. entry_fill_open_verdict retains entry-only."
+  },
+  "all_qualified_conflicts_preexisting_units_quarantine": true,
+  "qualified_conflict_observations": 99,
+  "unknown_units_comparisons": "DCE volume/OI and Work are raw-preserved hypotheses only, not counted as qualified dissent or independent support.",
+  "oi_conflict_direct_consumption_check": [
+    {
+      "contract_epoch_id": "SHFE.RU.202001",
+      "conflict_date": "2019-09-24",
+      "selected_daily_close_oi": 171516,
+      "official_daily_close_oi": 171517,
+      "consumed_week_end": "2019-09-27",
+      "weekly_close_oi_source_date": "2019-09-27",
+      "selected_weekly_close_oi": 166944.0,
+      "official_one_day_substitution_weekly_close_oi": 166944.0,
+      "previous_selected_week_end": "2019-09-20",
+      "previous_selected_weekly_close_oi": 175555.0,
+      "weekly_oi_up_selected": false,
+      "weekly_oi_up_if_only_this_official_oi_substituted": false,
+      "entry_trade_id": "BACKTESTING.296",
+      "actual_entry_order_id": "BACKTESTING.318",
+      "entry_signal_date": "2019-10-18",
+      "actual_entry_oi": 165135.0,
+      "actual_entry_prev_oi": 169160.0,
+      "logged_entry_oi_confirm_passed": 0,
+      "limitation": "Only these direct weekly end-OI and logged entry OI consumers checked. No strategy replay, recursive/counterfactual account effect or all thresholds proved unchanged."
+    },
+    {
+      "contract_epoch_id": "SHFE.RU.202009",
+      "conflict_date": "2020-06-05",
+      "selected_daily_close_oi": 225112,
+      "official_daily_close_oi": 225113,
+      "consumed_week_end": "2020-06-05",
+      "weekly_close_oi_source_date": "2020-06-05",
+      "selected_weekly_close_oi": 225112.0,
+      "official_one_day_substitution_weekly_close_oi": 225113.0,
+      "previous_selected_week_end": "2020-05-29",
+      "previous_selected_weekly_close_oi": 209261.0,
+      "weekly_oi_up_selected": true,
+      "weekly_oi_up_if_only_this_official_oi_substituted": true,
+      "entry_trade_id": "BACKTESTING.358",
+      "actual_entry_order_id": "BACKTESTING.386",
+      "entry_signal_date": "2020-07-10",
+      "actual_entry_oi": 191659.0,
+      "actual_entry_prev_oi": 200713.0,
+      "logged_entry_oi_confirm_passed": 0,
+      "limitation": "Only these direct weekly end-OI and logged entry OI consumers checked. No strategy replay, recursive/counterfactual account effect or all thresholds proved unchanged."
+    }
+  ],
+  "source_sha_reverification": {
+    "files": 137,
+    "changed": 0
+  },
+  "evidence_directory": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit",
+  "important_breakthrough": false,
+  "changes": "只新增来源审计与逐笔证据，不修改参数、策略、数据、既有回测或权益",
+  "new_parameters": [],
+  "modified_parameters": [],
+  "deleted_parameters": [],
+  "new_backtests": [],
+  "promotion": "NO_PROMOTION",
+  "record_time_local": "2026-10-23 21:51 Asia/Shanghai",
+  "overfitting_reflection": "否：对冻结成交及其实际指标依赖作只读多源取证，不按收益择源或调参。",
+  "continuation_reflection": "有价值：精确披露来源争议与周线政策；不把证据不足转成策略收益结论。",
+  "evidence_manifest_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/final_manifest.json",
+  "evidence_manifest_sha256": "0b55bc915cd33b7ef6a566accb96d6f9e053e2f79fb2580f89a6c55a0c6f8442",
+  "key_outputs_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/per_key_audit.csv": "3dd6b474d3b16fd84235d67f67c823a843edc4c99353f0a6b59365d9fe1c077e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/per_week_audit.csv": "6ff8dcea3c8b568d0a26a6c7d6eda2acfb6b4cead9d37e3db286e658d31ca374",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/per_entry_audit.csv": "984040654eae35f4c899c9f5a9389aafb01af6f138040254b25b9c7a45605158",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/per_episode_audit.csv": "984040654eae35f4c899c9f5a9389aafb01af6f138040254b25b9c7a45605158",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/per_trade_audit.csv": "f8b996af7062bad64af792119a9218e95ef6d29b995b8089c5b8a4678c7ab64c",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/field_source_comparisons.csv.gz": "2980c07ac7d40695f094c56a8298264254200d7920e40b28c9c4ff682639adda",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/excluded_whole_weeks_audit.csv": "4cc7e459b60afe7422c3f6220f4fe4990a8448e8ccd93c76a6e3fcd41f5eb14d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/excluded_week_positive_daily_gaps.csv": "e3c3fcff390475f6a6ccff61968bae0d33c05cf79db3ae9ee399bfb45637bfa1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage028_2015_2020_kline_audit/source_sha_reverification.json": "aeca715c5954b0e129ecf22a733fc4c86b50ae7a959475bdc2926071589e609e"
+  },
+  "narrative_sha256": "3bd4f1dd5da79ead944064422f47f70289dea2512f43e52597cb11a83aeaa5cb"
+}
