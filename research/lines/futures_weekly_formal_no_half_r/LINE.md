@@ -1,5 +1,14 @@
 # 正式衍生周线指标/半R关闭研究线
 
+## 当前状态（Stage015，2026-10-23 16:42）
+
+- K在H三MA基础上完整关闭MACD方向门、case3触发及两种换月MACD门；其余参数/周bar/21ready41store/原19/150000/2020-01-02—2026-10-22/日open模型/全AI及半R/C2关闭均与H完全一致。
+- K1544580/+929.72%/DD−33.9465%/Sharpe1.110927/453笔/19品种，滑点125260、手续费0；H979390/+552.9267%/DD−38.6075%/Sharpe0.942966/408笔。K已平净809750+末3合约207手净MTM584830=总净1394580；胜率40.6114%、payoff2.09009、PF1.43984。
+- 独审PASS_OFFLINE_RESEARCH，MACD/AI模型/分钟proxy0调用；K532冻结输入0变化。H原结果和独审复用未改。候选351−45条MACD-only+57条MA交叉=363，就绪覆盖完全不变。
+- 当前窗支持简化，收益/比例回撤/Sharpe改善但PF略降，末未平占净利41.94%、2026占56.00%，静态/0费/非OOS限制仍在。继续固定规则验证有价值，NO_PROMOTION，不扫参、不自动开展下一实验。
+- 最新完整记录：[20261023_1642_stage015_three_ma_macd_off_result.md](stages/20261023_1642_stage015_three_ma_macd_off_result.md)；独审stages/stage015_HK_independent_review.json/.md，图表artifacts/stage014。旧Stage013状态文件原字节按SHA保存在stages/stage015_previous_status；其余历史口径/AI勘误和F否决/G未完成均保留。
+
+
 ## 当前状态（Stage013，2026-10-23 16:18）
 
 - 本轮用户指定：原19、周MA5/10/20、去MA40；全部AI选品、0.5R、C2关闭。日Kopen是主撮合模型，普通周信号次周开盘；日线风控/换月保留，退出次日日K open。无分钟依赖，minute/proxy/AI模型读取均0。
