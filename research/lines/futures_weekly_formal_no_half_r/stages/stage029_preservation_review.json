@@ -1,0 +1,125 @@
+{
+  "schema": "stage029_final_preservation_check_v1",
+  "created_at": "2026-10-26T20:04:50.562671+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewer": "independent_agent_stage029_exit_design_review",
+  "status": "PASS_FROZEN_PRESERVATION",
+  "financial_replays": 0,
+  "downloads": 0,
+  "old_files_modified": 0,
+  "source_manifests": {
+    "stage028": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage028_delivery_manifest.json",
+      "sha256": "05054dcc1a963c435d085a009c32fb4d3a3b411a42528aed9ce3c6e991532cbd",
+      "matches_committed_2c8aa6b66": true
+    },
+    "R001": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt001/input_manifest.json",
+      "sha256": "565b2bf1564759fcbc23a4aba725a85504928197959cbd2613935e8466c9ebb1",
+      "stable_during_check": true
+    }
+  },
+  "scopes": {
+    "stage028_files": {
+      "checked": 2966,
+      "unchanged": 2966,
+      "missing": 0,
+      "changed": 0,
+      "changed_during_read": 0,
+      "unreadable": 0
+    },
+    "stage028_component_manifests": {
+      "checked": 7,
+      "unchanged": 7,
+      "missing": 0,
+      "changed": 0,
+      "changed_during_read": 0,
+      "unreadable": 0
+    },
+    "R001_inputs": {
+      "checked": 2457,
+      "unchanged": 2457,
+      "missing": 0,
+      "changed": 0,
+      "changed_during_read": 0,
+      "unreadable": 0
+    }
+  },
+  "unique_physical_paths_hashed": 2972,
+  "total_binding_checks": 5430,
+  "missing": [],
+  "changed": [],
+  "changed_during_read": [],
+  "unreadable": [],
+  "conflicting_expected_bindings": [],
+  "version_separation": {
+    "accepted": true,
+    "sources": {
+      "v1": [
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py",
+          "sha256": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+          "R001_expected_sha256": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+          "bound_in_R001": true
+        },
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits.py",
+          "sha256": "999c58b9f8f920753bcbf2da0d725fa8fdfd72fb02464998fb8507f0e63be216",
+          "R001_expected_sha256": "999c58b9f8f920753bcbf2da0d725fa8fdfd72fb02464998fb8507f0e63be216",
+          "bound_in_R001": true
+        },
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage029_week_close.py",
+          "sha256": "916b90bf478c0ba521186e6e14af28171f4b21d0b2e46037935624cf0f716e07",
+          "R001_expected_sha256": "916b90bf478c0ba521186e6e14af28171f4b21d0b2e46037935624cf0f716e07",
+          "bound_in_R001": true
+        }
+      ],
+      "v2": [
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py",
+          "sha256": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+          "R001_expected_sha256": null,
+          "bound_in_R001": false
+        },
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits_v2.py",
+          "sha256": "144416876d5e3cdedb7fbe8534b3248c760539412a01a77ca69ad476162abf9a",
+          "R001_expected_sha256": null,
+          "bound_in_R001": false
+        },
+        {
+          "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage029_week_close_v2.py",
+          "sha256": "af05ee057bdd08ec35423085a7229b4de4a8a9d4e94ee58c55ed37247a4fd39c",
+          "R001_expected_sha256": null,
+          "bound_in_R001": false
+        }
+      ]
+    }
+  },
+  "failed_attempt_terminal": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt001/terminal.json",
+    "sha256": "38bb01e16f18b3c260e77fef1535d244da4a053a0e4fa7e92b4a41281ea92064",
+    "observed_status": "failed",
+    "observed_error": "KeyError(datetime.date(2015, 3, 16))"
+  },
+  "artifacts": {
+    "tool": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_final_preservation_check/verify_preservation.py",
+      "sha256": "7c97bb8923386cc87afa1389c43fbdad21814ff997ac97c4087ef18d5b780376"
+    },
+    "bound_file_checks": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_final_preservation_check/bound_file_checks.csv",
+      "sha256": "a1d9b95e304aa2dc4f630d2d3035337a703a955eaf19f539d0d913cc7fc338b6"
+    }
+  },
+  "limitations": [
+    "Hash preservation proves selected frozen bytes are unchanged; it does not certify financial performance, vendor accuracy, historical main authenticity, PIT or production readiness.",
+    "This review does not hash mutable Q001/R003 outputs and does not interrupt active financial work.",
+    "R001 input_manifest self SHA is observed and stable during this check; its historical preservation claim concerns its declared inputs. Stage028 manifest itself is additionally compared to committed2c8aa6b66 bytes."
+  ],
+  "result_artifact": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_final_preservation_check/result.json",
+    "sha256": "1e7501a33af7f505f311bcb8007fae1785f65f366200b2459049272fd9437247"
+  }
+}

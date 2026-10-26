@@ -1,0 +1,75 @@
+{
+  "schema": "stage029_v2_preflight_independent_review_v1",
+  "reviewed_at": "2026-10-26T19:56:52.875596+08:00",
+  "reviewer": "independent_agent_stage029_exit_design_review",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "status": "PASS_V2_PREFLIGHT_OFFLINE_RESEARCH_WITH_DECLARED_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "financial_replay_allowed": true,
+  "allowed_attempts": [
+    "R_attempt002",
+    "Q_attempt001",
+    "R_attempt003"
+  ],
+  "financial_results_reviewed": false,
+  "financial_replays_run_by_reviewer": 0,
+  "downloads_run_by_reviewer": 0,
+  "production_qualified": false,
+  "source_sha256": {
+    "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+    "research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits_v2.py": "144416876d5e3cdedb7fbe8534b3248c760539412a01a77ca69ad476162abf9a",
+    "research/lines/futures_weekly_formal_no_half_r/tools/run_stage029_week_close_v2.py": "af05ee057bdd08ec35423085a7229b4de4a8a9d4e94ee58c55ed37247a4fd39c",
+    "research/lines/futures_weekly_formal_no_half_r/tools/stage029_metadata_delta.py": "8ec5f6503c2e31064c22a1a3d96efe3d8fe6e64e67f0982372fd809d02e3341f",
+    "research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_metadata_delta.py": "6fe4446bb40689459166eb89463b852ee1f1890f46b4a3c0a619391719ffc9fb"
+  },
+  "contract_pointer_sha256": "c15a725b521141e61837ebc7b1b08003b7b612fe1bde49fcd42d9061383c4a03",
+  "contract": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261026_1943_stage029_v2_invalid_weekly_stop_addendum.md",
+    "sha256": "c37f5103adbcd98c82fc3127cad527c5af50a8740e61ea0c5da567a9430783f2",
+    "base_contract_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261026_1924_stage029_week_close_exit_contract_plan.md",
+    "base_contract_sha256": "f5f77931f808f7a8f04bc0093d9b76da7906f6c848afc1063cb6b18569505ca1",
+    "failed_v1_attempt": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt001"
+  },
+  "failed_v1_source_binding_unchanged": true,
+  "independent_tests": {
+    "v2_behavior_count": 22,
+    "v2_behavior_passed": true,
+    "metadata_delta_count": 8,
+    "metadata_delta_passed": true,
+    "actual_base_handle_rollover_exercised": true,
+    "valid_real_parent_sizing_dictionary_matches_v1": true,
+    "actual_stage804_qualification_and_event_parity_verified": true
+  },
+  "metadata_pure_build": {
+    "accepted": true,
+    "only_added_symbol": "cu2612.SHFE",
+    "size": 5,
+    "slippage": 10.0,
+    "rate": 0.0,
+    "margin_ratio": 0.12,
+    "price_tick": 10.0,
+    "old_keys_values_preserved": true
+  },
+  "review_findings": [
+    "Only a finite positive completed-week stop on the wrong side of a finite positive plan reference is rejected with selected_volume=0. Long equality and short equality are rejected.",
+    "Formal Stage804 stop formula retained. Qualification temporarily suppresses only duplicate adjustment diagnostics and restores the same list in finally; valid parent sizing and diagnostics match v1.",
+    "Missing/future/mismatched completed week, stale date, epoch, unknown direction, invalid plan price, nonfinite/nonpositive stop, bad metadata and parent sizing exceptions remain hard failures. No broad exception-to-zero conversion.",
+    "Rejection snapshots explicitly mark budgets not_evaluated and preserve original stop, reference, weekly date, signal context and zero selection. Ownership before/after verifies no new target or reservation mutation.",
+    "Actual inherited handle_rollover fixture closes old position, sets old target0, records rollover_close, skips new contract final_volume0 without new target or reservation. Daily margin path remains operable after rejection.",
+    "Original v1 entry-stop/open hard gates and base audit remain intact. Rejections have independent ledger and context evidence; opened/targeted candidate, ownership mutation, missing order anchor and rejected open fill are rejected.",
+    "Execution audit joins order_id to anchors.signal_date, then contract/direction/context. Later legitimate dates or another uniquely evidenced entry context are not contract-blacklisted.",
+    "Callback exceptions set engine.intraday_execution_failure then rethrow the original exception; successful path unchanged.",
+    "Runner binds original/addendum contracts and all new sources. CU2612 tick10/margin0.12 explicit assertion and output, strict old-map/margin comparison, RSI-only R setting change, all existing input/coverage/epoch/nextday-open/account gates preserved."
+  ],
+  "resolved_review_note": "Runner historical-safety original_strategy_class label corrected from WeekCloseExitStrategy to WeekCloseExitStrategyV2; final runner SHA verified.",
+  "limitations": [
+    "v2 changes rejection semantics after observed R001 execution failure; it is a disclosed contract revision and cannot retroactively qualify v1 or erase its failed attempt.",
+    "Prior preflight independently verified latest additive data source2538 hashes and33 raw/SQLite rows; this v2 pass does not newly certify vendor consensus, historical main PIT or all historical data.",
+    "Full-repository earlier receipt remains1652 tests with5 failures/45 errors, not a full-repository pass or production readiness claim.",
+    "No performance conclusion is available from preflight. Each financial arm still requires full-window gates, accounting and independent result review; no partial or failed attempt performance accepted."
+  ],
+  "overfit_reflection": "No numerical fitting, stop movement, source/date fallback or rescue scan. Semantics were completed after a failed execution attempt, so disclose v2 and repeated in-sample reuse.",
+  "continuation_reflection": "One fixed offline falsification is valuable after these behavioral gates; not permission for promotion or parameter scans."
+}

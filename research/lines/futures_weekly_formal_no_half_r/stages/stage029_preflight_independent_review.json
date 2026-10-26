@@ -1,0 +1,111 @@
+{
+  "schema": "stage029_preflight_independent_review_v1",
+  "reviewed_at": "2026-10-26T19:37:30.890816+08:00",
+  "reviewer": "independent_agent_stage029_exit_design_review",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "scope": "before_financial_replay_code_behavior_and_additive_data_review",
+  "status": "PASS_PREFLIGHT_OFFLINE_RESEARCH_WITH_DECLARED_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "financial_replay_allowed": true,
+  "financial_results_reviewed": false,
+  "production_qualified": false,
+  "financial_replays_run_by_reviewer": 0,
+  "downloads_run_by_reviewer": 0,
+  "source_sha256": {
+    "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+    "research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits.py": "999c58b9f8f920753bcbf2da0d725fa8fdfd72fb02464998fb8507f0e63be216",
+    "research/lines/futures_weekly_formal_no_half_r/tools/run_stage029_week_close.py": "916b90bf478c0ba521186e6e14af28171f4b21d0b2e46037935624cf0f716e07"
+  },
+  "independent_behavior_tests": {
+    "count": 26,
+    "passed": true,
+    "extra_actual_formal_MRO_checks": true,
+    "long_tighter_weekly_stop": 90.0,
+    "short_weekly_stop": 110.0,
+    "daily_safety_methods_identity_preserved": true
+  },
+  "adapter_review": [
+    "Initial technical stop uses most recent accepted completed week and preserves Stage804 long-tighter method through super MRO. Daily planned close remains sizing and margin reference; wrong-direction stop fails without repair.",
+    "Dynamic stop extrema, max-profit, tier lock and ATR midpoint update only with current completed weekly OHLC. Base close-confirmation semantics remain unchanged.",
+    "Inline MA, prev2 and layer stops share request-date and fresh-completed-week gates. No daily technical trigger fallback.",
+    "prev2 age counts accepted completed weeks after normalized entry date and is bounded to current inner epoch count. Daily state age restored only if entry identity survives.",
+    "RSI exit false, short_case2 entry denied, long_case2 native eligibility unchanged. Add, reverse, alignment exit and rollover history mode locked.",
+    "Daily account valuation, capital/margin/cluster safety, delayed rollover and sizing methods remain inherited; reconciliation daily-stop reconstruction is counted and rejected by acceptance."
+  ],
+  "runner_review": [
+    "Q retains old short_case2/RSI configuration; R uses fixed adapter and explicit RSI=False. Start 2015-01-01 and end require matching prepared receipt.",
+    "Actual setting and effective spec dictionaries compare against frozen N002 after only declared mapping-path and RSI normalization; original19, 150000, no extra four-position cap retained.",
+    "Formal identity/source bytes, N002 source closure, normalized data source manifest, actual SQLite binding, actual loaded flags, no AI/minute/proxy, epoch guard, held/traded positive daily coverage, strict next-trading-day same-contract open and full requested calendars retained.",
+    "Input hashes rechecked in finally; guard failures and audit CSVs survive failed attempts. Runtime outputs remain pending independent financial review."
+  ],
+  "independent_additive_data": {
+    "independent_review": true,
+    "status": "PASS_READONLY_ADDITIVE_DATA",
+    "source_manifest_files": 2538,
+    "source_mismatches": [],
+    "old_accepted_rows": 392080,
+    "new_accepted_rows": 33,
+    "accepted_rows": 392113,
+    "new_daily_by_date": {
+      "2026-10-19": 1,
+      "2026-10-20": 1,
+      "2026-10-21": 1,
+      "2026-10-22": 1,
+      "2026-10-23": 1,
+      "2026-10-26": 28
+    },
+    "all_raw_price_volume_close_oi_locator_symbol_exact": true,
+    "old_physical_all_fields_exact": true,
+    "old_mapping_all_fields_exact": true,
+    "old_database_rows_preserved": true,
+    "old_database_rows": 1345640,
+    "new_database_rows": 1345673,
+    "new_database_field_parity": true,
+    "metadata_unchanged": true,
+    "physical_epochs_unchanged": true,
+    "current_main_positive_real_rows": 19,
+    "forming_week_excluded": true,
+    "last_completed_week": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22",
+      "2026-10-23"
+    ],
+    "data_sha": {
+      "source_manifest.json": "01c44ef0965472286a68f7c055a8387978f21f67df8dffc084e986f59d193a8f",
+      "receipt.json": "ea9625f49101da988467af63c38a125a5b9ee725876bf3b72d08f667d23b95f4",
+      "daily.sqlite": "8483435b49605691c91380beea999f49ec7fd08b3ea81b981fdf9953f61989d9",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "7ca678ff7534e25049c91add51f8d1c905dbbb0213a9b15273e3889a11b22938",
+      "mapping.csv": "ad4e08307989af9719c20b245599a8e8a3a11eb8d62031fd32d757b5eb3902f0"
+    }
+  },
+  "reported_regression_receipt": {
+    "path": "research/lines/futures_weekly_formal_no_half_r/outputs/stage029_adapter_tests/verification_receipt.json",
+    "sha256": "a9b768be2dfd4f50ceffd8d8d766f02f94b5bc6c239a27dedcb7ce780ffc695c",
+    "research_line_tests": {
+      "count": 256,
+      "passed": true,
+      "log": "regression_with_report.log"
+    },
+    "repository_tests": {
+      "count": 1652,
+      "passed": false,
+      "failures": 5,
+      "errors": 45,
+      "log": "repository_regression.log"
+    },
+    "independently_rerun_full_repository": false
+  },
+  "limitations": [
+    "Full repository receipt has 5 failures and 45 errors among 1652 tests; this review did not independently re-triage every cause and does not claim full repository pass.",
+    "Stage028 approved-source conflicts, effective-complete-observation-week gaps, frozen main-mapping historical authenticity and PIT limitations remain.",
+    "New Tq data have exact selected raw-value provenance but no independent multi-vendor consensus. Zero commissions, static historical risk metadata, daily-open liquidity/capacity and repeated in-sample research limits remain.",
+    "Preflight pass permits the frozen offline attempt only. Any guard failure is a preserved failed attempt, not an accepted partial performance result."
+  ],
+  "overfit_reflection": "No additional fitting or parameter/source rescue; the three user-declared changes are one fixed structural candidate. Repeated same-window testing still limits inference.",
+  "continuation_reflection": "Worth one frozen falsification run after these input and behavioral gates; no promotion or further scans authorized by this review."
+}
