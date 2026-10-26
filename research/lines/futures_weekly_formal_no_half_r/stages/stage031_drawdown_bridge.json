@@ -1,0 +1,583 @@
+{
+  "schema": "stage031_frozen_B_W_drawdown_attribution_v1",
+  "created_at": "2026-10-26T21:58:56.573156+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "source_head": "59e58f271df58451869c9da3d66f0de750f3b013",
+  "new_financial_replays": 0,
+  "new_downloads": 0,
+  "strategy_imports": 0,
+  "parameter_changes": 0,
+  "production_qualified": false,
+  "promotion_decision": "NO_PROMOTION",
+  "window": {
+    "start_peak_excluded": "2018-02-27",
+    "end_trough_included": "2020-04-09",
+    "dates": 515,
+    "active_day_contract_union_rows": 812,
+    "contracts": 49,
+    "products": 14
+  },
+  "max_drawdowns": {
+    "B": {
+      "peak_date": "2017-09-05",
+      "peak_equity": 367425.0,
+      "trough_date": "2020-04-09",
+      "trough_equity": 160519.99999999985,
+      "signed_change": -206905.00000000015,
+      "absolute_loss": 206905.00000000015,
+      "drawdown_pct": -56.31217255222158,
+      "recovery_date": "2020-12-10",
+      "recovery_equity": 369239.9999999999,
+      "recovery_threshold": "EOD equity >= original peak EOD equity"
+    },
+    "W": {
+      "peak_date": "2018-02-27",
+      "peak_equity": 290665.0,
+      "trough_date": "2020-04-09",
+      "trough_equity": 114515.00000000006,
+      "signed_change": -176149.99999999994,
+      "absolute_loss": 176149.99999999994,
+      "drawdown_pct": -60.6024117110763,
+      "recovery_date": "2021-02-25",
+      "recovery_equity": 321595.00000000006,
+      "recovery_threshold": "EOD equity >= original peak EOD equity"
+    }
+  },
+  "same_date_windows": [
+    {
+      "window_owner": "B",
+      "arm": "B",
+      "start_date": "2017-09-05",
+      "end_date": "2020-04-09",
+      "start_equity": 367425.0,
+      "end_equity": 160519.99999999985,
+      "signed_change": -206905.00000000015,
+      "absolute_loss": 206905.00000000015,
+      "window_return_pct": -56.31217255222158,
+      "days": 629,
+      "holding_pnl": -235630.00000000023,
+      "trading_pnl": 45795.00000000016,
+      "commission": 0.0,
+      "slippage": 17070.0,
+      "net_pnl": -206905.00000000006
+    },
+    {
+      "window_owner": "B",
+      "arm": "W",
+      "start_date": "2017-09-05",
+      "end_date": "2020-04-09",
+      "start_equity": 255619.99999999997,
+      "end_equity": 114515.00000000006,
+      "signed_change": -141104.9999999999,
+      "absolute_loss": 141104.9999999999,
+      "window_return_pct": -55.2010797277208,
+      "days": 629,
+      "holding_pnl": -116285.00000000012,
+      "trading_pnl": -12609.99999999984,
+      "commission": 0.0,
+      "slippage": 12210.0,
+      "net_pnl": -141104.99999999994
+    },
+    {
+      "window_owner": "W",
+      "arm": "B",
+      "start_date": "2018-02-27",
+      "end_date": "2020-04-09",
+      "start_equity": 355884.9999999999,
+      "end_equity": 160519.99999999985,
+      "signed_change": -195365.00000000003,
+      "absolute_loss": 195365.00000000003,
+      "window_return_pct": -54.89554209927366,
+      "days": 515,
+      "holding_pnl": -210010.00000000017,
+      "trading_pnl": 27075.00000000012,
+      "commission": 0.0,
+      "slippage": 12430.0,
+      "net_pnl": -195365.00000000006
+    },
+    {
+      "window_owner": "W",
+      "arm": "W",
+      "start_date": "2018-02-27",
+      "end_date": "2020-04-09",
+      "start_equity": 290665.0,
+      "end_equity": 114515.00000000006,
+      "signed_change": -176149.99999999994,
+      "absolute_loss": 176149.99999999994,
+      "window_return_pct": -60.60241171107631,
+      "days": 515,
+      "holding_pnl": -154895.00000000006,
+      "trading_pnl": -12359.999999999876,
+      "commission": 0.0,
+      "slippage": 8895.0,
+      "net_pnl": -176149.99999999994
+    }
+  ],
+  "own_maxima_ratio_bridge": {
+    "loss_change_effect_pp": -8.370415731101641,
+    "denominator_change_effect_pp": 12.66065488995636,
+    "total_difference_pp": 4.290239158854725,
+    "order": "replace absolute loss at B peak denominator, then replace B denominator with W denominator; algebraic, not causal"
+  },
+  "W_same_window_ratio_bridge": {
+    "loss_change_effect_pp": -5.399216038888993,
+    "denominator_change_effect_pp": 11.106085650691625,
+    "total_difference_pp": 5.706869611802645,
+    "order": "replace absolute loss at B peak denominator, then replace B denominator with W denominator; algebraic, not causal"
+  },
+  "W_window_accounting_totals": {
+    "holding_pnl_B": -210010.00000000017,
+    "holding_pnl_W": -154895.00000000006,
+    "trading_pnl_B": 27075.000000000124,
+    "trading_pnl_W": -12359.999999999873,
+    "commission_B": 0.0,
+    "commission_W": 0.0,
+    "slippage_B": 12430.0,
+    "slippage_W": 8895.0,
+    "net_pnl_B": -195365.00000000006,
+    "net_pnl_W": -176149.99999999994,
+    "holding_pnl_W_minus_B": 55115.0000000001,
+    "trading_pnl_W_minus_B": -39435.0,
+    "commission_W_minus_B": 0.0,
+    "slippage_W_minus_B": -3535.0,
+    "net_pnl_W_minus_B": 19215.00000000011,
+    "holding_position_gap_rebuilt": 55115.0000000001,
+    "cost_contribution_W_minus_B": 3535.0,
+    "gap_sum_rebuilt": 19215.00000000011
+  },
+  "margin_summary": {
+    "B": {
+      "window_days": 515,
+      "actual_over100_days": 0,
+      "actual_margin_pct_max": 95.86093241260872,
+      "actual_margin_pct_mean": 29.829421470769663,
+      "gross_notional_to_equity_mean": 1.5369205002720419,
+      "end_lots_mean": 5.1300970873786405
+    },
+    "W": {
+      "window_days": 515,
+      "actual_over100_days": 0,
+      "actual_margin_pct_max": 94.20625559566783,
+      "actual_margin_pct_mean": 25.497828725422668,
+      "gross_notional_to_equity_mean": 1.2390791172822053,
+      "end_lots_mean": 2.8524271844660194
+    }
+  },
+  "W_higher_actual_margin_pct_days": 164,
+  "W_window_profit_half_fills": [
+    {
+      "date": "2018-11-19",
+      "previous_date": "2018-11-16",
+      "vt_symbol": "OI901.CZCE",
+      "close_volume": 1.0,
+      "fill_price": 6296.0,
+      "trade_id": "BACKTESTING.187",
+      "source_trades_csv_row": 188,
+      "W_contract_start_pos": -2.0,
+      "W_contract_end_pos": -1.0,
+      "B_contract_start_pos": -3.0,
+      "B_contract_end_pos": -3.0,
+      "W_equity_before": 197560.00000000012,
+      "W_equity_after": 198180.0000000001,
+      "W_actual_margin_pct_before": 35.50807349665922,
+      "W_actual_margin_pct_after": 6.288283378746591,
+      "B_actual_margin_pct_after": 13.35775765046359,
+      "W_gross_notional_to_equity_before": 2.0239420935412014,
+      "W_gross_notional_to_equity_after": 0.3175900696336662
+    },
+    {
+      "date": "2019-05-20",
+      "previous_date": "2019-05-17",
+      "vt_symbol": "AP910.CZCE",
+      "close_volume": 1.0,
+      "fill_price": 9426.0,
+      "trade_id": "BACKTESTING.208",
+      "source_trades_csv_row": 209,
+      "W_contract_start_pos": 2.0,
+      "W_contract_end_pos": 1.0,
+      "B_contract_start_pos": 3.0,
+      "B_contract_end_pos": 3.0,
+      "W_equity_before": 194340.0000000001,
+      "W_equity_after": 197220.0000000001,
+      "W_actual_margin_pct_before": 47.46742821858596,
+      "W_actual_margin_pct_after": 37.57703072710677,
+      "B_actual_margin_pct_after": 50.231688143867345,
+      "W_gross_notional_to_equity_before": 1.825151795821755,
+      "W_gross_notional_to_equity_after": 1.3352094108102621
+    },
+    {
+      "date": "2020-01-13",
+      "previous_date": "2020-01-10",
+      "vt_symbol": "OI005.CZCE",
+      "close_volume": 1.0,
+      "fill_price": 7832.0,
+      "trade_id": "BACKTESTING.253",
+      "source_trades_csv_row": 254,
+      "W_contract_start_pos": 3.0,
+      "W_contract_end_pos": 2.0,
+      "B_contract_start_pos": 5.0,
+      "B_contract_end_pos": 5.0,
+      "W_equity_before": 182755.0000000001,
+      "W_equity_after": 183665.0000000001,
+      "W_actual_margin_pct_before": 51.94771141692427,
+      "W_actual_margin_pct_after": 43.4001252279966,
+      "B_actual_margin_pct_after": 65.16977348343286,
+      "W_gross_notional_to_equity_before": 2.623621788733549,
+      "W_gross_notional_to_equity_after": 2.191925516565485
+    }
+  ],
+  "row_counts": {
+    "B": {
+      "raw_position_rows": 1142353,
+      "active_rows_full_requested_window": 5315,
+      "daily_rows": 2868,
+      "fills": 723
+    },
+    "W": {
+      "raw_position_rows": 1142353,
+      "active_rows_full_requested_window": 5478,
+      "daily_rows": 2868,
+      "fills": 785
+    }
+  },
+  "assertions": {
+    "B_daily_equity_vs_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 2.3283064365386963e-10,
+      "tolerance": 1e-06
+    },
+    "B_daily_net_components": {
+      "passed": true,
+      "maximum_absolute_error": 1.4551915228366852e-11,
+      "tolerance": 1e-06
+    },
+    "B_legacy_margin_is_1p1": {
+      "passed": true,
+      "maximum_absolute_error": 2.3283064365386963e-10,
+      "tolerance": 1e-06
+    },
+    "B_holding_price_formula": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "B_net_components": {
+      "passed": true,
+      "maximum_absolute_error": 3.637978807091713e-12,
+      "tolerance": 1e-06
+    },
+    "B_position_change": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_holding_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 1.4551915228366852e-11,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_trading_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 3.637978807091713e-12,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_commission": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_slippage": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_net_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 1.4551915228366852e-11,
+      "tolerance": 1e-06
+    },
+    "B_positions_daily_trade_count": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_fill_direction": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_fills_pos_change": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_fills_trading_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 1.8189894035458565e-12,
+      "tolerance": 1e-06
+    },
+    "B_fills_slippage": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_fills_commission": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_fills_trade_count": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_daily_equity_vs_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 2.3283064365386963e-10,
+      "tolerance": 1e-06
+    },
+    "W_daily_net_components": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "W_legacy_margin_is_1p1": {
+      "passed": true,
+      "maximum_absolute_error": 1.1641532182693481e-10,
+      "tolerance": 1e-06
+    },
+    "W_holding_price_formula": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "W_net_components": {
+      "passed": true,
+      "maximum_absolute_error": 1.8189894035458565e-12,
+      "tolerance": 1e-06
+    },
+    "W_position_change": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_holding_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_trading_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 1.8189894035458565e-12,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_commission": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_slippage": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_net_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "W_positions_daily_trade_count": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_fill_direction": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_fills_pos_change": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_fills_trading_pnl": {
+      "passed": true,
+      "maximum_absolute_error": 1.8189894035458565e-12,
+      "tolerance": 1e-06
+    },
+    "W_fills_slippage": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_fills_commission": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_fills_trade_count": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_window_B_equity_change_vs_sum": {
+      "passed": true,
+      "maximum_absolute_error": 8.731149137020111e-11,
+      "tolerance": 1e-06
+    },
+    "B_window_W_equity_change_vs_sum": {
+      "passed": true,
+      "maximum_absolute_error": 2.9103830456733704e-11,
+      "tolerance": 1e-06
+    },
+    "W_window_B_equity_change_vs_sum": {
+      "passed": true,
+      "maximum_absolute_error": 2.9103830456733704e-11,
+      "tolerance": 1e-06
+    },
+    "W_window_W_equity_change_vs_sum": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_W_same_active_close_price": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_W_same_active_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "B_W_holding_gap_price_formula": {
+      "passed": true,
+      "maximum_absolute_error": 1.4551915228366852e-11,
+      "tolerance": 1e-06
+    },
+    "B_W_net_gap_components": {
+      "passed": true,
+      "maximum_absolute_error": 1.4551915228366852e-11,
+      "tolerance": 1e-06
+    },
+    "B_W_window_contract_sum": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_W_window_contract_sum": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "W_window_gap_conservation": {
+      "passed": true,
+      "maximum_absolute_error": 7.275957614183426e-12,
+      "tolerance": 1e-06
+    },
+    "prepeak_equity_gap_conservation": {
+      "passed": true,
+      "maximum_absolute_error": 1.1641532182693481e-10,
+      "tolerance": 1e-06
+    },
+    "2018-03-12_jm1805.DCE_approved_DB_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2018-03-12_jm1805.DCE_approved_DB_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2019-08-26_au1912.SHFE_approved_DB_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2019-08-26_au1912.SHFE_approved_DB_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-02-03_cu2003.SHFE_approved_DB_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-02-03_cu2003.SHFE_approved_DB_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-02-03_CF005.CZCE_approved_DB_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-02-03_CF005.CZCE_approved_DB_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-01-13_OI005.CZCE_approved_DB_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "2020-01-13_OI005.CZCE_approved_DB_pre_close": {
+      "passed": true,
+      "maximum_absolute_error": 0.0,
+      "tolerance": 1e-06
+    },
+    "ratio_bridge_367425.0": {
+      "passed": true,
+      "maximum_absolute_error": 5.329070518200751e-15,
+      "tolerance": 1e-06
+    },
+    "ratio_bridge_355884.9999999999": {
+      "passed": true,
+      "maximum_absolute_error": 1.3322676295501878e-14,
+      "tolerance": 1e-06
+    }
+  },
+  "limitations": [
+    "Algebraic accounting attribution is not a per-rule causal intervention.",
+    "Both daily rows and positions are EOD marks; not intraday maximum drawdowns or live fills.",
+    "Actual margin here is the frozen nominal margin times configured 1.65; legacy broker10 columns use 1.1.",
+    "All active position rows retained; all-zero positions/trades/PnL rows omitted and absent counterpart rows explicitly filled as zero.",
+    "Zero commissions; fixed modeled slippage; historical market truth, PIT and OOS not proved.",
+    "Five-case DB price verification confirms local approved source agreement, not independent historical market truth."
+  ],
+  "external_research": {
+    "source": "https://github.com/vnpy/vnpy_portfoliostrategy/blob/main/vnpy_portfoliostrategy/backtesting.py",
+    "judgment": "Official ContractDailyResult supplies a valid accounting identity: holding = start_pos*(close-pre_close)*size; trading = sum signed_fill*(close-fill)*size; net = holding+trading-commission-slippage. Use the frozen local ledger, not current remote runtime, as numeric truth."
+  },
+  "reflection": {
+    "before_overfit": false,
+    "after_overfit": false,
+    "reason": "Frozen candidate, ledger and thresholds; no fitting, tuning, new entry selection or replay.",
+    "before_continuation_value": true,
+    "after_continuation_value": true,
+    "value_reason": "Explains the observed drawdown denominator and path mechanisms; no claim of alpha or promotion."
+  },
+  "sources_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage030_delivery_manifest.json": "e391fe30ec479244ba3fd35ab346424bae4b893c8ddbac562a8a2a373494d84d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_latest_data/data_approved/daily.sqlite": "8483435b49605691c91380beea999f49ec7fd08b3ea81b981fdf9953f61989d9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage031_drawdown_bridge.py": "5e9d4e3a490ff4954a26f2c907043e5b96911d99c16b1f34baef118a6c37c40b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/daily.csv": "bead908cc78a92f0afb995b222834e8122881171f9e2623ce06a382ce8a9d28b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/positions.csv": "ab9ef8c551cc535d4a40375f90ebdeb5301483eb5e21c8d2323b930ce6001a4f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/trades.csv": "8c3502cf0a1eab2dd5eb0c80021d511e256034e7ec981fedd3ca67dfa88379fb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/trade_events.csv": "54f1066baaeeaee3263a6b181e00aed380e739c0454fcd9f4f245e2cd24c3164",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/entry_risk.csv": "fbb8e543beec8c8e26a0913b4d83ef27d1532384316a1f96cb3c0471b7323d9e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003/effective_parameters.json": "0ea296995b512c0a48451c35111e169fd093ffedfbf08642e8d4eaf5cca19139",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/daily.csv": "2ddc3ad755c316db8d823efd14e6a67d683fc2be35f6fe416852b9c7b817d9f4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/positions.csv": "dc5c9d5be7d12a283422166cd206421af636dd1a69492fcfdd883f1f25f59a6a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/trades.csv": "511e4e124b89d035beeb0cb0570d8da74a8640577565a493eb7b52ded04ee855",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/trade_events.csv": "769361e20175424679abd497d614acf57ca011ccb8eea056d5f34918e0a01712",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/entry_risk.csv": "f07653462804a493ebc89f4156e8a5e4eae6d45c931dd88a3bd120253dd981c5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_weekly_attempt001/effective_parameters.json": "0ea296995b512c0a48451c35111e169fd093ffedfbf08642e8d4eaf5cca19139"
+  },
+  "script_sha256": "5e9d4e3a490ff4954a26f2c907043e5b96911d99c16b1f34baef118a6c37c40b"
+}

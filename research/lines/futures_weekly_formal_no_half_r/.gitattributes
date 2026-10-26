@@ -1,0 +1,4 @@
+# Stage031 generated canonical pages embed unmodified vendored Plotly.
+# Preserve reviewed HTML hashes; hand-written sources retain normal checks.
+artifacts/stage031_recap/baseline/index.html -whitespace
+artifacts/stage031_recap/weekly/index.html -whitespace

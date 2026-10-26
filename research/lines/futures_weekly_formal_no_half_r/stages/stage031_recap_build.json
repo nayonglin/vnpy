@@ -1,0 +1,88 @@
+{
+  "schema": "stage031_canonical_recap_build_v1",
+  "generated_at": "2026-10-26T22:10+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "scope": "READONLY_FROZEN_DISPLAY",
+  "important_breakthrough": false,
+  "source_head": "59e58f271df58451869c9da3d66f0de750f3b013",
+  "canonical_renderer": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_trend_winner_trade_forensics/tools/stage038_c9_15w_big_winner_multiscale_html.py",
+  "canonical_renderer_sha256": "613672a4cc91493ba17dc055542e4b4172349de210ff932530caf04ce36bb93a",
+  "validation": {
+    "status": "PASS_STATIC_FROZEN_DISPLAY_CHECKS_PENDING_BROWSER",
+    "checks": 13375,
+    "arms": {
+      "weekly": {
+        "closed": 349,
+        "terminal": 4,
+        "partial_fill_markers": 81,
+        "terminal_actual_fills": 6,
+        "minute_missing_window_days": 8922,
+        "profit": 157,
+        "loss": 191,
+        "flat": 1,
+        "frozen_end_equity": 2004940.0,
+        "max_dd_pct": -60.6024117110763
+      },
+      "baseline": {
+        "closed": 355,
+        "terminal": 4,
+        "partial_fill_markers": 9,
+        "terminal_actual_fills": 4,
+        "minute_missing_window_days": 8819,
+        "profit": 157,
+        "loss": 197,
+        "flat": 1,
+        "frozen_end_equity": 3481369.999999998,
+        "max_dd_pct": -56.31217255222158
+      }
+    },
+    "sources_unchanged": 25
+  },
+  "related_tests": {
+    "passed": 49,
+    "seconds": 4.139,
+    "new_adapter_tests": 13,
+    "initial_failure": "related suite initially lacked examples/portfolio_backtesting PYTHONPATH; retained green_related.log",
+    "remaining_startup_message": "configured run exit0, retains a subprocess sitecustomize ModuleNotFoundError: vnpy message and upstream Tq disclaimer; no API constructed"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "strategy_parameter_changes": 0,
+  "added_display_parameters": [
+    "?episode=<original_entry_trade_id> deep link"
+  ],
+  "modified_strategy_parameters": [],
+  "removed_strategy_parameters": [],
+  "browser_acceptance": "DELEGATED_TO_ROOT_PENDING",
+  "http_base": "http://127.0.0.1:8766/",
+  "http_session_id": 76918,
+  "overfit_before": "否：仅复用冻结数据，不拟合、不调参",
+  "overfit_after": "否：没有新的金融回放或参数选择；本图不能提高策略统计置信度",
+  "continue_value_before": "是：定位固定5%周收半仓的真实成交路径",
+  "continue_value_after": "是：完整逐笔复盘与归因可继续；不据此扫阈值或优化",
+  "research_sources": [
+    "https://plotly.com/javascript/plotlyjs-events/",
+    "https://plotly.com/javascript/plotlyjs-function-reference/",
+    "https://github.com/plotly/documentation/issues/873"
+  ],
+  "research_judgment": "沿用canonical matches轴和selector；只以Plotly.react包装补真实partial markers，不复制K线或HTML实现。",
+  "outputs": {
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_recap/delivery_manifest.json": "93dfb14b0447a785fba01faeca4db9423fab7d6dcbf3ff7fc19943732ca2e76b",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_recap/summary.json": "f89ac28b5abb638ec5fe62ecb913cd64f86c89d12cbadafe5dd7edfbc50f1a72",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_recap/weekly/index.html": "5aa81ef414124c62477386cecf11fe766a2dfa4de04815442d7b1dce9e602e89",
+    "research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_recap/baseline/index.html": "6649e054e787adbeb665722758a3683438fe1b27c5dd7e2b988113ea4ad2ec5b",
+    "research/lines/futures_weekly_formal_no_half_r/outputs/stage031_recap_tests/validation.json": "524a030b29e54d7ebdf4871fc64859e08a9f16e4a99afb8d990ac299f23e018f",
+    "research/lines/futures_weekly_formal_no_half_r/outputs/stage031_recap_tests/js_parse.log": "09dd8b564ce97447b54ecc01b1c0db310bb0255abf398cc86e3be353ec4a9b64",
+    "research/lines/futures_weekly_formal_no_half_r/outputs/stage031_recap_tests/green_related_configured.log": "72a12ab67868a96dd8e681c7d98a45116d63895e2102a536dd8a27b0b7cc61e6",
+    "research/lines/futures_weekly_formal_no_half_r/outputs/stage031_recap_tests/ma_validation.json": "8e57f888f8b29b17bff9fe89069c1b4aa9919d7050f3c0db2cc3692d336d62d0"
+  },
+  "daily_ma_independent_validation": {
+    "status": "PASS_DAILY_MA_VS_FULL_REAL_PHYSICAL_EPOCH",
+    "moving_average_values_checked": 651120,
+    "episodes_with_unavoidable_listing_history_ma40_null": 704,
+    "avoidable_leading_ma40_nulls": 0,
+    "synthetic_padding": 0,
+    "strategy_reruns": 0
+  }
+}

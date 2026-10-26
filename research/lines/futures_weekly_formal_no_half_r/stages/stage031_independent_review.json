@@ -1,0 +1,77 @@
+{
+  "schema": "stage031_independent_review_summary_v1",
+  "time": "2026-10-26T22:27:11.709446+08:00",
+  "status": "PASS_READONLY_ATTRIBUTION_AND_CANONICAL_RECAP_WITH_MATERIAL_LIMITATIONS_NO_PROMOTION",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewer_is_implementation_author": false,
+  "A_checks": 127,
+  "BC_value_checks": 458622,
+  "failures": [],
+  "P0": 0,
+  "P1": 0,
+  "P2_actionable": 0,
+  "observations": [
+    "6 original final-fill reason labels differ from profit-half trigger reason; original labels are preserved, original anchors/events prove actual quantities; parent should disclose this when presenting examples.",
+    "Configured margin=nominal frozen margin*1.65 is a model measure, not independently confirmed historical broker margins."
+  ],
+  "source_and_implementation_hashes": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_drawdown_bridge/delivery_manifest.json": "6528dc3459e1af68330269687322026a87faee534a8190fb25164aa28e70c321",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_trade_pair_attribution/source_and_output_manifest.json": "1478b71c124c10d2657781a71b226ae443dece23d0e2cb780d7a2c039df9af46",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_recap/delivery_manifest.json": "93dfb14b0447a785fba01faeca4db9423fab7d6dcbf3ff7fc19943732ca2e76b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage031_drawdown_bridge.py": "5e9d4e3a490ff4954a26f2c907043e5b96911d99c16b1f34baef118a6c37c40b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage031_trade_pair_attribution.py": "e5ae95d330fc4ec634d7615df7a5265c833961714cf167dcda9fc7fe4d659274",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage031_canonical_recap.py": "e994ef86d39c89bc54e8238b06483739082ba37bfddc511d58c5ab86d03f99cb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_browser_acceptance.json": "222e9414b0ff527fb91ddcbc8052e98dda650c511452086718d7cf4edacc263b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_visual/receipt.json": "2b7e6a5c95fa41eab5344ea7c6ab329ebd4f0b81d6e2dbc97f9fcdc8092c6645",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage031_same_window_drawdown.png": "6f96f7d71b70d6d591545b7e638bf6fb8370966d0b3ed1a1756c624de8edb578",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage031_drawdown_visual.py": "b4cd316a82e83cca727b61ba31509083c4f03a43e225a9abf6b1dfa0659701a8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage031_recap_build.md": "84bc26b8edfdb0da3ce440ee3e6f23732069d0717d12d1aeb23b255f56ba7fee",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage031_recap_build.json": "1bb07c870c34010e2e721a00d3380897501a7905bf66ce4016968bb58d0d93c0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_recap_tests/ma_validation.json": "8e57f888f8b29b17bff9fe89069c1b4aa9919d7050f3c0db2cc3692d336d62d0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_full_line_tests.log": "163e7b340b5ff84a0e7d8bf0a043c9f7a6f987c20fdf494c028f4524df9697bf"
+  },
+  "detailed_reports_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_independent_review/A_independent_review.json": "35005b4b897a74877aceda130b70d93e25ab201c5edab4ccd1d176554c640536",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_independent_review/BC_independent_review.json": "7b1d7ae7445a205f385d866176f9e509009dcf2d812c66de3a5a77bf5de301f5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_independent_review/FIFO_anchor_supplement.json": "983172ec7984128b602558014628ae9c04122507184f10204c94db78c96b265b"
+  },
+  "source_file_hashes_rechecked_unchanged": true,
+  "new_financial_replays": 0,
+  "new_downloads": 0,
+  "strategy_imports": 0,
+  "production_accesses": 0,
+  "promotion": "NO_PROMOTION",
+  "independent_historical_truth_or_PIT_or_OOS_proven": false,
+  "pending": [],
+  "before_after_overfit": false,
+  "before_after_continue_value": true,
+  "FIFO_anchor_checks": 4990,
+  "final_root_record_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261026_2224_stage031_weekly_half_drawdown_forensics.md": "a3249685ad845e8ad7171f281f02f8cbb4246af1de3671b54e004bca3eb1af85"
+  },
+  "parent_browser_acceptance": {
+    "passed": 8,
+    "unresolved": 0,
+    "evidence": "Parent CUA native AX and screenshot interaction; screenshots remain in task transcript, no exported screenshot file."
+  },
+  "root_visual_check": {
+    "visual_inspected": true,
+    "calendar_rows": 516,
+    "source_sha_and_output_sha_match": true,
+    "not_a_new_strategy_curve": true
+  },
+  "full_line_regression": {
+    "passed": 336,
+    "seconds": 8.851,
+    "log": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage031_full_line_tests.log",
+    "warning_scope": "Inherited Tq disclaimer and pandas dtype FutureWarning remain in log; tests exit OK."
+  },
+  "resolved_findings": [
+    {
+      "priority": "minor_numeric_typo",
+      "description": "Parent final prose maximum-DD difference rounded to 4.290239 pp instead of 4.290240 pp; source numbers unchanged.",
+      "resolved": true
+    }
+  ],
+  "independent_review_final_checks_complete": true
+}
