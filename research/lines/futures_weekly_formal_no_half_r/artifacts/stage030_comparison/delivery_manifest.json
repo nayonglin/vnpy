@@ -1,0 +1,20 @@
+{
+  "schema": "stage030_report_delivery_manifest_v1",
+  "comparison_sha256": "edf08731d777d39f649a8a88710f78ae8979894faaa441e0e912649d8a548059",
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/annual.csv": "da2cc213479dca3b9c7a0de4c29278b9dd4ad9c2b0a761acd5006ac3e9186017",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/baseline_daily.csv": "1e1f1c76f862774ed0ea2be387c4408c4f1beeab8dec86e28ffed746d453159f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/closed_fifo_segments.csv": "777b7ff99161bc0af05ebbd3413f7d08b71a65d1913228c470955716d502fcf9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/complete_contract_rounds.csv": "9d0beafe93029b571019ba7c99bbb78804768ae1119684dfa02bb6303c200ae3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/daily_daily.csv": "a4b3b9c30bde50f48917c32545817b3c3daea2bd02ecf437980969a52e38bb17",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/products.csv": "1239b1cf195f11af4b0070764425ae9efd828521a28c8656540e0cc6b4d0944e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/slices_2015_2019_2020.csv": "b07dfe7579b7512a458c789bd72d8cbde09fba125e76d3effaf23fd0a1d01824",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/summary.csv": "42c4ff3a0bbc207e65430a2977480020c6d1dde32e9642ade3f455ad5f3cc406",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/terminal_open_rounds.csv": "f608a8829ea45380163e0c8547d598875f7c5d268164a73b01f52e9087027d88",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/weekly_daily.csv": "1c51fc6d13e946f100ebea0b31cdc29c8cbb849685ed7016d81973233c4bfba4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_equity_drawdown.png": "9f855362d4f6f0ab46d1d9171c5bb47af070a64348b9d5955de7f9e8f70aaf32",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage030_comparison/comparison.json": "edf08731d777d39f649a8a88710f78ae8979894faaa441e0e912649d8a548059"
+  },
+  "self_hash_excluded": true,
+  "independent_review_verdict": null
+}

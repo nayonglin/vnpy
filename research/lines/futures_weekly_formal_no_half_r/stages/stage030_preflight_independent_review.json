@@ -1,0 +1,118 @@
+{
+  "schema": "stage030_preflight_independent_review_v1",
+  "reviewed_at": "2026-10-26T21:26:52.986171+08:00",
+  "reviewer": "independent_agent_stage029_exit_design_review",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "status": "PASS_STAGE030_PREFLIGHT_OFFLINE_RESEARCH_WITH_DECLARED_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "financial_replay_allowed": true,
+  "financial_replay_policy": "daily then weekly serial; frozen R003 baseline read-only",
+  "financial_results_reviewed": false,
+  "financial_replays_run_by_reviewer": 0,
+  "downloads_run_by_reviewer": 0,
+  "full_repository_tests_rerun": false,
+  "production_qualified": false,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage030_profit5_half.py": "a759925a8eeb9d7840f628bd5f62b7f16bda2ade8e9072c911ce7aa103da7065",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage030_profit5_half.py": "abefc948b2003796ebf545b935ab3f249f2db8e9680cccf20eea539e1b3107b4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage030_profit5_half.py": "acc51ef92c9405c4e638564b48488f468d823c9644773c091eb7a978cab8cefa",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage030_build_artifacts.py": "52edbb0ea07aa3be0ae04a48df64415f17424dabc944aae0e9eff1b2a1c486e3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage030_report_builder.py": "4667179a639ce924db123ac8b97f6c7095c8d3b1be63b466a8ed75ebe83550cc"
+  },
+  "old_R003_sources_unchanged": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits.py": "999c58b9f8f920753bcbf2da0d725fa8fdfd72fb02464998fb8507f0e63be216",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_week_close_exits_v2.py": "144416876d5e3cdedb7fbe8534b3248c760539412a01a77ca69ad476162abf9a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage029_week_close_v2.py": "af05ee057bdd08ec35423085a7229b4de4a8a9d4e94ee58c55ed37247a4fd39c"
+  },
+  "data_identity": {
+    "status": "PASS_SAME_R003_FROZEN_DATA",
+    "baseline": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/R_attempt003",
+    "data": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_latest_data/data_approved",
+    "data_files": [
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_latest_data/data_approved/daily.sqlite",
+        "sha256": "8483435b49605691c91380beea999f49ec7fd08b3ea81b981fdf9953f61989d9",
+        "matches_R003": true
+      },
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_latest_data/data_approved/source_manifest.json",
+        "sha256": "01c44ef0965472286a68f7c055a8387978f21f67df8dffc084e986f59d193a8f",
+        "matches_R003": true
+      },
+      {
+        "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage029_latest_data/data_approved/receipt.json",
+        "sha256": "ea9625f49101da988467af63c38a125a5b9ee725876bf3b72d08f667d23b95f4",
+        "matches_R003": true
+      }
+    ],
+    "contract_pointer": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_contract_pointer.json",
+      "sha256": "29d0524e232685d32da921cc794da09f41ccf3f9eb05501c6e13d35f2cdf701d",
+      "contract_path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261026_2025_stage030_profit5_half_contract_plan.md",
+      "contract_sha256": "1e9ee1a0458d0a01eeb6f97c1d3b541a2e71064a49165ad8036131baa5daddbc"
+    },
+    "financial_replays": 0
+  },
+  "independent_tests": {
+    "count": 20,
+    "passed": true,
+    "failures": 0,
+    "errors": 0,
+    "log_sha256": "26605c0dbed93f9dde51dc5e42ae426ffe5f9c9720303e27e24a9809dda06b97"
+  },
+  "baseline_setting_sha256": "a6c82370124bf7da63e5778d94f514d887ad22e955ae6d74bb67a671227a0443",
+  "baseline_effective_sha256": "0ea296995b512c0a48451c35111e169fd093ffedfbf08642e8d4eaf5cca19139",
+  "runner_review": [
+    "Only daily/weekly factory argument changes the new profit-taking confirmation. Original setting and actual dictionaries and entire effective spec/maps must equal frozen R003 without normalization.",
+    "Before runtime imports, data directory equals R003 actual database binding and daily.sqlite/source_manifest/receipt hashes equal R003 bound values. All source data hashes and R003 original source closure are rechecked.",
+    "All existing formal identity, original19/150000/max19, AI/HalfR/C2/RSI flags off, metadata CU2612 tick10/margin0.12, physical epoch, held-day positivity, strict next global trading day same-contract open and complete requested calendars retained.",
+    "Four new diagnostic lists plus old weekly-stop diagnostics survive failures. Profit trigger audit, actual configuration, terminal pending, input postflight and new per-frequency outputs/pointers preserve previous files."
+  ],
+  "adapter_review": [
+    "Actual Stage827 fill synchronization tested. Eligibility requires finite positive actual synced layer prices, matching actual position quantity/direction, native episode and AM inner epoch identity.",
+    "Decimal strict >5 percent boundaries, long/short symmetry, weighted actual cost, floor-half odd quantities, one-lot skip, once per native episode and reset on actual successful open tested. RSI flag/done remain unused.",
+    "Daily uses current daily close. Weekly uses same-contract fresh completed week close; stale daily highs and forming weeks cannot substitute. All other technical stops remain weekly.",
+    "Prior prev2/layer and per-product account reductions preserve inherited early returns. Pure observed-history MA20_prev defer preserves later inline MA full exit.",
+    "Remaining layer cost/stop/extrema are retained. Existing pending-close lots and next-open actual-price correction are used without resetting remaining cost. Repeated target assignment is idempotent.",
+    "Disabled mode preserves old behavior. Missing/unsynced/contradictory basis, wrong contract/date/epoch and unknown direction remain explicit hard failures.",
+    "Trigger evidence links exact event quantity, episode/cost/strict threshold, actual close order anchors and fills, or actual unfilled terminal-day active orders. Trigger count is separate from fill count."
+  ],
+  "forced_margin_clarification": {
+    "changes_trading_rules": false,
+    "original_post_loop_safety_retained": true,
+    "explanation": "Core forced margin can run after profit target generation and replace the target. One net close can exceed half. Audit requires exact net volume = half event volume + explicit same-day forced_margin_deleverage event volumes and records reason_volumes; it never labels all net volume as profit-taking.",
+    "fixture": "original4 -> half2 -> explicit forced1 -> remaining1, net fill3. Deleting forced event must fail.",
+    "trade_reason_label_scope": "Core fill label retains first pending reason only; use execution_allocations/reason_volumes for attribution."
+  },
+  "report_review": {
+    "scope": "read-only source/schema review; report tests not independently rerun here",
+    "accepted": true,
+    "acceptance_schema": "stage030_profit_half_acceptance_v1",
+    "configuration_schema_matches_runner": true,
+    "exact_old_setting_effective_comparison": true,
+    "trigger_executed_pending_conservation": true,
+    "source_bindings": true,
+    "baseline_snapshot_pinned": true,
+    "actual_margin_multiplier": 1.65,
+    "partial_realized_and_terminal_inventory_separate": true,
+    "output_publication_exclusive": true
+  },
+  "limitations": [
+    "This is preflight behavior/input admission, not independent financial-result review or promotion. Each completed D/W arm still needs accounting, real source close/cost, trigger/fill, remaining inventory and source hashes review.",
+    "Post-loop forced margin priority follows the original loop; exact reason allocation clarifies existing safety interaction and does not modify trading rules.",
+    "Repeated same historical sample, fixed-price threshold, original19, zero commissions, fixed slippage, static specifications, observed-week gaps, historical vendor/main/PIT and liquidity/capacity limitations remain.",
+    "Earlier full-repository1652-test receipt has5 failures/45 errors. No whole-repository pass or production readiness is asserted."
+  ],
+  "overfit_reflection": "No fitting or parameter/source scan added; fixed5percent/50percent daily and weekly arms were declared together. Repeated sample selection risk remains and both results must be retained.",
+  "continuation_reflection": "One fixed serial D/W comparison is valuable to measure realization-frequency and trend-tail tradeoffs; no promotion or rescue scan authorized.",
+  "evidence_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preflight_review/behavior_tests.log": "26605c0dbed93f9dde51dc5e42ae426ffe5f9c9720303e27e24a9809dda06b97",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preflight_review/behavior_tests.json": "fec437eec98de54bab30a8184be43f8468bfb8fffe168026bbac9cd9acf0796d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preflight_review/same_data_identity.json": "6ffbbb8235a1e6b67a959cc1210e8ce011af5914a718419be39fcc1b74afea3b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preflight_review/result.json": "9505cc097b6296de321e6c2709e4f06d05f4a862a35103e6d881c4e6a3c4eaac"
+  }
+}

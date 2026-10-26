@@ -1,0 +1,62 @@
+{
+  "schema": "stage030_stage029_preservation_check_v1",
+  "created_at": "2026-10-26T21:33:46.934379+08:00",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewer": "independent_agent_stage029_exit_design_review",
+  "status": "PASS_STAGE029_FROZEN_PRESERVATION",
+  "financial_replays": 0,
+  "behavior_tests": 0,
+  "downloads": 0,
+  "old_files_modified": 0,
+  "source_manifest": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage029_delivery_manifest.json",
+    "sha256": "a599c5d753f96149fb5b066cff09cfe1e8a03e78540df500bf8b0d90c41a1004",
+    "compared_git_commit": "9eacc5443",
+    "matches_committed_bytes": true,
+    "stable_during_check": true
+  },
+  "scopes": {
+    "stage029_files": {
+      "checked": 3313,
+      "unchanged": 3313,
+      "missing": 0,
+      "changed": 0,
+      "changed_during_read": 0,
+      "unreadable": 0
+    },
+    "stage029_components": {
+      "checked": 9,
+      "unchanged": 9,
+      "missing": 0,
+      "changed": 0,
+      "changed_during_read": 0,
+      "unreadable": 0
+    }
+  },
+  "unique_paths_hashed": 3313,
+  "binding_checks": 3322,
+  "missing": [],
+  "changed": [],
+  "changed_during_read": [],
+  "unreadable": [],
+  "conflicting_expected_bindings": [],
+  "artifacts": {
+    "tool": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preservation_check/verify_preservation.py",
+      "sha256": "4c535853317f12fd54465558426c74348182b775a8123352c50b173f5a8c1527"
+    },
+    "bound_file_checks": {
+      "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preservation_check/bound_file_checks.csv",
+      "sha256": "a1716c15ea25db25a9afa72daf841a52d1e106cc20fe1324d5ba37933ce5826d"
+    }
+  },
+  "limitations": [
+    "Frozen-byte preservation only. It is not a performance, vendor accuracy, historical main/PIT, OOS, capacity or production qualification verdict.",
+    "New Stage030 financial results and mutable report outputs were not included or reviewed.",
+    "The tool and result hashes are externalized to avoid impossible SHA self-reference."
+  ],
+  "result_artifact": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage030_preservation_check/result.json",
+    "sha256": "3cd30a0059ceaa9df417f709c762f165e879c716c467d73d1947fb5c19213736"
+  }
+}
