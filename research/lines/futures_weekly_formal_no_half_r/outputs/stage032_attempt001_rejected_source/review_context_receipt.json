@@ -1,0 +1,18 @@
+{
+  "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage032_adapter_implementation.md": {
+    "snapshot": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_adapter_implementation.md",
+    "sha256": "8bff49a4d00caca3ad3753c2f0fc63381a5a0cd2aec7f97a86d7e5ead67cd391"
+  },
+  "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage032_adapter_implementation.json": {
+    "snapshot": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_adapter_implementation.json",
+    "sha256": "dd319622ff500395a1debc1442311953d9229bd7a9ac323cda8c31b433ad3797"
+  },
+  "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage032_preflight_independent_review.md": {
+    "snapshot": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_preflight_independent_review.md",
+    "sha256": "2811fb1d8473cece22b9b98c2009c4e32f0f50f6d0f64c1d42c8255980e42294"
+  },
+  "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage032_preflight_independent_review.json": {
+    "snapshot": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_preflight_independent_review.json",
+    "sha256": "683894bddb935962a26832f1e07636f959bf1932ec5ffbd469d8adf2d0a64767"
+  }
+}

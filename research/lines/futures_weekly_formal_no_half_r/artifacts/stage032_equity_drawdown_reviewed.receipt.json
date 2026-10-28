@@ -1,0 +1,20 @@
+{
+  "status": "PASS_REVIEWED_CURVES_SAME_POINTS_TITLE_ONLY",
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "financial_replays": 0,
+  "strategy_parameter_changes": 0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/stage032_results_independent_review.json": "8de8db5ea1609ef6bd621ae2fde84f2de5e70e04e8baac47bb35480687a75b9a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage032_comparison/comparison.json": "c5f45cc2b714a4129918c414b7f7e9d0be0b987e04ac351f7696bf9f5d97e0ad",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_reviewed_visual.py": "a87f4accafd5983b08bcef4373b90c64972dfe8a926a0d13e09272fb598f14ba",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_build_artifacts.py": "f2fe5bab8b879ebb00a04a18dd564dca93dbf37089b4f119c8423cfb432472ec",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage032_comparison/baseline_daily.csv": "5b8426a882e8db0f9153fd1f27ac60319cdc8bc53dd02f813bf18fb9d593cbc6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/artifacts/stage032_comparison/candidate_daily.csv": "ad73784dc922400d67c2ff2d8689adfe017001fa4ba9622a2a25b9fc487dad09"
+  },
+  "curve_points_sha256": {
+    "baseline": "5aab55599e94f79c69f046b8947b6fb4af23d448e12f8faa06c7b46842308e8f",
+    "candidate": "a56633be0b035a9585f38a84a1243ca48fddb98d13b5313bf0a83cbced548603"
+  },
+  "figure_sha256": "54fef38ae687a30bd476dc837b7a7e7719cd01d5d6dc29b09f930f017b081d7b",
+  "note": "Separate figure; original pending-review report and figure remain byte-identical."
+}

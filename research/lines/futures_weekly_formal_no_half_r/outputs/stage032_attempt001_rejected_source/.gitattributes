@@ -1,0 +1,2 @@
+# Preserve the original rejected-attempt source bytes and recorded SHA.
+run_stage032_daily_addon.py -whitespace

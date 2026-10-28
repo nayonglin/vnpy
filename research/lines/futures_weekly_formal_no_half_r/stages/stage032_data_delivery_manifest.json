@@ -1,0 +1,22 @@
+{
+  "schema": "stage032_daily_data_delivery_v1",
+  "说明": "仅Stage032新增日线资料与作者验收；待独立终审，不是策略结果或晋级",
+  "created_at": "2026-10-28T16:34:15.288410+08:00",
+  "data_ready_for_bounded_replay": true,
+  "date_end": "2026-10-28",
+  "financial_start": "2020-01-01",
+  "financial_replays": 0,
+  "production_accesses": 0,
+  "files": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/stages/20261028_1634_stage032_daily_data_20261028.md": "1262792892a41ab8ee5c4f40eb699ba7ca270a32e0fa002fbdc6b2ed716f3670",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_latest_data.py": "c920bbfd08ae833b87159602de9e60fd4c4d01a93e7ec9504083ba56fba3c879",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_latest_data.py": "d05e5012b271ba4fb35b4f1e85459f141283648409f1b617ded7ba5ee3eb7317",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/data_approved/receipt.json": "dce2ac8a312d31ab557d1b588b02e09022c0c65e5cf2bf02456b2639fb9fb4ee",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/data_approved/source_manifest.json": "1a4d62cc31d80b61e2b04f2fdece9c6bf2a7453ab6436f4060e289ca5eb94b03",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/data_approved/daily.sqlite": "a927f7829de4edf1b336b4290d8a6dd6c95588d6f3d37bdc9bf05b22caacf8b5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/data_approved/metadata_admission.json": "c8e33720a71d9df7a40390e5f9aaa7592871e5f5af9f8848c3360fd8cb34a4b8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/author_audit/audit.json": "34e0c7cf80b61dbae85719b0bb6739621929f0ccb20509d1186e447e4fe87b6a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/author_audit/test_receipt.json": "25b8d9be5863163f4c3b058b01c25e679f042ad8953b1fdc46b39242e2ce4467",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_latest_data/author_audit/data_tests_green.log": "fb714ce106783fe76a2adcb4a854393f233fb8db4034611cc312f4cdc56272cf"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "status": "INVALID_SLEEVE_OWNERSHIP_C_ATTEMPT001",
+  "cause": "Actual FG401 addon close incorrectly allocated entirely to base; report rejected unmatched_close BACKTESTING.315. SM505/cu2509 also affected; no source or ledger repair.",
+  "files": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_daily_addon.py": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage032_daily_addon.py": "b580322699e073b91e4e225e183737be6d769016c8830010b1845f930cc51f04",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_runner_contract.py": "f1d5a02628ebd80fbc115db88ed25d8e1c38c611b4d6341caa3727b4caa20968"
+  }
+}

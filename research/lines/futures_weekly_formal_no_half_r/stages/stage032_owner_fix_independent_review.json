@@ -1,0 +1,201 @@
+{
+  "schema": "stage032_owner_fix_independent_review_v1",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewed_at": "2026-10-28T17:15:37.265047+08:00",
+  "decision": "PASS_OWNER_FIX_BOUNDED_A_C_ATTEMPT002_REPLAY",
+  "allow_A_attempt002": true,
+  "allow_C_attempt002": true,
+  "scope": "Only owner inventory V2 diff, three actual C001 failure sequences, unfilled and duplicate plan reservations, stop/roll/forced subset, and disabled-arm parent callback identity",
+  "current_actionable_findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "C001_validity": "REJECTED_RETAIN_RAW_OUTPUTS",
+  "prior_preflight_limitation": "Per-fill total quantity conservation missed unfilled-plan owner contamination; prior permission did not establish C001 correctness.",
+  "adapter_sha256": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974",
+  "test_sha256": "1e6b3542cfaeb93ea983d97f9517d7011e5152a219cc6f273ff25339182c6ce2",
+  "independent_checks": {
+    "accepted": true,
+    "adapter_sha256": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974",
+    "test_sha256": "1e6b3542cfaeb93ea983d97f9517d7011e5152a219cc6f273ff25339182c6ce2",
+    "actual_failure_sequences": {
+      "FG401.CZCE": {
+        "actual_trade_ids": [
+          "BACKTESTING.310",
+          "BACKTESTING.314",
+          "BACKTESTING.315"
+        ],
+        "unfilled_plan_quantity": 22,
+        "base_closed": 10,
+        "addon_closed": 1,
+        "owner_terminal_empty": true,
+        "close_allocations": [
+          {
+            "trade_id": "BACKTESTING.315",
+            "order_id": "BACKTESTING.344",
+            "vt_symbol": "FG401.CZCE",
+            "product_vt_symbol": "FG.CZCE",
+            "trading_date": "2023-12-11",
+            "datetime": "2023-12-08 21:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 1,
+            "price": 1853.0,
+            "sleeve": "daily_addon",
+            "round_id": 1,
+            "addon_id": "86:1",
+            "reason": "long_base_stop",
+            "entry_price": 1898.0,
+            "stop_price": 1798.0
+          },
+          {
+            "trade_id": "BACKTESTING.315",
+            "order_id": "BACKTESTING.344",
+            "vt_symbol": "FG401.CZCE",
+            "product_vt_symbol": "FG.CZCE",
+            "trading_date": "2023-12-11",
+            "datetime": "2023-12-08 21:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 10,
+            "price": 1853.0,
+            "sleeve": "base",
+            "round_id": 0,
+            "addon_id": "",
+            "reason": "long_base_stop",
+            "entry_price": 1731.0,
+            "stop_price": 1.0
+          }
+        ]
+      },
+      "SM505.CZCE": {
+        "actual_trade_ids": [
+          "BACKTESTING.421",
+          "BACKTESTING.422",
+          "BACKTESTING.423",
+          "BACKTESTING.424"
+        ],
+        "unfilled_plan_quantity": 28,
+        "base_closed": 27,
+        "addon_closed": 1,
+        "owner_terminal_empty": true,
+        "close_allocations": [
+          {
+            "trade_id": "BACKTESTING.423",
+            "order_id": "BACKTESTING.465",
+            "vt_symbol": "SM505.CZCE",
+            "product_vt_symbol": "SM.CZCE",
+            "trading_date": "2025-02-12",
+            "datetime": "2025-02-12 09:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 1,
+            "price": 6592.0,
+            "sleeve": "daily_addon",
+            "round_id": 1,
+            "addon_id": "111:1",
+            "reason": "daily_addon_fixed_stop",
+            "entry_price": 7354.0,
+            "stop_price": 7254.0
+          },
+          {
+            "trade_id": "BACKTESTING.424",
+            "order_id": "BACKTESTING.466",
+            "vt_symbol": "SM505.CZCE",
+            "product_vt_symbol": "SM.CZCE",
+            "trading_date": "2025-02-13",
+            "datetime": "2025-02-13 09:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 27,
+            "price": 6426.0,
+            "sleeve": "base",
+            "round_id": 0,
+            "addon_id": "",
+            "reason": "long_risk_cluster_heat_deleverage",
+            "entry_price": 6870.0,
+            "stop_price": 1.0
+          }
+        ]
+      },
+      "cu2509.SHFE": {
+        "actual_trade_ids": [
+          "BACKTESTING.479",
+          "BACKTESTING.487",
+          "BACKTESTING.489"
+        ],
+        "unfilled_plan_quantity": 4,
+        "base_closed": 2,
+        "addon_closed": 1,
+        "owner_terminal_empty": true,
+        "close_allocations": [
+          {
+            "trade_id": "BACKTESTING.489",
+            "order_id": "BACKTESTING.538",
+            "vt_symbol": "cu2509.SHFE",
+            "product_vt_symbol": "cu.SHFE",
+            "trading_date": "2025-09-03",
+            "datetime": "2025-09-02 21:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 1,
+            "price": 79580.0,
+            "sleeve": "daily_addon",
+            "round_id": 1,
+            "addon_id": "124:1",
+            "reason": "rollover",
+            "entry_price": 79640.0,
+            "stop_price": 79540.0
+          },
+          {
+            "trade_id": "BACKTESTING.489",
+            "order_id": "BACKTESTING.538",
+            "vt_symbol": "cu2509.SHFE",
+            "product_vt_symbol": "cu.SHFE",
+            "trading_date": "2025-09-03",
+            "datetime": "2025-09-02 21:00:00+08:00",
+            "direction": "short",
+            "offset": "close",
+            "volume": 2,
+            "price": 79580.0,
+            "sleeve": "base",
+            "round_id": 0,
+            "addon_id": "",
+            "reason": "rollover_close",
+            "entry_price": 79060.0,
+            "stop_price": 1.0
+          }
+        ]
+      }
+    },
+    "old_C001_rejected_by_symbol": {
+      "FG401.CZCE": "owner_inventory_overclose:BACKTESTING.315:FG401.CZCE:base",
+      "SM505.CZCE": "owner_inventory_overclose:BACKTESTING.424:SM505.CZCE:base",
+      "cu2509.SHFE": "owner_inventory_overclose:BACKTESTING.489:cu2509.SHFE:base"
+    },
+    "duplicate_plan_does_not_consume_or_overreserve_inventory": true,
+    "original_parent_queue_preserved": true,
+    "normal_stop_roll_forced_subset_pass": true,
+    "disabled_parent_callbacks_identical": true,
+    "raw_C001_bindings_unchanged": {
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/trades.csv": "2381096e091d0fd98f42768ab954efa2318f25768a8be44c6284e03dd9ff7561",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/trade_events.csv": "44f2398eeeec6c6ef2ddf7135c8aa203bdfaa3507e0f88d611d74c2d37c1ae69",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_allocations.csv": "0204d081a85daa58dee1fef486e6aac6b56bc178b7f2ff235bc6f01df758f418"
+    },
+    "cost_and_terminal_orphan_mutations_rejected": true,
+    "financial_replays": 0
+  },
+  "evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/owner_v2/independent_checks.py": "a4115101280c63a5b808bf2654e1fc22f6f3fc76ee47e8d1ef84f4d00d9ec90d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/owner_v2/independent_checks.json": "eac83b4d535cd6d1617fc74dbf6914a08e827fd87518f10bc9d14caff0a02835"
+  },
+  "required_next_checks": [
+    "A001/A002 actual trades and daily equity exact equivalence",
+    "Fresh independent full C002 results and actual owner/cost/inventory/terminal audit",
+    "All existing source/data/runtime/accounting gates remain active"
+  ],
+  "financial_replays_by_reviewer": 0,
+  "source_edits_by_reviewer": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

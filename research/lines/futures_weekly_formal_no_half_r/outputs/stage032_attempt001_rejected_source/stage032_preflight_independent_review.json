@@ -1,0 +1,74 @@
+{
+  "schema": "stage032_independent_preflight_review_v1",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewed_at": "2026-10-28T16:54:48.670051+08:00",
+  "decision": "PASS_BOUNDED_A_C_FINANCIAL_REPLAY_PREFLIGHT",
+  "allow_A_financial_replay": true,
+  "allow_C_financial_replay": true,
+  "data_cutoff": "2026-10-28",
+  "financial_start": "2020-01-01",
+  "financial_replays_by_reviewer": 0,
+  "new_market_downloads_by_reviewer": 0,
+  "source_edits_by_reviewer": 0,
+  "current_actionable_findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "repaired_findings": [
+    {
+      "priority": "P1",
+      "issue": "Multiple pending addons independently passed frozen opening capacity despite aggregate excess",
+      "failing_source_sha256": "475a2cd5416d5c83ca9618bfd25b622bdddf9b7238aadb258bc149e1af66c34a",
+      "evidence": "shared_budget_counterexample.json",
+      "resolution": "Shared batch reservations, known opening margin gaps, cancellation releases, separate cluster adjustments, actual held same-symbol opening mark adjustment",
+      "verification": "repair_checks_final.json"
+    },
+    {
+      "priority": "P2",
+      "issue": "Explicit safety-close reason did not reach base allocation queue before parent recorded event",
+      "resolution": "Scope explicit exit_reason around base close queue",
+      "verification": "repair_checks_final.json"
+    }
+  ],
+  "source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_latest_data.py": "c920bbfd08ae833b87159602de9e60fd4c4d01a93e7ec9504083ba56fba3c879",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_latest_data.py": "d05e5012b271ba4fb35b4f1e85459f141283648409f1b617ded7ba5ee3eb7317",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage032_daily_addon.py": "b580322699e073b91e4e225e183737be6d769016c8830010b1845f930cc51f04",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_runner_contract.py": "f1d5a02628ebd80fbc115db88ed25d8e1c38c611b4d6341caa3727b4caa20968",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_daily_addon.py": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7"
+  },
+  "evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_prefreeze_v1_sha.json": "f2bfb9217b0a6b0c642c20bcb62af89d25d75f02ebb724719f9195d1f2c32288",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_frozen_v3.diff": "6811629b126f12a87221bb6f15d8f870bb645ecfe8e92bf71ba36fd859dcecd1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/forced_parent_check.py": "ba87e4f590b371418ed05d9e964bebc2111298b9e589dfd1bf4325fe0b28ab6d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/repair_checks_final.py": "b6e3ebba7df89d899a960d60b8494d29a263098817e904665b3298d7cfd874a8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/forced_parent_check.json": "493df9b6f5484839cf93fe3a988924df6ea1206649ea9a9fb1ea4a3ae2e30e05",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/independent_data_checks.json": "f3fbb50d167c9f84b085dc1ca6c1e484980297652386218a38780da66c4489a6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_budget_fixed_v2.diff": "590b705e76e8c9f33e8ac0c7e9401f5e6fc7cd8ba68d2c56090e5dc8dcf5754d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/shared_budget_counterexample.py": "ce856e5eec9dcee88699c57547a3b9d88c298924de00f1fce591b676fa6f856a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/real_parent_checks.py": "d318b211c60956c120de6a8a8086f2ea19998bed02513f3c3b98cb365bee1db9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/repair_checks_v1.json": "208cdfe4e130aea48179678afdbfdf246328348ceda4eee03d625753ef2c9fdc",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_frozen_v3_sha.json": "b4fc549b11bde3dff5f1520a73de9dd7ae0944a3c00a7ef4b142762fbdad9b78",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_budget_fixed_v2_sha.json": "b9864661abb83c0c35d71feda6adc62aa540cd3a88c8c11d1fe8dcb0382ad1c1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/repair_checks.py": "870bf1e1113f0b44df613e45580e4bbe8e1b021b53a2f6d2b4ad307621739463",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/independent_data_checks.py": "9f7a2bb01e2d8b88f1cd08a6318ca6568de88788ba9348a35005a1a86ef2e661",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/repair_checks_final.json": "624a523ce714ab0296997ef6eef230a26370ad7c110e4d1934ab75d70e0c6ec2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/real_parent_checks.json": "4ab87eb624907202e28ab98dd25fc285f2ac41eea334f34174f95bd7d8bdca3e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/shared_budget_counterexample.json": "ca250cdc7014a62135e07ab9092981c593abd1e2e553ba584d3e019fccc25938",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_preflight_review/code_package_prefreeze_v1.diff": "c27525331b79e1228bb4cdff7728fc39cbe6a34a694447dd5bf4e29a5c131df0"
+  },
+  "limits": [
+    "Bounded additive vendor data admission; no exchange-truth or PIT/OOS proof.",
+    "28 accepted latest contracts cover prior held/pending and main; actual A/C holding/trading coverage still must pass runner gates.",
+    "Declared actual daily-open price with calendar session clock; no minute quote, spread, queue or capacity evidence.",
+    "Opening add-on budget uses completed D2 capacities plus known D3 opening margin changes, not future D3 close/equity; other unobserved holdings retain D2 marks, and ordinary base execution remains unchanged.",
+    "Preflight is not result review or production qualification. Every financial run needs independent result/accounting review; no parameter rescue."
+  ],
+  "external_sources": [
+    "https://doc.shinnytech.com/tqsdk/latest/reference/tqsdk.api.html",
+    "https://github.com/shinnytech/tqsdk-python/blob/master/tqsdk/api.py"
+  ],
+  "promotion_decision": "NO_PROMOTION"
+}

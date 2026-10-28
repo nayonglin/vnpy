@@ -1,0 +1,777 @@
+{
+  "line_id": "futures_weekly_formal_no_half_r",
+  "reviewed_at": "2026-10-28T17:06:15.558654+08:00",
+  "reviewer": "stage032_results_independent_review",
+  "verdict": "A_PASS_BOUNDED_ACCOUNTING__C_INVALID_SLEEVE_OWNERSHIP",
+  "A": {
+    "days": 1651,
+    "fills": 464,
+    "position_rows": 3417,
+    "end_equity": 1259840.0000000005,
+    "total_return_pct": 739.8933333333335,
+    "max_dd_pct": -55.04291739512648,
+    "sharpe": 0.955173201789422,
+    "slippage": 81020.0,
+    "commission": 0.0,
+    "complete_native_contract_rounds": {
+      "n": 228,
+      "wins": 109,
+      "losses": 118,
+      "win_rate_pct": 47.80701754385965,
+      "average_win": 23003.853211009173,
+      "average_loss": 15427.966101694916,
+      "payoff_ratio": 1.491048985937425,
+      "profit_factor": 1.377324910738808,
+      "net": 686920.0
+    },
+    "native_open_contracts": 4,
+    "native_open_round_net_mtm": 422920.0,
+    "errors": []
+  },
+  "C_diagnostic_only_invalid_for_comparison": {
+    "days": 1651,
+    "fills": 596,
+    "position_rows": 3326,
+    "end_equity": 2410910.0,
+    "total_return_pct": 1507.273333333333,
+    "max_dd_pct": -46.636792723242436,
+    "sharpe": 1.1408726382339212,
+    "slippage": 145450.0,
+    "commission": 0.0,
+    "complete_native_contract_rounds": {
+      "n": 232,
+      "wins": 104,
+      "losses": 128,
+      "win_rate_pct": 44.827586206896555,
+      "average_win": 42182.067307692305,
+      "average_loss": 22924.1796875,
+      "payoff_ratio": 1.840068778151009,
+      "profit_factor": 1.495055882247695,
+      "net": 1452640.0000000002
+    },
+    "native_open_contracts": 4,
+    "native_open_round_net_mtm": 808270.0,
+    "addon_signal_checks": 95,
+    "actual_adds": 94,
+    "closed_adds": 91,
+    "sleeve_closed_round_stats": {
+      "base": {
+        "n": 229,
+        "wins": 104,
+        "losses": 124,
+        "win_rate_pct": 45.414847161572055,
+        "average_win": 40927.692307692305,
+        "average_loss": 22527.298387096773,
+        "payoff_ratio": 1.8168042880425885,
+        "profit_factor": 1.5237713383583,
+        "net": 1463095.0000000002
+      },
+      "daily_addon": {
+        "n": 91,
+        "wins": 37,
+        "losses": 54,
+        "win_rate_pct": 40.65934065934066,
+        "average_win": 4187.972972972973,
+        "average_loss": 2384.4444444444443,
+        "payoff_ratio": 1.756372635449989,
+        "profit_factor": 1.2034405094749923,
+        "net": 26195.0
+      }
+    },
+    "owner_terminal_positions": {
+      "('base', 'FG401.CZCE')": -1.0,
+      "('daily_addon', '86:1')": 1.0,
+      "('base', 'SM505.CZCE')": -1.0,
+      "('daily_addon', '111:1')": 1.0,
+      "('base', 'cu2509.SHFE')": -1.0,
+      "('daily_addon', '124:1')": 1.0,
+      "('base', 'lc2701.GFEX')": -21.0,
+      "('base', 'SA701.CZCE')": -165.0,
+      "('base', 'rb2701.SHFE')": -118.0,
+      "('base', 'SH701.CZCE')": -21.0
+    },
+    "sleeve_net_mtm": {
+      "base": 2707725.0,
+      "daily_addon": -446815.0
+    },
+    "errors": [
+      {
+        "check": "owner_overclose",
+        "trade": "BACKTESTING.315",
+        "owner": "('base', 'FG401.CZCE')",
+        "before": 10.0,
+        "move": -11
+      },
+      {
+        "check": "owner_overclose",
+        "trade": "BACKTESTING.424",
+        "owner": "('base', 'SM505.CZCE')",
+        "before": 26.0,
+        "move": -27
+      },
+      {
+        "check": "owner_overclose",
+        "trade": "BACKTESTING.489",
+        "owner": "('base', 'cu2509.SHFE')",
+        "before": 2.0,
+        "move": -3
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-12"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-13"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-14"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-15"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-18"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-19"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-20"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-21"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-25"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-26"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-27"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-28"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2023-12-29"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-02"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-05"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-08"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-09"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-10"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-11"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-12"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "86:1",
+        "date": "2024-01-15"
+      },
+      {
+        "check": "orphan_addon_no_bar",
+        "addon": "86:1",
+        "date": "2024-01-16"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-11"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-12"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-13"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-14"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-17"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-18"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-19"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-20"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-21"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-24"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-25"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-26"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-27"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-02-28"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-03"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-04"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-05"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-06"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-07"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-10"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-11"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-12"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-13"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-14"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-17"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-18"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-19"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-20"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-21"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-24"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-25"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-26"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-27"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-28"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-03-31"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-01"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-02"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-03"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-07"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-08"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-09"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-10"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-11"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-14"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-15"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-16"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-17"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-18"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-21"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-22"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-23"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-24"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-25"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-28"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-29"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-04-30"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-06"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-07"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-08"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-09"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-12"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-13"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-14"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-15"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-16"
+      },
+      {
+        "check": "missed_stop_exit",
+        "addon": "111:1",
+        "date": "2025-05-19"
+      },
+      {
+        "check": "orphan_addon_no_bar",
+        "addon": "111:1",
+        "date": "2025-05-20"
+      },
+      {
+        "check": "orphan_addon_no_bar",
+        "addon": "124:1",
+        "date": "2025-09-16"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "priority": "P1",
+      "status": "unresolved_in_attempt001",
+      "title": "未成交计划减仓污染owner平仓队列，三次真实加仓平仓错误归底仓",
+      "evidence": [
+        {
+          "trade_id": "BACKTESTING.315",
+          "vt_symbol": "FG401.CZCE",
+          "date": "2023-12-11",
+          "base_before": 10,
+          "addon_before": 1,
+          "actual_close": 11,
+          "allocated_base_close": 11,
+          "addon_id": "86:1"
+        },
+        {
+          "trade_id": "BACKTESTING.424",
+          "vt_symbol": "SM505.CZCE",
+          "date": "2025-02-13",
+          "base_before": 26,
+          "addon_before": 1,
+          "actual_close": 27,
+          "allocated_base_close": 27,
+          "addon_id": "111:1"
+        },
+        {
+          "trade_id": "BACKTESTING.489",
+          "vt_symbol": "cu2509.SHFE",
+          "date": "2025-09-03",
+          "base_before": 2,
+          "addon_before": 1,
+          "actual_close": 3,
+          "allocated_base_close": 3,
+          "addon_id": "124:1"
+        }
+      ],
+      "root_cause": "FG401于2023-09-01只有计划开仓后同日安全减仓22手，实际没有成交。旧队列entry_price1812和forced_margin_deleverage延续至12-11，真实long_base_stop11手先消耗旧base队列，遗漏addon的close_fill。其他两例同型。父pending_close_lots/reasons也存在同类风险；原生exit_reason不能无条件当真。",
+      "impact": "底仓出现-1伪库存和addon+1孤儿库存；_da_active停留pending_close，规则状态不满足实际平仓释放锁。总净仓/总权益守恒不能证明C的真实策略路径正确。",
+      "required_action": "保留失败attempt和旧源码；实现侧修复未成交计划与真实仓位的队列生命周期及验收闸门，在新attempt重跑，再由新的结果agent独审。禁止修CSV或仅改报告。"
+    }
+  ],
+  "remaining": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 0
+  },
+  "source_bindings_at_review": {
+    "bindings": 2628,
+    "conflicts": [],
+    "mismatches": []
+  },
+  "frozen_source_archive": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py": {
+      "original_sha256": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac",
+      "immutable_review_copy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_daily_addon.py",
+      "copy_sha256": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac"
+    },
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_daily_addon.py": {
+      "original_sha256": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7",
+      "immutable_review_copy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/test_stage032_daily_addon.py",
+      "copy_sha256": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7"
+    },
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/run_stage032_daily_addon.py": {
+      "original_sha256": "b580322699e073b91e4e225e183737be6d769016c8830010b1845f930cc51f04",
+      "immutable_review_copy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/run_stage032_daily_addon.py",
+      "copy_sha256": "b580322699e073b91e4e225e183737be6d769016c8830010b1845f930cc51f04"
+    },
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_runner_contract.py": {
+      "original_sha256": "f1d5a02628ebd80fbc115db88ed25d8e1c38c611b4d6341caa3727b4caa20968",
+      "immutable_review_copy": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/test_stage032_runner_contract.py",
+      "copy_sha256": "f1d5a02628ebd80fbc115db88ed25d8e1c38c611b4d6341caa3727b4caa20968"
+    }
+  },
+  "evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/initial_stop_audit.csv": "2c4b52da7b1a6aa725f49dabe738bfc9c0368615e9a3609447b9991c6cf51c68",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/stop_retry_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/weekly_stop_guard_failures.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/metrics.json": "8f26115cfc28133f949212d5077393aa0f3ffc1d1b715778dc456ded93d5eb17",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/data_quality.json": "0feb4676ffb65f0f7268045fd0558ceb2e0f76263c1ffa29eb0ec9abb7532bb6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_snapshots.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/no_position_cap_acceptance.json": "7fdd956e0e37f228d0e49dca0a43040b7024ebbf94f91e5dbb8f6bd0c014f4ec",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/intraday_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/input_manifest.json": "ddc025a9684a8c10ab46108adce95e81d7caf9202ab97841c0b83000017f0dc1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/historical_target_cleanup.csv": "80f3d881f0f1e39a9f03a2a76836f868e90ffe6a2b76877d6c3a3a7d5bbd74f2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/rollover_shape_same_volume.csv": "c277e240e8dfb4a09beee89f85576144b26d2f8e0946c54dcefd92b2408e0eb5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_rounds.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/historical_epoch_failures.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/actual_daily_addon_configuration.json": "ffdcc775e8358d9226d4e9a19836ead4d0a276d9fff92b487dc2f821e33b4ee0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/actual_strategy_settings.json": "3bc6ba5edd495b6a0065849b5e246c43d0e33caba99dc3ca1184e2912aed9ddc",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/execution_audit.json": "71529b125cacb43c07a1be5a00c5a57a20d13a526016a984f4725602705cf4a4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/execution_proxy_usage.csv": "84416f8640666389855a0b71cd1846149726636648343c10cf2ecca6f62a35e1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/weekly_stop_audit.csv": "2514fe633734d54ea6c080fd34ba4499b577612c0e749bc95d6439ee90a3f6e6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/historical_epoch_transitions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/entry_candidates.csv": "139632a2529b8da4a1f9253b016fcc725c3f321f55e11d11c7545dbd2c7b73ff",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/pending_orders.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/actual_database_binding.json": "3df214ed8ad5e00edc4cb708d71538a7f2434ced0389fb734ae0296d168a6917",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/short_case2_acceptance.json": "382dd8c97b122b9b9af9e08a9172dba469f9b0db82d2100a2fcbde5bcb047fdd",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/macd_acceptance.json": "3a74495504a595f24283ed0c527ccf9d59d1088e2e71420d5f199286a75b0b1b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/c2_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/ai_selection_acceptance.json": "cc7da481cc0b3afb3b09bafed3c3f5a1e4aaa58e8d2e37b240e966102ce7cc5a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/data_read_counts.json": "93d3de2922f2827829f6ecf964a43097e5ef67962cc83491d97fed1657306277",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/execution_anchor_requests.csv": "8277a81f7b2f926bf233bdf22ba4f5bd76531fac76a755822542d2cea15944f3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/metadata_delta_acceptance.json": "61a20f5b6d16f0f7f1657918b3b922384694b9e24b5370205b56ecd65cddeb41",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily.csv": "c6d5a3ad83e946522c3acfe1a78722b84a67160150fb4b017d710f3e82802fa6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_allocations.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_events.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/weekly_bars.csv": "cf4f53a9ef34d783392852f4c1471e409c7775e11cfcef86036369d410220912",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/invalid_weekly_stop_rejections.csv": "6d3fecfd75287890b4a45f12999012251e214a22054da9e249f2615313726229",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/long_signal_atr_shock.csv": "db0cae5b2421ef12ccaba2171d711fc7870ac54a75063c5588d7f8599a2e6bd6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/long_signal_range_atr.csv": "2303b77f5513d84cf54ad38ce515a70360c9bfb0af4a7ecff054c3205eb7388d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/week_close_exit_acceptance.json": "ac24eb9cb85ac1991d35ca64e0c06c6b8247570e9ed463a7214e36079d027b51",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/trades.csv": "90ef6f9c864d849f281967872ef55ad623620e4d87ef0c66b884580d4bcd65a7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/positions.csv": "2f4b1517adbe0ad0a98e1bfac693181a3504b1334d6699d2639569bebf1c8a7b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_acceptance.json": "cb6b87a4a9e9274a52f7faeaf40fb1e989c6424089e6a9c316ab7dcca63571c7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/terminal.json": "dfe9a5d7d46deaf75dc30001b86cdd83071c78d00d8b31da4ce64f276b4db2cd",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_decisions.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/weekly_coverage.json": "a824026068dcf5de2a44084327ee58018c4ba061d845be314b4ed4cfa1f2fd5e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/internal_equity_daily.csv": "7256762a7f433ebf2db1f950c4a8ee5228525dd7d77236c193e8348dda72591b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/weekly_readiness.csv": "1e5c8eda479dd7fc24b5136860f2c69eb4ca3722942a9ec4d7d861284d671291",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/execution_clock.csv": "9a561b96ab68aead6fe65374dde54fc76a129205c74cca0fff1b31d4b3c89df2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/bar_open_acceptance.json": "a88f8944a3aef45c44d0920668103d20d3cca794f40b0d348493f2bada994af4",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/rollover_delay.csv": "8c901853486e88572c4f3a014508748e57d922bbe5d25259f1457d3fe1aa373b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/trade_events.csv": "fcd3328dd4aa57965a9a726c3c3328cc1837a1a0a3a4c97e36a35e85126a288a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/entry_risk.csv": "3b1d8f97eb68c365cc9e0a408f5ce830bbf12921155ad0efb6422bf55f6c1b41",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/preflight.json": "5f71f2fab1134f1b390e855075864b26c1f8ff8d35aef6584b854bbcd1bda561",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/effective_parameters.json": "eac530bc3ac785b579fe9727e743ff9c50dee6b6db70b423857f67905202d14a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/daily_addon_guard_failures.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_A_attempt001/historical_safety_acceptance.json": "9247c8f66cd343a1d8ee0d444ecc9bbd358ea1826fa4ec97281528a50f8a2fc7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/initial_stop_audit.csv": "f37ddb80ca20b75a4a5259947d922a0111392526fa6dcacc1fd53b495229e982",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/stop_retry_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/weekly_stop_guard_failures.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/metrics.json": "64c29711db4ea9adae57eaac41b180a53ae980fa1990947ff07c1150db4ea28c",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/data_quality.json": "0feb4676ffb65f0f7268045fd0558ceb2e0f76263c1ffa29eb0ec9abb7532bb6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_snapshots.csv": "7b605e69dceef6d95da052c981aaf43f3433cdea2e1e8109b5e42271e376adcb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/no_position_cap_acceptance.json": "7fdd956e0e37f228d0e49dca0a43040b7024ebbf94f91e5dbb8f6bd0c014f4ec",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/intraday_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/input_manifest.json": "ddc025a9684a8c10ab46108adce95e81d7caf9202ab97841c0b83000017f0dc1",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/historical_target_cleanup.csv": "80f3d881f0f1e39a9f03a2a76836f868e90ffe6a2b76877d6c3a3a7d5bbd74f2",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/rollover_shape_same_volume.csv": "47b931061f864a73f9d829d5bd6f31b594788f6e8530cebb3ba1b45cb74bc89b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_rounds.csv": "c229b3d8dff5689f5bf94e268bdb240ffea10e8b3d148c7d3fee4f331b50ed97",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/historical_epoch_failures.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/actual_daily_addon_configuration.json": "875e72c313c490c24cf5390776d5c8575244b672d4390eeab17ce14a9092f374",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/actual_strategy_settings.json": "3bc6ba5edd495b6a0065849b5e246c43d0e33caba99dc3ca1184e2912aed9ddc",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/execution_audit.json": "26f1dacac478c325d5765d4d8efecac021f9776375e8369b63df36a788c72ad6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/execution_proxy_usage.csv": "4b7034640c497aeb10d3941a9285fa76ba9c91271006b54c4d586f5eea0e7e12",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/weekly_stop_audit.csv": "23f0bcf03357bbed6fea45a521f8c86762e0392fc27f6fb1819d46d47354e734",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/historical_epoch_transitions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/entry_candidates.csv": "3b566596a41ce9ea6dd946604f4e96deed8b968e6b78eb0830e90c8b93c63df0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/pending_orders.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/actual_database_binding.json": "3df214ed8ad5e00edc4cb708d71538a7f2434ced0389fb734ae0296d168a6917",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/short_case2_acceptance.json": "ba88232c00151b12c1b1b16b192e21cfbe1849208418e85a73a14519786a6eaf",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/macd_acceptance.json": "3a74495504a595f24283ed0c527ccf9d59d1088e2e71420d5f199286a75b0b1b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/c2_events.csv": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/ai_selection_acceptance.json": "cc7da481cc0b3afb3b09bafed3c3f5a1e4aaa58e8d2e37b240e966102ce7cc5a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/data_read_counts.json": "93d3de2922f2827829f6ecf964a43097e5ef67962cc83491d97fed1657306277",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/execution_anchor_requests.csv": "e6043904caeec111c846e09f7c6589fb1937f4d9fbb8929d6f671dcd1d2df553",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/metadata_delta_acceptance.json": "61a20f5b6d16f0f7f1657918b3b922384694b9e24b5370205b56ecd65cddeb41",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily.csv": "1acd69da1be53fe5c94242e365fe83ad1dc807e1c8624299ca65d40106465dd0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_allocations.csv": "0204d081a85daa58dee1fef486e6aac6b56bc178b7f2ff235bc6f01df758f418",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_events.csv": "82a333371cb9db1fcda224dd328793b479fadd9f09fb8d66f996cd0829425453",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/weekly_bars.csv": "cf4f53a9ef34d783392852f4c1471e409c7775e11cfcef86036369d410220912",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/invalid_weekly_stop_rejections.csv": "dd28030fc6968ffc48525f1764fc9a22aebb515a249788e064fa5b8bccbf6da6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/long_signal_atr_shock.csv": "1b293add2b5be7f8d8fe98651bd7e2e86d5906df4c3c554ca2d539c4dccedf92",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/long_signal_range_atr.csv": "9bec0ae13ed67130796fb449caba12d1839f1c2eb18b5eac1232ba0f01620cfb",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/week_close_exit_acceptance.json": "77f3c3efb6dd83e7b195310d1998a9d1d23d4f90c0095b63a5732e973f04ce88",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/trades.csv": "2381096e091d0fd98f42768ab954efa2318f25768a8be44c6284e03dd9ff7561",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/positions.csv": "3caaf891b0b93e1e5a788299844ce3bb6f8f2c709d25b31e03ffb5b75c027ac5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_acceptance.json": "7eb762f990c5ab5e39925ba45c4c059b957360dd20611694123eec02a588ba6f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/terminal.json": "42a1e5978d2e2f6446f50f71b6b9d8bc953afc7152d5b4f8945334169b0ba8d5",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_decisions.csv": "5e5cea5168ffbd00e5b952f05f3a958d11e71ae4feef556092049183d9112a7c",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/weekly_coverage.json": "a824026068dcf5de2a44084327ee58018c4ba061d845be314b4ed4cfa1f2fd5e",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/internal_equity_daily.csv": "49a3f45224a55ca161ef2a0bb8eb770e73cc412d440b5bd23e31db204ec02c40",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/weekly_readiness.csv": "1e5c8eda479dd7fc24b5136860f2c69eb4ca3722942a9ec4d7d861284d671291",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/execution_clock.csv": "47522a9692e15b973565e1e54fbdbb46285a5501834a391ca6b0f70226c1afc3",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/bar_open_acceptance.json": "4c57af506cc53fb02cb6ebfd6f0f33bfdb9996e991e404123aa7b7de65013cd8",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/rollover_delay.csv": "6df100d440f286c7ac3b2b25394b615f43313ee7c5298696c34946d737108d3a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/trade_events.csv": "44f2398eeeec6c6ef2ddf7135c8aa203bdfaa3507e0f88d611d74c2d37c1ae69",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/entry_risk.csv": "a260aac7c047f3f39ae250dbd0ae961e23c7fdc05f3f15fea3894d23e6029e1a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/preflight.json": "1367174fd6b9ead26ce493178984dd1046ebe09c115ed487dcd881097e25e00b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/effective_parameters.json": "eac530bc3ac785b579fe9727e743ff9c50dee6b6db70b423857f67905202d14a",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_guard_failures.csv": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/historical_safety_acceptance.json": "2e067e03cc7d4501dfdb057fda6d8d0d480581cdc925a1d7670609d00a1e4426",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/run_stage032_daily_addon.py": "b580322699e073b91e4e225e183737be6d769016c8830010b1845f930cc51f04",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/test_stage032_runner_contract.py": "f1d5a02628ebd80fbc115db88ed25d8e1c38c611b4d6341caa3727b4caa20968",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/test_stage032_daily_addon.py": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/stage032_daily_addon.py": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_attempt001_rejected_source/receipt.json": "1a7dffb2e100301084a2e35d1ee5ba94b9c500056700c80e76a35465f4e5bd1f",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_independent_audit_stage032_C_attempt001.json": "ac895088698bfab983283fe585a0ad042361089f512e7349cb1e62c52503c15d",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_result_hash_review_attempt001.json": "5aa5da8b89e7ce2973ea2d65f429857025a2731c42b24fefa233f5b69cabe138",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_independent_rules_stage032_C_attempt001.json": "574d092db63864de1805c57c6f575b4f166b91d27a72660ea6660e172064eee6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_independent_result_audit.py": "ab10c8660e6776084bac40b86fe021ebf59e2630003e23b12e3efa9bf44905ec",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_independent_rules_audit.py": "0e511ab4bdb2f05dfd753ff73c6f78fc033f98d2c66aebe7f45837cc9531a9a7",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_results_review/stage032_independent_audit_stage032_A_attempt001.json": "3c8917425d36c5d6df67af884dc62f8f61f0f252dba3ac3fcf51a93e12fbc9a1"
+  },
+  "production_qualified": false,
+  "promotion": "NO_PROMOTION_FAILED_C_ATTEMPT",
+  "confidence": {
+    "A_accounting": "high_under_declared_daily_open_model",
+    "C_failure": "high_direct_fill_counterexample",
+    "C_alpha": "not_assessable_until_valid_rerun",
+    "data_truth": "bounded_source_consistency_not_exchange_final_truth_or_PIT"
+  },
+  "scope": "No strategy replay, no data download, no code/ledger changes, no repeat of completed 400 tests. Independent raw-SQL marks, fill inventory, costs, daily MTM and event/rule checks only."
+}

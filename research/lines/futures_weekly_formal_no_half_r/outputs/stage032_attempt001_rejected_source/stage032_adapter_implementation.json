@@ -1,0 +1,59 @@
+{
+  "schema": "stage032_adapter_implementation_v1",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "recorded_at": "2026-10-28T16:50:00+08:00",
+  "task": 2,
+  "implementation_complete": true,
+  "independent_review_pending": true,
+  "financial_backtests_run": 0,
+  "commit_created": false,
+  "source_sha256": {
+    "research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py": "560232fcf1227a37f3d6c81613db422d6bdfff1472da4070e855eb87a77aadac",
+    "research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_daily_addon.py": "a8ba5011774da0f3ce2874fa486ee1b29d60335d896e9251746108e808139dd7"
+  },
+  "tests": {
+    "adapter": {
+      "tests": 28,
+      "passed": 28,
+      "failed": 0
+    },
+    "stage029_regression": {
+      "tests": 48,
+      "passed": 48,
+      "failed": 0
+    }
+  },
+  "red_evidence": [
+    "initial 13 failures: adapter not implemented",
+    "frozen open risk budget: expected False got True",
+    "actual one-lot heat gate: expected False got True after correcting heat-map fixture and rerunning RED",
+    "frozen broker/incremental/heat capacity: expected False got True",
+    "actual full-exit round status pending versus closed",
+    "fill/cancel event dates D2 versus D3",
+    "independent shared-budget counterexample both accepted; opposite fill order and cancel release failed",
+    "base close reason stale_old_reason rather than explicit heat reason",
+    "known same-contract open reprices held base: admitted 312 margin against 310 cap"
+  ],
+  "rulings": [
+    "Tagged PositionLayer carries real net ownership and risk; technical weekly consumers locally exclude addon; parent full close restores it before close.",
+    "Addon close PnL enters shared account but does not feed parent alpha win/loss streak or product-outcome memory.",
+    "Disabled factory returns original Stage029v2 wrapper directly.",
+    "Actual open admission uses D2 frozen capacities, all sibling pending reservations and known prior fills only; all other symbols future OHLC forbidden.",
+    "Shared ledger preserves original execution order; cancelled pending frees reservation; ordinary base opens remain untouched and only their known margin gap reduces later addon capacity.",
+    "Current addon same-contract held base margin is repriced at the now-known open; D2 equity ceilings remain conservative.",
+    "Independent final review and broad research-line regression delegated to root; this task does not run financial replay."
+  ],
+  "interfaces": {
+    "strategy": "daily_addon_strategy_class(base,weeks,calendar,epoch_lookup,enabled=True)",
+    "engine": "daily_addon_engine_class(base)",
+    "audit": "audit_daily_addon(strategy,frames=None)",
+    "lists": [
+      "daily_addon_events",
+      "daily_addon_decisions",
+      "daily_addon_rounds",
+      "daily_addon_allocations",
+      "daily_addon_snapshots",
+      "daily_addon_guard_failures"
+    ]
+  }
+}

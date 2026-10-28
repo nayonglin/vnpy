@@ -1,0 +1,127 @@
+{
+  "schema": "stage032_report_build_implementation_v1",
+  "time": "2026-10-28 16:37",
+  "line_id": "futures_weekly_formal_no_half_r",
+  "status": "IMPLEMENTED_UNIT_VERIFIED_PENDING_REAL_LEDGER_AND_INDEPENDENT_REVIEW",
+  "financial_strategy_replays": 0,
+  "downloads": 0,
+  "production_qualified": false,
+  "promotion_decision": "NO_PROMOTION",
+  "new_test_count": 10,
+  "inherited_pure_accounting_test_count": 8,
+  "combined_test_count": 18,
+  "test_result": "18 passed in 1.763s",
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH='.:/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor:examples/portfolio_backtesting:research/lines/futures_weekly_formal_no_half_r/tools' .py311/bin/python -m unittest research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_report_builder.py research/lines/futures_weekly_formal_no_half_r/tools/test_stage029_report_builder.py -v",
+  "source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_build_artifacts.py": "f2fe5bab8b879ebb00a04a18dd564dca93dbf37089b4f119c8423cfb432472ec",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/test_stage032_report_builder.py": "bcae25502532b5da4f29c65fe585e9ff5b2aec8888c37c395043d0e02129f552",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_build_artifacts.py": "c01fbde3ba539060164aba4e3b929fa9cbdeb943bb6b51f8175b914f873173a7"
+  },
+  "red_evidence": [
+    "Initial missing tool import then explicit NotImplementedError: 6 tests,15 subcases rejected prior to implementation.",
+    "Empty addon CSV: pandas EmptyDataError reproduced before parser fix.",
+    "Actual adapter long/open plus integer round_id rejected before semantic enum/id normalization fix.",
+    "Missing addon_analysis key reproduced before add-number attribution implementation."
+  ],
+  "synthetic_accounting_checks": {
+    "fifo_closed": -40.0,
+    "native_complete_round": -40.0,
+    "terminal_open_round": 190.0,
+    "total_net": 150.0,
+    "distinct_owner_fixture": {
+      "total_inventory_fifo_closed": 180.0,
+      "addon_owner_closed": 80.0,
+      "base_owner_open": 240.0,
+      "total_net": 320.0
+    }
+  },
+  "chart_visual_check": "Synthetic fixture chart inspected; same equity and drawdown axes, dates, capital, source/model and NO_PROMOTION labels present.",
+  "rulings": [
+    "Reuse pure Stage029 accounting only; never use frozen2015/old RSI-on load_ledger.",
+    "Both arms must have identical full actual_strategy_settings and effective_parameters, identical dates and four bound data hashes; enabled flag differs only in separate addon configuration.",
+    "Normal inventory FIFO and recorded sleeve ownership are separate closed-trade statistic bases.",
+    "Missing audit CSV files fail closed; genuinely empty files are accepted when their rows are empty.",
+    "Source historical_safety account_days must equal daily calendar length; exact first requested trading date is 2020-01-02."
+  ],
+  "limitations": [
+    "No real A/C strategy execution or financial backtest performed by this subtask.",
+    "Synthetic test fixtures are accounting tests, never performance claims.",
+    "Independent review remains required after each actual strategy replay.",
+    "PIT/OOS, source historical mapping, zero fees and quote/capacity limitations remain."
+  ],
+  "start_reflection": {
+    "overfitting": "No parameter optimization in report implementation; source strategy remains in-sample with acknowledged overfitting risk.",
+    "continue_value": "Yes: prevent ordinary FIFO from falsely assigning addon exits to base trades and reconcile direct addon versus capital-path effect."
+  },
+  "end_reflection": {
+    "overfitting": "No: report implementation fixes accounting contract only; it adds no strategy signal, thresholds, parameter selection or rescue tuning.",
+    "continue_value": "Yes: accepted real A/C ledgers and independent review can now test the one frozen hypothesis; code/unit success alone is not a candidate result."
+  },
+  "real_attempt001_readonly_diagnostic": {
+    "time": "2026-10-28 17:00",
+    "status": "REJECT_C_REAL_OWNER_ALLOCATIONS_NOT_REPORT_ERROR",
+    "report_artifacts_published": false,
+    "report_source_modified": false,
+    "financial_ledger_modified": false,
+    "first_report_error": "ValueError unmatched_close:BACKTESTING.315",
+    "close_owner_inventory_overflows": [
+      {
+        "trade_id": "BACKTESTING.315",
+        "contract": "FG401.CZCE",
+        "date": "2023-12-11",
+        "base_inventory_before": 10,
+        "allocated_base_close": 11,
+        "addon_id": "86:1",
+        "addon_inventory_still_open": 1,
+        "csv_lines": [
+          354,
+          358,
+          359
+        ]
+      },
+      {
+        "trade_id": "BACKTESTING.424",
+        "contract": "SM505.CZCE",
+        "date": "2025-02-13",
+        "base_inventory_before": 26,
+        "allocated_base_close": 27,
+        "addon_id": "111:1",
+        "addon_inventory_still_open": 1,
+        "csv_lines": [
+          477,
+          478,
+          479,
+          480
+        ]
+      },
+      {
+        "trade_id": "BACKTESTING.489",
+        "contract": "cu2509.SHFE",
+        "date": "2025-09-03",
+        "base_inventory_before": 2,
+        "allocated_base_close": 3,
+        "addon_id": "124:1",
+        "addon_inventory_still_open": 1,
+        "csv_lines": [
+          540,
+          548,
+          550
+        ]
+      }
+    ],
+    "preceding_actual_events": [
+      "FG86:1 open_fill12-08 after base10; close_signal long_base_stop12-08; no addon close_fill despite315 real total close11.",
+      "SM111:1 close_signal daily_addon_fixed_stop02-11;423 real close1 on02-12 wrongly allocatedbase then424 close27 creates negativebase inventory.",
+      "cu124:1 close_signal rollover09-02 then489 real close3 all allocatedbase."
+    ],
+    "diagnosis": "Raw allocations already overclose base and strand addon inventory. Total fill order/volume is conserved but sleeve inventories are not. Reporting groups by native contract forbase and addon_id foraddon and refuses invalid owner inventory correctly. Pending owner queue overwritten by subsequent forced-exit paths is an implementation hypothesis, to be verified by adapter author.",
+    "decision": "Do not patch report to accept or edit ledger allocations; preserve attempt001 and failing report log. Root should fix adapter with failure regression and run a new C attempt; independent financial review remains required.",
+    "source_sha256": {
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_allocations.csv": "0204d081a85daa58dee1fef486e6aac6b56bc178b7f2ff235bc6f01df758f418",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/trades.csv": "2381096e091d0fd98f42768ab954efa2318f25768a8be44c6284e03dd9ff7561",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/execution_clock.csv": "47522a9692e15b973565e1e54fbdbb46285a5501834a391ca6b0f70226c1afc3",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_C_attempt001/daily_addon_events.csv": "82a333371cb9db1fcda224dd328793b479fadd9f09fb8d66f996cd0829425453",
+      "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage032_report_build_attempt001.log": "d3e92349853e87da927d601d40ee05bbed275d7bb703441721de32de59abd21c"
+    }
+  }
+}
