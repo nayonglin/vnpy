@@ -1,0 +1,7 @@
+vt_symbol,direction,entry_trade_id,entry_execution_datetime,entry_trading_date,opened_volume,fill_count,end_pos,terminal_mark,partial_closed_net_pnl,remaining_open_net_mtm,net_mtm,sleeve,owner_id,role
+lc2701.GFEX,short,BACKTESTING.458,2026-09-28 09:00:00+08:00,2026-09-28,11.0,1,-11.0,88360.0,0.0,389290.0,389290.0,base,lc2701.GFEX,baseline
+SA701.CZCE,short,BACKTESTING.460,2026-10-09 21:00:00+08:00,2026-10-12,86.0,1,-86.0,978.0,0.0,53320.0,53320.0,base,SA701.CZCE,baseline
+rb2701.SHFE,short,BACKTESTING.462,2026-10-16 21:00:00+08:00,2026-10-19,61.0,1,-61.0,3056.0,0.0,7320.0,7320.0,base,rb2701.SHFE,baseline
+SH701.CZCE,short,BACKTESTING.464,2026-10-26 21:00:00+08:00,2026-10-27,11.0,1,-11.0,1460.0,0.0,17160.0,17160.0,base,SH701.CZCE,baseline
+lc2701.GFEX,short,BACKTESTING.431,2026-09-28 09:00:00+08:00,2026-09-28,15.0,1,-15.0,88360.0,0.0,530850.0,530850.0,base,lc2701.GFEX,candidate
+SH701.CZCE,short,BACKTESTING.435,2026-10-26 21:00:00+08:00,2026-10-27,16.0,1,-16.0,1460.0,0.0,24960.0,24960.0,base,SH701.CZCE,candidate

@@ -1,0 +1,93 @@
+{
+  "status": "PASS_BASELINE_IDENTITY_AND_MECHANICAL_RETRY",
+  "checks": {
+    "daily": {
+      "equal": true,
+      "rows": 1651,
+      "columns": 31
+    },
+    "trades": {
+      "equal": true,
+      "rows": 464,
+      "columns": 21
+    },
+    "execution_clock": {
+      "equal": true,
+      "rows": 464,
+      "columns": 10
+    },
+    "entry_candidates": {
+      "equal": true,
+      "rows": 363,
+      "columns": 276
+    },
+    "weekly_bars": {
+      "equal": true,
+      "rows": 25295,
+      "columns": 10
+    },
+    "execution_anchor_requests": {
+      "equal": true,
+      "rows": 464,
+      "columns": 26
+    },
+    "internal_equity_daily": {
+      "equal": true,
+      "rows": 1707,
+      "columns": 3
+    },
+    "active_positions": {
+      "equal": true,
+      "rows": 3417,
+      "columns": 10
+    },
+    "retry002_003_A": {
+      "limitation": "Rejected002 stopped before exporting daily/trades; only preserved diagnostics can be compared.",
+      "weekly_stop_audit": {
+        "equal": true,
+        "sha256": "eaa3acd43b621a8190bcfe9cec41a7c67122006704863ed4e508bc34c36d66dc"
+      },
+      "initial_stop_audit": {
+        "equal": true,
+        "sha256": "2c4b52da7b1a6aa725f49dabe738bfc9c0368615e9a3609447b9991c6cf51c68"
+      },
+      "weekly_stop_guard_failures": {
+        "equal": true,
+        "sha256": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61"
+      },
+      "invalid_weekly_stop_rejections": {
+        "equal": true,
+        "sha256": "6d3fecfd75287890b4a45f12999012251e214a22054da9e249f2615313726229"
+      },
+      "short_ma_slope_decisions": {
+        "equal": true,
+        "sha256": "f084fea27380ffbe9192068cbd6dd32ae90ba6adc3b761c3e658331fed4efe7d"
+      }
+    },
+    "retry002_003_C": {
+      "limitation": "Rejected002 stopped before exporting daily/trades; only preserved diagnostics can be compared.",
+      "weekly_stop_audit": {
+        "equal": true,
+        "sha256": "b221071d023b62134eddc29e78320956cf4b4a1136efe2c6fb0d65af012b37cc"
+      },
+      "initial_stop_audit": {
+        "equal": true,
+        "sha256": "ccaf0e678d13f3c949430b7bfd3e6fd9a8a7b0c50df741d28f60d886cf52eed9"
+      },
+      "weekly_stop_guard_failures": {
+        "equal": true,
+        "sha256": "d87a4b14ff7707fdf9ba049d8e368a894f0743d867f8aa682148dc66cfb6ef61"
+      },
+      "invalid_weekly_stop_rejections": {
+        "equal": true,
+        "sha256": "4b0a2f9c179b76b63f5ace9cb814848fe79d5ad0032bf5c0158aeaee68fe30fc"
+      },
+      "short_ma_slope_decisions": {
+        "equal": true,
+        "sha256": "8fe5cd648a7462ded3b8259ed1205705e9fd3030ae912ee1e0ca114b4a71a0a8"
+      }
+    }
+  },
+  "financial_replays": 0,
+  "limitations": "2020 independent baseline compared through original 10/28 cutoff; no claim truncated 2015 curve equals independent2020 start."
+}

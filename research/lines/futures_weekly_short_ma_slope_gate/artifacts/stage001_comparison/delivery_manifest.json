@@ -1,0 +1,24 @@
+{
+  "schema": "stage032_report_delivery_manifest_v1",
+  "comparison_sha256": "623936766eb15d7d3852ef0e998a8743f5435f2fa34722c631ab832003215df6",
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/addon_entries.csv": "3cfc8d20d7d7a76da36f37bd90a2ec28935e165a607b148805e2698e9a9bbeec",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/annual.csv": "fdc363eafb28116dab2b6af6d67f6d2754a0ee277f4b3ec1ac7395d58fac1aa4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/annual_products.csv": "2d946781cff3b82e19f60e6ca3438032b6fdc181bd57e7cd1df2b90cd5e0e9f2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/baseline_daily.csv": "3619df6cf2637c04cb5fdcaec855b9acb996f57335ea225ecf705279c37f302f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/candidate_daily.csv": "732ed79fb0ca47398770734396e8539504d796a18aab81ba877e8139a1c948cf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/closed_fifo_segments.csv": "8cf4bee4b90414b85103efc0693f710bfa4c819a00002a7b747fd38ca9763e20",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/complete_contract_rounds.csv": "d7a633d4b3270d2562f689d7b03359178e7c975843e2112555e88c9c499b493d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/owner_closed_fifo_segments.csv": "07d56092aca9d7d785cde401eae4f65816202adb130aecc40d47a3a4217f5362",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/owner_complete_contract_rounds.csv": "0282c123758b65a71d7731abaa7bfd4920352ac463b65d12a97a05b98688edc7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/owner_terminal_open_rounds.csv": "0fe6524db636f5b7c485000657d44d805eab5e7388dc2ea8b4a5e19fe69512dc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/products.csv": "6ecd43b00274d94d97a332e5464331502b642a854c8b340ddf7df3f4e43a1c4f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/sleeve_summary.csv": "53217b5accc7aa90e2b3cdc34f9925a57213cfaa979857de16c4ad866d801941",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/summary.csv": "074a01e3d4896370335bc123024334d5f8b5cd8ba03a045b62a915b860daf3f2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/terminal_open_rounds.csv": "125fcba424c46e23022fbcb3a528de7d6b736f36a8ed01a530f0153767e80085",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_equity_drawdown.png": "e6e8b0881f79e7b786fa54745ef1c633e2e2790ce97b517819077306c9c502f5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage001_comparison/comparison.json": "623936766eb15d7d3852ef0e998a8743f5435f2fa34722c631ab832003215df6"
+  },
+  "self_hash_excluded": true,
+  "independent_review_verdict": null
+}

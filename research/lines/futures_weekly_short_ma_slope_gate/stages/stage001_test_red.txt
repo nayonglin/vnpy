@@ -1,0 +1,77 @@
+FFFFFFFF
+======================================================================
+FAIL: test_both_down_and_flat_allow (test_stage001_slope_gate.GateTests.test_both_down_and_flat_allow)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_invalid_history_epoch_or_future_fails (test_stage001_slope_gate.GateTests.test_invalid_history_epoch_or_future_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_long_rollover_disabled_and_noncase1_unchanged (test_stage001_slope_gate.GateTests.test_long_rollover_disabled_and_noncase1_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_negative_signal_passes_whole_parent_result (test_stage001_slope_gate.GateTests.test_negative_signal_passes_whole_parent_result)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_parent_failure_not_hidden (test_stage001_slope_gate.GateTests.test_parent_failure_not_hidden)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_positive_either_is_or_not_and (test_stage001_slope_gate.GateTests.test_positive_either_is_or_not_and)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_rejected_short_zero_no_parent_mutation_or_ownership_change (test_stage001_slope_gate.GateTests.test_rejected_short_zero_no_parent_mutation_or_ownership_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+======================================================================
+FAIL: test_uses_observed_tail_not_zero_prefix (test_stage001_slope_gate.GateTests.test_uses_observed_tail_not_zero_prefix)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_slope_gate.py", line 21, in setUp
+    def setUp(self):self.assertTrue(callable(slope_snapshot),'missing slope implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing slope implementation
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+FAILED (failures=8)

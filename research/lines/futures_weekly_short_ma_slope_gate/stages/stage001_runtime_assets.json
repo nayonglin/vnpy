@@ -1,0 +1,10 @@
+{
+  "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_eligible_full_market_structural_prefilter_v1.csv": {
+    "source": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_full_market_structural_prefilter_eligible_full_market_structural_prefilter_v1.csv",
+    "sha256": "dc389dce4f6d404061127390deea04e15b7cd641f6bb6c265f9721a7c65fc309"
+  },
+  "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_eligibility_ai_product_pool_shadow_v1.csv": {
+    "source": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_ai_product_pool_shadow_portfolio_eligibility_ai_product_pool_shadow_v1.csv",
+    "sha256": "63c976a09f035fd1b7e57401de5da2d48c2b9538382ede8fe28fbc71d6017242"
+  }
+}

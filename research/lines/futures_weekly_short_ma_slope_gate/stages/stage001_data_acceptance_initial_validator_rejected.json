@@ -1,0 +1,40 @@
+{
+  "status": "FAIL",
+  "checks": {
+    "source_manifest_hashes_unchanged": true,
+    "bound_files": 78,
+    "completed_day": true,
+    "bounded_original19": true,
+    "old_physical_all_fields_exact": true,
+    "old_physical_bytes_prefix": true,
+    "new_28_only_20261029": true,
+    "unique_physical_keys": true,
+    "metadata.csv_bytes_unchanged": true,
+    "physical_epochs.csv_bytes_unchanged": true,
+    "old_mapping_all_fields_exact": true,
+    "old_mapping_bytes_prefix": true,
+    "new_mapping_19_only_20261029": true,
+    "same_original19_all_mapping": false,
+    "no_future_approved_daily": true,
+    "no_future_mapping": true,
+    "required_keys_covered": true,
+    "positive_real_OHLCV": true,
+    "new_epoch_identity": true,
+    "raw_rows_exact": true,
+    "sqlite_integrity": true,
+    "old_sqlite_all_rows_exact": true,
+    "sqlite_rows_before_after": [
+      1345729,
+      1345757
+    ],
+    "new_sqlite_fields_exact": true,
+    "no_order_or_CTP": true
+  },
+  "failed_checks": [
+    "same_original19_all_mapping"
+  ],
+  "source_mismatches": [],
+  "completed_at": "2026-10-29T19:56:43.295596+08:00",
+  "financial_replays": 0,
+  "review_scope": "Separate code recomputes preservation, raw numerical parity, mapping, physical epochs, all bound hashes; not independent-vendor truth or final post-backtest review."
+}

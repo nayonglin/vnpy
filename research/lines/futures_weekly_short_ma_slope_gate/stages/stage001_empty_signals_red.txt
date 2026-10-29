@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_real_failed_settings_only_isolated_empty_signals_are_allowed (test_stage001_empty_signal_path.EmptySignals.test_real_failed_settings_only_isolated_empty_signals_are_allowed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage001_empty_signal_path.py", line 11, in test_real_failed_settings_only_isolated_empty_signals_are_allowed
+    self.assertEqual(normalize_settings(current[section],r[section],str(data/'mapping.csv'),approved),r[section])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage001.py", line 58, in normalize_settings
+    if result!=reference:raise ValueError('nondeclared_settings_changed')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: nondeclared_settings_changed
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (errors=1)

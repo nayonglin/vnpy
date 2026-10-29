@@ -1,0 +1,1 @@
+addon_id,round_id,entry_trading_date,entry_trade_id,vt_symbol,product,status,exit_trading_date,exit_reason,net_pnl,closed_net_pnl,open_net_mtm,total_slippage,total_commission,holding_calendar_days,holding_trading_days,add_number,role
