@@ -1,0 +1,21 @@
+{
+  "status": "PASS_FROZEN_SOURCE_CHECKPOINT",
+  "time": "2026-10-30T01:00:14.272372+08:00",
+  "frozen_delivery_binding_counts": {
+    "stage001_delivery_manifest.json": 3105,
+    "stage002_delivery_manifest.json": 3141,
+    "stage003_delivery_manifest.json": 41
+  },
+  "frozen_manifest_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_delivery_manifest.json": "f2de47ae8c1807e905c0f5eaa8520d4ae89f011d59e730ce24be0b4d6333c93b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage002_delivery_manifest.json": "35f955e44a5e212b2e442f3b7a34efc7363ce99eb0de817084701822540045cc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_delivery_manifest.json": "e31b6b1ad58d86cb9abb6c52bd253899dc99b500aa4fb19c7960ef688247a886"
+  },
+  "data_source_bindings": 78,
+  "data_cutoff": "2026-10-29",
+  "original19_count": 19,
+  "market_downloads": 0,
+  "financial_replays": 0,
+  "production_accesses": 0,
+  "limitations": "Source checkpoint only; Stage004 strategy and actual financial result review pending."
+}

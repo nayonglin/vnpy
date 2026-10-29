@@ -1,0 +1,26 @@
+EF....
+======================================================================
+ERROR: test_final_guard_allows_ma10_down_rejects_ma5_down (test_stage004_long_ma5_gate.LongMA5Tests.test_final_guard_allows_ma10_down_rejects_ma5_down)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_long_ma5_gate.py", line 29, in test_final_guard_allows_ma10_down_rejects_ma5_down
+    s=self.obj(90,110);self.assertEqual(s._open_position(None,'rb2010.SHFE','long',3,s.bar(),signal,s.history(),{'signal':signal}),'opened')
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage002_symmetric_gate.py", line 26, in _open_position
+    if row['ma5_delta']<0 or row['ma10_delta']<0:raise ValueError('long_ma_slope_gate_bypassed')
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: long_ma_slope_gate_bypassed
+
+======================================================================
+FAIL: test_ma10_down_alone_does_not_block (test_stage004_long_ma5_gate.LongMA5Tests.test_ma10_down_alone_does_not_block)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_long_ma5_gate.py", line 14, in test_ma10_down_alone_does_not_block
+    s=self.obj(a,110);self.assertIs(self.size(s,signal),s.result);r=s.long_ma_slope_decisions[-1];self.assertLess(r['ma10_delta'],0);self.assertFalse(r['would_block']);self.assertFalse(r['applied_block'])
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'selected_volume': 0, 'stop_price': 200.0, 'risk_amount': 100.0, 'nested': {'unchanged': True}, 'rejection_reason': 'long_ma5_or_ma10_slope_negative', 'long_ma_slope_gate_blocked': True} is not {'selected_volume': 3, 'stop_price': 200.0, 'risk_amount': 100.0, 'nested': {'unchanged': True}}
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.061s
+
+FAILED (failures=1, errors=1)

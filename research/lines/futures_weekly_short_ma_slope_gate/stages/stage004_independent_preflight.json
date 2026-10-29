@@ -1,0 +1,31 @@
+{
+  "status": "PASS_BOUNDED_PREFLIGHT",
+  "time": "2026-10-30T01:00:14.272372+08:00",
+  "frozen_delivery_binding_counts": {
+    "stage001_delivery_manifest.json": 3105,
+    "stage002_delivery_manifest.json": 3141,
+    "stage003_delivery_manifest.json": 41
+  },
+  "frozen_manifest_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_delivery_manifest.json": "f2de47ae8c1807e905c0f5eaa8520d4ae89f011d59e730ce24be0b4d6333c93b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage002_delivery_manifest.json": "35f955e44a5e212b2e442f3b7a34efc7363ce99eb0de817084701822540045cc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_delivery_manifest.json": "e31b6b1ad58d86cb9abb6c52bd253899dc99b500aa4fb19c7960ef688247a886"
+  },
+  "data_source_bindings": 78,
+  "data_cutoff": "2026-10-29",
+  "original19_count": 19,
+  "market_downloads": 0,
+  "financial_replays": 0,
+  "production_accesses": 0,
+  "limitations": "Source checkpoint only; Stage004 strategy and actual financial result review pending.",
+  "independent_gate_tests_passed": 21,
+  "strategy_code_review": "Both long sizing and final open guard use MA5_delta<0 only, MA10 audit-only; case1a+case2; zeros allowed; short Stage001 OR intact; rollover/exits unchanged; full parent sizing retained.",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "reviewed_stage004_code_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_long_ma5_gate.py": "9772e9a6282108bdbb9fecd6786d0e93da1eea9e106b0383abc7d22911f506f7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_long_ma5_gate.py": "71ccefd05c457adb8de88096f77ce1884bd312c5e4242ad63c62ee34bc0447e7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage004.py": "2b44741f93bb283024df5d33d9579628c44f542d31e9e9bb5858e23fab288374"
+  }
+}

@@ -1,0 +1,80 @@
+EEEEE
+======================================================================
+ERROR: test_long_ma10_participation_cannot_be_mislabelled_ma5_only (test_stage004_report.ReportTests.test_long_ma10_participation_cannot_be_mislabelled_ma5_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 33, in test_long_ma10_participation_cannot_be_mislabelled_ma5_only
+    m=subject();a=self.ledger();a['long_ma5']['acceptances']['long_ma5_slope_acceptance.json']['ma10_used_for_long_gate']=True
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 7, in subject
+    s=importlib.util.spec_from_file_location('report',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_report.py'
+
+======================================================================
+ERROR: test_nav_uses_initial_capital_and_drawdown_includes_initial_peak (test_stage004_report.ReportTests.test_nav_uses_initial_capital_and_drawdown_includes_initial_peak)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 10, in test_nav_uses_initial_capital_and_drawdown_includes_initial_peak
+    m=subject();nav,dd=m.nav_drawdown(np.array([120000.,135000.,180000.,150000.]))
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 7, in subject
+    s=importlib.util.spec_from_file_location('report',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_report.py'
+
+======================================================================
+ERROR: test_nonfinite_or_nonpositive_nav_is_rejected (test_stage004_report.ReportTests.test_nonfinite_or_nonpositive_nav_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 13, in test_nonfinite_or_nonpositive_nav_is_rejected
+    m=subject()
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 7, in subject
+    s=importlib.util.spec_from_file_location('report',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_report.py'
+
+======================================================================
+ERROR: test_output_is_independent_stage004_only (test_stage004_report.ReportTests.test_output_is_independent_stage004_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 36, in test_output_is_independent_stage004_only
+    m=subject()
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 7, in subject
+    s=importlib.util.spec_from_file_location('report',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_report.py'
+
+======================================================================
+ERROR: test_same_contract_rejects_data_parameter_or_date_change (test_stage004_report.ReportTests.test_same_contract_rejects_data_parameter_or_date_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 24, in test_same_contract_rejects_data_parameter_or_date_change
+    m=subject();a=self.ledger();m.require_same_contract(a)
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage004_report.py", line 7, in subject
+    s=importlib.util.spec_from_file_location('report',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage004_report.py'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=5)
