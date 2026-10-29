@@ -1,0 +1,68 @@
+FFFFFFF
+======================================================================
+FAIL: test_disabled_mirror_leaves_long_and_keeps_short_gate (test_stage002_symmetric_gate.MirrorTests.test_disabled_mirror_leaves_long_and_keeps_short_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_flat_or_both_positive_allow (test_stage002_symmetric_gate.MirrorTests.test_flat_or_both_positive_allow)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_long_open_final_guard_rejects_negative_slope (test_stage002_symmetric_gate.MirrorTests.test_long_open_final_guard_rejects_negative_slope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_missing_or_nonfinite_fails (test_stage002_symmetric_gate.MirrorTests.test_missing_or_nonfinite_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_negative_either_blocks_both_long_cases_without_mutation (test_stage002_symmetric_gate.MirrorTests.test_negative_either_blocks_both_long_cases_without_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_rollover_is_unchanged (test_stage002_symmetric_gate.MirrorTests.test_rollover_is_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+======================================================================
+FAIL: test_short_filter_still_blocks_positive (test_stage002_symmetric_gate.MirrorTests.test_short_filter_still_blocks_positive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage002_symmetric_gate.py", line 8, in setUp
+    def setUp(self):self.assertTrue(callable(symmetric_strategy_class),'missing symmetric implementation')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : missing symmetric implementation
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (failures=7)

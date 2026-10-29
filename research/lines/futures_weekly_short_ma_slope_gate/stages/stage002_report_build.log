@@ -1,0 +1,1 @@
+{"status": "DERIVED_PENDING_INDEPENDENT_REVIEW", "gates": {"end_equity": false, "max_dd_pct": false, "sharpe": false}, "difference": {"end_equity": -1341870.0000000005, "total_return_pct": -894.5800000000003, "max_dd_pct": -14.148203809590882, "sharpe": -0.5140056129411653}}

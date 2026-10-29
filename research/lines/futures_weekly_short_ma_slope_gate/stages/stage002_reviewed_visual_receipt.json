@@ -1,0 +1,12 @@
+{
+  "independent_review": "PASS_WITH_LIMITATIONS",
+  "sources_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage002_independent_final.json": "bc65cb236fd54546d39e2a7f41f95216eacf76a6101f10a2bac9ad4869a4cca3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage002_comparison/original_daily.csv": "3619df6cf2637c04cb5fdcaec855b9acb996f57335ea225ecf705279c37f302f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage002_comparison/short_only_daily.csv": "732ed79fb0ca47398770734396e8539504d796a18aab81ba877e8139a1c948cf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage002_comparison/symmetric_daily.csv": "3976a69e7f088af1731301dea491ba5020d30cdd1a54ac9f86cdf6aa45658d66"
+  },
+  "image_sha256": "ddf5ee9c7db3bc55d8fa3ad6fcb34ffed0f9fc29158df0a37d609ce3028d3841",
+  "points_per_curve": 1652,
+  "financial_replays": 0
+}

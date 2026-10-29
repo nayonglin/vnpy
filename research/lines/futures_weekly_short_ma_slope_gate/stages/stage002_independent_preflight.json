@@ -1,0 +1,40 @@
+{
+  "status": "PASS_BOUNDED_PREFLIGHT",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "old_delivery_bound_files": 3105,
+  "old_delivery_mismatches": [],
+  "data_source_bound_files": 78,
+  "controls": {
+    "A": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003",
+      "short_enabled": false,
+      "long_enabled": false,
+      "data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      }
+    },
+    "C": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_C_attempt003",
+      "short_enabled": true,
+      "long_enabled": false,
+      "data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      }
+    }
+  },
+  "independent_tests_passed": 15,
+  "code_review": "Stage001 short gate always enabled; long_case1a and long_case2 strict negative OR, zero allowed; same completed-week snapshot/physical epoch/count trimming; parent sizing preserved then zero copy; long final open guard; rollover signal/context excluded; inherited exits/long and short sizing unchanged except declared entry gate.",
+  "limitations": [
+    "Historical development sample; no new OOS/PIT.",
+    "No new data and no additional controls rerun needed; full accounting and actual long/short fill review pending newC."
+  ],
+  "financial_replays": 0
+}
