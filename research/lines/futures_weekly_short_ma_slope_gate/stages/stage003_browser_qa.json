@@ -1,0 +1,63 @@
+{
+  "schema": "stage003_cua_browser_qa_v1",
+  "time": "2026-10-29T21:19:55.873273+08:00",
+  "status": "PASS",
+  "url": "http://127.0.0.1:8783/index.html",
+  "index_sha256": "b2331ba0e88c04b70c3335a603b0066be1c60a9ba28dba54e13f91c89df5c249",
+  "source": "Stage002 C attempt001 applied_block candidates",
+  "checks": {
+    "all_count": 35,
+    "long_count": 20,
+    "short_count": 15,
+    "default_periods": [
+      "day30",
+      "daily"
+    ],
+    "next_previous_restores_first": true,
+    "year_product_filter": {
+      "year": "2026",
+      "product": "rb.SHFE",
+      "direction": "short",
+      "count": 2
+    },
+    "linked_zoom": {
+      "method": "actual Plotly Zoom in UI; CDP read-only rendered axes",
+      "periods": [
+        "weekly",
+        "daily"
+      ],
+      "before": {
+        "x": [
+          0,
+          242
+        ],
+        "x2": [
+          0,
+          242
+        ]
+      },
+      "after": {
+        "x": [
+          60.5,
+          181.5
+        ],
+        "x2": [
+          60.5,
+          181.5
+        ]
+      },
+      "matches": "x"
+    },
+    "plot_payload_unchanged_after_textfix": true,
+    "minute_note": "本页15分钟无缓存、未下载，已跳过15分钟K。",
+    "console_errors": 0,
+    "signal_marker_and_NA_financials_visible": true
+  },
+  "preview_files": [
+    "stage003_browser_full_preview.png",
+    "stage003_browser_chart_preview.png"
+  ],
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0
+}

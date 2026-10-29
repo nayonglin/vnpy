@@ -1,0 +1,13 @@
+.......F.
+======================================================================
+FAIL: test_page_never_suggests_nonexistent_minute_cache (test_stage003_blocked_recap.BlockedRecapTests.test_page_never_suggests_nonexistent_minute_cache)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage003_blocked_recap.py", line 38, in test_page_never_suggests_nonexistent_minute_cache
+    self.assertFalse('切到已补数交易时恢复' in page,'misleading minute cache recovery prompt still present')
+AssertionError: True is not false : misleading minute cache recovery prompt still present
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.269s
+
+FAILED (failures=1)

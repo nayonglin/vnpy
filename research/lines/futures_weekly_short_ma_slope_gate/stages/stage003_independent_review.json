@@ -1,0 +1,52 @@
+{
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "reviewed_at": "2026-10-29T21:20:33.385410+08:00",
+  "review_scope": "display-only source/data/semantic/code review; not a backtest or production qualification",
+  "index_html_sha256": "b2331ba0e88c04b70c3335a603b0066be1c60a9ba28dba54e13f91c89df5c249",
+  "output_checks": 116677,
+  "event_count": 35,
+  "long_count": 20,
+  "short_count": 15,
+  "previous_version_actual_open_matches": 34,
+  "previous_version_candidate_not_opened": 1,
+  "independent_tests_passed": 9,
+  "javascript_parsed_scripts": 3,
+  "effective_semantic_render_count": 35,
+  "old_stage001_bound_files_unchanged": 3105,
+  "old_stage002_bound_files_unchanged": 3141,
+  "canonical_files_unchanged_vs_source_head": true,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_independent_output.json": "f93abb37d3a6900db500f5194167329d28081878dffe2c46dae71a4be2c4fd15",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_independent_semantics.json": "caaa3f7135bd83bccbd3507e0cbeba9abb54aaec081cf6996874f171521c348d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_independent_expected.json": "fdf80bc3ca1b1eec5cdb214fc323b58ac08863844c105b2c662a3e4e9490e034",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_independent_jsparse.json": "e13d8ba9eefae43c18bdee545012d1d93587840792724519465a4d26cc97c3bb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/delivery_manifest.json": "2b872cf59db5fb22db9f0c25c13cc911bddcd7e97594885a2067cd8b2622e7c3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/source_hashes.json": "3619ac1136ffe42f73d85e7a887b43f6b0c98e314996fe63e9987a687df76214",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/index.html": "b2331ba0e88c04b70c3335a603b0066be1c60a9ba28dba54e13f91c89df5c249",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_browser_qa.json": "d7188c12c9216dbc900a9af688aa162361fb8b4caefb9901fcce0a8f8098ab8e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_browser_full_preview.png": "710fc524b10a1ef7bd8c23097c9268fa2c43689f94a0b94ec8d4078fbcaa8ead",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_browser_chart_preview.png": "cb63505a17a80f568f6e9b696da33cfb742c78a4b412995c4774043c029f64a6"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "strategy_changes": 0,
+  "browser_qa": "Root actual CUA browser QA PASS; independent reviewer read its receipt and confirmed exact final HTML SHA; JS semantic harness remains separately identified.",
+  "limitations": [
+    "The35 items are unexecuted candidate events, not35 executed trades.",
+    "Previous-version actual-open evidence is historical fact matching, not fixed-position causal counterfactual PnL.",
+    "Exact physical-epoch history, missing15m, truncated context and unavoidable MA warmup nulls remain disclosed.",
+    "Visualization adds no alpha, OOS or promotion evidence."
+  ],
+  "textfix_frozen_data_files_byte_equal": {
+    "records.json": true,
+    "summary.json": true,
+    "chart_manifest.csv": true,
+    "exact_epoch_coverage.csv": true,
+    "previous_version_actual_open_matches.csv": true
+  },
+  "browser_qa_receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_browser_qa.json"
+}

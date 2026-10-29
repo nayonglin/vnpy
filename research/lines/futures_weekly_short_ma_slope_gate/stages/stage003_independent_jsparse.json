@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "scripts": [
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_0.js",
+      "status": "PASS"
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_1.js",
+      "status": "PASS"
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_2.js",
+      "status": "PASS"
+    }
+  ]
+}

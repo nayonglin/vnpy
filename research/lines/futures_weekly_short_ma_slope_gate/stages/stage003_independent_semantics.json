@@ -1,0 +1,21 @@
+{
+  "status": "PASS_EFFECTIVE_JS_SEMANTICS",
+  "rendered_candidates": 35,
+  "default_periods": [
+    "day30",
+    "daily"
+  ],
+  "filters": {
+    "long": 20,
+    "short": 15
+  },
+  "marker": "one signal-close X marker per event",
+  "holding_shapes": 0,
+  "trade_markers": 0,
+  "finance_fields": "N/A",
+  "actual_MA_overlays": 2,
+  "linked_axes": true,
+  "navigation": true,
+  "missing_15m": true,
+  "browser_qa": "not a real browser; root separately verifies Plotly zoom and visuals"
+}

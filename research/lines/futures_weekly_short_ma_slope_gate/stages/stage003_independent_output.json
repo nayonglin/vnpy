@@ -1,0 +1,39 @@
+{
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "checks": 116677,
+  "event_count": 35,
+  "long_count": 20,
+  "short_count": 15,
+  "baseline_status_counts": {
+    "candidate_not_opened": 1,
+    "actual_open_matched": 34
+  },
+  "aggregate_bar_counts": {
+    "weekly": 1711,
+    "monthly": 448,
+    "day10": 874,
+    "day30": 314
+  },
+  "canonical_reuse": "AST pure-functions loaded from frozen Stage031 adapter; canonical _records/_html, aggregation/candles/axes/linkedzoom retained; candidate semantic hook removes effective trade markers/hold range/metrics.",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "source_bindings": 25,
+  "output_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/summary.json": "4ad67fabe3beda54bfafdc9d4c8d6d4597245c6ae6595ca3f3c5f481f3236e85",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_2.js": "9174bb7441a917c46d8d8875f78512e47db5204e1cf7ada7f14ab74cbbf8c3e9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/index.html": "b2331ba0e88c04b70c3335a603b0066be1c60a9ba28dba54e13f91c89df5c249",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/delivery_manifest.json": "2b872cf59db5fb22db9f0c25c13cc911bddcd7e97594885a2067cd8b2622e7c3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/previous_version_actual_open_matches.csv": "a198b3a071bfb32494fd4ecfa6ae84463e18e8aafdfac97c9f55689af17c5512",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/exact_epoch_coverage.csv": "84df0cdf90e537b7d7453fefeedddc6d399fbf99d3968d83c32330158e5f3a4d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/records.json": "2df06b0370ce4dfb987c6f2ec7384769276a7bdd4878bffd36e8bc764c6da728",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/source_hashes.json": "3619ac1136ffe42f73d85e7a887b43f6b0c98e314996fe63e9987a687df76214",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_0.js": "7c76cd2cff869485cdf9e7db41e73bf1491e994cf7349a7b5267c6c42d6d371b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/chart_manifest.csv": "cd12b7d7b243d6ce6f2d17e7840307b79121eca2a6999410da2ca4367245fa0a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage003_blocked_recap/embedded_script_1.js": "cc34376087e04edfacfde900a3e4115dd21d0e240876da05a391d2160e3204aa"
+  },
+  "browser_qa": "root agent to validate actual browser visuals and zoom separately"
+}

@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage003_blocked_recap.py", line 158, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage003_blocked_recap.py", line 157, in main
+    ap=argparse.ArgumentParser();ap.add_argument('--output',type=Path,default=OUTPUT);a=ap.parse_args();r=build(a.output);print(json.dumps({k:r[k] for k in ['blocked_event_count','long_blocked_count','short_blocked_count','baseline_matches','source_delivery_verified_files']},ensure_ascii=False));print(str(a.output/'index.html'))
+                                                                                                          ^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage003_blocked_recap.py", line 151, in build
+    p=output/f'embedded_script_{i}.js';p.write_text(script);subprocess.run(['node','--check',str(p)],check=True,capture_output=True)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py", line 1950, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'node'
