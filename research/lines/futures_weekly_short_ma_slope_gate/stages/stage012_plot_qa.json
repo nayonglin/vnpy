@@ -1,0 +1,120 @@
+{
+  "schema": "stage012_renderer_input_and_visual_qa_v1",
+  "created_at": "2026-10-30T19:04:07.912343+08:00",
+  "status": "PASS_RENDERER_INPUT_AND_VISUAL_QA_WITH_LIMITATIONS",
+  "promotion_decision": "NO_PROMOTION",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "reviewer_role": "renderer_author_readonly_real_projection_and_visual_QA; independent financial review is separate",
+  "scope": {
+    "summary_rows": 46,
+    "paired_rows": 23,
+    "daily_rows": 70998,
+    "curves": 46,
+    "starts": 23,
+    "actual_cutoff": "2026-10-29",
+    "january_windows": 12,
+    "june_windows": 11,
+    "observation_summary_rows": 2,
+    "observation_pairs": 1,
+    "methods": {
+      "frozen_baseline": 23,
+      "proven_nonbinding_reuse": 14,
+      "fresh_engine": 9
+    }
+  },
+  "mature_pnl_comparison": {
+    "higher": 4,
+    "tied": 13,
+    "lower": 5
+  },
+  "mature_risk_checks": [
+    {
+      "variant": "C_R150",
+      "mature_windows": 22,
+      "real_pnl_negative_windows": 1,
+      "nonpositive_E_windows": 0,
+      "margin_over100_windows": 14,
+      "reserve_exhausted_windows": 3
+    },
+    {
+      "variant": "C_R50",
+      "mature_windows": 22,
+      "real_pnl_negative_windows": 2,
+      "nonpositive_E_windows": 0,
+      "margin_over100_windows": 13,
+      "reserve_exhausted_windows": 9
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/summary.csv": "c77e6823a9ec5b378eb3aa031d114952e7750db568447a3c940fa8dc97e6de3a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/paired.csv": "de45ace0f105584fdf9c0fef39b32212624920338a51f51bb19fe01705c22e81",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/daily.csv": "e01a7b4e3a7951c8664a168f4ed39b1da24bb3e7b7febbe1e08a0d186744e2db",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/01_c_account_nav_drawdown_2015.png": "1fc43d38e11b107916d27e3bec71717b02b5603cd4576495379467407dd1eb01",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/02_january_c_account_nav.png": "48e373df24a3179b66ebe807e3ee1063fd220360addc4399a8c9c177ca6b2ac1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/03_june_c_account_nav.png": "77933831d1598746226cddd45ba58427f74b3b3693ef857b7f9e1b87e5a59d8e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/04_real_pnl_account_dd_deposit_deltas.png": "cf09e09cc7a8f420d5a90b361f8f8a83550bca3a773fa23dd7cbf87db628406e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/05_reserve_use_and_survival_overview.png": "cccf9c871f49a0fa59816b64feed1cecf2444e1e7ac363c7220cdeecbd9cbb01",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage012_plots.py": "abdeb4460a823a4a1af76f8c4766114ba037810c6331fcf94251f2238ee27a59",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage012_plots.py": "4405fa6a5ba59608016f1105c1ad96bc4995b121c4461cb30fa5d19011b15cee"
+  },
+  "png_checks": [
+    {
+      "name": "01_c_account_nav_drawdown_2015.png",
+      "width": 2250,
+      "height": 1464,
+      "mode": "RGBA",
+      "sha256": "1fc43d38e11b107916d27e3bec71717b02b5603cd4576495379467407dd1eb01",
+      "visual_check": "PASS"
+    },
+    {
+      "name": "02_january_c_account_nav.png",
+      "width": 2439,
+      "height": 1869,
+      "mode": "RGBA",
+      "sha256": "48e373df24a3179b66ebe807e3ee1063fd220360addc4399a8c9c177ca6b2ac1",
+      "visual_check": "PASS"
+    },
+    {
+      "name": "03_june_c_account_nav.png",
+      "width": 2449,
+      "height": 1869,
+      "mode": "RGBA",
+      "sha256": "77933831d1598746226cddd45ba58427f74b3b3693ef857b7f9e1b87e5a59d8e",
+      "visual_check": "PASS"
+    },
+    {
+      "name": "04_real_pnl_account_dd_deposit_deltas.png",
+      "width": 2361,
+      "height": 1713,
+      "mode": "RGBA",
+      "sha256": "cf09e09cc7a8f420d5a90b361f8f8a83550bca3a773fa23dd7cbf87db628406e",
+      "visual_check": "PASS"
+    },
+    {
+      "name": "05_reserve_use_and_survival_overview.png",
+      "width": 2503,
+      "height": 2055,
+      "mode": "RGBA",
+      "sha256": "cccf9c871f49a0fa59816b64feed1cecf2444e1e7ac363c7220cdeecbd9cbb01",
+      "visual_check": "PASS"
+    }
+  ],
+  "validation_command": "MPLCONFIGDIR=/private/tmp/stage012-plots-mpl .py311/bin/python; stage012_plots.validate_inputs(summary,paired,daily)",
+  "findings_zh": [
+    "真实46 summary、23 paired、70998 daily、46曲线已通过renderer完整范围、现金桥、逐日指标、复用身份和配对字段校验。",
+    "五张PNG全部目视检查；标题、图例、坐标、热图逐窗数值、表格与页脚完整，无实质截断、错层或口径误用。",
+    "年初12窗与年中11窗全部展示；2026不足一年明确标记观察。9个fresh与14个proofreuse透明区分，未宣称23个新引擎。",
+    "2015两版E路径完全重合并明确注释。两版均为150000+4025345真实PnL+43960补资=4219305；R150余106040，R50余6040，未把场外10万差额算入PnL。",
+    "主NAV严格E/150000；已入金进入E、未入金R排除。差值热图为R50-R150的真实PnL、E回撤和补资；不使用不同总预算W百分比晋级门。",
+    "图5成熟窗真实PnL高/平/低为4/13/5；真实亏损窗R150=1、R50=2，保证金压力窗14/13，非正E窗均0，与实际输入一致。",
+    "仅执行只读验证与图像检查；未改金融或图表源码，未运行金融、HTTP、浏览器或全线回归。"
+  ],
+  "limitations_zh": [
+    "这是renderer作者的真实输入和目视QA，不替代另一个agent的金融、数据、因果与源码独立审查。",
+    "validate_inputs验证计数/端点和同窗日期一致性；内部交易日历与源数据真实性、源hash入场和逐事件补资笔数由root及独审负责。",
+    "五图仍显示INDEPENDENT REVIEW PENDING；整体独审通过后的reviewed状态由root另行生成与封存。",
+    "本次只比较固定R50/R150，不做备用金额救参；重叠历史、零手续费、静态保证金等限制继承，不自动晋级。"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "status": "PASS_ROOT_STAGE_FACTS_AND_SOURCE",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "reviewed_stage": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261030_1905_stage012_original_C_reserve50k_comparison.md",
+  "reviewed_stage_sha256": "bd6f35d912bbca9f21b39639b65037073bfb31fe9308c5ce04c4807e22a4d104",
+  "mature_comparisons": {
+    "real_PnL": {
+      "higher": 4,
+      "equal": 13,
+      "lower": 5
+    },
+    "E_maxDD": {
+      "higher": 3,
+      "equal": 14,
+      "lower": 5
+    },
+    "E_Sharpe": {
+      "higher": 3,
+      "equal": 13,
+      "lower": 6
+    }
+  },
+  "capital_stress": {
+    "C_R150": {
+      "reserve_exhausted": 3,
+      "margin_over100_windows": 14,
+      "negative_real_PnL_mature": 1
+    },
+    "C_R50": {
+      "reserve_exhausted": 9,
+      "margin_over100_windows": 13,
+      "negative_real_PnL_mature": 2
+    }
+  },
+  "fresh9_table_checked_against_numeric_v2": true,
+  "full2015_identical_E_and_truePnL": true,
+  "all14_proven_reuse_with_no_new_engine_claim": true,
+  "all_financial_frozen_source_bytes_unchanged": true,
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

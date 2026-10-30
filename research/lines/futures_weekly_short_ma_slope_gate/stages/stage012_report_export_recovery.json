@@ -1,0 +1,17 @@
+{
+  "status": "RECOVERED_REPORT_EXPORT_ONLY",
+  "cause": "set_index dropped start and variant columns before row export",
+  "fix": "retain identity columns with drop=False",
+  "financial_replays": 0,
+  "data_tables_unchanged_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/summary.csv": "c77e6823a9ec5b378eb3aa031d114952e7750db568447a3c940fa8dc97e6de3a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/paired.csv": "de45ace0f105584fdf9c0fef39b32212624920338a51f51bb19fe01705c22e81",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/daily.csv": "e01a7b4e3a7951c8664a168f4ed39b1da24bb3e7b7febbe1e08a0d186744e2db",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/cohort_summary.csv": "359e4b6061dcd395513c7bced3439bf905612eaedbc0c378c78ffa4dee72e538",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/reserve_events.csv": "4e38f2c09aed9324fa6489310d00eead4e47f909e02b9be760dcebd519d6997d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/comparison.json": "293a2f04e0862c3b920a14f7af59d1a3ef1e4ab64c68b6c38291ead0194e74be"
+  },
+  "per_window_records": 23,
+  "regression_red_log": "stage012_report_export_red.log",
+  "regression_green_log": "stage012_report_export_green.log"
+}

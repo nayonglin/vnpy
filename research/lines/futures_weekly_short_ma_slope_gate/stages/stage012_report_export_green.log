@@ -1,0 +1,11 @@
+test_funding_alone_cannot_be_profit_improvement (test_stage012_report.CashAccountingTests.test_funding_alone_cannot_be_profit_improvement) ... ok
+test_negative_equity_never_clipped (test_stage012_report.CashAccountingTests.test_negative_equity_never_clipped) ... ok
+test_nonbinding_cash_stays_outside_nav (test_stage012_report.CashAccountingTests.test_nonbinding_cash_stays_outside_nav) ... ok
+test_overdraw_is_rejected (test_stage012_report.CashAccountingTests.test_overdraw_is_rejected) ... ok
+test_partial_topup_not_profit_or_full_floor (test_stage012_report.CashAccountingTests.test_partial_topup_not_profit_or_full_floor) ... ok
+test_index_lookup_retains_window_identity_for_export (test_stage012_report.RecordExportTests.test_index_lookup_retains_window_identity_for_export) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.031s
+
+OK

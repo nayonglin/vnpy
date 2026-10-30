@@ -1,0 +1,67 @@
+{"event": "STAGE012_INDEPENDENT_STARTED", "pid": 45883, "planned": 23, "workers": 2, "auditor_sha256": "87d68031069aa8c39cf085015dcbd7c79125a2ff1f7aebb37d815825e0d9a90c", "freeze_sha256": "d1c2ca5b02d398b2dd59a3a1179957bf2b19d6f6e75776f8514f05d580d5f2e6"}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2015-06-01", "method": "proven_nonbinding_reuse", "pid": 45884}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2016-01-01", "method": "proven_nonbinding_reuse", "pid": 45885}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 2, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2015-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2015-06-01_C.json", "sha256": "038084ecc322873df2808409dcc048c8b33584fb3e3b28fa9d81d093d5fca38c", "real_PnL": 4059384.999999998}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2016-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2016-01-01_C.json", "sha256": "4262220d5714910cb378372bc34e91a1248f72707d61243e0d824466955c6815", "real_PnL": 3580425.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2020-06-01", "method": "proven_nonbinding_reuse", "pid": 45898}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2021-01-01", "method": "proven_nonbinding_reuse", "pid": 45899}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 4, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2020-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2020-06-01_C.json", "sha256": "6f53dbbc1480d8ce1e9f5a05ff4fddd6e909677b68cf7e087feadd6b6d3f4c3b", "real_PnL": 2873254.999999998}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2021-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2021-01-01_C.json", "sha256": "045a4b0999593668a4184ebdd2bd4cf1ed99484ac8115326cb9de09efbffc2b3", "real_PnL": 732165.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2022-01-01", "method": "proven_nonbinding_reuse", "pid": 45936}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2022-06-01", "method": "proven_nonbinding_reuse", "pid": 45937}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 6, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2022-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2022-01-01_C.json", "sha256": "197243b33afb09e9614cefd23a66d2f6fbc32bd4d34d09eeaffa97cdbf72c87c", "real_PnL": 709795.0}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2022-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2022-06-01_C.json", "sha256": "3e30162b14c4723ea38fd039d87e44490eecf45f069848b0e2b7ab0e4d0c3105", "real_PnL": 589890.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2023-01-01", "method": "proven_nonbinding_reuse", "pid": 45961}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2023-06-01", "method": "proven_nonbinding_reuse", "pid": 45962}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 8, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2023-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2023-01-01_C.json", "sha256": "76860fe61beceea6d1d21a92a2448680a0a5cc1cd6ba7fbd9ad601a711fe7b3e", "real_PnL": 680495.0000000002}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2023-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2023-06-01_C.json", "sha256": "4c7207a1b7abdaa29097f4000810a8e84186d265b69880d303f4f9c28511f2fc", "real_PnL": 683205.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2024-01-01", "method": "proven_nonbinding_reuse", "pid": 45990}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2024-06-01", "method": "proven_nonbinding_reuse", "pid": 45991}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 10, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2024-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2024-01-01_C.json", "sha256": "b780753be3c0bea9ed7604e3ed82616afe28efdedc1542146d709efdff0a0bd0", "real_PnL": 35460.0}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2024-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2024-06-01_C.json", "sha256": "f4ef345875543a0219fe34ff0684c40c503ce2eaf50fcaae5d42c3e38fb1c509", "real_PnL": -8560.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2025-01-01", "method": "proven_nonbinding_reuse", "pid": 46023}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2025-06-01", "method": "proven_nonbinding_reuse", "pid": 46024}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 12, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2025-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2025-01-01_C.json", "sha256": "8e86ea3282a15e30da84656185f56776f75a051ffa0be1dafa7f4bdb97644e0e", "real_PnL": 2500.0}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2025-06-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2025-06-01_C.json", "sha256": "84c7d4670119258bc96cd7b6ca88e9c78f24e8f0e8554cb91a6e7c370f4e8d3d", "real_PnL": 98965.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2026-01-01", "method": "proven_nonbinding_reuse", "pid": 46060}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 14, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2026-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2026-01-01_C.json", "sha256": "1f52c31c47bb1aa4fa85856fe7d4f0d5d258296997e2dff141f2038323a72d9d", "real_PnL": 22380.0}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 15, "running": 0, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2017-06-01", "method": "fresh_engine", "pid": 46349}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 15, "running": 1, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2017-01-01", "method": "fresh_engine", "pid": 46406}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 15, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2017-06-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2017-06-01_C.json", "sha256": "a53a0eaabd3c01a8b8b3b3b669da8ff99488ab4c7be0ed9ab732265e8b3e285d", "real_PnL": 442304.9999999999}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 16, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2017-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2017-01-01_C.json", "sha256": "57fbd4dfc1e6f3018c3efcd04fe74938f906b1e08f2e5f1b9a9c57c5de4ffec0", "real_PnL": -5340.000000000029}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 17, "running": 0, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2018-01-01", "method": "fresh_engine", "pid": 46684}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 17, "running": 1, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2018-06-01", "method": "fresh_engine", "pid": 46749}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 17, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2018-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2018-01-01_C.json", "sha256": "c9991c7c310d3eac0535173c63a52adab65721e6ddfbedaf5f9cf5c3b7aa7c32", "real_PnL": 364.99999999995634}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 18, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2018-06-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2018-06-01_C.json", "sha256": "ec56250db652b0bd8e2c78170b6ad90fb2124b335f3bccc59d1ff7ab41876a73", "real_PnL": 388854.9999999999}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 19, "running": 0, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2019-01-01", "method": "fresh_engine", "pid": 47094}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 19, "running": 1, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2019-06-01", "method": "fresh_engine", "pid": 47191}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 19, "running": 2, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2019-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2019-01-01_C.json", "sha256": "019dedb20dcb3850ee4ed5309e28851478780379b1a48ede28d565639fca0846", "real_PnL": 2135109.999999998}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 20, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2019-06-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2019-06-01_C.json", "sha256": "722fbdba5286ee7109e318e986204b9bf5d575bc05444d23c737955f7a97b827", "real_PnL": 3674514.9999999963}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 21, "running": 0, "planned": 23}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2021-06-01", "method": "fresh_engine", "pid": 47375}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 21, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2021-06-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2021-06-01_C.json", "sha256": "35965e0e874365d93e0e049edd1bf76e7aa6cb8c44bd82d92250d9134ef0afee", "real_PnL": 563410.0}
+{"event": "STAGE012_AUDIT_STARTED", "start": "2020-01-01", "method": "fresh_engine", "pid": 47487}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 22, "running": 1, "planned": 23}
+{"event": "STAGE012_INDEPENDENT_WINDOW_PASS", "start": "2020-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2020-01-01_C.json", "sha256": "61033dd86843a1cb0a8cbeec20325c1f7a6cbd0124b3fcb134a0bd85ec2bf35a", "real_PnL": 3372904.999999997}
+{"event": "STAGE012_AUDIT_PROGRESS", "complete": 23, "running": 0, "planned": 23}
+{"event": "STAGE012_ALL_INDEPENDENT_COMPLETE", "complete": 23}

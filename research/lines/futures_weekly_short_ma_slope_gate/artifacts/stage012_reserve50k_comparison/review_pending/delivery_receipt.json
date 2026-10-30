@@ -1,0 +1,28 @@
+{
+  "status": "INDEPENDENT_REVIEW_PENDING",
+  "data_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/summary.csv": "c77e6823a9ec5b378eb3aa031d114952e7750db568447a3c940fa8dc97e6de3a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/paired.csv": "de45ace0f105584fdf9c0fef39b32212624920338a51f51bb19fe01705c22e81",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/daily.csv": "e01a7b4e3a7951c8664a168f4ed39b1da24bb3e7b7febbe1e08a0d186744e2db",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/cohort_summary.csv": "359e4b6061dcd395513c7bced3439bf905612eaedbc0c378c78ffa4dee72e538",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/reserve_events.csv": "4e38f2c09aed9324fa6489310d00eead4e47f909e02b9be760dcebd519d6997d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/comparison.json": "293a2f04e0862c3b920a14f7af59d1a3ef1e4ab64c68b6c38291ead0194e74be"
+  },
+  "figure_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/01_c_account_nav_drawdown_2015.png": "1fc43d38e11b107916d27e3bec71717b02b5603cd4576495379467407dd1eb01",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/02_january_c_account_nav.png": "48e373df24a3179b66ebe807e3ee1063fd220360addc4399a8c9c177ca6b2ac1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/03_june_c_account_nav.png": "77933831d1598746226cddd45ba58427f74b3b3693ef857b7f9e1b87e5a59d8e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/04_real_pnl_account_dd_deposit_deltas.png": "cf09e09cc7a8f420d5a90b361f8f8a83550bca3a773fa23dd7cbf87db628406e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/05_reserve_use_and_survival_overview.png": "cccf9c871f49a0fa59816b64feed1cecf2444e1e7ac363c7220cdeecbd9cbb01"
+  },
+  "report_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/Stage012_原风险C版_5万与15万备用金对比.html": "2aadf503413c656012db59469a99e0cc0dc2e4818f9126d4f4e64a1fbe120960",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage012_reserve50k_comparison/review_pending/report.md": "449b47e656fa588e0bbfe8443ef2c058760af0e894e55a0ff381801f482dc3d4"
+  },
+  "independent_review_sha256": null,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "browser_interaction_verified": false,
+  "promotion_decision": "NO_PROMOTION"
+}

@@ -1,0 +1,28 @@
+test_funding_alone_cannot_be_profit_improvement (test_stage012_report.CashAccountingTests.test_funding_alone_cannot_be_profit_improvement) ... ok
+test_negative_equity_never_clipped (test_stage012_report.CashAccountingTests.test_negative_equity_never_clipped) ... ok
+test_nonbinding_cash_stays_outside_nav (test_stage012_report.CashAccountingTests.test_nonbinding_cash_stays_outside_nav) ... ok
+test_overdraw_is_rejected (test_stage012_report.CashAccountingTests.test_overdraw_is_rejected) ... ok
+test_partial_topup_not_profit_or_full_floor (test_stage012_report.CashAccountingTests.test_partial_topup_not_profit_or_full_floor) ... ok
+test_index_lookup_retains_window_identity_for_export (test_stage012_report.RecordExportTests.test_index_lookup_retains_window_identity_for_export) ... ERROR
+
+======================================================================
+ERROR: test_index_lookup_retains_window_identity_for_export (test_stage012_report.RecordExportTests.test_index_lookup_retains_window_identity_for_export)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage012_report.py", line 66, in test_index_lookup_retains_window_identity_for_export
+    write_window_records(summary,pd.DataFrame(),{'source_head':'new_frozen','baseline_freeze':'old_freeze'})
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage012_report.py", line 149, in write_window_records
+    for row in [a,b]:text+='|'+'|'.join(row_values(row))+'|\n'
+                                        ^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage012_report.py", line 134, in row_values
+    return [m.start+('（观察）' if m.observation_only else ''),LABELS[m.variant],m.method,formatted(m.account_end_equity),formatted(m.account_growth_pct,'pct'),
+            ^^^^^^^
+  File "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/core/generic.py", line 6321, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'start'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.031s
+
+FAILED (errors=1)

@@ -1,0 +1,24 @@
+{
+  "schema": "stage012_independent_canary_and_reuse_v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "canary_start": "2016-06-01",
+  "freeze_sha256": "d1c2ca5b02d398b2dd59a3a1179957bf2b19d6f6e75776f8514f05d580d5f2e6",
+  "source_head": "a4396af4de8d6fe775ae5d9cab11a06e4566fc85",
+  "checkpoints_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage012_multistart/checkpoints/2015-01-01_C.json": "2f1058d69ccf9dd4da9c32f5d25c269168feef4c62644bc2a3bcd925bf179c16",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage012_multistart/checkpoints/2016-06-01_C.json": "a550a68394becb4b4a9327d09c86997f4dabe21fba672567430e0bc30dca2ecd"
+  },
+  "receipts_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2015-01-01_C.json": "3ebe144fa0f451ae88b9be99a83a8833e618632129291267220f5d2b2b9f90b2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_receipts/2016-06-01_C.json": "20f3fec03a242464fe0bda35afc81a2e83cefb2b9669e4400a77fb7ea4d93304"
+  },
+  "scope": "2015full proved-nonbinding reuse and earliest-binding2016June genuine engine independently accepted; remaining8 fixed fresh runs may proceed",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

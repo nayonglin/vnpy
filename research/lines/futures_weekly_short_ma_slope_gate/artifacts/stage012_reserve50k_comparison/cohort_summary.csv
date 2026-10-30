@@ -1,0 +1,7 @@
+cohort,scope,n,fresh,proof_reuse,real_pnl_higher,real_pnl_equal,real_pnl_lower,dd_shallower,dd_equal,dd_deeper,sharpe_higher,sharpe_equal,sharpe_lower
+January,complete_ge_1y,11,4,7,1,7,3,2,7,2,1,7,3
+January,observation_lt_1y,1,0,1,0,1,0,0,1,0,0,1,0
+June,complete_ge_1y,11,5,6,3,6,2,1,7,3,2,6,3
+June,observation_lt_1y,0,0,0,0,0,0,0,0,0,0,0,0
+combined,complete_ge_1y,22,9,13,4,13,5,3,14,5,3,13,6
+combined,observation_lt_1y,1,0,1,0,1,0,0,1,0,0,1,0

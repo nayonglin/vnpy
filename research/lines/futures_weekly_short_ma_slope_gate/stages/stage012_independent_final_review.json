@@ -1,0 +1,78 @@
+{
+  "schema": "stage012_independent_final_review_v1",
+  "status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "reviewed_at": "2026-10-30T19:09:44+08:00",
+  "financial_source_head": "a4396af4de8d6fe775ae5d9cab11a06e4566fc85",
+  "freeze_sha256": "d1c2ca5b02d398b2dd59a3a1179957bf2b19d6f6e75776f8514f05d580d5f2e6",
+  "candidate_windows": 23,
+  "new_financial_engines": 9,
+  "proven_nonbinding_reuses": 14,
+  "frozen_old_C_controls": 23,
+  "variant_windows": 46,
+  "paired_windows": 23,
+  "daily_points": 70998,
+  "total_independent_checks": 3271458,
+  "risk_setting_identity": "Original C1.8%/6%/6%/2.5% and all actual/effective settings retained; only unused reserve150k->50k changes; no Stage011 uniform-risk config",
+  "reuse_proof": "Full-source constant-only AST plus absence of R/W trading consumers and every native cash check induction;14 full paths identical, never claimed new engines",
+  "fresh_proof": "All9 true raw inventories/fills/FIFO/MTM/costs/weekly/calendar/cash snapshots reconstructed; actual first-bound partial transfer exact and full trading/cash prefix identical before it",
+  "mature22": {
+    "real_PnL": {
+      "higher": 4,
+      "equal": 13,
+      "lower": 5
+    },
+    "E_maxDD": {
+      "higher": 3,
+      "equal": 14,
+      "lower": 5
+    },
+    "E_Sharpe": {
+      "higher": 3,
+      "equal": 13,
+      "lower": 6
+    }
+  },
+  "capital_stress": {
+    "C_R150": {
+      "reserve_exhausted": 3,
+      "margin_over100_windows": 14,
+      "negative_real_PnL_mature": 1
+    },
+    "C_R50": {
+      "reserve_exhausted": 9,
+      "margin_over100_windows": 13,
+      "negative_real_PnL_mature": 2
+    }
+  },
+  "budget_policy": "Primary E/150k includes transferred deposits; true PnL separate. Total commitments200k/300k differ, no same-W percentage promotion gates",
+  "economic_verdict": "50k is not a stable path-equivalent replacement of150k across starts: mature13 equal,4 higher PnL,5 lower, and reserve exhaustion3->9. Preserve negative outcomes and do not scan neighboring reserve amounts.",
+  "confidence": {
+    "frozen_model_accounting_and_source_identity": "High within declared daily-next-open model and independent coupling proof",
+    "economic_generalization": "Limited by post-history-selected50k, overlapping starts, non-PIT/full-lifecycle coverage, zero commission, static margin and absent real capacity evidence"
+  },
+  "resolved_report_defect": "set_index dropped exported start/variant; exact one drop=False identity fix,6 report regression tests, original numeric receipt retained; v2 binds repaired report with identical dataSHA. No financial rerun.",
+  "evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_reuse_admission.json": "776d06ea1599219d029a36f837527a7d120e357b4410044892953c9183a5ea37",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_code_review.json": "fa38a8f0dfb2e5f300bb4ba69074b73a7311b5a4d2457b2dc5977bd96908e9b9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_canary_independent_review.json": "937a678b8ff082e4a5c79a681fe753e78f77c2438b0a466356e2165abe982f9a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_runs_review.json": "df1748d5b232af676bbfb62bd4bb65d7bfbae650d889be48e72f5181ad4893bf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_numeric_review.json": "105a25a53ec05cc4adcb7ffc23eac9d00cb8c92c6cf07a7be72e47ae88e361bc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_numeric_review_v2.json": "dc5ef3bc618c59dfe31671b9484b5ea0203522f4300113c78ecceac6509ff1a6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_export_recovery_review.json": "8255b9b0ea85bf3a2013299498f58c00a23048630c203aa9801e8ccc86a5b510",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_pending_delivery_review.json": "517143a8bd7d0580f110e674dd00caec26a6e1726da3b605e9f597de47a6c505",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_delivery_review.json": "654e5ddc165e9eb41124be3089948a30c9822ee0ebbed178c22d0f1da17f91f5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_root_stage_review.json": "12d6d023a72de22a3878762086d7079fa38f5fbc9db8502b4b9b8a3fe412fa9f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage012_independent_tests_attempt002.log": "c0e3d6fb9fdd9896ab939a8b04d5968fc84fae9848be4c9284a5329fe96ac463"
+  },
+  "browser_interaction_verified": false,
+  "browser_limitation": "Automatic file URL safety restriction retained;5 local PNGs inspected and final title-only changes proven at pixel y16..40; offline HTML static and exact embeds verified; noHTTP/bypass",
+  "financial_replays_executed_by_auditor": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION"
+}
