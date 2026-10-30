@@ -1,0 +1,42 @@
+{
+  "status": "PASS_PENDING_LAYOUT_AND_OFFLINE_STRUCTURE",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "figures": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/review_pending/01_account_nav_drawdown_2015.png": {
+      "sha256": "603f6e22568d0b4967ee6b3fd821e636795884b41c4805796aa617e96f355327",
+      "width": 2250,
+      "height": 1433
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/review_pending/02_january_account_nav.png": {
+      "sha256": "602104aaad8cffafc95cba2fb6c19bc43cf721e1365102e69ab18975410487d2",
+      "width": 2439,
+      "height": 1869
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/review_pending/03_june_account_nav.png": {
+      "sha256": "525585f5a68b971ac82d75b433c3aa42c54e8efedb61dd23488fcf1740c16b6f",
+      "width": 2439,
+      "height": 1869
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/review_pending/04_real_pnl_wealth_deltas.png": {
+      "sha256": "4852b91ac44fbf2825417ea9d7ecf11fa8708ccd54231b6c6aaa0642a9543911",
+      "width": 2454,
+      "height": 1946
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/review_pending/05_risk_funding_and_pnl_overview.png": {
+      "sha256": "7b39cf241f73184ebfeb6661e88a88f7d2b99a5c29ab2d4c3b3528b18ec672d4",
+      "width": 2503,
+      "height": 2086
+    }
+  },
+  "html_rows": 92,
+  "starts": 23,
+  "options": 24,
+  "embedded_png_bytes_exact": true,
+  "visual_inspection": "All5 original local PNGs viewed: full2015 E-NAV/DD,12Jan panels incl2026OBS,11June panels,46delta heatmap rows,PNL/funding/risk tables. Labels/axes/legends/footers legible; no clipping/overlap found.",
+  "browser_interaction_verified": false,
+  "reason": "Known file URL automatic browser safety restriction; noHTTP/bypass attempted",
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

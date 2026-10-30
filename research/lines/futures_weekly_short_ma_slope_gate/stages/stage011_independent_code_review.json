@@ -1,0 +1,47 @@
+{
+  "schema": "stage011_independent_code_admission_v1",
+  "status": "PASS_SOURCE_FOR_FROZEN_CANARY_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage011.py": "5ce364b20cb5a6e73fcc6af6a12a2ac3c77064bd2dc76e649e4110e6552bdce6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_risk.py": "bcc434dbee5b6f2f17f0d861ef32ad2aa568a339b391a37f2a233c6f8534e14c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_contract.py": "67947d3ad085b20ac0e15cef47a9ae36aa2a3e3b6d9a9d9fbb3d723e2e3bbe18",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_coordinator.py": "faa58eb95babe70448b61faec43093754d57b6efd5cbfe21a09a75b63a59022e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage011_runner.py": "9d24b41dbb71eae63c1c2ca2f6850cdd0a52bd7d2e26cfc674c8e80d588e4b26",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage011_risk.py": "721be2e58e076f72d271d369cfe53b61cf1eddc106d1de83597ae9b284bd09af",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage011_contract.py": "b4df50014e7d06ad3d7ab346dd1691014c69ac8fdf39de95af98490ae41f6409",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage011_coordinator.py": "15790b2d22b5b8ce9ff8a1be16a7237e388a1a6f3f45739c63176adab259fc33"
+  },
+  "old_runner_sha256": "d8a39d29e930837b2dccfaed7d3fccc1da335cc34c4491f6ec8f987577dd1543",
+  "financial_try_AST_exact_preservation": true,
+  "financial_try_AST_sha256": "34e535b46d149d5779554eaa47491fa7c853d3f7b99ea7e4bc4c99131d8d655b",
+  "allowed_added_witness_statements": [
+    "dump(out / 'actual_strategy_settings.json', s901._json_safe(actual))",
+    "dump(out / 'uniform_risk_acceptance.json', risk_proof(out, freeze, args.arm, start_day, baseline))"
+  ],
+  "alpha_delta": "Only risk_ratio_volume_open_interest_surge .06->.018; risk_ratio_open_interest_surge .06->.018; risk_ratio_open_interest_decline .025->.018",
+  "review_findings": [
+    "Full actual setting/actual/effective snapshots must match same-window Stage009 after restoring exactly three base ratios; normalization does not authorize other strategy changes.",
+    "All calls to reserve_strategy_class, historical/next-open classes, run_backtesting, source/export/settlement/PNL/positions/weekly aggregation in the complete financial try retain exact AST.",
+    "New freeze pins23starts,10/29cutoff,46new/46old,150k+150k,2workers and same four SHA. Old Stage009 checkpoints are read with their original freeze.",
+    "Admission verifies financial-source/data/freeze/old-control manifest coverage; checkpoint identity includes source/arm/start/end/freeze and actual snapshots.",
+    "Canary approval binds both actual checkpoints and source freeze before remaining44 fixed jobs; no criterion rescans financial parameters."
+  ],
+  "tests": {
+    "core_log": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_core_tests_attempt001.log",
+    "core_log_sha256": "7551f9994c5d3a8b7d6c9837feeaeee5c9a593fe7f898a6e07b06aa8218b07b2",
+    "mutation_log": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_tests_attempt002.log",
+    "mutation_log_sha256": "f1e81a091fb7d467ea9489cf20f66385c7da3062d767e6f43ef8343e5a987809"
+  },
+  "data_review_sha256": "59c6db4d4dfcba3cbf8cf9a20fcba1ce3ac40ece2e91e2c9d9d461df866000d8",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "source_head_admission": "Root must freeze these bytes at a commit and then bind source_head/SHA before finance; results not yet run",
+  "auditor_source_sha256": "9bc656c720034eacca0c0c29e45b5abf89ec5e9a1f134601034d612a79deaf2b"
+}

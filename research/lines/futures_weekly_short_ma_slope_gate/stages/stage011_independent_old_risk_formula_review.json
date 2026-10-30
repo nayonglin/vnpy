@@ -1,0 +1,10 @@
+{
+  "status": "PASS_INDEPENDENT_RISK_FORMULA_AGAINST_ALL46_OLD_ACTUAL_RUNS",
+  "actual_old_entries": 9078,
+  "controls": 46,
+  "floor": 1000,
+  "second_global_04_scale": false,
+  "formula": "min(max(limited_balance*risk_ratio,1000),max_risk_per_trade)*risk_multiplier*directional_multiplier",
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

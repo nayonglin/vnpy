@@ -1,0 +1,63 @@
+{
+  "status": "PASS_ROOT_CHINESE_STAGE_KEY_CONCLUSIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "reviewed_stage": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261030_1816_stage011_uniform_risk_result.md",
+  "reviewed_stage_sha256": "9adfae8c20b32eba84f9b9a26d6e00369d384c07d03cd5a0bdea3a3f2ca16c0c",
+  "facts": {
+    "A": {
+      "E_DD_strict_better": 9,
+      "E_Sharpe_strict_better": 9,
+      "W_DD_no_worse": 7,
+      "means": {
+        "old": 59551.59090909092,
+        "new": 65322.954545454544
+      },
+      "exhausted": {
+        "old": 2,
+        "new": 2
+      },
+      "margin_over100": {
+        "old": 22,
+        "new": 3
+      }
+    },
+    "C": {
+      "E_DD_strict_better": 7,
+      "E_Sharpe_strict_better": 6,
+      "W_DD_no_worse": 10,
+      "means": {
+        "old": 57089.318181818184,
+        "new": 62401.363636363654
+      },
+      "exhausted": {
+        "old": 3,
+        "new": 2
+      },
+      "margin_over100": {
+        "old": 14,
+        "new": 0
+      }
+    }
+  },
+  "new_margin_over100_windows": [
+    {
+      "start": "2018-06-01",
+      "variant": "A_new"
+    },
+    {
+      "start": "2020-06-01",
+      "variant": "A_new"
+    },
+    {
+      "start": "2021-01-01",
+      "variant": "A_new"
+    }
+  ],
+  "nonpositive_E_windows_new_and_old": 0,
+  "frozen_financial_sources": 32,
+  "all_frozen_source_SHA_unchanged": true,
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

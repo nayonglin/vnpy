@@ -1,0 +1,11 @@
+{
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/summary.csv": "8487cf0cf18adcb9bcd7b2aee70b774dc143596136979e6d5b277da286befbfd",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/paired.csv": "e80d21d81c00af2cc0fcf523c863beb06321da3e2f1a9c47f8d641328fc6c4c4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/daily.csv": "ad24945fd050711f9eb8e7299f02f01f755f3a58b8a457cee1bfcbd17668b88d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/cohort_summary.csv": "39547e81bd921d66a04c66fc42ccfdc2b7753b05d024d45e6916a53336a325fe",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/reserve_events.csv": "ef0d79c599e5de0acd0ddbc56d5d5af812e431a5e7da96a4ce8969f14a0f3a6d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/actual_parameter_deltas.csv": "2f69325a1f9cfdb48d048d813378d706126e80277e56de9f548a4a4675c94718",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/comparison.json": "7ce4eb572bfac240ff68325bbc9226299b062854bc97a469216fa30bee6a311a"
+  }
+}

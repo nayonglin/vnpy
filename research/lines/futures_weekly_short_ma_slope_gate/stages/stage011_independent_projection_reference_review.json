@@ -1,0 +1,8 @@
+{
+  "status": "PASS_INDEPENDENT_E_METRIC_FORMULA_AGAINST_FROZEN_STAGE010",
+  "variant_windows": 92,
+  "metrics_checked_per_window": 5,
+  "whole_sharpe_zero_when_any_previous_E_nonpositive": true,
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

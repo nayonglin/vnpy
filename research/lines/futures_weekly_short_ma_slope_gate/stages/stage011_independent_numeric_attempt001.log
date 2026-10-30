@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_independent_aggregate.py", line 94, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_independent_aggregate.py", line 93, in main
+    audit(args.report,args.output)
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_independent_aggregate.py", line 52, in audit
+    flow=np.array([amounts.get(d,0.) for d in days]);T=flow.cumsum();E=150000.+cum+T;R=150000.-T;W=300000.+cum;near(raw.account_equity.to_numpy(),150000.+cum,'raw150k_truePnL');ok((R>=-1e-6).all() and (flow>=0).all(),'bounded_monotone_transfers')
+                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage011_independent_aggregate.py", line 18, in near
+    if a is None or pd.isna(a):ok(b is None or pd.isna(b),label);return
+       ^^^^^^^^^
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()

@@ -1,0 +1,75 @@
+{
+  "schema": "stage011_independent_final_review_v1",
+  "status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "reviewed_at": "2026-10-30T18:17:28+08:00",
+  "source_head": "edeabccc6ba83d7c50adf314b271592e7889f194",
+  "freeze_sha256": "9863c0cd45d4c7f989839efc51a0b311d7ab546ee87a1155ce4a78ba750e9208",
+  "new_financial_runs_reviewed": 46,
+  "frozen_old_controls": 46,
+  "independent_starts": 23,
+  "variant_windows": 92,
+  "paired_windows": 46,
+  "daily_points": 141996,
+  "actual_entry_base_rates": [
+    0.018
+  ],
+  "actual_entry_rows": 8938,
+  "total_checks": 13229795,
+  "evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_data_review.json": "59c6db4d4dfcba3cbf8cf9a20fcba1ce3ac40ece2e91e2c9d9d461df866000d8",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_code_review.json": "7e62f578ebc1a477d79498a0f1a275b2b6d73220e56bc4dc9a800c826b1e3b3e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_canary_independent_review.json": "2e06a97b305c7553a2ed5dad7b547c50d6780c90fc10f70ebc667968ed543f82",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_runs_review.json": "b5d4b2ddc5ff41b6e72250712ec68ed190f8f3ec4a99ee1472fcc4fc77fe2320",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_numeric_review.json": "d29b17bd3990d5f3b1f2f6629c7b648572e45d33e5f4bfb171cfa75fae4ff631",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_pending_delivery_review.json": "19c228383a3f1d6e43d184a08a180b636ac118a4735e6267f29795f4b7be92a0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_delivery_review.json": "e0239db49928680e7a8a39c3a13553134133ba9d2b86fa8e214f4e796aaec4ca",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_status_pixel_review.json": "80ad915f8442d239d1b58e6ec035775081dd788e55ecc14841a7a7edebc32b32",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_canary_drawdown_review.json": "382a7f66625780902692e5bc5002035dc9cf95c0e2da971235d0e1ca3a4b8ac6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_old_risk_formula_review.json": "bfe8c06f0045739b8fc5b779a60cd31ffc5809858947c34dbcad66e625c99f82",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_projection_reference_review.json": "b1b4a8d17a45127aa40a0981fd726864f6d6ef3eee80db2971e5962ac7092832",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage011_independent_tests_attempt004_GREEN.log": "7c72f6eb06e3633a1de2698f56570c5b7e9c74fadc12b18af5a9dd25993384ea"
+  },
+  "confidence": {
+    "accounting_and_declared_delta": "High within the frozen daily-next-open model; each new run independently reconstructed from source bars, real fills and marked inventory.",
+    "economic_generalization": "Limited: overlapping repeated history is not independent/OOS evidence; zero commission, PIT/lifecycle/data gaps, static margin and absent capacity remain."
+  },
+  "economic_summary": {
+    "A_mature_realPnL_wins": 5,
+    "C_mature_realPnL_wins": 5,
+    "mature_windows_per_arm": 22,
+    "A_joint_gate_pass": 4,
+    "C_joint_gate_pass": 4,
+    "A_wealth_DD_no_worse": 7,
+    "C_wealth_DD_no_worse": 10,
+    "A_wealth_Sharpe_no_lower": 8,
+    "C_wealth_Sharpe_no_lower": 6
+  },
+  "research_verdict": "Uniform .018 special-risk bases do not improve the old reserve strategy broadly. Preserve all negative results; no neighboring-risk/window/product rescue scan. This does not prove old .06/.025 optimal.",
+  "limitations": [
+    "2014 MA aliases have228 missing mapped days; hc1505 first2015 target has only13 complete2014 weeks; actual21-ready state must be exported by replay.",
+    "Unknown full future lifecycle is labeled; never infer expiry from observed last row.",
+    "Frozen mapping has explicit18 structural defects, not a reconstructed historical main series; no substitute contracts inferred. data_ready requires unknown main gaps0; approved real zero-volume keys are classification-only, never bars/week inputs/fills. Every held/traded/week-source positive-data and execution/accounting gate remains mandatory.",
+    "New Tq authority was declared before finance; no multi-source consensus or PIT claim.",
+    "10/27 local Stage283 daily closeOI snapshot is the predeclared authority; later same-vendor observations do not overwrite it.",
+    "10/28 Tq daily is observed after 15:30 local, not independently arbitrated exchange final truth.",
+    "10/28 is incomplete week; ordinary weekly indicators use completed weeks only.",
+    "Data readiness covers original19 main plus frozen R003 held/pending and accepted recent tails; each new replay must still verify every actual held/traded day and 2020 warmup readiness.",
+    "10/29 Tq daily observed after 15:30; not exchange-final arbitration. 10/30 forming rows excluded.",
+    "Original19 standalone snapshot; no source from ongoing44 research. All historical PIT, lifecycle gaps, static metadata and capacity limitations inherited."
+  ],
+  "browser_interaction_verified": false,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "resolved_auditor_only_defects": [
+    "Preflight import initially omitted repository ROOT; attempt001 preserved; actual vendor imports passed after adding ROOT.",
+    "Follow supervisor initially opened registry before coordinator prepare created it; attempt001 preserved; follow now waits for registry.",
+    "Aggregate near helper initially applied scalar NaN truth test to an ndarray; failure/RED logs preserved; scalar/vector mutation tests now8GREEN. No financial rerun was performed to repair these audit adapters."
+  ]
+}

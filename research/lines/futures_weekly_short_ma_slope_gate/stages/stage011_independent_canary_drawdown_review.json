@@ -1,0 +1,49 @@
+{
+  "status": "PASS_CANARY_MAX_DRAWDOWN_BRIDGE",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "source_sha256": "7a43e941a9779c8b08ae61b86fd3da9261be17cdb2dfba54095c6d37a8e15700",
+  "rows": [
+    {
+      "arm": "A",
+      "version": "old",
+      "peak_date": "2018-02-27",
+      "peak_equity": 422825.0,
+      "trough_date": "2020-04-09",
+      "trough_equity": 173990.0,
+      "max_dd_pct": -58.850588304854256
+    },
+    {
+      "arm": "A",
+      "version": "new",
+      "peak_date": "2021-05-12",
+      "peak_equity": 780190.0,
+      "trough_date": "2023-03-10",
+      "trough_equity": 250070.00000000012,
+      "max_dd_pct": -67.94755123751905
+    },
+    {
+      "arm": "C",
+      "version": "old",
+      "peak_date": "2016-12-13",
+      "peak_equity": 445550.0,
+      "trough_date": "2020-04-09",
+      "trough_equity": 218110.00000000003,
+      "max_dd_pct": -51.04702053641566
+    },
+    {
+      "arm": "C",
+      "version": "new",
+      "peak_date": "2016-11-11",
+      "peak_equity": 429020.0,
+      "trough_date": "2020-04-02",
+      "trough_equity": 138260.0000000001,
+      "max_dd_pct": -67.7730641928115
+    }
+  ],
+  "account_basis": "E includes deposits; equal300k wealth W used separately for economic gates",
+  "inference": "Lower base risk is not a scalar transformation of a dynamically sized shared-capital curve; observed maximum drawdown epochs change. This is attribution only, no rule selection.",
+  "financial_replays": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

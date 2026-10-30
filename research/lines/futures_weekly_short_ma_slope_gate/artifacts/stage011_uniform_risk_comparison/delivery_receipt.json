@@ -1,0 +1,29 @@
+{
+  "status": "PASS_WITH_LIMITATIONS",
+  "data_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/summary.csv": "8487cf0cf18adcb9bcd7b2aee70b774dc143596136979e6d5b277da286befbfd",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/paired.csv": "e80d21d81c00af2cc0fcf523c863beb06321da3e2f1a9c47f8d641328fc6c4c4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/daily.csv": "ad24945fd050711f9eb8e7299f02f01f755f3a58b8a457cee1bfcbd17668b88d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/cohort_summary.csv": "39547e81bd921d66a04c66fc42ccfdc2b7753b05d024d45e6916a53336a325fe",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/reserve_events.csv": "ef0d79c599e5de0acd0ddbc56d5d5af812e431a5e7da96a4ce8969f14a0f3a6d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/actual_parameter_deltas.csv": "2f69325a1f9cfdb48d048d813378d706126e80277e56de9f548a4a4675c94718",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/comparison.json": "7ce4eb572bfac240ff68325bbc9226299b062854bc97a469216fa30bee6a311a"
+  },
+  "figure_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/01_account_nav_drawdown_2015.png": "594e7e8ff7f036995492d261eb9f77217041669004b1732a923fdd12e6c56dbe",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/02_january_account_nav.png": "f13940c9038fed46594dae8dab7d04506192f86dc1881912d45b15f3ef42c962",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/03_june_account_nav.png": "2aab7f7e808add1160550c31918d1d2b9285c5e9b7a8624bdded86a53568a6f6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/04_real_pnl_wealth_deltas.png": "d88bdb70f4033f57d13eb58a8e26cc70962ff237968eef7dae1ac36a854754e2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/05_risk_funding_and_pnl_overview.png": "e8ff20aeb5483fc205fd8ddad238e8223b777b38cc9aa0028fabc347477ae6de"
+  },
+  "report_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/Stage011_统一普通风险_场外补资对比.html": "7c271ffa0decc64a960301f1dd21afe59a880803dbca925f1808984ac713c6f7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage011_uniform_risk_comparison/report.md": "bb6da86238333097819fd15d3b7d8ae1da342c2c48f6b06323258489176a39b3"
+  },
+  "independent_review_sha256": "d29b17bd3990d5f3b1f2f6629c7b648572e45d33e5f4bfb171cfa75fae4ff631",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "browser_interaction_verified": false,
+  "promotion_decision": "NO_PROMOTION"
+}
