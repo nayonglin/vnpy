@@ -1,0 +1,327 @@
+{
+  "schema": "stage014_independent_financial_source_admission_v1",
+  "status": "PASS_SOURCE_FOR_59_FRESH_CANARY_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage014.py": "05d255a708e55841cd15b26cd47a1a8c2c01f4a3c9a55e87604f39fe45a1bddf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_contract.py": "cdfb6eb6b55a5ad92cab062666be211c02704f8a5a6179d777a13acfc6585ab7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_reserve.py": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_coordinator.py": "7519fd49345c97a511c1d36bd07fc62a17582fbf6a624d927a7f1ad508824b94",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_reserve.py": "66a1a4b547d6db47f1b67ceb0bdc0183aa6a38833372845875ad73fb15515603",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_contract.py": "c2fd70d17724268c7ffed7dfc74353961edf57c9a7ac5b8e83c54ca6ef95e621",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_runner.py": "3a28c16b751ed0f771edc16a2eb5a9b169fe7e7d870432f379113c3967a72ee0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_coordinator.py": "3ab54f030f89e00fd59f4eda5c9de3cb1370657cd18e7493543619172d776aec"
+  },
+  "resolved_runtime_imports": {
+    "analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
+      "sha256": "9ba78df489079967f8281c7667ad6ae3bc15099047564942424200f42a644105",
+      "locations": []
+    },
+    "argparse": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/argparse.py",
+      "sha256": "dc1eba8adfdf615986421f981337458ba1072d3e718a0f76e3224940fd74118b",
+      "locations": []
+    },
+    "contract_metadata": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/contract_metadata.py",
+      "sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70",
+      "locations": []
+    },
+    "copy": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/copy.py",
+      "sha256": "27dcfc53a4b9d4fbc3d90c74e549eb6eca9301524d6d2fbff9a6589cf51b6fd5",
+      "locations": []
+    },
+    "daily_coverage": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/daily_coverage.py",
+      "sha256": "a00d70ccc8ac3ecc3c92b891d9d3925532c8114d51c0e67a3ee9c58c5ac071e3",
+      "locations": []
+    },
+    "dataclasses": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+      "sha256": "4b7e1c99ebea53b546317d218a0261895a1769f83a6b95dc0136f13578066a7f",
+      "locations": []
+    },
+    "datetime": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/datetime.py",
+      "sha256": "e77455fc9f87c3f29ec4f57fbae33a58c47fae11695f76365d96e183b3b14fc4",
+      "locations": []
+    },
+    "hashlib": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/hashlib.py",
+      "sha256": "e2bffb462e4d43e6637b9450e259e8ba2a56626ba3037d68aa1cee68b3f61d4a",
+      "locations": []
+    },
+    "json": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/__init__.py",
+      "sha256": "d5d41e2c29049515d295d81a6d40b4890fbec8d8482cfb401630f8ef2f77e4d5",
+      "locations": [
+        "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json"
+      ]
+    },
+    "main_contract_mapping": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/main_contract_mapping.py",
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503",
+      "locations": []
+    },
+    "os": {
+      "origin": "frozen",
+      "sha256": null,
+      "locations": []
+    },
+    "pandas": {
+      "origin": "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas/__init__.py",
+      "sha256": "108be8ca3ae1a2a5c765ee6f87e8867d87c2fb5a89107e6c2d3a6acc96612b7b",
+      "locations": [
+        "/Users/mac/Documents/Codex/fian-research-20261014/.py311/lib/python3.11/site-packages/pandas"
+      ]
+    },
+    "pathlib": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py",
+      "sha256": "3b21ac188fd9ac20bacc8ccd976fabd5d8ccf5000f8e157d3dfff005b228fb3d",
+      "locations": []
+    },
+    "qmt_roll_official_baseline_identity": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/qmt_roll_official_baseline_identity.py",
+      "sha256": "1821c098c92997e0785c7592d00e6379aa9620aa721bf37442df300d9fe0c152",
+      "locations": []
+    },
+    "qmt_roll_official_strategy_material_resolver": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py",
+      "sha256": "8dc173b93f48657f3d825d816353c350e39457cec8fcc1af8a4202878646aeff",
+      "locations": []
+    },
+    "qmt_roll_portfolio_strategy": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+      "locations": []
+    },
+    "replay_audit_helpers": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/replay_audit_helpers.py",
+      "sha256": "b2a4ff35d3a24fc51a357987db61dc6f6442a103c41b7f79d7cf2ea8232da288",
+      "locations": []
+    },
+    "sqlite3": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/sqlite3/__init__.py",
+      "sha256": "29878411a7bcefcd56a3751fe689dea2c99bda75a13a485d78898834a323f0c0",
+      "locations": [
+        "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/sqlite3"
+      ]
+    },
+    "stage005_sessions": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage005_sessions.py",
+      "sha256": "6c513a6bfefa528dd301e20f58e19b548d6e30ba9e7e397f17fa37d8ac936d98",
+      "locations": []
+    },
+    "stage005_short_bottom20": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py",
+      "sha256": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+      "locations": []
+    },
+    "stage011_bar_open_audit": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage011_bar_open_audit.py",
+      "sha256": "e3238cd39abc8cd3b1956a50707f38a88b20b7d0363cd8e010c2b4bfe3a3c524",
+      "locations": []
+    },
+    "stage011_bar_open_execution": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage011_bar_open_execution.py",
+      "sha256": "ceba51f9dd8edbb1e2cd42ce74212208e9866e5f0d84d12183a356d37162a3c0",
+      "locations": []
+    },
+    "stage012_ai_selection_off": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage012_ai_selection_off.py",
+      "sha256": "7d798119b58932b005689d0c67231940064758f3b725cceb1b18c5e78dc2e397",
+      "locations": []
+    },
+    "stage014_contract": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_contract.py",
+      "sha256": "cdfb6eb6b55a5ad92cab062666be211c02704f8a5a6179d777a13acfc6585ab7",
+      "locations": []
+    },
+    "stage014_reserve": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_reserve.py",
+      "sha256": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+      "locations": []
+    },
+    "stage018_short_case2": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage018_short_case2.py",
+      "sha256": "1721650a4e3d346517573e5ddb1d3246bf588f11f2fe414cecf5ee01df701943",
+      "locations": []
+    },
+    "stage020_no_position_cap": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage020_no_position_cap.py",
+      "sha256": "efed04cfe7b34f1465778159f8b966220e48ceea8e8b499833d2e1a779f0ae5c",
+      "locations": []
+    },
+    "stage022_historical_safety": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage022_historical_safety.py",
+      "sha256": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7",
+      "locations": []
+    },
+    "stage029_week_close_exits_v2": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py",
+      "sha256": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+      "locations": []
+    },
+    "stage032_daily_addon": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py",
+      "sha256": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974",
+      "locations": []
+    },
+    "subprocess": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py",
+      "sha256": "2ff641d58f8696496e8718538cd96cd7afcd503ae271fb23da22422b3aee9fc7",
+      "locations": []
+    },
+    "sys": {
+      "origin": "built-in",
+      "sha256": null,
+      "locations": []
+    },
+    "time": {
+      "origin": "built-in",
+      "sha256": null,
+      "locations": []
+    },
+    "vnpy.trader.database": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/vnpy/trader/database.py",
+      "sha256": "3b4f9308ed5580784f887bc6d761a16074c15f98eae422bc67a026024206201f",
+      "locations": []
+    },
+    "vnpy.trader.setting": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/vnpy/trader/setting.py",
+      "sha256": "a8a364ba894c0f9cfc277dc07986664803db1c0935455ba57d6dca951537f5f1",
+      "locations": []
+    },
+    "vnpy_sqlite.sqlite_database": {
+      "origin": "/Users/mac/Documents/Codex/fian-handoff-20261014/vnpy_handoff_20261014/vendor/vnpy_sqlite/sqlite_database.py",
+      "sha256": "a9a0cc09422c67150260c8d7d6a3976b61b72d403fca160c97472fba11c72ae7",
+      "locations": []
+    },
+    "weekly_adapter": {
+      "origin": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/weekly_adapter.py",
+      "sha256": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd",
+      "locations": []
+    },
+    "zoneinfo": {
+      "origin": "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/zoneinfo/__init__.py",
+      "sha256": "ac7fb403e4371d07482ef2fda81dbcf6879484e9fc41d4be42c156d7e54c68a8",
+      "locations": [
+        "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/zoneinfo"
+      ]
+    }
+  },
+  "shared_frozen_assets_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/frozen_baseline/M_attempt001/preflight.json": "d7f4d22b85d13e9ef75c91c030e2686dfadd7659715b354b58c6ab70f2ee2c97",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/frozen_baseline/stage012_ai_off_contract_pointer.json": "0ab6eb728ab05ddfcf79ddf065f1d363c01bb6ae74b3410a325ab2e7d38e60a0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/frozen_baseline/stage029_contract_pointer_v2.json": "adcc2bd5cc944c49b4679070cddf27b2a2f8d8efedf35b69896803a49ef98dcb"
+  },
+  "complete_main_import_AST_unchanged_except_owned_contract_and_reserve": true,
+  "reserve_wrapper_byte_and_AST_identical_to_Stage009": true,
+  "financial_try_AST_unchanged_except_output_namespace": true,
+  "engine_AST_unchanged": true,
+  "original_overrides_AST_unchanged": true,
+  "normalization_AST_unchanged_only_validator_global_bound_to_59": true,
+  "local_59_validator_23_baseline_immutable": true,
+  "start_months": [
+    1,
+    3,
+    6,
+    9,
+    11
+  ],
+  "starts": [
+    "2015-01-01",
+    "2015-03-01",
+    "2015-06-01",
+    "2015-09-01",
+    "2015-11-01",
+    "2016-01-01",
+    "2016-03-01",
+    "2016-06-01",
+    "2016-09-01",
+    "2016-11-01",
+    "2017-01-01",
+    "2017-03-01",
+    "2017-06-01",
+    "2017-09-01",
+    "2017-11-01",
+    "2018-01-01",
+    "2018-03-01",
+    "2018-06-01",
+    "2018-09-01",
+    "2018-11-01",
+    "2019-01-01",
+    "2019-03-01",
+    "2019-06-01",
+    "2019-09-01",
+    "2019-11-01",
+    "2020-01-01",
+    "2020-03-01",
+    "2020-06-01",
+    "2020-09-01",
+    "2020-11-01",
+    "2021-01-01",
+    "2021-03-01",
+    "2021-06-01",
+    "2021-09-01",
+    "2021-11-01",
+    "2022-01-01",
+    "2022-03-01",
+    "2022-06-01",
+    "2022-09-01",
+    "2022-11-01",
+    "2023-01-01",
+    "2023-03-01",
+    "2023-06-01",
+    "2023-09-01",
+    "2023-11-01",
+    "2024-01-01",
+    "2024-03-01",
+    "2024-06-01",
+    "2024-09-01",
+    "2024-11-01",
+    "2025-01-01",
+    "2025-03-01",
+    "2025-06-01",
+    "2025-09-01",
+    "2025-11-01",
+    "2026-01-01",
+    "2026-03-01",
+    "2026-06-01",
+    "2026-09-01"
+  ],
+  "cutoff": "2026-10-30",
+  "new_financial_runs_planned": 59,
+  "data_admission_sha256": "0d74360c3125803e25e8e9d9550ea090af82e2fd5e4c7e540c5e37b8511afb6b",
+  "data_identity": {
+    "daily_sqlite_sha256": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping_sha256": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "physical_epoch_daily_sha256": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt_sha256": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "independent_target_tests_sha256": "32652a1f419e8491519a1394d0ea4f7fd8e8e63341563234e94e5e871013d561",
+  "source_hash_cache": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_independent_run_hash_cache.json",
+  "source_hash_cache_sha256": "16d75bc17424309844faa687ee4f4e1b5f36e22ec87a599f42800177fb84d6bc",
+  "dedup_run_cache_files": 4933,
+  "same_byte_stat_drift_rehashed": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34"
+  },
+  "allowed_financial_deltas": [
+    "independent_start_date_in_fixed59",
+    "data_path_to_append_only_20261030_snapshot",
+    "end_date20261030",
+    "management/output/freezing_IO_only"
+  ],
+  "economic_parameters_changed": [],
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "auditor_source_sha256": "3240e25fa1ce5cb5248b9f46ebf23c5da0050bceda7b8f3de06191d40df7383c"
+}

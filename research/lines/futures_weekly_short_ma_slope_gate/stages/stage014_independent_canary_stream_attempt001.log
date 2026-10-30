@@ -1,0 +1,8 @@
+{"event": "STAGE014_INDEPENDENT_STARTED", "pid": 62089, "planned": 1, "workers": 2, "auditor_sha256": "17baa5bf84894f3e2fd170660c2b4c461a16c7e78cbf13a49af11be7fb3fd44e", "freeze_sha256": "ef706f779c5a48b760dbbfa3272f1c88a19719bfaca336afcd45e01d6d74317f"}
+{"event": "STAGE014_AUDIT_PROGRESS", "complete": 0, "running": 0, "planned": 1}
+{"event": "STAGE014_AUDIT_STARTED", "start": "2015-01-01", "method": "fresh_engine", "pid": 62232}
+{"event": "STAGE014_AUDIT_PROGRESS", "complete": 0, "running": 1, "planned": 1}
+{"event": "STAGE014_INDEPENDENT_WINDOW_PASS", "start": "2015-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_independent_receipts/2015-01-01_C.json", "sha256": "8826d91239219a97334754adf292e5e3c58ca3feb5e0e4661bc6cace5ba2aff3", "real_PnL": 4025344.999999998}
+{"event": "STAGE014_AUDIT_PROGRESS", "complete": 1, "running": 0, "planned": 1}
+{"event": "STAGE014_CANARY_GATE_ACCEPTED", "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_canary_independent_review.json", "sha256": "3aa8ce32a43118821107c331fa6a6c03ccb418cdb4e04202caa4579bf3b9639d"}
+{"event": "STAGE014_ALL_INDEPENDENT_COMPLETE", "complete": 1}

@@ -1,0 +1,160 @@
+{
+  "schema": "stage014_zero_daily_never_main_evidence_v1",
+  "status": "PASS_DATA_EVIDENCE_PENDING_INDEPENDENT_CODE_REACHABILITY",
+  "created_at": "2026-10-30T22:49:04.470850+08:00",
+  "contracts": [
+    {
+      "vt_symbol": "SM704.CZCE",
+      "physical_epoch": "CZCE.SM.202704",
+      "mapping_all_history_count": 0,
+      "mapping_all_history_casefold_count": 0,
+      "new_target_main_count": 0,
+      "physical_prior_alias_rows": 98,
+      "physical_prior_current_epoch_rows": 96,
+      "sqlite_prior_alias_rows": 98,
+      "sqlite_first": "2017-01-10 00:00:00",
+      "sqlite_last": "2026-10-16 00:00:00",
+      "latest_prior_positive": [
+        {
+          "date": "2026-10-16",
+          "open": 5890.0,
+          "high": 5892.0,
+          "low": 5822.0,
+          "close": 5822.0,
+          "volume": 5.0,
+          "close_oi": 70.0,
+          "contract_epoch_id": "CZCE.SM.202704"
+        }
+      ],
+      "raw_target_fields": {
+        "date": "2026-10-30",
+        "open": 5896.0,
+        "high": 5896.0,
+        "low": 5896.0,
+        "close": 5896.0,
+        "volume": 0.0,
+        "close_oi": 75.0,
+        "duration": 86400
+      },
+      "data_only_conclusion": "Never a main contract in any frozen historical mapping or target30; existing physical data does not imply strategy reachability. Independent code audit must confirm all position-creation paths require mapped main and fresh initial positions are zero."
+    },
+    {
+      "vt_symbol": "SM706.CZCE",
+      "physical_epoch": "CZCE.SM.202706",
+      "mapping_all_history_count": 0,
+      "mapping_all_history_casefold_count": 0,
+      "new_target_main_count": 0,
+      "physical_prior_alias_rows": 74,
+      "physical_prior_current_epoch_rows": 72,
+      "sqlite_prior_alias_rows": 74,
+      "sqlite_first": "2017-03-28 00:00:00",
+      "sqlite_last": "2026-10-16 00:00:00",
+      "latest_prior_positive": [
+        {
+          "date": "2026-10-16",
+          "open": 5902.0,
+          "high": 5904.0,
+          "low": 5842.0,
+          "close": 5846.0,
+          "volume": 24.0,
+          "close_oi": 83.0,
+          "contract_epoch_id": "CZCE.SM.202706"
+        }
+      ],
+      "raw_target_fields": {
+        "date": "2026-10-30",
+        "open": 5924.0,
+        "high": 5924.0,
+        "low": 5924.0,
+        "close": 5924.0,
+        "volume": 0.0,
+        "close_oi": 97.0,
+        "duration": 86400
+      },
+      "data_only_conclusion": "Never a main contract in any frozen historical mapping or target30; existing physical data does not imply strategy reachability. Independent code audit must confirm all position-creation paths require mapped main and fresh initial positions are zero."
+    },
+    {
+      "vt_symbol": "SM707.CZCE",
+      "physical_epoch": "CZCE.SM.202707",
+      "mapping_all_history_count": 0,
+      "mapping_all_history_casefold_count": 0,
+      "new_target_main_count": 0,
+      "physical_prior_alias_rows": 57,
+      "physical_prior_current_epoch_rows": 56,
+      "sqlite_prior_alias_rows": 57,
+      "sqlite_first": "2017-05-11 00:00:00",
+      "sqlite_last": "2026-10-16 00:00:00",
+      "latest_prior_positive": [
+        {
+          "date": "2026-10-16",
+          "open": 6000.0,
+          "high": 6010.0,
+          "low": 5848.0,
+          "close": 5874.0,
+          "volume": 42.0,
+          "close_oi": 177.0,
+          "contract_epoch_id": "CZCE.SM.202707"
+        }
+      ],
+      "raw_target_fields": {
+        "date": "2026-10-30",
+        "open": 5956.0,
+        "high": 5956.0,
+        "low": 5956.0,
+        "close": 5956.0,
+        "volume": 0.0,
+        "close_oi": 229.0,
+        "duration": 86400
+      },
+      "data_only_conclusion": "Never a main contract in any frozen historical mapping or target30; existing physical data does not imply strategy reachability. Independent code audit must confirm all position-creation paths require mapped main and fresh initial positions are zero."
+    },
+    {
+      "vt_symbol": "SM708.CZCE",
+      "physical_epoch": "CZCE.SM.202708",
+      "mapping_all_history_count": 0,
+      "mapping_all_history_casefold_count": 0,
+      "new_target_main_count": 0,
+      "physical_prior_alias_rows": 37,
+      "physical_prior_current_epoch_rows": 28,
+      "sqlite_prior_alias_rows": 37,
+      "sqlite_first": "2016-09-05 00:00:00",
+      "sqlite_last": "2026-10-16 00:00:00",
+      "latest_prior_positive": [
+        {
+          "date": "2026-10-16",
+          "open": 5920.0,
+          "high": 5920.0,
+          "low": 5858.0,
+          "close": 5858.0,
+          "volume": 9.0,
+          "close_oi": 38.0,
+          "contract_epoch_id": "CZCE.SM.202708"
+        }
+      ],
+      "raw_target_fields": {
+        "date": "2026-10-30",
+        "open": 5972.0,
+        "high": 5972.0,
+        "low": 5972.0,
+        "close": 5972.0,
+        "volume": 0.0,
+        "close_oi": 108.0,
+        "duration": 86400
+      },
+      "data_only_conclusion": "Never a main contract in any frozen historical mapping or target30; existing physical data does not imply strategy reachability. Independent code audit must confirm all position-creation paths require mapped main and fresh initial positions are zero."
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/mapping.csv": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/physical_epoch_daily.csv": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/daily.sqlite": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/admitted_20261030_mapping.csv": "9474723ada54eade4f835872ceccb4515a3c3c10e3316eedbfb8e8d776e5353c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/raw/new_rows.json": "02b92fa8c70dc4cc15e87b0e21b18e90c87be2d9dbd83dd97e97d7801f6e08b7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/raw/contract_coverage.json": "abeffdb1eec17a9a8fe54759b8466514e23349649bfe7f09a0aa00ea23a2a7f1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_data_reachability.py": "856b17502c22f4737e9b2ccffc2800c0eeaeb4602082e2650918957463288f32"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "claim": "No synthetic bar inserted; zero/invalid four are classified and cannot be silently treated as prices. Code reachability proof is separate and required before finance."
+}

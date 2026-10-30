@@ -1,0 +1,265 @@
+{
+  "schema": "stage014_plotter_actual_report_QA_v1",
+  "created_at": "2026-10-31T00:17:22.055813+08:00",
+  "status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "failures": [],
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "reviewer_role": "report_renderer_author_actual_input_visual_static_HTML_QA",
+  "reviewed_artifact_directory": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150",
+  "pending_and_final_visual_QA": true,
+  "scope": {
+    "summary_rows": 59,
+    "daily_rows": 86049,
+    "curves": 59,
+    "mature_windows": 54,
+    "observation_windows": 5,
+    "method": "fresh_engine",
+    "mapping_sha256": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "cutoff": "2026-10-30"
+  },
+  "result_scopes": {
+    "mature": {
+      "windows": 54,
+      "positive_real_pnl": 51,
+      "negative_real_pnl": 3,
+      "reserve_exhausted": 5,
+      "nonpositive_E": 0,
+      "margin_pressure": 37,
+      "undefined_E_sharpe": 0
+    },
+    "observation": {
+      "windows": 5,
+      "positive_real_pnl": 3,
+      "negative_real_pnl": 2,
+      "reserve_exhausted": 0,
+      "nonpositive_E": 0,
+      "margin_pressure": 0,
+      "undefined_E_sharpe": 0
+    }
+  },
+  "mature_loss_windows": [
+    {
+      "start": "2024-06-01",
+      "real_trading_net_pnl": -8560.0,
+      "total_transferred": 31660.0,
+      "account_end_equity": 173100.0,
+      "account_growth_pct": 15.399999999999991
+    },
+    {
+      "start": "2024-09-01",
+      "real_trading_net_pnl": -15120.0,
+      "total_transferred": 65140.0,
+      "account_end_equity": 200020.0,
+      "account_growth_pct": 33.34666666666666
+    },
+    {
+      "start": "2024-11-01",
+      "real_trading_net_pnl": -9420.0,
+      "total_transferred": 59440.0,
+      "account_end_equity": 200020.0,
+      "account_growth_pct": 33.34666666666666
+    }
+  ],
+  "observation_rows": [
+    {
+      "start": "2025-11-01",
+      "actual_start": "2025-11-03",
+      "actual_end": "2026-10-30",
+      "trading_days": 241,
+      "real_trading_net_pnl": 39660.0,
+      "total_transferred": 10360.0,
+      "account_end_equity": 200020.0,
+      "account_growth_pct": 33.34666666666666,
+      "balance_max_dd_pct": -30.904272938058963,
+      "balance_sharpe": 0.8959355820268716,
+      "round_count": 21,
+      "round_payoff_ratio": 1.9140695139156085,
+      "round_profit_factor": 1.4355521354367065
+    },
+    {
+      "start": "2026-01-01",
+      "actual_start": "2026-01-05",
+      "actual_end": "2026-10-30",
+      "trading_days": 198,
+      "real_trading_net_pnl": 22380.0,
+      "total_transferred": 720.0,
+      "account_end_equity": 173100.0,
+      "account_growth_pct": 15.399999999999991,
+      "balance_max_dd_pct": -36.16147793362984,
+      "balance_sharpe": 0.6195342610491572,
+      "round_count": 18,
+      "round_payoff_ratio": 1.5807519508157957,
+      "round_profit_factor": 1.2646015606526366
+    },
+    {
+      "start": "2026-03-01",
+      "actual_start": "2026-03-02",
+      "actual_end": "2026-10-30",
+      "trading_days": 164,
+      "real_trading_net_pnl": -17905.0,
+      "total_transferred": 40020.0,
+      "account_end_equity": 172115.0,
+      "account_growth_pct": 14.74333333333333,
+      "balance_max_dd_pct": -21.631493506493506,
+      "balance_sharpe": 0.6917769359034538,
+      "round_count": 12,
+      "round_payoff_ratio": 1.2384365363780314,
+      "round_profit_factor": 0.6192182681890157
+    },
+    {
+      "start": "2026-06-01",
+      "actual_start": "2026-06-01",
+      "actual_end": "2026-10-30",
+      "trading_days": 103,
+      "real_trading_net_pnl": -50455.0,
+      "total_transferred": 72570.0,
+      "account_end_equity": 172115.0,
+      "account_growth_pct": 14.74333333333333,
+      "balance_max_dd_pct": -26.5,
+      "balance_sharpe": 0.7838896731703896,
+      "round_count": 8,
+      "round_payoff_ratio": 0.7170822171852462,
+      "round_profit_factor": 0.2390274057284154
+    },
+    {
+      "start": "2026-09-01",
+      "actual_start": "2026-09-01",
+      "actual_end": "2026-10-30",
+      "trading_days": 38,
+      "real_trading_net_pnl": 21700.0,
+      "total_transferred": 0.0,
+      "account_end_equity": 171700.0,
+      "account_growth_pct": 14.466666666666672,
+      "balance_max_dd_pct": -22.15270221254987,
+      "balance_sharpe": 1.5899458962091337,
+      "round_count": 3,
+      "round_payoff_ratio": 6.035714285714286,
+      "round_profit_factor": 12.071428571428571
+    }
+  ],
+  "figure_checks": [
+    {
+      "name": "01_full_2015_account_and_funding.png",
+      "width": 2266,
+      "height": 1792,
+      "final_sha256": "9d0fe80a720fc50037ab6954d545f6216e80c87fcaf7bd74d4f3b2f759c7597a",
+      "pending_sha256": "f4156416892513de4a0cc6d12194e67b47b4e3f80a3c4a82d495486830d054fc",
+      "pending_visual_check": "PASS",
+      "final_visual_check": "PASS"
+    },
+    {
+      "name": "02_all_month_cohort_curves.png",
+      "width": 2503,
+      "height": 2057,
+      "final_sha256": "dfc21083220b95c0c29e77d6df39463128583bafcfad6ff5438a9005fc6621f5",
+      "pending_sha256": "c892386c455d329d25716e8441d0b2b724003c6d88a9f60b14e7d99d9d87fda0",
+      "pending_visual_check": "PASS",
+      "final_visual_check": "PASS"
+    },
+    {
+      "name": "03_all_start_year_curves.png",
+      "width": 2507,
+      "height": 1902,
+      "final_sha256": "0bfad3a97bfcff7c0f665c33be6c89623632e202d427d0f328044de13b9d27d2",
+      "pending_sha256": "f3d53d11c3dfb4e17c22cc20627507bf0f463ba7ed9279f7815ccccfcb0b33ff",
+      "pending_visual_check": "PASS",
+      "final_visual_check": "PASS"
+    },
+    {
+      "name": "04_all_window_metric_matrices.png",
+      "width": 2499,
+      "height": 1902,
+      "final_sha256": "68bc7795b9c20f70cf5a838e0a61ff6834312f923b4a02f87f4c8801f500d275",
+      "pending_sha256": "f907fb0634301cd106655e0b11e65f0da35d1571f4320d8aa36bdaec7c4acc99",
+      "pending_visual_check": "PASS",
+      "final_visual_check": "PASS"
+    },
+    {
+      "name": "05_funding_risk_and_cohort_overview.png",
+      "width": 2503,
+      "height": 2104,
+      "final_sha256": "d70d882b81dbc3dbf4455616d153ca7fc79db396544ae4a14e7f77617fe9bd6d",
+      "pending_sha256": "be1ae6f0c47418fb2fa58d6f485ff170c5ecbbae42720b9286f65a39617612a8",
+      "pending_visual_check": "PASS",
+      "final_visual_check": "PASS"
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/summary.csv": "d58e6f70051c0c7688209bc4aa290d3eb9a93cf9380749882639aaab67ab6d4b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/daily.csv": "3ce70d4da1f2cbe38c8cccb59460e759d613c570407f865a5bce8ef873f51ee2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/cohort_summary.csv": "5cdc10e4b58de0a52955f36405906be6301d8e793275a66eeb177a6438d1b3b2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/calendar.json": "623f4bd7fe7196ec8039dd070861b99250fa35e55f7f750093b93255261777fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/data_manifest.json": "6a40bae2dd0327c43f7b2ea16d37ee7b2183410b665be8f34294955b4b53cd76",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/delivery_receipt.json": "f8c1374b0b9c57077133b07a3f4c50e05248c7724225f07c7578937ae9f991eb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/Stage014_原C15万备用_每年五起点完整回测.html": "bbf4e2d04ed3d826d6cee681570a22a160fb7528d654a693dc92e626c6b33704",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/01_full_2015_account_and_funding.png": "9d0fe80a720fc50037ab6954d545f6216e80c87fcaf7bd74d4f3b2f759c7597a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/02_all_month_cohort_curves.png": "dfc21083220b95c0c29e77d6df39463128583bafcfad6ff5438a9005fc6621f5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/03_all_start_year_curves.png": "0bfad3a97bfcff7c0f665c33be6c89623632e202d427d0f328044de13b9d27d2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/04_all_window_metric_matrices.png": "68bc7795b9c20f70cf5a838e0a61ff6834312f923b4a02f87f4c8801f500d275",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/05_funding_risk_and_cohort_overview.png": "d70d882b81dbc3dbf4455616d153ca7fc79db396544ae4a14e7f77617fe9bd6d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/review_pending/01_full_2015_account_and_funding.png": "f4156416892513de4a0cc6d12194e67b47b4e3f80a3c4a82d495486830d054fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/review_pending/02_all_month_cohort_curves.png": "c892386c455d329d25716e8441d0b2b724003c6d88a9f60b14e7d99d9d87fda0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/review_pending/03_all_start_year_curves.png": "f3d53d11c3dfb4e17c22cc20627507bf0f463ba7ed9279f7815ccccfcb0b33ff",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/review_pending/04_all_window_metric_matrices.png": "f907fb0634301cd106655e0b11e65f0da35d1571f4320d8aa36bdaec7c4acc99",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage014_five_starts_R150/review_pending/05_funding_risk_and_cohort_overview.png": "be1ae6f0c47418fb2fa58d6f485ff170c5ecbbae42720b9286f65a39617612a8",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_report.py": "a79dad6a4056151948fd6b6c6f283440665831a2c3f95119c6b2d916cca19cbf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_plots.py": "b6a1a1e217eb279bbcef9dc46dd4f8a49d8a8576d55974750ccc22a7b3957140",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_report.py": "6a08a880aa9f31b823b3bee2f41243a003a6e7c9480c19c31e5b6fc3875d0581",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_plots.py": "12a9ea0dea081e3654a36d0e0ea97bf6a3602fac245a877c0081104033c0bb7c"
+  },
+  "html_checks": {
+    "images": 5,
+    "data_rows": 59,
+    "filter_options": 60,
+    "rows_match_csv": true,
+    "embedded_images": [
+      {
+        "name": "01_full_2015_account_and_funding.png",
+        "embedded_sha256": "9d0fe80a720fc50037ab6954d545f6216e80c87fcaf7bd74d4f3b2f759c7597a",
+        "matches_final_png": true
+      },
+      {
+        "name": "02_all_month_cohort_curves.png",
+        "embedded_sha256": "dfc21083220b95c0c29e77d6df39463128583bafcfad6ff5438a9005fc6621f5",
+        "matches_final_png": true
+      },
+      {
+        "name": "03_all_start_year_curves.png",
+        "embedded_sha256": "0bfad3a97bfcff7c0f665c33be6c89623632e202d427d0f328044de13b9d27d2",
+        "matches_final_png": true
+      },
+      {
+        "name": "04_all_window_metric_matrices.png",
+        "embedded_sha256": "68bc7795b9c20f70cf5a838e0a61ff6834312f923b4a02f87f4c8801f500d275",
+        "matches_final_png": true
+      },
+      {
+        "name": "05_funding_risk_and_cohort_overview.png",
+        "embedded_sha256": "d70d882b81dbc3dbf4455616d153ca7fc79db396544ae4a14e7f77617fe9bd6d",
+        "matches_final_png": true
+      }
+    ],
+    "active_external_resources": [],
+    "browser_interaction_verified": false
+  },
+  "pending_to_reviewed_pixel_bridge": "delegated_to_independent_reviewer_not_claimed_by_this_QA",
+  "findings_zh": [
+    "真实59 summary、86049 daily、59曲线通过validate_inputs，完整内部日期序列绑定冻结mapping SHA；唯一版本C_R150，59 fresh、54成熟、5观察。",
+    "Pending和最终reviewed五张PNG均逐张目视；标题、图例、坐标、矩阵注释/色条、表格与页脚完整，无实质截断。最终状态为INDEPENDENT REVIEWED WITH LIMITATIONS / NO_PROMOTION。",
+    "图1全2015净值/DD/累计入金及场外R；图2五个月组含12+12+12+12+11=59曲线，图3十二年份含11×5+4=59曲线；未抽选。图4全12×5网格，2026Nov灰色FUTURE，五观察带星号，金额注释与色条均CNY k。",
+    "图5与实际表一致：成熟54窗51正3负，5备用耗尽、37保证金压力、0非正E；观察5窗3正2负、0耗尽/压力/非正E。账户E Sharpe实际全部可定义。",
+    "账户NAV=E/150000从1开始，已补入计入E，未转入R排除；资金流与真实PnL分列。观察2026June真实PnL=-50455，但T=72570使E=172115、含入金增长14.7433%，图表未把该增长冒作策略盈利。",
+    "最终HTML含5内嵌PNG且SHA逐一匹配最终已检图、59数据行和60筛选项；59行的版本方法/成熟度/E/PnL/T/R/Sharpe逐一匹配CSV。无主动外部资源或网络API；未用HTTP、浏览器或file://绕过，交互未验收。",
+    "最终delivery receipt状态PASS_WITH_LIMITATIONS，图像/报告hash和data_manifest全部即时校验相符。只新增本JSON与中文QA记录，未改源码/数据/图片，未金融/回归。"
+  ],
+  "limitations_zh": [
+    "该QA由报告/renderer作者完成，只覆盖实际投影、呈现、静态HTML及文件绑定，不替代另一agent的numeric/run/full-prefix独立审核。",
+    "Pending→reviewed图体仅标题变化的逐像素证明由独立reviewer负责；本记录已分别目视两套五图并绑定各自SHA，不自行宣称完成像素证明。",
+    "同历史反复观察与起点重叠仍有过拟合/选择偏差；固定59起点反证有继续记录价值，但不是独立OOS。零手续费、PIT/生命周期、静态保证金、next-open/容量限制继承，NO_PROMOTION。"
+  ],
+  "promotion_decision": "NO_PROMOTION",
+  "stage_record": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_0017_stage014_actual_report_QA.md"
+}

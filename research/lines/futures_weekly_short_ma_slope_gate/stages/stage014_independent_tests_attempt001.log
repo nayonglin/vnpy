@@ -1,0 +1,17 @@
+...E..
+======================================================================
+ERROR: test_original_parameters_allow_only_new_mapping_and_March_start (__main__.IndependentAuditTests.test_original_parameters_allow_only_new_mapping_and_March_start)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_tests.py", line 18, in test_original_parameters_allow_only_new_mapping_and_March_start
+    self.assertTrue(a.parameter_audit(p,'2015-03-01',data)['all_effective_parameters_unchanged_except_declared_start_and_mapping'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_window.py", line 46, in parameter_audit
+    ok(copy==old,'all_other_actual_fields_exact_original_C');copy=deepcopy(e);over=copy['spec']['overrides'];before=oe['spec']['overrides'];edelta={k for k in set(over)|set(before) if over.get(k)!=before.get(k)};ok(edelta<={'mapping_csv_path','trade_start_date'},'only_authorized_effective_delta');ok(over['trade_start_date']==start and over['mapping_csv_path']==str(data/'mapping.csv'),'effective_actual_start_mapping');over['trade_start_date']=before['trade_start_date'];over['mapping_csv_path']=before['mapping_csv_path'];ok(copy==oe,'all_remaining_effective_config_exact')
+                                                                                                                                                                                                                                                                                                                                                                                                                                                              ~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'trade_start_date'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.180s
+
+FAILED (errors=1)

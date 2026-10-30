@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_data.py", line 84, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_data.py", line 57, in main
+    recent=set(old.loc[old.date.eq(OLD),'vt_symbol']);required=set(newmap.main_contract_vt)|set(selection['frozen_held'])|set(selection['frozen_pending']);ok(wanted==active|recent|required and len(wanted)==189,'all_active_epochs_tails_and_required_union_not_only23_positions');ok(set(selection['active_epoch_symbols'])==active,'independent_lifecycle_selection')
+                                                                                                                                                                                                                                                                                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'active_epoch_symbols'

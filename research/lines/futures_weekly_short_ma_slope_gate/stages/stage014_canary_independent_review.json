@@ -1,0 +1,23 @@
+{
+  "schema": "stage014_independent_canary_prefix_v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "canary_start": "2015-01-01",
+  "freeze_sha256": "ef706f779c5a48b760dbbfa3272f1c88a19719bfaca336afcd45e01d6d74317f",
+  "source_head": "688754057ba1dc07caa9edc537ceec486f678372",
+  "checkpoints_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_multistart/checkpoints/2015-01-01_C.json": "40fd738c5933d35c3a193ab474a3330f9e372a69a4289f41bd08cbc34ddff602"
+  },
+  "receipts_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_independent_receipts/2015-01-01_C.json": "8826d91239219a97334754adf292e5e3c58ca3feb5e0e4661bc6cace5ba2aff3"
+  },
+  "scope": "2015Jan fresh10/30 independently accepted; full economic prefix through29 identical to frozen old C; remaining58 fixed fresh runs may proceed",
+  "prefix_through_2026_10_29_unchanged": true,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION"
+}

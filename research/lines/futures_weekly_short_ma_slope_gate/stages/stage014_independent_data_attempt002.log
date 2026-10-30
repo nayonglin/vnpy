@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_data.py", line 90, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_data.py", line 69, in main
+    lookup={(r.vt_symbol,r.date):r.contract_epoch_id for r in physical.itertuples()};financialmap=mapping.loc[mapping.date.ge('2015-01-01')&mapping.main_contract_vt.ne('')];missing=[(r.main_contract_vt,r.date) for r in financialmap.itertuples() if (r.main_contract_vt,r.date)not in lookup];ok(not missing,'every_financial_main_key_has_real_bar')
+                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_independent_data.py", line 13, in ok
+    if not value:raise AssertionError(label)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: every_financial_main_key_has_real_bar

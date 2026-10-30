@@ -1,0 +1,9 @@
+test_duplicate_real_daily_date_is_rejected (test_stage014_data_prepare.DataBoundaryTests.test_duplicate_real_daily_date_is_rejected) ... ok
+test_forming_next_trading_day_never_admitted (test_stage014_data_prepare.DataBoundaryTests.test_forming_next_trading_day_never_admitted) ... ok
+test_lifecycle_candidate_includes_unheld_existing_active_epoch (test_stage014_data_prepare.DataBoundaryTests.test_lifecycle_candidate_includes_unheld_existing_active_epoch) ... ok
+test_unknown_past_month_does_not_invent_exact_expiry (test_stage014_data_prepare.DataBoundaryTests.test_unknown_past_month_does_not_invent_exact_expiry) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.029s
+
+OK

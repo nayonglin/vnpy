@@ -1,0 +1,41 @@
+test_duplicate_real_daily_date_is_rejected (test_stage014_data_prepare.DataBoundaryTests.test_duplicate_real_daily_date_is_rejected) ... FAIL
+test_forming_next_trading_day_never_admitted (test_stage014_data_prepare.DataBoundaryTests.test_forming_next_trading_day_never_admitted) ... FAIL
+test_lifecycle_candidate_includes_unheld_existing_active_epoch (test_stage014_data_prepare.DataBoundaryTests.test_lifecycle_candidate_includes_unheld_existing_active_epoch) ... FAIL
+test_unknown_past_month_does_not_invent_exact_expiry (test_stage014_data_prepare.DataBoundaryTests.test_unknown_past_month_does_not_invent_exact_expiry) ... FAIL
+
+======================================================================
+FAIL: test_duplicate_real_daily_date_is_rejected (test_stage014_data_prepare.DataBoundaryTests.test_duplicate_real_daily_date_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_data_prepare.py", line 13, in test_duplicate_real_daily_date_is_rejected
+    self.assertTrue(hasattr(m,'split_serial'),'completed day splitter missing')
+AssertionError: False is not true : completed day splitter missing
+
+======================================================================
+FAIL: test_forming_next_trading_day_never_admitted (test_stage014_data_prepare.DataBoundaryTests.test_forming_next_trading_day_never_admitted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_data_prepare.py", line 7, in test_forming_next_trading_day_never_admitted
+    self.assertTrue(hasattr(m,'split_serial'),'completed day splitter missing')
+AssertionError: False is not true : completed day splitter missing
+
+======================================================================
+FAIL: test_lifecycle_candidate_includes_unheld_existing_active_epoch (test_stage014_data_prepare.DataBoundaryTests.test_lifecycle_candidate_includes_unheld_existing_active_epoch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_data_prepare.py", line 18, in test_lifecycle_candidate_includes_unheld_existing_active_epoch
+    self.assertTrue(hasattr(m,'select_epoch_candidates'),'epoch selector missing')
+AssertionError: False is not true : epoch selector missing
+
+======================================================================
+FAIL: test_unknown_past_month_does_not_invent_exact_expiry (test_stage014_data_prepare.DataBoundaryTests.test_unknown_past_month_does_not_invent_exact_expiry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage014_data_prepare.py", line 25, in test_unknown_past_month_does_not_invent_exact_expiry
+    self.assertTrue(hasattr(m,'select_epoch_candidates'),'epoch selector missing')
+AssertionError: False is not true : epoch selector missing
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=4)
