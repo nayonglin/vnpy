@@ -1,0 +1,14 @@
+F...
+======================================================================
+FAIL: test_axis_signature_detects_bar_height_change (test_stage008_reviewed_visual.ReviewedVisualTests.test_axis_signature_detects_bar_height_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_reviewed_visual.py", line 18, in test_axis_signature_detects_bar_height_change
+    self.assertNotEqual(visual._artist_signature(a),visual._artist_signature(b));plt.close(a);plt.close(b)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '[{"images": [], "lines": [], "patches": [{"edge": [0.0, 0.0, 0.0, 0.0], "face": [0.12156862745098039, 0.4666666666666667, 0.7058823529411765, 1.0], "type": "Rectangle", "vertices": {"dtype": "float64", "mask": [[false, false], [false, false], [false, false], [false, false], [false, false]], "shape": [5, 2], "values": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]]}, "width": 1.0}], "position": [0.125, 0.10999999999999999, 0.775, 0.77], "tables": [], "texts": [], "title": "", "xlabel": "", "xlim": [-0.44000000000000006, 0.44000000000000006], "xscale": "linear", "ylabel": "", "ylim": [0.0, 3.0], "yscale": "linear"}]' == '[{"images": [], "lines": [], "patches": [{"edge": [0.0, 0.0, 0.0, 0.0], "face": [0.12156862745098039, 0.4666666666666667, 0.7058823529411765, 1.0], "type": "Rectangle", "vertices": {"dtype": "float64", "mask": [[false, false], [false, false], [false, false], [false, false], [false, false]], "shape": [5, 2], "values": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]]}, "width": 1.0}], "position": [0.125, 0.10999999999999999, 0.775, 0.77], "tables": [], "texts": [], "title": "", "xlabel": "", "xlim": [-0.44000000000000006, 0.44000000000000006], "xscale": "linear", "ylabel": "", "ylim": [0.0, 3.0], "yscale": "linear"}]'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.255s
+
+FAILED (failures=1)

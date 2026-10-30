@@ -1,0 +1,131 @@
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 6, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2016-06-01", "arm": "A", "checks": 331875, "end_equity": 351720.00000000006, "sharpe": 0.41742929611261004, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2016-06-01_A.json", "receipt_sha256": "ea8e4c7a14e56ad98f264b8cb164497e1033dc4f0513b185316aee87b289a821"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 7, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2016-01-01", "arm": "A", "checks": 350685, "end_equity": 968939.9999999999, "sharpe": 0.6473072191775429, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2016-01-01_A.json", "receipt_sha256": "c70b2c1f7712d0a78f01d9f137291ff65154efe9a88f60a621a81742dc5e69fa"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2016-01-01", "arm": "C", "checks": 345438, "end_equity": 3730424.999999999, "sharpe": 0.9406557125170272, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2016-01-01_C.json", "receipt_sha256": "6a58441fc5ecc0d9f4c35da9180ce7aafccfcc14963abe15cfebb5a54ef8a98d"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 9, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2016-06-01", "arm": "C", "checks": 324817, "end_equity": 189589.99999999997, "sharpe": 0.25928165207637127, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2016-06-01_C.json", "receipt_sha256": "b4fe9cfeb1ce471fa826bb06632eb0fe2f557212d4d77c88ecee0f9635735a03"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 10, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2017-01-01", "arm": "A", "checks": 329996, "end_equity": 1351195.0, "sharpe": 0.7655518600220328, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2017-01-01_A.json", "receipt_sha256": "eb8156e2b8060beff1ce00cd967891767b1255bf13cc6c9ead79b297e45419e7"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2017-01-01", "arm": "C", "checks": 317009, "end_equity": 588825.0000000002, "sharpe": 0.5649709709552962, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2017-01-01_C.json", "receipt_sha256": "350c156c60a9d6a2a06712aaf5772e9ed52d1759ca6976ec80e6d25a2e9ec8b0"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 12, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2017-06-01", "arm": "A", "checks": 313948, "end_equity": 358829.9999999999, "sharpe": 0.4436729283096225, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2017-06-01_A.json", "receipt_sha256": "5baf03d874433ddf221fea30e25aa74e433a5cdd61cddacf5e6c4d01267a5713"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2017-06-01", "arm": "C", "checks": 304771, "end_equity": 190169.99999999997, "sharpe": 0.2679658653232338, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2017-06-01_C.json", "receipt_sha256": "8e589129677de8144055b5901f5681c0e918e4bd3a45ea35f1a1f3a625624f23"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2018-01-01", "arm": "A", "checks": 300702, "end_equity": 397935.0, "sharpe": 0.49374219625084037, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2018-01-01_A.json", "receipt_sha256": "af1c0a4486422d87fd0407f5f2226cd654d80b516263328bce20b027fab9f80c"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 15, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2018-01-01", "arm": "C", "checks": 290782, "end_equity": 223520.00000000006, "sharpe": 0.3175423864838857, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2018-01-01_C.json", "receipt_sha256": "782133d25f89e279b3f39a379a0af7c5b1e3cfc83ae2bd03dda6d95f3b027ede"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2018-06-01", "arm": "A", "checks": 299241, "end_equity": 1351185.0000000005, "sharpe": 0.8415977996155987, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2018-06-01_A.json", "receipt_sha256": "d45a4357c771af1018abb83ca963a31e2b33fe5df5f0b2242d4bd26fff05612b"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2018-06-01", "arm": "C", "checks": 287741, "end_equity": 589025.0000000002, "sharpe": 0.6177597182506127, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2018-06-01_C.json", "receipt_sha256": "0383140ac452dcb9d27c98a400eb0029d3a2298f6e0f7b3a45b5f467ea4140ee"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 18, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2019-01-01", "arm": "A", "checks": 286772, "end_equity": 1220470.0, "sharpe": 0.8554915592880246, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2019-01-01_A.json", "receipt_sha256": "64ae9930e8c2c4d7ac7104c4ef011c62b6ddea40227cf7f58cc64f2129b1d9eb"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2019-01-01", "arm": "C", "checks": 278906, "end_equity": 916685.0, "sharpe": 0.7690872211083678, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2019-01-01_C.json", "receipt_sha256": "cc57b0d83ce283ff58ba5ed1c520a524212049a21e60555dfb17b4639eccbbdb"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 20, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2019-06-01", "arm": "A", "checks": 280051, "end_equity": 1351275.0, "sharpe": 0.9067917222652031, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2019-06-01_A.json", "receipt_sha256": "67e0a7727adedc4117c0857bca6061afdbc78e6ea0126cec5aa380d1f2c46a80"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 21, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2019-06-01", "arm": "C", "checks": 271550, "end_equity": 1677169.999999999, "sharpe": 0.9811292484727373, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2019-06-01_C.json", "receipt_sha256": "1a92e10d756583c51060a70a731cdb7ed974cc36e3bda430d3a07b0b43197c1e"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2020-06-01", "arm": "A", "checks": 252007, "end_equity": 2768045.000000001, "sharpe": 1.2639184782394874, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2020-06-01_A.json", "receipt_sha256": "153ead73fc2d55d718c46864ca60963e812dee438f7abad25efa39715229e942"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2020-06-01", "arm": "C", "checks": 247256, "end_equity": 3023254.999999998, "sharpe": 1.2875543482312248, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2020-06-01_C.json", "receipt_sha256": "8ec2d8ce20785f62cf46e790aa8073e1b5bb3a278e65d1750dbb156336968318"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 24, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2021-01-01", "arm": "A", "checks": 232301, "end_equity": 776660.0, "sharpe": 0.90602183927144, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2021-01-01_A.json", "receipt_sha256": "d2bc7fb724696ca7646e70e6d397e30161b84a0d8fd781fab98f175671bd5ddd"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2021-01-01", "arm": "C", "checks": 227977, "end_equity": 730040.0000000002, "sharpe": 0.855824279590452, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2021-01-01_C.json", "receipt_sha256": "557d071e05dcfba20254a5def7e0a7c193060ac5daee1d513ec50a583fc30267"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2021-06-01", "arm": "A", "checks": 223770, "end_equity": 1253750.0000000002, "sharpe": 1.1647929308614526, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2021-06-01_A.json", "receipt_sha256": "bd89f3a97ac6f33fe4947e5a42b190b6b5ed39dd60fb5b66c1cdffe41f4aac8f"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 27, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2021-06-01", "arm": "C", "checks": 214749, "end_equity": 587350.0, "sharpe": 0.8210236585150786, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2021-06-01_C.json", "receipt_sha256": "f602cbb50e702fc0268a4b495a60cba216d56506c7ae95931329e2af76480b89"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2022-01-01", "arm": "A", "checks": 200908, "end_equity": 371275.00000000006, "sharpe": 0.6626473401648736, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2022-01-01_A.json", "receipt_sha256": "9cf186681e5aa1d21ac964a16f353c100d753e4da49178bbb3c2a17ef06320e9"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2022-01-01", "arm": "C", "checks": 200540, "end_equity": 664720.0000000002, "sharpe": 0.9749327211775923, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2022-01-01_C.json", "receipt_sha256": "3b528cd81d99b9fcd866086d5af30ac86a0362e42c476a19ec796e67d02a35c7"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 30, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 30, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 30, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 30, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 30, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2022-06-01", "arm": "A", "checks": 193826, "end_equity": 771905.0000000002, "sharpe": 1.1058452602851725, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2022-06-01_A.json", "receipt_sha256": "33067119d46f572b5e9ef25e45d073e97fe89d69f0c6d18f14c24c51902ea4f5"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2022-06-01", "arm": "C", "checks": 187516, "end_equity": 829635.0, "sharpe": 1.116042924610012, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2022-06-01_C.json", "receipt_sha256": "02f1a55d03e51f0eac62265186528363dc935dbe3bbb0dadaf135b5cf52e9e5c"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2023-01-01", "arm": "A", "checks": 176439, "end_equity": 1049885.0000000002, "sharpe": 1.4040328697355713, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2023-01-01_A.json", "receipt_sha256": "1f1c84bd56c56ebad627732637922a893a88795584b20b6996be669eef0084c2"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 33, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 33, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 33, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 33, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2023-01-01", "arm": "C", "checks": 171868, "end_equity": 619080.0000000001, "sharpe": 1.0703466944139646, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2023-01-01_C.json", "receipt_sha256": "81dd036cf4a39b8142c08b7c752ac44b27de6cbf2a2eca39ce0de41833aaa8eb"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2023-06-01", "arm": "A", "checks": 161421, "end_equity": 719050.0000000001, "sharpe": 1.3193332855638868, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2023-06-01_A.json", "receipt_sha256": "e96139b2f06e1208236a5df8fe23d82d7dd7e2bcf4ec8039e1d6ae5d11b208fe"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 35, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2023-06-01", "arm": "C", "checks": 160664, "end_equity": 833205.0000000005, "sharpe": 1.3894740427376149, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2023-06-01_C.json", "receipt_sha256": "e557f095f8385a4ca84e9fe6ad23d27f680738953226a5a7dd0595165fef7d59"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 36, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 36, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 36, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 36, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2024-01-01", "arm": "A", "checks": 143191, "end_equity": 714415.0, "sharpe": 1.4019846789376746, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2024-01-01_A.json", "receipt_sha256": "92671412a64689a8a93c5772492f54bcb204c518d99736f7baa5a654da1347d6"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2024-01-01", "arm": "C", "checks": 137199, "end_equity": 192760.0, "sharpe": 0.43209263227422984, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2024-01-01_C.json", "receipt_sha256": "df690f7f9ddc3dbdccd79025dcf2341bedfa33b16427595a7823c385dce01a82"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2024-06-01", "arm": "A", "checks": 125909, "end_equity": 260330.0, "sharpe": 0.7705549095153352, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2024-06-01_A.json", "receipt_sha256": "a4bd63480e1fc5f9f144725630297443c9da0e9d091a832c09f5d1d7aa23ca94"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 39, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 39, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 39, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2024-06-01", "arm": "C", "checks": 122161, "end_equity": 157965.0, "sharpe": 0.2567833831442163, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2024-06-01_C.json", "receipt_sha256": "5cb79ea1f3d31ce2439079226071f97ce7df1caf2550bc004e5c31c3809e550b"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2025-01-01", "arm": "A", "checks": 104233, "end_equity": 180635.0, "sharpe": 0.46336150811889654, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2025-01-01_A.json", "receipt_sha256": "ae8b24e95b440edb12fd3d23e4c82903d6ad91e898c999b79e2830dd9014821a"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2025-01-01", "arm": "C", "checks": 100896, "end_equity": 118495.0, "sharpe": -0.12256687912652925, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2025-01-01_C.json", "receipt_sha256": "29dc21dedaae2527f8cb23d5c854dadf7357481454cc05b168390168c89078c5"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 42, "planned": 46}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 42, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2025-06-01", "arm": "A", "checks": 87703, "end_equity": 186380.0, "sharpe": 0.5900734698836307, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2025-06-01_A.json", "receipt_sha256": "8461599fd9aad49c18b66c04a041b77470ff0dae57604c84a3703714201ed081"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2025-06-01", "arm": "C", "checks": 85366, "end_equity": 109480.0, "sharpe": -0.29410485408716713, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2025-06-01_C.json", "receipt_sha256": "14f7eea8904783d7515293fe0f113119aa0f3038211d723f086f1234882c6419"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2026-01-01", "arm": "A", "checks": 65314, "end_equity": 366760.0, "sharpe": 2.7869425038584166, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2026-01-01_A.json", "receipt_sha256": "f8f3fc79682ea6ddc5cc1eaef1073e7a3d32e5ed445068fd932efcc56693c10c"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 45, "planned": 46}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2026-01-01", "arm": "C", "checks": 62679, "end_equity": 172380.0, "sharpe": 0.6099893664300162, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2026-01-01_C.json", "receipt_sha256": "832b1f0653c366746cce6b51f2e43dd953494639184c2820054c8fdf6c194753"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "all", "complete": 46, "planned": 46}

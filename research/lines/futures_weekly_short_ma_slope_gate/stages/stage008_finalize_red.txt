@@ -1,0 +1,18 @@
+E
+======================================================================
+ERROR: test_stage008_finalize (unittest.loader._FailedTest.test_stage008_finalize)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stage008_finalize
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_finalize.py", line 6, in <module>
+    from stage008_finalize import STARTS,FIGURES,SourceBook,require_inventory,require_final_review,require_visual,require_report_rows,render_window,atomic_publish
+ModuleNotFoundError: No module named 'stage008_finalize'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

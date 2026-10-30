@@ -1,0 +1,14 @@
+....E
+======================================================================
+ERROR: test_review_binds_exact_report_freeze_and_scope (test_stage008_reviewed_visual.ReviewedVisualTests.test_review_binds_exact_report_freeze_and_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_reviewed_visual.py", line 19, in test_review_binds_exact_report_freeze_and_scope
+    self.assertTrue(visual.validate_review_binding(verdict,doc,'a'*64))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'stage008_reviewed_visual' has no attribute 'validate_review_binding'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.301s
+
+FAILED (errors=1)

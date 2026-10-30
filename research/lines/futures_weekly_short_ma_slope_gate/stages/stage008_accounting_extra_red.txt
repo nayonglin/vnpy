@@ -1,0 +1,23 @@
+..E...E.
+======================================================================
+ERROR: test_checkpoint_float_roundtrip_tolerance_rejects_material_drift (test_stage008_accounting.AccountingTests.test_checkpoint_float_roundtrip_tolerance_rejects_material_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_accounting.py", line 24, in test_checkpoint_float_roundtrip_tolerance_rejects_material_drift
+    m=subject();a=dict(end_equity=1000000.,total_return_pct=566.6666666667,max_dd_pct=-30.,sharpe=1.1,total_slippage=100.,modeled_fill_count=20);b={**a,'total_trade_count':20};b['end_equity']+=1e-8;m.check_registered_metrics(a,b);b['end_equity']+=1.
+                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'a' has no attribute 'check_registered_metrics'
+
+======================================================================
+ERROR: test_new_runs_cannot_hide_a_long_price_gate (test_stage008_accounting.AccountingTests.test_new_runs_cannot_hide_a_long_price_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_accounting.py", line 27, in test_new_runs_cannot_hide_a_long_price_gate
+    m=subject();m.validate_disabled_long({'long_price_range_acceptance.json':dict(enabled=False,decision_count=0,applied_block_count=0)},True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'a' has no attribute 'validate_disabled_long'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.131s
+
+FAILED (errors=2)

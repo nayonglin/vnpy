@@ -1,0 +1,18 @@
+# Stage008 固定23独立起点至同截止：多起点报告
+
+结论：MIXED_OR_FAIL_NO_RESCUE_TUNING / NO_PROMOTION。
+
+用户范围为2015—2025各1/1、6/1及2026-1/1到2026-10-29，不是固定1/2/3年窗口。46臂窗全部验收后原子发布，4复用/42新引擎；每臂150000空仓独立起跑。
+
+January11完整+1观察，June11完整，combined22完整投票；2026Jan不足1年只展示不投票。权益严格更高、DD不更差、Sharpe不更低三门；窗口长度不同，不把总收益均值当预期收益。
+
+cohort,sample,windows,vote_windows,observation_windows,return_wins,return_ties,return_losses,dd_wins,sharpe_wins,three_gate_pass_count,return_wins_rate_pct,dd_wins_rate_pct,sharpe_wins_rate_pct,three_gate_pass_count_rate_pct,A_negative_return_count,A_positive_return_count,A_flat_return_count,A_survival_failure_count,A_configured_margin_failure_count,A_configured_margin_unknown_count,A_median_dd_pct,A_worst_dd_pct,A_median_sharpe,A_worst_sharpe,A_minimum_total_return_pct,C_negative_return_count,C_positive_return_count,C_flat_return_count,C_survival_failure_count,C_configured_margin_failure_count,C_configured_margin_unknown_count,C_median_dd_pct,C_worst_dd_pct,C_median_sharpe,C_worst_sharpe,C_minimum_total_return_pct
+January,complete_ge_1y,11,11,0,3,0,8,6,3,3,27.27272727272727,54.54545454545454,27.27272727272727,27.27272727272727,0,11,0,0,10,0,-55.04291739512648,-66.41977740569291,0.8554915592880239,0.4633615081188963,20.423333333333325,1,10,0,0,7,0,-53.107122522571416,-71.40940380352352,0.855824279590452,-0.12256687912652846,-21.00333333333333
+January,observation_lt_1y,1,0,1,0,0,0,0,0,0,,,,,0,1,0,0,0,0,-31.2413059487767,-31.2413059487767,2.7869425038584157,2.7869425038584157,144.50666666666666,0,1,0,0,0,0,-36.16147793362984,-36.16147793362984,0.6099893664300196,0.6099893664300196,14.92
+June,complete_ge_1y,11,11,0,4,0,7,3,4,2,36.36363636363637,27.27272727272727,36.36363636363637,18.181818181818183,0,11,0,0,9,0,-48.36186419854206,-71.56864996440629,0.9067917222652027,0.4174292961126097,24.253333333333327,1,10,0,0,7,0,-51.10663983903421,-76.86907859211624,0.8210236585150796,-0.29410485408716563,-27.013333333333335
+June,observation_lt_1y,0,0,0,0,0,0,0,0,0,,,,,0,0,0,0,0,0,,,,,,0,0,0,0,0,0,,,,,
+combined,complete_ge_1y,22,22,0,7,0,15,9,7,5,31.818181818181817,40.909090909090914,31.818181818181817,22.727272727272727,0,22,0,0,19,0,-52.43252891536869,-71.56864996440629,0.8727910178959344,0.4174292961126097,20.423333333333325,2,20,0,0,14,0,-52.106881180802816,-76.86907859211624,0.8384239690527658,-0.29410485408716563,-27.013333333333335
+combined,observation_lt_1y,1,0,1,0,0,0,0,0,0,,,,,0,1,0,0,0,0,-31.2413059487767,-31.2413059487767,2.7869425038584157,2.7869425038584157,144.50666666666666,0,1,0,0,0,0,-36.16147793362984,-36.16147793362984,0.6099893664300196,0.6099893664300196,14.92
+
+
+逐窗summary/paired、年度annual、最弱窗weakest和五图在同目录。0报告金融回放/0下载/0生产，原始账本与配置未改。独审状态PENDING，财务派生成功不等于策略晋级。

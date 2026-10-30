@@ -1,0 +1,3 @@
+PASS: actual incomplete registry rejected before final output creation.
+Reason: all46_registry_jobs_must_be_validated
+Financial replays=0, market downloads=0.

@@ -1,0 +1,5 @@
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "canary", "complete": 0, "planned": 2}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "canary", "complete": 0, "planned": 2}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2015-06-01", "arm": "A", "checks": 365288, "end_equity": 3992084.999999999, "sharpe": 0.9280491951284572, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2015-06-01_A.json", "receipt_sha256": "8648c476adbaf2b3e62193737c49debed5d60ac93364550513be741f4d8be9ca"}
+{"event": "INDEPENDENT_AUDIT_PASS", "start": "2015-06-01", "arm": "C", "checks": 356159, "end_equity": 3730324.999999999, "sharpe": 0.9120091280833363, "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_receipts/2015-06-01_C.json", "receipt_sha256": "75f9bc7bf7504c408b2f8fdd5a9529ca6752ebe1d15f910366ebe006ff29fc4b"}
+{"event": "INDEPENDENT_STREAM_PROGRESS", "phase": "canary", "complete": 2, "planned": 2}

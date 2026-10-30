@@ -1,0 +1,5 @@
+{"event": "started", "key": "2015-06-01|A", "counts": {"pending": 41, "running": 1, "validated": 4, "failed": 0, "total": 46}}
+{"event": "started", "key": "2015-06-01|C", "counts": {"pending": 40, "running": 2, "validated": 4, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2015-06-01|C", "counts": {"pending": 40, "running": 1, "validated": 5, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2015-06-01|A", "counts": {"pending": 40, "running": 0, "validated": 6, "failed": 0, "total": 46}, "error": null}
+{"mode": "canary", "counts": {"pending": 40, "running": 0, "validated": 6, "failed": 0, "total": 46}, "financial_engine_batch_complete": false, "registry": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage008_multistart/registry.json"}

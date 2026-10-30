@@ -1,0 +1,197 @@
+Deriving actual financial ledger 2015-01-01|A
+Derived 2015-01-01|A equity=3661109.999999998
+Deriving actual financial ledger 2015-01-01|C
+Derived 2015-01-01|C equity=3180474.9999999963
+Deriving actual financial ledger 2020-01-01|A
+Derived 2020-01-01|A equity=1304010.0000000005
+Deriving actual financial ledger 2020-01-01|C
+Derived 2020-01-01|C equity=2435919.9999999986
+{"derived_cache_count": 4, "expected": 46, "newly_derived": 4, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2015-06-01|A
+Derived 2015-06-01|A equity=3992084.9999999986
+Deriving actual financial ledger 2015-06-01|C
+Derived 2015-06-01|C equity=3730324.999999999
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 6, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2016-06-01|A
+Derived 2016-06-01|A equity=351719.9999999999
+{"derived_cache_count": 7, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2016-01-01|A
+Derived 2016-01-01|A equity=968940.0000000002
+Deriving actual financial ledger 2016-01-01|C
+Derived 2016-01-01|C equity=3730425.0
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 9, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2016-06-01|C
+Derived 2016-06-01|C equity=189590.0
+Deriving actual financial ledger 2017-01-01|C
+Derived 2017-01-01|C equity=588824.9999999998
+{"derived_cache_count": 11, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2017-01-01|A
+Derived 2017-01-01|A equity=1351195.0000000002
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 12, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2017-06-01|A
+Derived 2017-06-01|A equity=358830.0
+Deriving actual financial ledger 2017-06-01|C
+Derived 2017-06-01|C equity=190170.0
+Deriving actual financial ledger 2018-01-01|A
+Derived 2018-01-01|A equity=397934.99999999994
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 15, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2018-01-01|C
+Derived 2018-01-01|C equity=223519.9999999999
+Deriving actual financial ledger 2018-06-01|A
+Derived 2018-06-01|A equity=1351185.0000000002
+Deriving actual financial ledger 2018-06-01|C
+Derived 2018-06-01|C equity=589024.9999999999
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 18, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2019-01-01|A
+Derived 2019-01-01|A equity=1220470.0000000002
+Deriving actual financial ledger 2019-01-01|C
+Derived 2019-01-01|C equity=916685.0000000002
+Deriving actual financial ledger 2019-06-01|A
+Derived 2019-06-01|A equity=1351275.0000000002
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 21, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2019-06-01|C
+Derived 2019-06-01|C equity=1677169.999999999
+Deriving actual financial ledger 2020-06-01|A
+Derived 2020-06-01|A equity=2768045.000000001
+Deriving actual financial ledger 2020-06-01|C
+Derived 2020-06-01|C equity=3023254.999999998
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 24, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2021-01-01|A
+Derived 2021-01-01|A equity=776660.0
+Deriving actual financial ledger 2021-01-01|C
+Derived 2021-01-01|C equity=730039.9999999998
+Deriving actual financial ledger 2021-06-01|A
+Derived 2021-06-01|A equity=1253750.0
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 27, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2022-01-01|C
+Derived 2022-01-01|C equity=664719.9999999999
+{"derived_cache_count": 28, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2021-06-01|C
+Derived 2021-06-01|C equity=587349.9999999999
+Deriving actual financial ledger 2022-01-01|A
+Derived 2022-01-01|A equity=371275.0
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 30, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2022-06-01|A
+Derived 2022-06-01|A equity=771905.0000000002
+Deriving actual financial ledger 2023-01-01|A
+Derived 2023-01-01|A equity=1049885.0000000002
+{"derived_cache_count": 32, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2022-06-01|C
+Derived 2022-06-01|C equity=829635.0000000005
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 33, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2023-01-01|C
+Derived 2023-01-01|C equity=619080.0
+Deriving actual financial ledger 2023-06-01|A
+Derived 2023-06-01|A equity=719050.0000000002
+Deriving actual financial ledger 2023-06-01|C
+Derived 2023-06-01|C equity=833205.0
+{"derived_cache_count": 36, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 36, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 36, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 36, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 36, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2024-01-01|A
+Derived 2024-01-01|A equity=714415.0000000001
+Deriving actual financial ledger 2024-06-01|A
+Derived 2024-06-01|A equity=260330.0
+{"derived_cache_count": 38, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2024-01-01|C
+Derived 2024-01-01|C equity=192760.0
+{"derived_cache_count": 39, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+{"derived_cache_count": 39, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 39, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 39, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2024-06-01|C
+Derived 2024-06-01|C equity=157965.0
+Deriving actual financial ledger 2025-01-01|A
+Derived 2025-01-01|A equity=180635.0
+Deriving actual financial ledger 2025-01-01|C
+Derived 2025-01-01|C equity=118495.0
+{"derived_cache_count": 42, "expected": 46, "newly_derived": 3, "cache_only_not_final_report": true}
+{"derived_cache_count": 42, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 42, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+{"derived_cache_count": 42, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2026-01-01|A
+Derived 2026-01-01|A equity=366760.0
+{"derived_cache_count": 43, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2025-06-01|A
+Derived 2025-06-01|A equity=186380.0
+Deriving actual financial ledger 2025-06-01|C
+Derived 2025-06-01|C equity=109480.0
+{"derived_cache_count": 45, "expected": 46, "newly_derived": 2, "cache_only_not_final_report": true}
+{"derived_cache_count": 45, "expected": 46, "newly_derived": 0, "cache_only_not_final_report": true}
+Deriving actual financial ledger 2026-01-01|C
+Derived 2026-01-01|C equity=172380.0
+{"derived_cache_count": 46, "expected": 46, "newly_derived": 1, "cache_only_not_final_report": true}

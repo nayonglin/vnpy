@@ -1,0 +1,25 @@
+{
+  "schema": "stage008_atomic_final_delivery_v1",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "files_sha256": {
+    "summary.csv": "85f0eb026ee5bc3c7bd5ddd943750e3146584960ffae57b5017eb45d788cfc65",
+    "paired.csv": "0f041495d1eaceea00fbed4dd287edfd359f4acf241aa98e3646d8067dc9b257",
+    "weakest_windows.csv": "4d19ed667099f4920eb861d55a7899128914772ace5370d3706434b03505cafc",
+    "report.md": "2c1a9364a3672434323ed3caa1537bc1322de4748ebfb67ebbeae805c6d12559",
+    "02_january_starts_nav.png": "d793c7fba690d7630430e08bc0bf8992e6dc958acc168a90807176cd65d01144",
+    "comparison.json": "f5098dcfe6edc66ccb7205b2364581b60c61929dc9bb39fe7141bd9a1f1e2203",
+    "04_start_to_cutoff_heatmaps.png": "b84fbb0684be9a202c525ab0b979960ba1f2d9feb16c75d585ab4c3116de689d",
+    "cohort_summary.csv": "a768de38e93875ca53caa6fe646654a3e24788902224bf84a0438fc9ec22ef7f",
+    "annual.csv": "8f5cfc5befc68798edc24c03e399308b078d535975bfa580bfc0ce97aaef8017",
+    "01_full_2015_nav_drawdown.png": "3fd5d7e84b62710f9015df6c4af469a71ad4b3dd6f715fac547cde31b791d74c",
+    "all_daily.csv": "83007e52811d27194b591df545c337bab0a39e55b511982c14d6960422268d25",
+    "decision.json": "9ad093fb91127740a1a52319196cddaea681c1f8428577b4bb9248321ac5a3cc",
+    "05_cohort_summary_weakest.png": "089508a6a388c08758b21139964dde0524f872c5fdbc02f49513fd8de5b338d8",
+    "source_hashes.json": "85b56d4f0cbb81ceed5e46a73305cbb03e586818c660793f340546682f195c1c",
+    "03_june_starts_nav.png": "edfb6d7436a3e38003eff4fded6d22446a7bdcc19a32938f601368b3fd2117bd"
+  },
+  "self_hash_excluded": true,
+  "all46_arm_windows_verified": true,
+  "total_daily_points": 70998,
+  "financial_replays": 0
+}

@@ -1,0 +1,20 @@
+{
+  "status": "PASS_EXACT_TWO_IDENTITY_IF_REPLACEMENTS",
+  "changes": {
+    "gate": 1,
+    "window": 1
+  },
+  "all_other_financial_AST_exactly_preserved": true,
+  "arm_check_changed": false,
+  "original_source_unchanged": true,
+  "adapted_ast_sha256": "80b2f85d375f07d5eb6c7c3e8cfa6531a06b1aa6466b1814359a3dcc3af1da10",
+  "reviewed_code_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage008_accounting.py": "d4b9386815b3ec83d126eb2dce0a659d427f576d307dcbe6ca4fbb67b314080f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_accounting.py": "d1651b3fba62fac86a1088b2b7c36ffaa4a5963ec7760d10bea9be4ba79596fa",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage001_report.py": "0651881509655317064d6cde46783d9b18a70cef3c161152c936309c92f8fed6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage006_report.py": "22dcd3fbb3e163621b8d23d491b25e23cdbbae42b6ae302b57c9dace8a449488",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_build_artifacts.py": "c01fbde3ba539060164aba4e3b929fa9cbdeb943bb6b51f8175b914f873173a7"
+  },
+  "independent_script_sha256": "348fa3d434e69435c565d7ae4919535b56adb1a496aee631faa59ee8aa98452f",
+  "financial_replays": 0
+}

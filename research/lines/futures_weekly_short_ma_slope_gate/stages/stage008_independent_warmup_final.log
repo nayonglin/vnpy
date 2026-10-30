@@ -1,0 +1,1 @@
+{"status": "PASS_ACTUAL_NATIVE21_COMPLETED_WEEK_READINESS", "freeze_sha256": "f285ede86164f43c906b498da3138bff7c479d783be96ec1a62ffc6907e6c992", "window_count": 46, "actual_native_fills_checked": 7413, "failures": [], "auditor_source_sha256": "0f10ea96035d1650a39d15b3309ce460550a0720c375cc2f7545e32b26df660a", "financial_replays": 0, "market_downloads": 0}
