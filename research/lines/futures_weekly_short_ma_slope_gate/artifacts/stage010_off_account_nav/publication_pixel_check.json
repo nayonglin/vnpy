@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "method": "all five PNG dimensions equal; all changed pixels confined to first50 rows review-state heading",
+  "figures": {
+    "01_account_nav_drawdown_2015.png": {
+      "size": [
+        2156,
+        1353
+      ],
+      "changed_row_range": [
+        16,
+        40
+      ]
+    },
+    "02_january_account_nav.png": {
+      "size": [
+        2371,
+        1820
+      ],
+      "changed_row_range": [
+        16,
+        40
+      ]
+    },
+    "03_june_account_nav.png": {
+      "size": [
+        2386,
+        1820
+      ],
+      "changed_row_range": [
+        16,
+        40
+      ]
+    },
+    "04_account_cashflow_deltas.png": {
+      "size": [
+        2391,
+        1867
+      ],
+      "changed_row_range": [
+        16,
+        40
+      ]
+    },
+    "05_trading_pnl_and_deposit_overview.png": {
+      "size": [
+        2377,
+        1711
+      ],
+      "changed_row_range": [
+        16,
+        40
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "stage010-data-lock-v1",
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/projection.json": "ed2c4f6b88121fcf9134e9faeb4aa93bb1c1abee22fd81362efeea324261ee6e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/daily.csv": "954db52f6f61071756c368146d7c3358539306828250277242b9fbfd60d22d0e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/summary.csv": "644b6c6cd3103d5a681e988e948e116893f8f0fbeea3194bf26815dfa0229ebc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/paired.csv": "a451afb6cbe750c90724dd5df9f216cd9040d0d22654cedd0e6f197f5ea429d4"
+  }
+}

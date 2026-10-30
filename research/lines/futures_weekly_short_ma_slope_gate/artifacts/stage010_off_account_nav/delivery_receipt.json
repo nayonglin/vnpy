@@ -1,0 +1,38 @@
+{
+  "schema": "stage010-display-delivery-v1",
+  "published_at": "2026-10-30T16:46:50.167213+08:00",
+  "review_status": "PASS_WITH_LIMITATIONS",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "initial_trading_capital": 150000,
+  "off_account_reserve_in_nav": false,
+  "deposits_in_nav": true,
+  "data_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/projection.json": "ed2c4f6b88121fcf9134e9faeb4aa93bb1c1abee22fd81362efeea324261ee6e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/daily.csv": "954db52f6f61071756c368146d7c3358539306828250277242b9fbfd60d22d0e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/summary.csv": "644b6c6cd3103d5a681e988e948e116893f8f0fbeea3194bf26815dfa0229ebc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/paired.csv": "a451afb6cbe750c90724dd5df9f216cd9040d0d22654cedd0e6f197f5ea429d4"
+  },
+  "figure_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/01_account_nav_drawdown_2015.png": "4ddb00533854143c5c7cabdfe0e16d17bf268b0198d1202ef08edd6e47ff4369",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/02_january_account_nav.png": "d34a7e155b769add4ba9019c318ae0d5097776bc3bcd161c3007ba55fa6e92c3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/03_june_account_nav.png": "70aeee73df0992b88a18521c64b44cc4e914f664e177579244a27c03ddeaa967",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/04_account_cashflow_deltas.png": "b30702ba5862d24a6d199aaf6d606d2c82288b7e634f510fe965cdf0b4b8fd1c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/05_trading_pnl_and_deposit_overview.png": "701a3f54e69868cffeb92131d04237740112c4cbaccdc5ede1a908b49f8ccd89"
+  },
+  "report_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/Stage010_15万起点_场外补资净值报告.html": "1b8255ddc8f2305eb3904dc8d57a638f9e907c54ace7364b7e11d378f05c5b90",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/report.md": "f59bb91b3a63b66cc9f9deb4b539938b245336a5c9ccd5f176e54be99229f8b7"
+  },
+  "independent_review_sha256": "350c197ffb9ba70c7a797d2d09e3de1809586d2e4bb6edcb600b52c52b85548b",
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_delivery_manifest.json": "b4712560c72548106fb9e4273895e1bfc80c56a6813cdfe3d71b4190b5d5a424",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/all_daily.csv": "b624ee5cf2da09f06619fd05bde71d8164930cde20819c3d61df4a1e24824a42",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/summary.csv": "e2ef200dde434e5bf6b44d39491b61387cca41a338cbc0ec5daa58b5702f6e54",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/reserve_events.csv": "feed1c2f2df3a8fb6c45128b95288344edda387dd642ffa790f2873dd2d149fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_independent_final.json": "e8b5a11a0ca1172ad5ad37e5cfa3f22d069e2da9de58ed2ca6bccd33ca290c93",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_freeze.json": "d53d36fc21b8308b220cd69484697ae3d1b29074abd23311f28f58feec4e406a"
+  },
+  "promotion_decision": "NO_PROMOTION"
+}

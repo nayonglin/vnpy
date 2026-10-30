@@ -1,0 +1,25 @@
+test_deposit_lifts_balance_but_never_pnl (test_stage010_account_nav.AccountNavTests.test_deposit_lifts_balance_but_never_pnl) ... ok
+test_deposit_sequence_is_monotone_and_capped (test_stage010_account_nav.AccountNavTests.test_deposit_sequence_is_monotone_and_capped) ... ok
+test_first_balance_must_be_150000 (test_stage010_account_nav.AccountNavTests.test_first_balance_must_be_150000) ... ok
+test_idle_cannot_receive_funding (test_stage010_account_nav.AccountNavTests.test_idle_cannot_receive_funding) ... ok
+test_negative_equity_not_clipped (test_stage010_account_nav.AccountNavTests.test_negative_equity_not_clipped) ... ok
+test_positive_balance_growth_can_coexist_with_trading_loss (test_stage010_account_nav.AccountNavTests.test_positive_balance_growth_can_coexist_with_trading_loss) ... ok
+test_source_corruption_rejected (test_stage010_account_nav.AccountNavTests.test_source_corruption_rejected) ... ok
+test_untransferred_reserve_never_in_nav (test_stage010_account_nav.AccountNavTests.test_untransferred_reserve_never_in_nav) ... ok
+test_zero_denominator_returns_are_explicitly_undefined (test_stage010_account_nav.AccountNavTests.test_zero_denominator_returns_are_explicitly_undefined) ... ok
+test_balance_sharpe_defensive_boundary (test_stage010_plots.AccountPlotTests.test_balance_sharpe_defensive_boundary) ... ok
+test_complete_start_end_counts_and_calendar_agreement_required (test_stage010_plots.AccountPlotTests.test_complete_start_end_counts_and_calendar_agreement_required) ... ok
+test_five_figures_show_only_account_nav_and_review_changes_status_only (test_stage010_plots.AccountPlotTests.test_five_figures_show_only_account_nav_and_review_changes_status_only) ... ok
+test_invalid_inputs_are_rejected_before_figure_allocation (test_stage010_plots.AccountPlotTests.test_invalid_inputs_are_rejected_before_figure_allocation) ... ok
+test_overview_loss_counts_use_real_trading_pnl_not_account_growth (test_stage010_plots.AccountPlotTests.test_overview_loss_counts_use_real_trading_pnl_not_account_growth) ... ok
+test_paired_deltas_and_observation_flags_must_match (test_stage010_plots.AccountPlotTests.test_paired_deltas_and_observation_flags_must_match) ... ok
+test_rejects_300k_or_off_account_reserve_in_nav (test_stage010_plots.AccountPlotTests.test_rejects_300k_or_off_account_reserve_in_nav) ... ok
+test_rejects_bad_summary_metric_and_legacy_pair_gates (test_stage010_plots.AccountPlotTests.test_rejects_bad_summary_metric_and_legacy_pair_gates) ... ok
+test_rejects_deposit_removed_from_equity_or_counted_as_pnl (test_stage010_plots.AccountPlotTests.test_rejects_deposit_removed_from_equity_or_counted_as_pnl) ... ok
+test_rejects_false_daily_transfers_or_costs (test_stage010_plots.AccountPlotTests.test_rejects_false_daily_transfers_or_costs) ... ok
+test_valid_scope_and_account_cashflow_bridges (test_stage010_plots.AccountPlotTests.test_valid_scope_and_account_cashflow_bridges) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 11.359s
+
+OK

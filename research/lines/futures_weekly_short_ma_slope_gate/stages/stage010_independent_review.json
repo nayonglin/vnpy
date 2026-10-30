@@ -1,0 +1,242 @@
+{
+  "schema": "stage010-independent-account-nav-review-v1",
+  "status": "PASS_WITH_LIMITATIONS",
+  "reviewed_at": "2026-10-30T16:46:35.484111+08:00",
+  "reviewer": "stage010_independent_review_agent",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "failures": [],
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "scope": {
+    "starts": 23,
+    "variant_windows": 92,
+    "pairs": 46,
+    "daily_points": 141996,
+    "cutoff": "2026-10-29",
+    "endpoints": {
+      "2015-01-01": {
+        "actual_start": "2015-01-05",
+        "cutoff": "2026-10-29",
+        "trading_days": 2871
+      },
+      "2015-06-01": {
+        "actual_start": "2015-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 2773
+      },
+      "2016-01-01": {
+        "actual_start": "2016-01-04",
+        "cutoff": "2026-10-29",
+        "trading_days": 2627
+      },
+      "2016-06-01": {
+        "actual_start": "2016-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 2527
+      },
+      "2017-01-01": {
+        "actual_start": "2017-01-03",
+        "cutoff": "2026-10-29",
+        "trading_days": 2383
+      },
+      "2017-06-01": {
+        "actual_start": "2017-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 2286
+      },
+      "2018-01-01": {
+        "actual_start": "2018-01-02",
+        "cutoff": "2026-10-29",
+        "trading_days": 2139
+      },
+      "2018-06-01": {
+        "actual_start": "2018-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 2040
+      },
+      "2019-01-01": {
+        "actual_start": "2019-01-02",
+        "cutoff": "2026-10-29",
+        "trading_days": 1896
+      },
+      "2019-06-01": {
+        "actual_start": "2019-06-03",
+        "cutoff": "2026-10-29",
+        "trading_days": 1797
+      },
+      "2020-01-01": {
+        "actual_start": "2020-01-02",
+        "cutoff": "2026-10-29",
+        "trading_days": 1652
+      },
+      "2020-06-01": {
+        "actual_start": "2020-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 1555
+      },
+      "2021-01-01": {
+        "actual_start": "2021-01-04",
+        "cutoff": "2026-10-29",
+        "trading_days": 1409
+      },
+      "2021-06-01": {
+        "actual_start": "2021-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 1312
+      },
+      "2022-01-01": {
+        "actual_start": "2022-01-04",
+        "cutoff": "2026-10-29",
+        "trading_days": 1166
+      },
+      "2022-06-01": {
+        "actual_start": "2022-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 1070
+      },
+      "2023-01-01": {
+        "actual_start": "2023-01-03",
+        "cutoff": "2026-10-29",
+        "trading_days": 924
+      },
+      "2023-06-01": {
+        "actual_start": "2023-06-01",
+        "cutoff": "2026-10-29",
+        "trading_days": 826
+      },
+      "2024-01-01": {
+        "actual_start": "2024-01-02",
+        "cutoff": "2026-10-29",
+        "trading_days": 682
+      },
+      "2024-06-01": {
+        "actual_start": "2024-06-03",
+        "cutoff": "2026-10-29",
+        "trading_days": 584
+      },
+      "2025-01-01": {
+        "actual_start": "2025-01-02",
+        "cutoff": "2026-10-29",
+        "trading_days": 440
+      },
+      "2025-06-01": {
+        "actual_start": "2025-06-03",
+        "cutoff": "2026-10-29",
+        "trading_days": 343
+      },
+      "2026-01-01": {
+        "actual_start": "2026-01-05",
+        "cutoff": "2026-10-29",
+        "trading_days": 197
+      }
+    }
+  },
+  "data_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/projection.json": "ed2c4f6b88121fcf9134e9faeb4aa93bb1c1abee22fd81362efeea324261ee6e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/daily.csv": "954db52f6f61071756c368146d7c3358539306828250277242b9fbfd60d22d0e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/summary.csv": "644b6c6cd3103d5a681e988e948e116893f8f0fbeea3194bf26815dfa0229ebc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/paired.csv": "a451afb6cbe750c90724dd5df9f216cd9040d0d22654cedd0e6f197f5ea429d4"
+  },
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_delivery_manifest.json": "b4712560c72548106fb9e4273895e1bfc80c56a6813cdfe3d71b4190b5d5a424",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/all_daily.csv": "b624ee5cf2da09f06619fd05bde71d8164930cde20819c3d61df4a1e24824a42",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/summary.csv": "e2ef200dde434e5bf6b44d39491b61387cca41a338cbc0ec5daa58b5702f6e54",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/reserve_events.csv": "feed1c2f2df3a8fb6c45128b95288344edda387dd642ffa790f2873dd2d149fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_independent_final.json": "e8b5a11a0ca1172ad5ad37e5cfa3f22d069e2da9de58ed2ca6bccd33ca290c93",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_freeze.json": "d53d36fc21b8308b220cd69484697ae3d1b29074abd23311f28f58feec4e406a"
+  },
+  "audited_code_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage010_account_nav.py": "5317c1162ca26d285a156c982da21a60825d24f23e3d429b56bacd9cd3cda16f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage010_account_nav.py": "3b8526dd8d08756264b1b7bdc6ed02dc25b56b7746407af44f25c5275c69319b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage010_delivery.py": "72565b75eb9a2a8713bd67cc97abf35762e06ea85d9e56d9dca2163a55f144a7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage010_plots.py": "d0ce23180f1aac0a2a36850a9c4e497395792ddaeb5d60d6a98e7364e2384e08",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage010_plots.py": "84065073a7f7e6e19cdfe68d3d521ad34ec66acbfe18e236c456426a528b267b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage010_independent_audit.py": "fd3da5d0d03c94f877f56a1e6e877e1ce4dcdbde2ba80dbf0267988a386e183b"
+  },
+  "audited_contract_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage010_account_nav_contract.md": "a031cc2d1e71f6a8de0b8de47a223df6c02f84bbcf0a287d7a6145249f15d1f8"
+  },
+  "independent_checks": [
+    "6 selected source SHA and accepted Stage009 identity",
+    "every preserved daily source column and every round statistic including missing values",
+    "all92 scalar running PnL/deposits/account equity/NAV/initial highwater DD",
+    "all92 scalar simple change Sharpe using statistics.stdev ddof1 sqrt252",
+    "all92 summary costs/fills/events/endpoints/calendars/observation flags",
+    "all46 paired metrics and account-difference=Pnl-difference+deposits",
+    "C2024June loss despite positive deposit-inclusive account growth",
+    "C2026Jan 720 deposit changes only account balance, actual PnL identical"
+  ],
+  "counterexamples": {
+    "C_2024_June": {
+      "real_trading_net_pnl": -8560.0,
+      "total_transferred": 31660.0,
+      "account_end_equity": 173100.0,
+      "account_growth_pct": 15.399999999999991
+    },
+    "C_2026_January": {
+      "deposit": 720.0,
+      "same_actual_PnL": 22380.0
+    }
+  },
+  "numeric_evidence_sha256": "e287521405ff0d28b8ec4023aa5c2a75678972f58ae04b6e43176d00e30d4225",
+  "unit_tests": {
+    "command": ".py311/bin/python -m unittest discover -s research/lines/futures_weekly_short_ma_slope_gate/tools -p 'test_stage010*.py' -v",
+    "passed": 20,
+    "seconds": 11.359,
+    "evidence": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage010_independent_tests.txt",
+    "sha256": "2a9e10dbf5863b51b976d2e7bc6518482aecaffed45e224f6e17642c73e4aa8f"
+  },
+  "pending_figure_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/01_account_nav_drawdown_2015.png": "61af4ce2a3c3e8248e49a00522b52417af1f4782f17ef10733d30382fa28e951",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/02_january_account_nav.png": "36b93db20635716b99e3cc340365e18d1c7e2a17863bb228818ee5ab0d49f307",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/03_june_account_nav.png": "50a78a86e89dbcfd02b4a664a5144ddd017b5a2cdaed5da37a491c518fa14b7e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/04_account_cashflow_deltas.png": "6a62f21851b29bb8d4d38ff48ff4916b29aa3be62b0e82d7856c7da72491f38a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/05_trading_pnl_and_deposit_overview.png": "b116e658579b449b66e7c761b9ca7d92fdf799a9a84b49d7aaa4c57b2d398b09"
+  },
+  "pending_report_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/Stage010_15万起点_场外补资净值报告.html": "3a2af2612d7706fe28db0db1f1321c9189ef5c44b8190ea5e1f3bf34c7237ce3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage010_off_account_nav/review_pending/report.md": "e5f6417c6e12c457babec5d618b382a52c230bf39e30f8a25271f98184549c46"
+  },
+  "pending_delivery_receipt_sha256": "b87d228f64b617bd97df794c42e12196881f7a0aa0008e828e479a156e96295c",
+  "offline_html_checks": [
+    "5 embedded PNG bytes match standalone figure SHA",
+    "92 rows x16 formatted source values and23 starts match summary",
+    "No external scripts/styles/iframes/runtime URL assets",
+    "One local filtering script binds actual start values",
+    "All display receipt SHA matches source data lock"
+  ],
+  "browser_interaction_verified": false,
+  "browser_interaction_limitation": "Parent reports CUA URL safety rejects file://; no HTTP workaround attempted.",
+  "visual_review": {
+    "status": "FIVE_FINAL_PENDING_PNGS_VISUALLY_INSPECTED",
+    "checks": [
+      "All five final pending PNGs opened with view_image after last plot source lock.",
+      "All four variants at150k/NAV1;12January panels and11June panels present;2026Jan marked observation.",
+      "Negative account deltas retained; cashflow warnings visible; graph growth not described as strategy alpha.",
+      "Real trading loss counts use real_trading_net_pnl, including C2024June loss despite positive deposit-inclusive NAV.",
+      "Tables and legends legible without detected clipping; deposits and real trading PnL shown separately."
+    ]
+  },
+  "confidence": "High for selected-source identity, frozen data projection and rendered/static report; bounded for source market truth, tradability and browser interaction.",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "http_services_started": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "limitations": [
+    "Account growth, balance DD and balance Sharpe include external cash inflows; they are not flow-adjusted strategy performance.",
+    "Only six selected Stage009 admission sources rehashed;17GB financial-source audit not repeated; source correctness inherits prior accepted review.",
+    "Overlapping independent replay starts are not independent statistical samples or new OOS evidence;2026Jan is less than one year and observation only.",
+    "Inherited history not proven complete listing/PIT truth, zero commission, static exchange-margin configuration times1.65, daily next-open execution, no broker capacity or live buying-power proof.",
+    "Original missing round total-win/total-loss/status fields are preserved as missing rather than fabricated.",
+    "CUA URL safety rejected file://; offline HTML runtime interaction remains unverified. Static structure, all92rows,23start options, embedded five image SHA and local filtering script verified."
+  ],
+  "overfitting_reflection": "No new financial parameters, trades, windows or tuning; display projection creates no new parameter overfitting. Repeated-history limitations remain.",
+  "value_reflection": "Worth completing: requested separation of off-account reserve and deposited account equity is now testable. Higher balance NAV alone is no strategy improvement or promotion evidence."
+}

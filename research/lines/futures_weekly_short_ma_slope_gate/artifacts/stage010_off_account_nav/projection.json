@@ -1,0 +1,32 @@
+{
+  "schema": "stage010-off-account-nav-v1",
+  "generated_at": "2026-10-30T16:39:35.530667+08:00",
+  "status": "INDEPENDENT_REVIEW_PENDING",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "strategy_parameters_changed": false,
+  "transaction_ledgers_changed": false,
+  "cutoff": "2026-10-29",
+  "independent_starts": 23,
+  "variant_windows": 92,
+  "paired_windows": 46,
+  "daily_points": 141996,
+  "initial_trading_capital": 150000.0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_delivery_manifest.json": "b4712560c72548106fb9e4273895e1bfc80c56a6813cdfe3d71b4190b5d5a424",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/all_daily.csv": "b624ee5cf2da09f06619fd05bde71d8164930cde20819c3d61df4a1e24824a42",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/summary.csv": "e2ef200dde434e5bf6b44d39491b61387cca41a338cbc0ec5daa58b5702f6e54",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage009_multistart/reserve_events.csv": "feed1c2f2df3a8fb6c45128b95288344edda387dd642ffa790f2873dd2d149fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_independent_final.json": "e8b5a11a0ca1172ad5ad37e5cfa3f22d069e2da9de58ed2ca6bccd33ca290c93",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage009_freeze.json": "d53d36fc21b8308b220cd69484697ae3d1b29074abd23311f28f58feec4e406a"
+  },
+  "projection_source_sha256": "5317c1162ca26d285a156c982da21a60825d24f23e3d429b56bacd9cd3cda16f",
+  "promotion_decision": "NO_PROMOTION",
+  "nav_definition": "trading_account_equity / 150000; excludes off-account reserve; includes transferred deposits",
+  "account_bridge": "E = 150000 + cumulative true net trading PnL + cumulative external deposits",
+  "metric_warning": "Account growth, balance drawdown and balance Sharpe include cashflow; not flow-adjusted strategy performance.",
+  "balance_sharpe_definition": "simple daily account balance changes; initial previous balance150000; ddof1; sqrt252; undefined denominators -> 0 plus explicit false flag",
+  "source_research": "https://www.backtrader.com/blog/posts/2017-06-19-fund-tracking/fund-tracking/"
+}
