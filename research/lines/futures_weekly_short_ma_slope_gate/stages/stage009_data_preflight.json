@@ -1,0 +1,2771 @@
+{
+  "schema": "stage009_same_data_reserve_preflight_v1",
+  "created_at": "2026-10-30T14:54:38.205960+08:00",
+  "status": "PASS_SAME_FROZEN_DATA_WITH_INHERITED_LIMITATIONS",
+  "cutoff": "2026-10-29",
+  "starts": [
+    "2015-01-01",
+    "2015-06-01",
+    "2016-01-01",
+    "2016-06-01",
+    "2017-01-01",
+    "2017-06-01",
+    "2018-01-01",
+    "2018-06-01",
+    "2019-01-01",
+    "2019-06-01",
+    "2020-01-01",
+    "2020-06-01",
+    "2021-01-01",
+    "2021-06-01",
+    "2022-01-01",
+    "2022-06-01",
+    "2023-01-01",
+    "2023-06-01",
+    "2024-01-01",
+    "2024-06-01",
+    "2025-01-01",
+    "2025-06-01",
+    "2026-01-01"
+  ],
+  "windows": [
+    {
+      "requested_start": "2015-01-01",
+      "cohort": "January",
+      "actual_first_day": "2015-01-05",
+      "end": "2026-10-29",
+      "trading_days": 2871,
+      "elapsed_calendar_days": 4319,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2014-01-01",
+      "warmup_first_real_day": "2014-01-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF505.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG506.CZCE",
+          "prior_completed_positive_weeks_365d": 28,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA506.CZCE",
+          "prior_completed_positive_weeks_365d": 28,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI505.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM501.CZCE",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1506.SHFE",
+          "prior_completed_positive_weeks_365d": 24,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1503.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1505.SHFE",
+          "prior_completed_positive_weeks_365d": 13,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1505.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1505.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1505.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1505.SHFE",
+          "prior_completed_positive_weeks_365d": 13,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 43821,
+      "missing_positive_mapped_keys": 591,
+      "known_no_trade_keys": 573,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2015-06-01",
+      "cohort": "June",
+      "actual_first_day": "2015-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2773,
+      "elapsed_calendar_days": 4168,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2014-06-01",
+      "warmup_first_real_day": "2014-06-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM601.CZCE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1512.SHFE",
+          "prior_completed_positive_weeks_365d": 19,
+          "ready21": false
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1508.SHFE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1510.SHFE",
+          "prior_completed_positive_weeks_365d": 12,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1509.DCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1509.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM601.CZCE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1512.SHFE",
+          "prior_completed_positive_weeks_365d": 19,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1510.SHFE",
+          "prior_completed_positive_weeks_365d": 12,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 42743,
+      "missing_positive_mapped_keys": 565,
+      "known_no_trade_keys": 547,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2016-01-01",
+      "cohort": "January",
+      "actual_first_day": "2016-01-04",
+      "end": "2026-10-29",
+      "trading_days": 2627,
+      "elapsed_calendar_days": 3954,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2015-01-01",
+      "warmup_first_real_day": "2015-01-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM605.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1606.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1602.SHFE",
+          "prior_completed_positive_weeks_365d": 46,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1605.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1605.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM605.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1605.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 41137,
+      "missing_positive_mapped_keys": 515,
+      "known_no_trade_keys": 497,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2016-06-01",
+      "cohort": "June",
+      "actual_first_day": "2016-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2527,
+      "elapsed_calendar_days": 3802,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2015-06-02",
+      "warmup_first_real_day": "2015-06-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM609.CZCE",
+          "prior_completed_positive_weeks_365d": 10,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1612.SHFE",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1608.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1610.SHFE",
+          "prior_completed_positive_weeks_365d": 23,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1609.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1610.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1609.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM609.CZCE",
+          "prior_completed_positive_weeks_365d": 10,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 39938,
+      "missing_positive_mapped_keys": 456,
+      "known_no_trade_keys": 438,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2017-01-01",
+      "cohort": "January",
+      "actual_first_day": "2017-01-03",
+      "end": "2026-10-29",
+      "trading_days": 2383,
+      "elapsed_calendar_days": 3588,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2016-01-02",
+      "warmup_first_real_day": "2016-01-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM705.CZCE",
+          "prior_completed_positive_weeks_365d": 11,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1706.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1711.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1705.DCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM705.CZCE",
+          "prior_completed_positive_weeks_365d": 11,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1711.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 38210,
+      "missing_positive_mapped_keys": 354,
+      "known_no_trade_keys": 336,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2017-06-01",
+      "cohort": "June",
+      "actual_first_day": "2017-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2286,
+      "elapsed_calendar_days": 3437,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2016-06-01",
+      "warmup_first_real_day": "2016-06-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM709.CZCE",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1712.SHFE",
+          "prior_completed_positive_weeks_365d": 26,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1707.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1804.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1710.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1709.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1710.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1709.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1804.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 37046,
+      "missing_positive_mapped_keys": 267,
+      "known_no_trade_keys": 249,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2018-01-01",
+      "cohort": "January",
+      "actual_first_day": "2018-01-02",
+      "end": "2026-10-29",
+      "trading_days": 2139,
+      "elapsed_calendar_days": 3223,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2017-01-01",
+      "warmup_first_real_day": "2017-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP805.CZCE",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1806.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1802.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1805.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1805.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP805.CZCE",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1805.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 35277,
+      "missing_positive_mapped_keys": 129,
+      "known_no_trade_keys": 111,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2018-06-01",
+      "cohort": "June",
+      "actual_first_day": "2018-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2040,
+      "elapsed_calendar_days": 3072,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2017-06-01",
+      "warmup_first_real_day": "2017-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP810.CZCE",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF901.CZCE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM809.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1812.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1807.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1810.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1809.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1810.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1809.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF901.CZCE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 33990,
+      "missing_positive_mapped_keys": 30,
+      "known_no_trade_keys": 19,
+      "structural_unavailable_keys": 11,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2019-01-01",
+      "cohort": "January",
+      "actual_first_day": "2019-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1896,
+      "elapsed_calendar_days": 2858,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2018-01-01",
+      "warmup_first_real_day": "2018-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM905.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1906.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1902.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 23,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1905.DCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1906.SHFE",
+          "prior_completed_positive_weeks_365d": 4,
+          "ready21": false
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1906.SHFE",
+          "prior_completed_positive_weeks_365d": 4,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 32094,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2019-06-01",
+      "cohort": "June",
+      "actual_first_day": "2019-06-03",
+      "end": "2026-10-29",
+      "trading_days": 1797,
+      "elapsed_calendar_days": 2707,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2018-06-01",
+      "warmup_first_real_day": "2018-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP910.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM909.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1912.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1907.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1909.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1910.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1909.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1910.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1909.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1909.SHFE",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 30708,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2020-01-01",
+      "cohort": "January",
+      "actual_first_day": "2020-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1652,
+      "elapsed_calendar_days": 2493,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2019-01-01",
+      "warmup_first_real_day": "2019-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA005.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM005.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2006.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2002.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2005.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2005.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2005.SHFE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA005.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 28660,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2020-06-01",
+      "cohort": "June",
+      "actual_first_day": "2020-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1555,
+      "elapsed_calendar_days": 2341,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2019-06-02",
+      "warmup_first_real_day": "2019-06-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP010.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA009.CZCE",
+          "prior_completed_positive_weeks_365d": 24,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2012.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2007.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2009.SHFE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2010.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2009.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2010.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2009.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2009.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 27205,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2021-01-01",
+      "cohort": "January",
+      "actual_first_day": "2021-01-04",
+      "end": "2026-10-29",
+      "trading_days": 1409,
+      "elapsed_calendar_days": 2127,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2020-01-02",
+      "warmup_first_real_day": "2020-01-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2102.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2102.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2105.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2105.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2103.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2103.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 25015,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2021-06-01",
+      "cohort": "June",
+      "actual_first_day": "2021-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1312,
+      "elapsed_calendar_days": 1976,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2020-06-01",
+      "warmup_first_real_day": "2020-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP110.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2112.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2107.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2109.SHFE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2110.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2109.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2109.DCE",
+          "prior_completed_positive_weeks_365d": 20,
+          "ready21": false
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2110.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2109.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2107.SHFE",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2109.DCE",
+          "prior_completed_positive_weeks_365d": 20,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 23467,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2022-01-01",
+      "cohort": "January",
+      "actual_first_day": "2022-01-04",
+      "end": "2026-10-29",
+      "trading_days": 1166,
+      "elapsed_calendar_days": 1762,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2021-01-01",
+      "warmup_first_real_day": "2021-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM205.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2202.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2202.SHFE",
+          "prior_completed_positive_weeks_365d": 47,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2205.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2205.DCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2203.DCE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 21131,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2022-06-01",
+      "cohort": "June",
+      "actual_first_day": "2022-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1070,
+      "elapsed_calendar_days": 1611,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2021-06-01",
+      "warmup_first_real_day": "2021-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP210.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2208.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2207.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2209.SHFE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2210.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2209.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2209.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2210.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2209.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2209.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 19595,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2023-01-01",
+      "cohort": "January",
+      "actual_first_day": "2023-01-03",
+      "end": "2026-10-29",
+      "trading_days": 924,
+      "elapsed_calendar_days": 1397,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2022-01-01",
+      "warmup_first_real_day": "2022-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM305.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2304.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2302.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2305.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2305.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2303.DCE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 17252,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2023-06-01",
+      "cohort": "June",
+      "actual_first_day": "2023-06-01",
+      "end": "2026-10-29",
+      "trading_days": 826,
+      "elapsed_calendar_days": 1246,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2022-06-01",
+      "warmup_first_real_day": "2022-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP310.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2308.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2307.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2309.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2310.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2309.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2309.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2310.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2309.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2309.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 15586,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2024-01-01",
+      "cohort": "January",
+      "actual_first_day": "2024-01-02",
+      "end": "2026-10-29",
+      "trading_days": 682,
+      "elapsed_calendar_days": 1032,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2023-01-01",
+      "warmup_first_real_day": "2023-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH405.CZCE",
+          "prior_completed_positive_weeks_365d": 14,
+          "ready21": false
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM402.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2402.SHFE",
+          "prior_completed_positive_weeks_365d": 47,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2402.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2403.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2405.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2407.GFEX",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2403.DCE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2402.GFEX",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH405.CZCE",
+          "prior_completed_positive_weeks_365d": 14,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 12958,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2024-06-01",
+      "cohort": "June",
+      "actual_first_day": "2024-06-03",
+      "end": "2026-10-29",
+      "trading_days": 584,
+      "elapsed_calendar_days": 880,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2023-06-02",
+      "warmup_first_real_day": "2023-06-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP410.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2408.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2407.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2409.SHFE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2410.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2409.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2407.GFEX",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2409.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2410.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2409.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2409.GFEX",
+          "prior_completed_positive_weeks_365d": 16,
+          "ready21": false
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2409.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "si.GFEX",
+          "first_main": "si2409.GFEX",
+          "prior_completed_positive_weeks_365d": 16,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 11096,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2025-01-01",
+      "cohort": "January",
+      "actual_first_day": "2025-01-02",
+      "end": "2026-10-29",
+      "trading_days": 440,
+      "elapsed_calendar_days": 666,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2024-01-02",
+      "warmup_first_real_day": "2024-01-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH505.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2502.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2502.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2503.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2505.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2505.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2503.DCE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2502.GFEX",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2503.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 8360,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2025-06-01",
+      "cohort": "June",
+      "actual_first_day": "2025-06-03",
+      "end": "2026-10-29",
+      "trading_days": 343,
+      "elapsed_calendar_days": 515,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2024-06-01",
+      "warmup_first_real_day": "2024-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP510.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2508.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2507.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2507.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2509.DCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2507.GFEX",
+          "prior_completed_positive_weeks_365d": 46,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2509.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2509.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2507.GFEX",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2507.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 6517,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2026-01-01",
+      "cohort": "January",
+      "actual_first_day": "2026-01-05",
+      "end": "2026-10-29",
+      "trading_days": 197,
+      "elapsed_calendar_days": 301,
+      "at_least_one_full_year": false,
+      "vote_eligible": false,
+      "observation_only": true,
+      "warmup_requested_start": "2025-01-01",
+      "warmup_first_real_day": "2025-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH603.CZCE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM603.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2602.SHFE",
+          "prior_completed_positive_weeks_365d": 50,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2602.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2603.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2605.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2605.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2603.DCE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2605.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 3743,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    }
+  ],
+  "window_count": 23,
+  "planned_financial_replays": 46,
+  "idle_control_arms": 46,
+  "data_directory": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved",
+  "data_identity": {
+    "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+    "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+  },
+  "inherited_preflight": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_data_preflight.json",
+  "inherited_preflight_sha256": "551ddd54efea52abc6f8cc796b06434e3c1e38e5f2ad3f41a2d19f47bdee4f35",
+  "stage008_registry": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage008_multistart/registry.json",
+  "stage008_registry_sha256": "8abed669b5825aaa1a2535cb9bda43c4f6a847039bbeb30894d25e94f75646f3",
+  "stage008_freeze": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_freeze.json",
+  "stage008_freeze_sha256": "f285ede86164f43c906b498da3138bff7c479d783be96ec1a62ffc6907e6c992",
+  "stage008_delivery_manifest_sha256": "7dbac3726e55f1180fe0efcb98ba6407c31acd2288743081ea49f99287306edd",
+  "trading_initial": 150000,
+  "reserve_initial": 150000,
+  "total_initial": 300000,
+  "complete_voting_windows": 22,
+  "observation_windows": 1,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "data_changes": 0,
+  "production_accesses": 0,
+  "limitations": [
+    "2014 MA aliases have228 missing mapped days; hc1505 first2015 target has only13 complete2014 weeks; actual21-ready state must be exported by replay.",
+    "Unknown full future lifecycle is labeled; never infer expiry from observed last row.",
+    "Frozen mapping has explicit18 structural defects, not a reconstructed historical main series; no substitute contracts inferred. data_ready requires unknown main gaps0; approved real zero-volume keys are classification-only, never bars/week inputs/fills. Every held/traded/week-source positive-data and execution/accounting gate remains mandatory.",
+    "New Tq authority was declared before finance; no multi-source consensus or PIT claim.",
+    "10/27 local Stage283 daily closeOI snapshot is the predeclared authority; later same-vendor observations do not overwrite it.",
+    "10/28 Tq daily is observed after 15:30 local, not independently arbitrated exchange final truth.",
+    "10/28 is incomplete week; ordinary weekly indicators use completed weeks only.",
+    "Data readiness covers original19 main plus frozen R003 held/pending and accepted recent tails; each new replay must still verify every actual held/traded day and 2020 warmup readiness.",
+    "10/29 Tq daily observed after 15:30; not exchange-final arbitration. 10/30 forming rows excluded.",
+    "Original19 standalone snapshot; no source from ongoing44 research. All historical PIT, lifecycle gaps, static metadata and capacity limitations inherited."
+  ]
+}
