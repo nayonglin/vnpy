@@ -1,0 +1,36 @@
+{
+  "status": "PASS_BOUNDED_2015_SOURCE_PREFLIGHT",
+  "time": "2026-10-30T12:47:07.358664+08:00",
+  "old_delivery_binding_counts": {
+    "stage001_delivery_manifest.json": 3105,
+    "stage002_delivery_manifest.json": 3141,
+    "stage003_delivery_manifest.json": 41,
+    "stage004_delivery_manifest.json": 3225,
+    "stage004_delivery_manifest_v2.json": 3229,
+    "stage005_delivery_manifest.json": 3097
+  },
+  "old_manifest_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_delivery_manifest.json": "f2de47ae8c1807e905c0f5eaa8520d4ae89f011d59e730ce24be0b4d6333c93b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage002_delivery_manifest.json": "35f955e44a5e212b2e442f3b7a34efc7363ce99eb0de817084701822540045cc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage003_delivery_manifest.json": "e31b6b1ad58d86cb9abb6c52bd253899dc99b500aa4fb19c7960ef688247a886",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage004_delivery_manifest.json": "0199d61427d5426895a3d0b987aedf605ff02cb505ea196263cdfc1a742a7c73",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage004_delivery_manifest_v2.json": "fb72a4ff0eee848eee0f7c1052d66340ffb2368c5c4fe88d488af47823b71b6d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage005_delivery_manifest.json": "613d52f94816cb8d70c471474bc729d49eb89f24b66ac4bad5eb52b6b61877a6"
+  },
+  "unchanged_range_module_sha256": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+  "data_cutoff": "2026-10-29",
+  "requested_start": "2015-01-01",
+  "actual_calendar_start": "2015-01-05",
+  "actual_calendar_end": "2026-10-29",
+  "financial_calendar_days": 2871,
+  "cached_2014_trading_calendar_days": 245,
+  "data_receipt_financial_start": "2020 legacy experiment tag; not a coverage cutoff",
+  "limitations": [
+    "A/C must each genuinely start150000/zero inventory in2015; implementation and post-run checks pending.",
+    "2014 cache has inherited main/alias/lifecycle gaps;21-ready must remain unchanged, not force all products ready on first day.",
+    "Same-epoch range uses all available approved daily history, not proven complete listing history."
+  ],
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0
+}

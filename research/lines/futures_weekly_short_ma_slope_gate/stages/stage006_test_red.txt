@@ -1,0 +1,18 @@
+E
+======================================================================
+ERROR: test_stage006_runner (unittest.loader._FailedTest.test_stage006_runner)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stage006_runner
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage006_runner.py", line 5, in <module>
+    from run_stage006 import validate_window,range_enabled_for_arm,normalize_settings,ROOT,FROZEN
+ModuleNotFoundError: No module named 'run_stage006'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

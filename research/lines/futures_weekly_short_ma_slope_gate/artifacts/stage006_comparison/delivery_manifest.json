@@ -1,0 +1,19 @@
+{
+  "schema": "stage006_report_delivery_v1",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "financial_replays": 0,
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/summary.csv": "46fbd16eed171eccd028be2cfa2b177c14c2d478539c8cc18306fc2c5b67108f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/nav_drawdown.csv": "0642c3aacc0776231bcfa8e3bdc74ba798815b90202f2730a4a131ad02a6a3b7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/price_range_complete_rounds.csv": "60b991ee1ebba853333a01409103e9f4921ac2a236bca475a70db7db511c1399",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/price_range_terminal_open_rounds.csv": "71f2247de2752aa707b49697da3ba566514e61fcc34536d5220918416adedf1e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/original_terminal_open_rounds.csv": "69d75b8ed09b19a824fc046540398bf9d5861be7c149180bc9de04675577000a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/annual.csv": "4c343c5d4b50101a9bf241d941acd426d4f4336546f5dd842eebdfcb95f2b7ff",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/original_daily.csv": "9e138ec47d35d7bbf8d2bbd039178caef78cf241c040f339f766f24e901518be",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/price_range_daily.csv": "048e0b4bffbb26ab924f9924b86997bd93a7d9a83c52e799321696dc4a76d0a1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/original_complete_rounds.csv": "4088ff64733b67ffeeb939105dfcc4bb394a8b27e6b098471987fd1359a626d9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_nav_drawdown.png": "802849e7981c4e41d94da6a17973c4305cc9020c90af29d8ef0593549889ea18",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage006_comparison/comparison.json": "4600ab60e6736c5fbb396d30bf137b66749e22eb28e78bb493112fcdf4145948"
+  },
+  "self_hash_excluded": true
+}

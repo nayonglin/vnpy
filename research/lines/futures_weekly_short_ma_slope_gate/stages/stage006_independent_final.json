@@ -1,0 +1,194 @@
+{
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "reviewed_at": "2026-10-30T12:57:06.279513+08:00",
+  "independent_tests_passed": 45,
+  "financial_core_checks": {
+    "A": 370808,
+    "C": 361795
+  },
+  "report_cross_check_count": 47825,
+  "metrics": {
+    "original": {
+      "end_equity": 3661109.999999997,
+      "total_return_pct": 2340.739999999998,
+      "max_dd_pct": -56.31217255222166,
+      "sharpe": 0.8900904765038444,
+      "total_slippage": 255980.0,
+      "total_trade_count": 725,
+      "rounds": {
+        "count": 356,
+        "wins": 158,
+        "losses": 197,
+        "flat": 1,
+        "win_rate_pct": 44.38202247191011,
+        "average_win": 46183.86075949367,
+        "average_loss_abs": 25890.913705583756,
+        "payoff_ratio": 1.7837864389287057,
+        "profit_factor": 1.4306510525418046,
+        "closed_net_pnl": 2196540.0
+      },
+      "open_round_net_mtm": 1314570.0
+    },
+    "price_range": {
+      "end_equity": 3180474.999999997,
+      "total_return_pct": 2020.3166666666648,
+      "max_dd_pct": -53.10712252257146,
+      "sharpe": 0.8653563191218635,
+      "total_slippage": 221670.0,
+      "total_trade_count": 618,
+      "rounds": {
+        "count": 304,
+        "wins": 130,
+        "losses": 172,
+        "flat": 2,
+        "win_rate_pct": 42.76315789473684,
+        "average_win": 62816.92307692308,
+        "average_loss_abs": 29858.866279069767,
+        "payoff_ratio": 2.103794648122859,
+        "profit_factor": 1.5900773503254166,
+        "closed_net_pnl": 3030474.999999999
+      },
+      "open_round_net_mtm": 0
+    }
+  },
+  "margin": {
+    "original": {
+      "configured_margin_max_pct": 110.00765478292807,
+      "over100_days": 3
+    },
+    "price_range": {
+      "configured_margin_max_pct": 98.46771055753271,
+      "over100_days": 0
+    }
+  },
+  "curve_checks": {
+    "original": {
+      "points": 2871,
+      "end_NAV": 24.40739999999999,
+      "max_DD_pct": -56.31217255222158,
+      "definition": "equity/150000; DD includes initial capital"
+    },
+    "price_range": {
+      "points": 2871,
+      "end_NAV": 21.203166666666643,
+      "max_DD_pct": -53.107122522571416,
+      "definition": "equity/150000; DD includes initial capital"
+    }
+  },
+  "A_disabled_range_diagnostics": {
+    "count": 100,
+    "would_block": 56,
+    "applied": 0
+  },
+  "range_diagnostics": {
+    "count": 100,
+    "would_block": 56,
+    "positive_size_applied_block": 55,
+    "daily_prefix_min": 105,
+    "daily_prefix_max": 234,
+    "events_with_daily_beyond_engine_week_sources": 75,
+    "events_cache_starts_after_known_listing": 7,
+    "listing_completeness_proven": false
+  },
+  "cold_start_evidence": {
+    "A": {
+      "hc1505_completed_weeks_before_start": 13,
+      "first_readiness": {
+        "date": "2015-01-05",
+        "mapped_products": 11,
+        "ready_target_contracts": 10,
+        "newly_completed_targets": 0
+      },
+      "first_fill_trade_date": "2015-01-26",
+      "first_open_signal_date": "2015-01-23"
+    },
+    "C": {
+      "hc1505_completed_weeks_before_start": 13,
+      "first_readiness": {
+        "date": "2015-01-05",
+        "mapped_products": 11,
+        "ready_target_contracts": 10,
+        "newly_completed_targets": 0
+      },
+      "first_fill_trade_date": "2015-01-26",
+      "first_open_signal_date": "2015-01-23"
+    }
+  },
+  "prior_A_identity_proof_sha256": "5c66d745c6c6b437b38350f7e9639cf9f87357ece75279b219e5cafcc8b55a66",
+  "end_equity_bridge": {
+    "closed_net_pnl_difference": 833934.9999999991,
+    "open_round_net_MTM_difference": -1314570.0,
+    "end_equity_difference": -480635.0
+  },
+  "actual_open_context_counts": {
+    "long": {
+      "native": 226,
+      "rollover": 35
+    },
+    "short": {
+      "native": 39,
+      "rollover": 4
+    }
+  },
+  "slope_diagnostics_only": {
+    "long": {
+      "actual_native_MA5_negative": 14,
+      "actual_native_MA5_or_MA10_negative": 39,
+      "actual_native_MA5_or_MA10_positive": 222
+    },
+    "short": {
+      "actual_native_MA5_negative": 39,
+      "actual_native_MA5_or_MA10_negative": 39,
+      "actual_native_MA5_or_MA10_positive": 21
+    }
+  },
+  "frozen_delivery_counts": {
+    "stage001_delivery_manifest.json": 3105,
+    "stage002_delivery_manifest.json": 3141,
+    "stage003_delivery_manifest.json": 41,
+    "stage004_delivery_manifest.json": 3225,
+    "stage004_delivery_manifest_v2.json": 3229,
+    "stage005_delivery_manifest.json": 3097
+  },
+  "reviewed_code_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage006_report.py": "22dcd3fbb3e163621b8d23d491b25e23cdbbae42b6ae302b57c9dace8a449488",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage006_report.py": "c693ba0f882446103ee028f58e37bd39f83315e407dacd1228ff31ffbe51f936",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage001_report.py": "0651881509655317064d6cde46783d9b18a70cef3c161152c936309c92f8fed6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_build_artifacts.py": "c01fbde3ba539060164aba4e3b929fa9cbdeb943bb6b51f8175b914f873173a7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage006.py": "379cf3b049513184c32d2c7c97db5d3bde66c1db495341093b4fa4bbc23acf96",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage006_runner.py": "40dcbb703ac4ee39c858e2a4f60fd54c870e0cc7c4a9fa793822bf09860d728b"
+  },
+  "report_comparison_sha256": "4600ab60e6736c5fbb396d30bf137b66749e22eb28e78bb493112fcdf4145948",
+  "fixed_candidate_gates": {
+    "end_equity": false,
+    "max_dd_pct": true,
+    "sharpe": false
+  },
+  "difference_vs_original": {
+    "end_equity": -480635.0,
+    "total_return_pct": -320.4233333333332,
+    "max_dd_pct": 3.2050500296502022,
+    "sharpe": -0.024734157381980926
+  },
+  "strategy_verdict": "MIXED_OR_FAIL_NO_RESCUE_TUNING",
+  "promotion_decision": "NO_PROMOTION",
+  "production_qualified": false,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "actual_strategy_run_interval": {
+    "started_at": "2026-10-30T12:47:27.192929+08:00",
+    "completed_at": "2026-10-30T12:49:59.632051+08:00"
+  },
+  "limitations": [
+    "All cached approved same-epoch daily history is not proven complete listing history;7 events begin after known listing date;2014 warmup/main/lifecycle limitations remain.",
+    "Repeated historical development; 2020 improvement fails to generalize to2015 equity/Sharpe; no OOS, alpha or production qualification.",
+    "Zero commission, static margin x1.65 and daily-next-open lack historical actual broker margin and depth/capacity proof.",
+    "Whole-account difference includes capital sizing/integer/risk/opportunity path feedback; not direct causal PnL of55 blocked candidates."
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "stage006_2015_readonly_data_preflight_v1",
+  "time": "2026-10-30T12:44:59.825599+08:00",
+  "financial_start": "2015-01-01",
+  "first_actual_day": "2015-01-05",
+  "last_actual_day": "2026-10-29",
+  "financial_trading_days": 2871,
+  "warmup_calendar_days_2014": 245,
+  "data_date_start": "2014-01-01",
+  "data_end": "2026-10-29",
+  "receipt_financial_start_is_old_experiment_label": "2020-01-01",
+  "data_ready_for_bounded_replay": true,
+  "historical_main_reconstruction_complete": false,
+  "physical_rows": 392197,
+  "physical_min_day": "2014-01-02",
+  "physical_max_day": "2026-10-29",
+  "mapped_nonempty_financial_rows": 43821,
+  "mapped_missing_positive_keys": 591,
+  "known_zero_keys": 573,
+  "structural_unavailable_keys": 18,
+  "unclassified_positive_missing_keys": 0,
+  "unclassified_examples": [],
+  "first_2015_main_warmup": [
+    {
+      "product": "CF.CZCE",
+      "first_main": "CF505.CZCE",
+      "available_accepted_complete_2014_weeks": 33,
+      "ready21_at_start": true
+    },
+    {
+      "product": "FG.CZCE",
+      "first_main": "FG506.CZCE",
+      "available_accepted_complete_2014_weeks": 28,
+      "ready21_at_start": true
+    },
+    {
+      "product": "MA.CZCE",
+      "first_main": "MA506.CZCE",
+      "available_accepted_complete_2014_weeks": 28,
+      "ready21_at_start": true
+    },
+    {
+      "product": "OI.CZCE",
+      "first_main": "OI505.CZCE",
+      "available_accepted_complete_2014_weeks": 33,
+      "ready21_at_start": true
+    },
+    {
+      "product": "SM.CZCE",
+      "first_main": "SM501.CZCE",
+      "available_accepted_complete_2014_weeks": 21,
+      "ready21_at_start": true
+    },
+    {
+      "product": "au.SHFE",
+      "first_main": "au1506.SHFE",
+      "available_accepted_complete_2014_weeks": 24,
+      "ready21_at_start": true
+    },
+    {
+      "product": "cu.SHFE",
+      "first_main": "cu1503.SHFE",
+      "available_accepted_complete_2014_weeks": 41,
+      "ready21_at_start": true
+    },
+    {
+      "product": "hc.SHFE",
+      "first_main": "hc1505.SHFE",
+      "available_accepted_complete_2014_weeks": 13,
+      "ready21_at_start": false
+    },
+    {
+      "product": "jm.DCE",
+      "first_main": "jm1505.DCE",
+      "available_accepted_complete_2014_weeks": 33,
+      "ready21_at_start": true
+    },
+    {
+      "product": "rb.SHFE",
+      "first_main": "rb1505.SHFE",
+      "available_accepted_complete_2014_weeks": 33,
+      "ready21_at_start": true
+    },
+    {
+      "product": "ru.SHFE",
+      "first_main": "ru1505.SHFE",
+      "available_accepted_complete_2014_weeks": 33,
+      "ready21_at_start": true
+    }
+  ],
+  "old_stage033_A_reference": {
+    "path": "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage033_A_attempt001",
+    "preflight_head": "24b975025355d2ea05ba80f5dd67105683ac1b62",
+    "data_identity": {
+      "daily_sqlite_sha256": "a927f7829de4edf1b336b4290d8a6dd6c95588d6f3d37bdc9bf05b22caacf8b5",
+      "mapping_sha256": "149a22ce87baa8423fa4a7540f9a6a8ed99c9109f7ef92ae522293c2e9ed330b",
+      "physical_epoch_daily_sha256": "d77e1a0ebf38fb243014eb31b91eaa553cc08748f454e0df3aaa7c4ff68aaeed",
+      "receipt_sha256": "dce2ac8a312d31ab557d1b588b02e09022c0c65e5cf2bf02456b2639fb9fb4ee"
+    },
+    "requested_start": "2015-01-01",
+    "end": "2026-10-28",
+    "metrics": {
+      "end_equity": 3536289.999999998,
+      "total_return_pct": 2257.5266666666653,
+      "max_dd_pct": -56.31217255222158,
+      "sharpe": 0.8829785967153345
+    },
+    "daily_sha256": "7587f3736d4d495365333a81b8b717208c1001786a936af7321d5663e17b756b",
+    "flags": {
+      "daily_addon_enabled": false,
+      "week_close_technical_exits": true,
+      "short_case2_allowed": false,
+      "rsi_exit_enabled": false
+    }
+  },
+  "preflight_conclusion": "PASS_FOR_FIXED_BOUNDED_REPLAY_WITH_INHERITED_LIMITATIONS",
+  "limitations": [
+    "2014 MA aliases have228 missing mapped days; hc1505 first2015 target has only13 complete2014 weeks; actual21-ready state must be exported by replay.",
+    "Unknown full future lifecycle is labeled; never infer expiry from observed last row.",
+    "Frozen mapping has explicit18 structural defects, not a reconstructed historical main series; no substitute contracts inferred. data_ready requires unknown main gaps0; approved real zero-volume keys are classification-only, never bars/week inputs/fills. Every held/traded/week-source positive-data and execution/accounting gate remains mandatory.",
+    "New Tq authority was declared before finance; no multi-source consensus or PIT claim.",
+    "10/27 local Stage283 daily closeOI snapshot is the predeclared authority; later same-vendor observations do not overwrite it.",
+    "10/28 Tq daily is observed after 15:30 local, not independently arbitrated exchange final truth.",
+    "10/28 is incomplete week; ordinary weekly indicators use completed weeks only.",
+    "Data readiness covers original19 main plus frozen R003 held/pending and accepted recent tails; each new replay must still verify every actual held/traded day and 2020 warmup readiness.",
+    "10/29 Tq daily observed after 15:30; not exchange-final arbitration. 10/30 forming rows excluded.",
+    "Original19 standalone snapshot; no source from ongoing44 research. All historical PIT, lifecycle gaps, static metadata and capacity limitations inherited."
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/receipt.json": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/mapping.csv": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/physical_epoch_daily.csv": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/physical_epochs.csv": "e84cd645d5a614d12a02db15c787a2fcb02b1d4e4ba92d62680ae13e61f47d25",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/known_no_trade_main.csv": "2a8f34188548e1f46f4954ce64e95a001d34b7e6afd7c282845d179ad0c58bf2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/structural_unavailable_main.csv": "43fe013d5aa417de9281438cafd2970b1e4d5f0055737758713790bb5f0dce69",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/warmup_missing_main_2014.csv": "ffc9bcaf2185734b58d9b827267a43187cc16d526ada35168df2f274019d4a6b",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage033_A_attempt001/preflight.json": "88e08b5c2cf9ea71714f15993356f50c4abed1f862c4218805caa0351183acb0",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage033_A_attempt001/metrics.json": "1a4a8bc2ba4bce28051de94c6cab039a2c9b65bc36ff62dd6103cb8cb8b6bf3c",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage033_A_attempt001/daily.csv": "7587f3736d4d495365333a81b8b717208c1001786a936af7321d5663e17b756b"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "data_changes": 0,
+  "production_accesses": 0
+}
