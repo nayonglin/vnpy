@@ -1,0 +1,13 @@
+.......F..
+======================================================================
+FAIL: test_new_run_freeze_identity_and_exact_reuse_path (test_stage008_runner.MultiStartTests.test_new_run_freeze_identity_and_exact_reuse_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage008_runner.py", line 37, in test_new_run_freeze_identity_and_exact_reuse_path
+    with self.assertRaises(ValueError):make_checkpoint(run,cp,freeze,'f'*64,'A','2015-01-01')
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.334s
+
+FAILED (failures=1)

@@ -1,0 +1,3059 @@
+{
+  "schema": "stage008_23_start_data_preflight_v1",
+  "time": "2026-10-30T13:39:45.515239+08:00",
+  "status": "PASS_FOR_FIXED_BOUNDED_MULTISTART_WITH_INHERITED_LIMITATIONS",
+  "cutoff": "2026-10-29",
+  "starts": [
+    "2015-01-01",
+    "2015-06-01",
+    "2016-01-01",
+    "2016-06-01",
+    "2017-01-01",
+    "2017-06-01",
+    "2018-01-01",
+    "2018-06-01",
+    "2019-01-01",
+    "2019-06-01",
+    "2020-01-01",
+    "2020-06-01",
+    "2021-01-01",
+    "2021-06-01",
+    "2022-01-01",
+    "2022-06-01",
+    "2023-01-01",
+    "2023-06-01",
+    "2024-01-01",
+    "2024-06-01",
+    "2025-01-01",
+    "2025-06-01",
+    "2026-01-01"
+  ],
+  "window_count": 23,
+  "expected_arm_windows": 46,
+  "reused_count": 4,
+  "new_engine_runs_expected": 42,
+  "data_identity": {
+    "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+    "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+  },
+  "windows": [
+    {
+      "requested_start": "2015-01-01",
+      "cohort": "January",
+      "actual_first_day": "2015-01-05",
+      "end": "2026-10-29",
+      "trading_days": 2871,
+      "elapsed_calendar_days": 4319,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2014-01-01",
+      "warmup_first_real_day": "2014-01-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF505.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG506.CZCE",
+          "prior_completed_positive_weeks_365d": 28,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA506.CZCE",
+          "prior_completed_positive_weeks_365d": 28,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI505.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM501.CZCE",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1506.SHFE",
+          "prior_completed_positive_weeks_365d": 24,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1503.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1505.SHFE",
+          "prior_completed_positive_weeks_365d": 13,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1505.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1505.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1505.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1505.SHFE",
+          "prior_completed_positive_weeks_365d": 13,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 43821,
+      "missing_positive_mapped_keys": 591,
+      "known_no_trade_keys": 573,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2015-06-01",
+      "cohort": "June",
+      "actual_first_day": "2015-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2773,
+      "elapsed_calendar_days": 4168,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2014-06-01",
+      "warmup_first_real_day": "2014-06-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM601.CZCE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1512.SHFE",
+          "prior_completed_positive_weeks_365d": 19,
+          "ready21": false
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1508.SHFE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1510.SHFE",
+          "prior_completed_positive_weeks_365d": 12,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1509.DCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1509.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM601.CZCE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1512.SHFE",
+          "prior_completed_positive_weeks_365d": 19,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1510.SHFE",
+          "prior_completed_positive_weeks_365d": 12,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 42743,
+      "missing_positive_mapped_keys": 565,
+      "known_no_trade_keys": 547,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2016-01-01",
+      "cohort": "January",
+      "actual_first_day": "2016-01-04",
+      "end": "2026-10-29",
+      "trading_days": 2627,
+      "elapsed_calendar_days": 3954,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2015-01-01",
+      "warmup_first_real_day": "2015-01-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI605.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM605.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1606.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1602.SHFE",
+          "prior_completed_positive_weeks_365d": 46,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1605.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1605.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM605.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1605.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 41137,
+      "missing_positive_mapped_keys": 515,
+      "known_no_trade_keys": 497,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2016-06-01",
+      "cohort": "June",
+      "actual_first_day": "2016-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2527,
+      "elapsed_calendar_days": 3802,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2015-06-02",
+      "warmup_first_real_day": "2015-06-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI609.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM609.CZCE",
+          "prior_completed_positive_weeks_365d": 10,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1612.SHFE",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1608.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1610.SHFE",
+          "prior_completed_positive_weeks_365d": 23,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1609.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1610.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1609.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM609.CZCE",
+          "prior_completed_positive_weeks_365d": 10,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 39938,
+      "missing_positive_mapped_keys": 456,
+      "known_no_trade_keys": 438,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2017-01-01",
+      "cohort": "January",
+      "actual_first_day": "2017-01-03",
+      "end": "2026-10-29",
+      "trading_days": 2383,
+      "elapsed_calendar_days": 3588,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2016-01-02",
+      "warmup_first_real_day": "2016-01-02",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI705.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM705.CZCE",
+          "prior_completed_positive_weeks_365d": 11,
+          "ready21": false
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1706.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1703.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1711.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1705.DCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1705.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM705.CZCE",
+          "prior_completed_positive_weeks_365d": 11,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1711.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 38210,
+      "missing_positive_mapped_keys": 354,
+      "known_no_trade_keys": 336,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2017-06-01",
+      "cohort": "June",
+      "actual_first_day": "2017-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2286,
+      "elapsed_calendar_days": 3437,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2016-06-01",
+      "warmup_first_real_day": "2016-06-01",
+      "first_main_readiness": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI709.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM709.CZCE",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1712.SHFE",
+          "prior_completed_positive_weeks_365d": 26,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1707.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1804.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1710.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1709.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1710.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1709.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1804.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 37046,
+      "missing_positive_mapped_keys": 267,
+      "known_no_trade_keys": 249,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2018-01-01",
+      "cohort": "January",
+      "actual_first_day": "2018-01-02",
+      "end": "2026-10-29",
+      "trading_days": 2139,
+      "elapsed_calendar_days": 3223,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2017-01-01",
+      "warmup_first_real_day": "2017-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP805.CZCE",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM805.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1806.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1802.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1805.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1805.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1805.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP805.CZCE",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1805.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 35277,
+      "missing_positive_mapped_keys": 129,
+      "known_no_trade_keys": 111,
+      "structural_unavailable_keys": 18,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2018-06-01",
+      "cohort": "June",
+      "actual_first_day": "2018-06-01",
+      "end": "2026-10-29",
+      "trading_days": 2040,
+      "elapsed_calendar_days": 3072,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2017-06-01",
+      "warmup_first_real_day": "2017-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP810.CZCE",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF901.CZCE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI809.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM809.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1812.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1807.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1810.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1809.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1810.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1809.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF901.CZCE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 0,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 33990,
+      "missing_positive_mapped_keys": 30,
+      "known_no_trade_keys": 19,
+      "structural_unavailable_keys": 11,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2019-01-01",
+      "cohort": "January",
+      "actual_first_day": "2019-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1896,
+      "elapsed_calendar_days": 2858,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2018-01-01",
+      "warmup_first_real_day": "2018-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI905.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM905.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1906.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1902.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1905.SHFE",
+          "prior_completed_positive_weeks_365d": 23,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1905.DCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1905.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1906.SHFE",
+          "prior_completed_positive_weeks_365d": 4,
+          "ready21": false
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1906.SHFE",
+          "prior_completed_positive_weeks_365d": 4,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 32094,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2019-06-01",
+      "cohort": "June",
+      "actual_first_day": "2019-06-03",
+      "end": "2026-10-29",
+      "trading_days": 1797,
+      "elapsed_calendar_days": 2707,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2018-06-01",
+      "warmup_first_real_day": "2018-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP910.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI909.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM909.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au1912.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu1907.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu1909.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc1910.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm1909.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb1910.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru1909.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp1909.SHFE",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 30708,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2020-01-01",
+      "cohort": "January",
+      "actual_first_day": "2020-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1652,
+      "elapsed_calendar_days": 2493,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2019-01-01",
+      "warmup_first_real_day": "2019-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI005.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA005.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM005.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2006.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2002.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2005.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2005.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2005.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2005.SHFE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA005.CZCE",
+          "prior_completed_positive_weeks_365d": 3,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 28660,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2020-06-01",
+      "cohort": "June",
+      "actual_first_day": "2020-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1555,
+      "elapsed_calendar_days": 2341,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2019-06-02",
+      "warmup_first_real_day": "2019-06-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP010.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA009.CZCE",
+          "prior_completed_positive_weeks_365d": 24,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM009.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2012.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2007.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2009.SHFE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2010.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2009.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2010.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2009.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2009.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 27205,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2021-01-01",
+      "cohort": "January",
+      "actual_first_day": "2021-01-04",
+      "end": "2026-10-29",
+      "trading_days": 1409,
+      "elapsed_calendar_days": 2127,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2020-01-02",
+      "warmup_first_real_day": "2020-01-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM105.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2102.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2102.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2105.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2105.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2105.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2103.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2103.SHFE",
+          "prior_completed_positive_weeks_365d": 18,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 25015,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2021-06-01",
+      "cohort": "June",
+      "actual_first_day": "2021-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1312,
+      "elapsed_calendar_days": 1976,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2020-06-01",
+      "warmup_first_real_day": "2020-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP110.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM109.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2112.SHFE",
+          "prior_completed_positive_weeks_365d": 27,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2107.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2109.SHFE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2110.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2109.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2109.DCE",
+          "prior_completed_positive_weeks_365d": 20,
+          "ready21": false
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2110.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2109.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2107.SHFE",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2109.DCE",
+          "prior_completed_positive_weeks_365d": 20,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 23467,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2022-01-01",
+      "cohort": "January",
+      "actual_first_day": "2022-01-04",
+      "end": "2026-10-29",
+      "trading_days": 1166,
+      "elapsed_calendar_days": 1762,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2021-01-01",
+      "warmup_first_real_day": "2021-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA205.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM205.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2202.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2202.SHFE",
+          "prior_completed_positive_weeks_365d": 47,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2205.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2205.DCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2203.DCE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2205.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 21131,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2022-06-01",
+      "cohort": "June",
+      "actual_first_day": "2022-06-01",
+      "end": "2026-10-29",
+      "trading_days": 1070,
+      "elapsed_calendar_days": 1611,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2021-06-01",
+      "warmup_first_real_day": "2021-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP210.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM209.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2208.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2207.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2209.SHFE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2210.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2209.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2209.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2210.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2209.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2209.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 19595,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2023-01-01",
+      "cohort": "January",
+      "actual_first_day": "2023-01-03",
+      "end": "2026-10-29",
+      "trading_days": 924,
+      "elapsed_calendar_days": 1397,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2022-01-01",
+      "warmup_first_real_day": "2022-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA305.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM305.CZCE",
+          "prior_completed_positive_weeks_365d": 29,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2304.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2302.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2305.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2305.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2303.DCE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2305.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 1,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 17252,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2023-06-01",
+      "cohort": "June",
+      "actual_first_day": "2023-06-01",
+      "end": "2026-10-29",
+      "trading_days": 826,
+      "elapsed_calendar_days": 1246,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2022-06-01",
+      "warmup_first_real_day": "2022-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP310.CZCE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM309.CZCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2308.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2307.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2309.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2310.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2309.DCE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2309.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2310.SHFE",
+          "prior_completed_positive_weeks_365d": 30,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2309.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2308.GFEX",
+          "prior_completed_positive_weeks_365d": 21,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2309.SHFE",
+          "prior_completed_positive_weeks_365d": 34,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 15586,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2024-01-01",
+      "cohort": "January",
+      "actual_first_day": "2024-01-02",
+      "end": "2026-10-29",
+      "trading_days": 682,
+      "elapsed_calendar_days": 1032,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2023-01-01",
+      "warmup_first_real_day": "2023-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA405.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH405.CZCE",
+          "prior_completed_positive_weeks_365d": 14,
+          "ready21": false
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM402.CZCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2402.SHFE",
+          "prior_completed_positive_weeks_365d": 47,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2402.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2403.SHFE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2405.DCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2407.GFEX",
+          "prior_completed_positive_weeks_365d": 22,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2403.DCE",
+          "prior_completed_positive_weeks_365d": 38,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2402.GFEX",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2405.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH405.CZCE",
+          "prior_completed_positive_weeks_365d": 14,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 12958,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2024-06-01",
+      "cohort": "June",
+      "actual_first_day": "2024-06-03",
+      "end": "2026-10-29",
+      "trading_days": 584,
+      "elapsed_calendar_days": 880,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2023-06-02",
+      "warmup_first_real_day": "2023-06-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP410.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM409.CZCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2408.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2407.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2409.SHFE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2410.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2409.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2407.GFEX",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2409.DCE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2410.SHFE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2409.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2409.GFEX",
+          "prior_completed_positive_weeks_365d": 16,
+          "ready21": false
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2409.SHFE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [
+        {
+          "product": "si.GFEX",
+          "first_main": "si2409.GFEX",
+          "prior_completed_positive_weeks_365d": 16,
+          "ready21": false
+        }
+      ],
+      "nonempty_mapped_keys": 11096,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2025-01-01",
+      "cohort": "January",
+      "actual_first_day": "2025-01-02",
+      "end": "2026-10-29",
+      "trading_days": 440,
+      "elapsed_calendar_days": 666,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2024-01-02",
+      "warmup_first_real_day": "2024-01-02",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH505.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM505.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2502.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2502.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2503.SHFE",
+          "prior_completed_positive_weeks_365d": 43,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2505.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2505.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2503.DCE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2505.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2502.GFEX",
+          "prior_completed_positive_weeks_365d": 25,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2503.SHFE",
+          "prior_completed_positive_weeks_365d": 39,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 8360,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2025-06-01",
+      "cohort": "June",
+      "actual_first_day": "2025-06-03",
+      "end": "2026-10-29",
+      "trading_days": 343,
+      "elapsed_calendar_days": 515,
+      "at_least_one_full_year": true,
+      "vote_eligible": true,
+      "observation_only": false,
+      "warmup_requested_start": "2024-06-01",
+      "warmup_first_real_day": "2024-06-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP510.CZCE",
+          "prior_completed_positive_weeks_365d": 31,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH509.CZCE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM509.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2508.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2507.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2507.SHFE",
+          "prior_completed_positive_weeks_365d": 48,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2509.DCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2507.GFEX",
+          "prior_completed_positive_weeks_365d": 46,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2509.DCE",
+          "prior_completed_positive_weeks_365d": 35,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2510.SHFE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2509.SHFE",
+          "prior_completed_positive_weeks_365d": 36,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2507.GFEX",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2507.SHFE",
+          "prior_completed_positive_weeks_365d": 41,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 6517,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    },
+    {
+      "requested_start": "2026-01-01",
+      "cohort": "January",
+      "actual_first_day": "2026-01-05",
+      "end": "2026-10-29",
+      "trading_days": 197,
+      "elapsed_calendar_days": 301,
+      "at_least_one_full_year": false,
+      "vote_eligible": false,
+      "observation_only": true,
+      "warmup_requested_start": "2025-01-01",
+      "warmup_first_real_day": "2025-01-01",
+      "first_main_readiness": [
+        {
+          "product": "AP.CZCE",
+          "first_main": "AP605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "CF.CZCE",
+          "first_main": "CF605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "FG.CZCE",
+          "first_main": "FG605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "MA.CZCE",
+          "first_main": "MA605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "OI.CZCE",
+          "first_main": "OI605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SA.CZCE",
+          "first_main": "SA605.CZCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "SH.CZCE",
+          "first_main": "SH603.CZCE",
+          "prior_completed_positive_weeks_365d": 42,
+          "ready21": true
+        },
+        {
+          "product": "SM.CZCE",
+          "first_main": "SM603.CZCE",
+          "prior_completed_positive_weeks_365d": 37,
+          "ready21": true
+        },
+        {
+          "product": "au.SHFE",
+          "first_main": "au2602.SHFE",
+          "prior_completed_positive_weeks_365d": 50,
+          "ready21": true
+        },
+        {
+          "product": "cu.SHFE",
+          "first_main": "cu2602.SHFE",
+          "prior_completed_positive_weeks_365d": 45,
+          "ready21": true
+        },
+        {
+          "product": "fu.SHFE",
+          "first_main": "fu2603.SHFE",
+          "prior_completed_positive_weeks_365d": 44,
+          "ready21": true
+        },
+        {
+          "product": "hc.SHFE",
+          "first_main": "hc2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "jm.DCE",
+          "first_main": "jm2605.DCE",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lc.GFEX",
+          "first_main": "lc2605.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "lh.DCE",
+          "first_main": "lh2603.DCE",
+          "prior_completed_positive_weeks_365d": 40,
+          "ready21": true
+        },
+        {
+          "product": "rb.SHFE",
+          "first_main": "rb2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "ru.SHFE",
+          "first_main": "ru2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        },
+        {
+          "product": "si.GFEX",
+          "first_main": "si2605.GFEX",
+          "prior_completed_positive_weeks_365d": 32,
+          "ready21": true
+        },
+        {
+          "product": "sp.SHFE",
+          "first_main": "sp2605.SHFE",
+          "prior_completed_positive_weeks_365d": 33,
+          "ready21": true
+        }
+      ],
+      "first_main_not_ready21": [],
+      "nonempty_mapped_keys": 3743,
+      "missing_positive_mapped_keys": 0,
+      "known_no_trade_keys": 0,
+      "structural_unavailable_keys": 0,
+      "unknown_main_gap_keys": 0
+    }
+  ],
+  "groups": {
+    "January": {
+      "total": 12,
+      "complete_votes": 11,
+      "observation_only": 1
+    },
+    "June": {
+      "total": 11,
+      "complete_votes": 11,
+      "observation_only": 0
+    }
+  },
+  "complete_window_votes": 22,
+  "observation_window_count": 1,
+  "user_override": "start-to-frozen-cutoff only; no fixed 1/2/3-year windows; June means June1",
+  "warmup_policy": "Frozen existing engine loads up to preceding365 calendar days; static readiness below is a feasibility estimate, actual per-day acceptance still required; cached full-epoch range data remains as-of signal.",
+  "reused_arms": {
+    "2015-01-01|A": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001",
+      "validated_complete": true,
+      "requested_start": "2015-01-01",
+      "actual_start": "2015-01-05",
+      "end": "2026-10-29",
+      "trading_days": 2871,
+      "metrics": {
+        "variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+        "label": "15w Stage847-C9-15w live default",
+        "cost_multiplier": 1.0,
+        "account_capital": 150000.0,
+        "c3_capital": 150000.0,
+        "risk_multiplier": 0.4,
+        "product_cap_ratio": 0.25,
+        "max_concurrent_positions": 19,
+        "end_equity": 3661109.999999998,
+        "total_return_pct": 2340.739999999999,
+        "cagr_pct": 31.053599456970083,
+        "max_dd_pct": -56.31217255222158,
+        "ulcer_pct": 26.7673807311385,
+        "sharpe": 0.8900904765038448,
+        "min_equity": 118119.99999999999,
+        "max_broker10_margin_to_equity_pct": 73.33843652195206,
+        "p95_broker10_margin_to_equity_pct": 54.29110063545531,
+        "days_over_100pct": 0,
+        "days_over_90pct": 0,
+        "days_equity_below_zero": 0,
+        "total_slippage": 255980.0,
+        "total_trade_count": 725.0,
+        "nonzero_daily_win_rate_pct": 52.25225225225225,
+        "dd40_pass": 0,
+        "broker10_100_pass": 1,
+        "account_survival_pass": 1,
+        "deployable_pass": 0,
+        "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+        "arm": "A",
+        "result_scope": "stage006_2015_short_historical_bottom20_A",
+        "start": "2015-01-01",
+        "end": "2026-10-29",
+        "actual_start": "2015-01-05",
+        "actual_end": "2026-10-29",
+        "execution_model": "declared_daily_bar_open_next_bar_v1",
+        "production_qualified": false
+      },
+      "preflight_data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      },
+      "price_acceptance_present": true,
+      "short_slope_actual_enabled": false,
+      "short_slope_decision_count": 0,
+      "short_slope_would_block_count": null,
+      "short_slope_applied_block_count": 0,
+      "legacy_2020_A_diagnostics_only": false
+    },
+    "2015-01-01|C": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001",
+      "validated_complete": true,
+      "requested_start": "2015-01-01",
+      "actual_start": "2015-01-05",
+      "end": "2026-10-29",
+      "trading_days": 2871,
+      "metrics": {
+        "variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+        "label": "15w Stage847-C9-15w live default",
+        "cost_multiplier": 1.0,
+        "account_capital": 150000.0,
+        "c3_capital": 150000.0,
+        "risk_multiplier": 0.4,
+        "product_cap_ratio": 0.25,
+        "max_concurrent_positions": 19,
+        "end_equity": 3180474.9999999963,
+        "total_return_pct": 2020.3166666666643,
+        "cagr_pct": 29.501645718002244,
+        "max_dd_pct": -53.107122522571416,
+        "ulcer_pct": 24.474531506122947,
+        "sharpe": 0.8653563191218633,
+        "min_equity": 119739.99999999999,
+        "max_broker10_margin_to_equity_pct": 65.64514037168848,
+        "p95_broker10_margin_to_equity_pct": 53.485468681682626,
+        "days_over_100pct": 0,
+        "days_over_90pct": 0,
+        "days_equity_below_zero": 0,
+        "total_slippage": 221670.0,
+        "total_trade_count": 618.0,
+        "nonzero_daily_win_rate_pct": 52.092788703983864,
+        "dd40_pass": 0,
+        "broker10_100_pass": 1,
+        "account_survival_pass": 1,
+        "deployable_pass": 0,
+        "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+        "arm": "C",
+        "result_scope": "stage006_2015_short_historical_bottom20_C",
+        "start": "2015-01-01",
+        "end": "2026-10-29",
+        "actual_start": "2015-01-05",
+        "actual_end": "2026-10-29",
+        "execution_model": "declared_daily_bar_open_next_bar_v1",
+        "production_qualified": false
+      },
+      "preflight_data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      },
+      "price_acceptance_present": true,
+      "short_slope_actual_enabled": false,
+      "short_slope_decision_count": 0,
+      "short_slope_would_block_count": null,
+      "short_slope_applied_block_count": 0,
+      "legacy_2020_A_diagnostics_only": false
+    },
+    "2020-01-01|A": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003",
+      "validated_complete": true,
+      "requested_start": "2020-01-01",
+      "actual_start": "2020-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1652,
+      "metrics": {
+        "variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+        "label": "15w Stage847-C9-15w live default",
+        "cost_multiplier": 1.0,
+        "account_capital": 150000.0,
+        "c3_capital": 150000.0,
+        "risk_multiplier": 0.4,
+        "product_cap_ratio": 0.25,
+        "max_concurrent_positions": 19,
+        "end_equity": 1304010.0000000005,
+        "total_return_pct": 769.3400000000003,
+        "cagr_pct": 37.29543875216166,
+        "max_dd_pct": -55.04291739512648,
+        "ulcer_pct": 33.60333605358534,
+        "sharpe": 0.9664999046996734,
+        "min_equity": 91720.0,
+        "max_broker10_margin_to_equity_pct": 69.83458702064893,
+        "p95_broker10_margin_to_equity_pct": 54.275493099721984,
+        "days_over_100pct": 0,
+        "days_over_90pct": 0,
+        "days_equity_below_zero": 0,
+        "total_slippage": 81020.0,
+        "total_trade_count": 464.0,
+        "nonzero_daily_win_rate_pct": 52.15485756026297,
+        "dd40_pass": 0,
+        "broker10_100_pass": 1,
+        "account_survival_pass": 1,
+        "deployable_pass": 0,
+        "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+        "arm": "A",
+        "result_scope": "stage001_2020_short_ma_slope_A",
+        "start": "2020-01-01",
+        "end": "2026-10-29",
+        "actual_start": "2020-01-02",
+        "actual_end": "2026-10-29",
+        "execution_model": "declared_daily_bar_open_next_bar_v1",
+        "production_qualified": false
+      },
+      "preflight_data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      },
+      "price_acceptance_present": false,
+      "short_slope_actual_enabled": false,
+      "short_slope_decision_count": 65,
+      "short_slope_would_block_count": 21,
+      "short_slope_applied_block_count": 0,
+      "legacy_2020_A_diagnostics_only": true
+    },
+    "2020-01-01|C": {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001",
+      "validated_complete": true,
+      "requested_start": "2020-01-01",
+      "actual_start": "2020-01-02",
+      "end": "2026-10-29",
+      "trading_days": 1652,
+      "metrics": {
+        "variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+        "label": "15w Stage847-C9-15w live default",
+        "cost_multiplier": 1.0,
+        "account_capital": 150000.0,
+        "c3_capital": 150000.0,
+        "risk_multiplier": 0.4,
+        "product_cap_ratio": 0.25,
+        "max_concurrent_positions": 19,
+        "end_equity": 2435919.9999999986,
+        "total_return_pct": 1523.9466666666658,
+        "cagr_pct": 50.46390117514543,
+        "max_dd_pct": -44.45432460924966,
+        "ulcer_pct": 23.98780292667827,
+        "sharpe": 1.1616606116703658,
+        "min_equity": 91720.0,
+        "max_broker10_margin_to_equity_pct": 65.2560062842533,
+        "p95_broker10_margin_to_equity_pct": 55.07268940290757,
+        "days_over_100pct": 0,
+        "days_over_90pct": 0,
+        "days_equity_below_zero": 0,
+        "total_slippage": 148790.0,
+        "total_trade_count": 414.0,
+        "nonzero_daily_win_rate_pct": 52.358490566037744,
+        "dd40_pass": 0,
+        "broker10_100_pass": 1,
+        "account_survival_pass": 1,
+        "deployable_pass": 0,
+        "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+        "arm": "C",
+        "result_scope": "stage005_2020_short_historical_bottom20_C",
+        "start": "2020-01-01",
+        "end": "2026-10-29",
+        "actual_start": "2020-01-02",
+        "actual_end": "2026-10-29",
+        "execution_model": "declared_daily_bar_open_next_bar_v1",
+        "production_qualified": false
+      },
+      "preflight_data_identity": {
+        "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+        "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+        "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+        "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+      },
+      "price_acceptance_present": true,
+      "short_slope_actual_enabled": false,
+      "short_slope_decision_count": 0,
+      "short_slope_would_block_count": null,
+      "short_slope_applied_block_count": 0,
+      "legacy_2020_A_diagnostics_only": false
+    }
+  },
+  "reused_deliveries_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_delivery_manifest.json": "f2de47ae8c1807e905c0f5eaa8520d4ae89f011d59e730ce24be0b4d6333c93b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage005_delivery_manifest.json": "613d52f94816cb8d70c471474bc729d49eb89f24b66ac4bad5eb52b6b61877a6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage006_delivery_manifest.json": "263f0aa6b8662b70948215826d6a21936c3d6bebe3eaab83d68fbdc4cbbb9f55"
+  },
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/daily.sqlite": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/mapping.csv": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/physical_epoch_daily.csv": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/physical_epochs.csv": "e84cd645d5a614d12a02db15c787a2fcb02b1d4e4ba92d62680ae13e61f47d25",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/receipt.json": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/known_no_trade_main.csv": "2a8f34188548e1f46f4954ce64e95a001d34b7e6afd7c282845d179ad0c58bf2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/structural_unavailable_main.csv": "43fe013d5aa417de9281438cafd2970b1e4d5f0055737758713790bb5f0dce69",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage001_20261029/data_approved/warmup_missing_main_2014.csv": "ffc9bcaf2185734b58d9b827267a43187cc16d526ada35168df2f274019d4a6b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/preflight.json": "a5fe62ef73f5f90bfd4a5606f4a9cf7f56e397261f8d62e3ebcfe4ac8e308cab",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/metrics.json": "2d83f710b528246ed81cde701bd0b85e3681906aa89b8b8a750ae959330e76f6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/daily.csv": "c7a6f01640a44b86fca0a34a5e589563f6e1c080ed97087fce91dec1d619dfe3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/terminal.json": "4ddb603654791c406693b26877e65a9172f912f20c970e2f9fbbd9868f2da2da",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/short_ma_slope_acceptance.json": "f66013c9ba322b5ba9c02dcbe6099a87a13c0cde07f543e3095a3faf429d1340",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/short_price_range_acceptance.json": "c212b5ae5cb6194e52e4335ce203c460b6c6af259ebb035be7b4b92ce2534c06",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/preflight.json": "b02793ac1f7d4ffd0ddd4f3e275e3bc25568d4419a4b129e39b7bdb9c7e0524a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/metrics.json": "2035d73168a377b3074981cd367e1a32dabb1489f71362f1c1e48d2806f14386",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/daily.csv": "6dfd09f96421c7cc7be715da893857f4ab6b531240a3205fcd1da2303b802c27",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/terminal.json": "3907c169646e1093dbff4ea6d5efefa390d503f3e92ea61084f1556f32c2e845",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/short_ma_slope_acceptance.json": "f66013c9ba322b5ba9c02dcbe6099a87a13c0cde07f543e3095a3faf429d1340",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/short_price_range_acceptance.json": "c3bce96ec82dbcb0ffa94c69549012fea0323782a28292700308518a151464e7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/preflight.json": "d4bdcdf64e23753aad07b4dba2804b16fe046910fabfb84bff3ac3aeef198981",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/metrics.json": "acf3109a2e647f38b896ed0afddc0663f2ce80d92efee7e4ef1a2640471ca1ae",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/daily.csv": "2a21801100072c96ec18adfa9a4ffabbbab3c17dccd727fe2de19db89aa922b9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/terminal.json": "7cce839fdd47b0ea1796949bb6a197d88d425b2ce37bee073320b492802a1549",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage001_A_attempt003/short_ma_slope_acceptance.json": "9cb750394d2aa623f46fafd4c14120e991c459e23ce97d162447da67e420236e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/preflight.json": "737543f4faa1415cbc0ce8fdaa0755252affdf16b8e6a410f0d95e68b9c48c0e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/metrics.json": "15900f32f799d3358fb35d1a998d9949efe3d9faeff7b13945015d26e9e04a45",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/daily.csv": "4ca357a7b01dff4941e1e991be2e1352a3eb56bd8c95f732ac56f4bd230d970e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/terminal.json": "cd3d3872580859072f3ff70cb2a8df393bd811f1a69c633146d4ded9b8dac81c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/postflight.json": "2d86d527910b748046132992651a414784708e04c45d564e843e66734bc24ca9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/short_ma_slope_acceptance.json": "f66013c9ba322b5ba9c02dcbe6099a87a13c0cde07f543e3095a3faf429d1340",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage005_C_attempt001/short_price_range_acceptance.json": "363358bf673ea025a10878c1027bbf6c4dfe383b849ef65cf1d656400c3110a8",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_delivery_manifest.json": "f2de47ae8c1807e905c0f5eaa8520d4ae89f011d59e730ce24be0b4d6333c93b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage001_independent_final.json": "a8204a75ef262e9db1b6a60422086e259ad3cf69419fb8274710689cfbf1ab1a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage005_delivery_manifest.json": "613d52f94816cb8d70c471474bc729d49eb89f24b66ac4bad5eb52b6b61877a6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage005_independent_final.json": "22127736d09f768254006a9d530628cc96178e6c669c75b4e9cd7667ff62657a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage006_delivery_manifest.json": "263f0aa6b8662b70948215826d6a21936c3d6bebe3eaab83d68fbdc4cbbb9f55",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage006_independent_final.json": "cd22fb6b9f4282376f37ec61174b4d62518bca5a622654e148c9720003e1be98"
+  },
+  "limitations": [
+    "2014 MA aliases have228 missing mapped days; hc1505 first2015 target has only13 complete2014 weeks; actual21-ready state must be exported by replay.",
+    "Unknown full future lifecycle is labeled; never infer expiry from observed last row.",
+    "Frozen mapping has explicit18 structural defects, not a reconstructed historical main series; no substitute contracts inferred. data_ready requires unknown main gaps0; approved real zero-volume keys are classification-only, never bars/week inputs/fills. Every held/traded/week-source positive-data and execution/accounting gate remains mandatory.",
+    "New Tq authority was declared before finance; no multi-source consensus or PIT claim.",
+    "10/27 local Stage283 daily closeOI snapshot is the predeclared authority; later same-vendor observations do not overwrite it.",
+    "10/28 Tq daily is observed after 15:30 local, not independently arbitrated exchange final truth.",
+    "10/28 is incomplete week; ordinary weekly indicators use completed weeks only.",
+    "Data readiness covers original19 main plus frozen R003 held/pending and accepted recent tails; each new replay must still verify every actual held/traded day and 2020 warmup readiness.",
+    "10/29 Tq daily observed after 15:30; not exchange-final arbitration. 10/30 forming rows excluded.",
+    "Original19 standalone snapshot; no source from ongoing44 research. All historical PIT, lifecycle gaps, static metadata and capacity limitations inherited."
+  ],
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "data_changes": 0,
+  "production_accesses": 0,
+  "scope_warning": "Fresh independent accounts, no curve slices; 2026 January <1y is observation-only; partial run caches are not a final multistart report."
+}
