@@ -1,0 +1,29 @@
+# Stage013 V2：启动前共享依赖绑定修复
+
+记录时间2026-10-30T19:30:36.476429+08:00，line_id=futures_weekly_short_ma_slope_gate。用户原授权固定10万备用金回测不变，非策略新优化、NO_PROMOTION。
+
+## 观察与根因
+
+V1金融源码HEAD=0c9f18628303519247666ee09ba7e018cd1e8689；原stage013_freeze.json SHA=c398ed516b8b7f68ead10fb764de127a5cb8350e9e91ed9fb0f0953a255c3a7c。2017-01-01 C attempt001在main第104行ModuleNotFoundError: stage013_ai_selection_off，日志SHA=3c353ab11e5d1b82a745287fce76275f0fd1af0b53b6f0f4b0dce92befd42e49。
+
+机械复制Stage012入口时，把两个属于上游冻结源的共享标识错误换成Stage013：stage012_ai_selection_off模块、stage012_ai_off_contract_pointer.json资产。它们本应沿原run_stage009/run_stage012保持旧绑定。首个错误已在import阶段中止，第二个通过完整main审查在再执行前发现。
+
+001目录仅actual_database_binding.json，没有preflight/engine/daily/trades/positions/metrics/terminal，日志栈止于创建引擎之前，金融回放次数=0。协调器计数financial_replays_started=1表示一次子进程dispatch，不等于一次已启动金融引擎；原registry完整保留失败计数。独审V1 follow收到明确中止，日志exit130保留。
+
+## 最小修复及复核缺口
+
+仅恢复上述两处共享依赖/资产绑定；R100000/W250000、E150000、原C风险/过滤、交易try/Engine/overrides不改。补main内导入可解析、精确origin及共享pointer存在/身份的回归，比较完整main静态import/资产对旧入口只允许本研究管理core/输出命名变化。原20目标测试只导入runner模块、未执行main内imports；原独审金融try AST审查也未覆盖这些前置依赖，这是准入缺口。所有原RED/GREEN/失败凭证保留，不把失败称绩效结果。
+
+## V2执行隔离
+
+- 保留V1代码Git提交、原freeze/registry/19proof/checkpoints、attempt001输出及日志，禁止覆盖。
+- 新freeze：stages/stage013_freeze_v2.json，schema stage013_frozen_reserve100k_23starts_v2；本记录加入required_financial_sources。
+- 新coordinator BASE：outputs/stage013_multistart_v2；4fresh全部attempt002及002日志，19proof按新HEAD/新freeze重新签发，旧金融源仍Stage009 C_R150。
+- 新gate：stages/stage013_canary_independent_review_v2.json，绑定2015reuse与2017Janfresh两checkpoint。
+- 新独审window_v2/stream_v2/code_review_v2与receipts_v2；原V1工具/证据不覆盖。纯报告读取registry_v2/freeze_v2/receipts_v2；输出artifact目录未build，不改数值规则。
+- V2 freeze另将完整main导入解析所得实际文件origin与SHA、共享FROZEN资产路径与SHA加入source_files_sha256，避免只冻结旧worktree原件而漏当前实际副本；保留模块到origin映射和同字节迁移证明。
+- 新金融core和本记录commit后才签V2freeze，实际金融仍计划4份（先2017Jan，独审后余3），19候选证明复用与23旧对照保持。第一dispatch无金融，所以V2不是为修后处理而重跑金融。
+
+## 反思
+
+本轮过拟合风险仍有（在5万结果后指定10万）；修复只涉及运行绑定，不能改善alpha，也不改任何金额/起点。继续价值仍是固定资金需求验证；不扫描金额救参。零手续费、非OOS/PIT全面证明、静态保证金/容量及本次准入覆盖缺口必须如实保留。终审需区分1次pre-engine失败与4次真实金融，不再声称没有启动错误。

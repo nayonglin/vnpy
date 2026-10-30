@@ -38,7 +38,7 @@ def output_path(start,arm,attempt):
 
 def main():
  global DATA
- ap=argparse.ArgumentParser();ap.add_argument('--arm',choices=['C'],required=True);ap.add_argument('--start',choices=FRESH_STARTS,required=True);ap.add_argument('--freeze',type=Path,default=LINE/'stages/stage013_freeze.json');ap.add_argument('--data-dir',type=Path,required=True);ap.add_argument('--attempt',required=True);ap.add_argument('--end',required=True);args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--arm',choices=['C'],required=True);ap.add_argument('--start',choices=FRESH_STARTS,required=True);ap.add_argument('--freeze',type=Path,default=LINE/'stages/stage013_freeze_v2.json');ap.add_argument('--data-dir',type=Path,required=True);ap.add_argument('--attempt',required=True);ap.add_argument('--end',required=True);args=ap.parse_args()
  DATA=args.data_dir.resolve();start_day=args.start;end_day=args.end
  freeze,freeze_sha=validate_freeze(args.freeze)
  if subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()!=freeze['source_head']:raise ValueError('stage013_actual_HEAD_not_frozen_source_head')
@@ -101,7 +101,7 @@ def main():
  from stage020_no_position_cap import universe_capacity_profile,require_only_position_cap_delta
  from stage011_bar_open_execution import bar_open_order_context
  from stage011_bar_open_audit import audit_bar_open_records
- from stage013_ai_selection_off import disable_ai_selection,audit_ai_selection_off,AI_FLAGS
+ from stage012_ai_selection_off import disable_ai_selection,audit_ai_selection_off,AI_FLAGS
  for row in json.loads((LINE/'stages/stage001_runtime_assets.json').read_text()).values():
   if sha(row['source'])!=row['sha256']:raise ValueError('frozen_runtime_asset_source_changed')
  for path,row in json.loads((LINE/'stages/stage001_runtime_assets.json').read_text()).items():
@@ -153,7 +153,7 @@ def main():
  pointer=FROZEN/'stage029_contract_pointer_v2.json';contract=json.loads(pointer.read_text())
  for p in [pointer,Path(contract['path']),Path(contract['base_contract_path']),Path(__file__),*[BASETOOLS/name for name in ['stage029_week_close_exits.py','test_stage029_week_close_exits.py','stage029_week_close_exits_v2.py','test_stage029_week_close_exits_v2.py','stage029_metadata_delta.py','test_stage029_metadata_delta.py']]]:inputs[str(p)]=sha(p)
  if sha(contract['path'])!=contract['sha256'] or sha(contract['base_contract_path'])!=contract['base_contract_sha256']:raise ValueError('stage029_v2_contract_changed')
- ai_pointer=FROZEN/'stage013_ai_off_contract_pointer.json';ai_contract=json.loads(ai_pointer.read_text())
+ ai_pointer=FROZEN/'stage012_ai_off_contract_pointer.json';ai_contract=json.loads(ai_pointer.read_text())
  if not ai_contract['all_ai_selection_disabled'] or sha(ai_contract['path'])!=ai_contract['sha256']:raise ValueError('AI_off_contract_changed')
  for p in [ai_pointer,Path(ai_contract['path'])]:inputs[str(p)]=sha(p)
  control=FROZEN/'R_attempt003'

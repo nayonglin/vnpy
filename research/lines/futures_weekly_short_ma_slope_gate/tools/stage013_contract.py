@@ -29,11 +29,11 @@ def validate_start(start):
 def required_financial_sources():
  tools=LINE/'tools';stages=LINE/'stages'
  names=['stage013_reserve','stage013_reuse','stage013_contract','run_stage013','stage013_coordinator']
- return [tools/(n+'.py') for n in names]+[tools/('test_'+n+'.py') for n in ['stage013_reserve','stage013_reuse','stage013_contract','stage013_runner','stage013_coordinator']]+[stages/n for n in ['20261030_stage013_reserve100k_design.md','20261030_stage013_implementation_plan.md']]
+ return [tools/(n+'.py') for n in names]+[tools/('test_'+n+'.py') for n in ['stage013_reserve','stage013_reuse','stage013_contract','stage013_runner','stage013_coordinator']]+[stages/n for n in ['20261030_stage013_reserve100k_design.md','20261030_stage013_implementation_plan.md','20261030_stage013_pre_engine_import_recovery.md']]
 
 def validate_freeze(path):
  p=Path(path).resolve();f=load(p)
- expected={'schema':'stage013_frozen_reserve100k_23starts_v1','starts':list(STARTS),'arms':['C'],'cutoff':CUTOFF,'engine_initial_capital':ENGINE_CAPITAL,'reserve_initial_capital':RESERVE_CAPITAL,'total_initial_capital':TOTAL_CAPITAL,'candidate_windows':23,'baseline_arm_windows':23,'planned_arm_windows':23,'planned_financial_replays':4,'planned_new_replays':4,'planned_proven_reuse':19,'fresh_starts':list(FRESH_STARTS),'reuse_starts':list(REUSE_STARTS),'canary_start':CANARY,'max_workers':2}
+ expected={'schema':'stage013_frozen_reserve100k_23starts_v2','starts':list(STARTS),'arms':['C'],'cutoff':CUTOFF,'engine_initial_capital':ENGINE_CAPITAL,'reserve_initial_capital':RESERVE_CAPITAL,'total_initial_capital':TOTAL_CAPITAL,'candidate_windows':23,'baseline_arm_windows':23,'planned_arm_windows':23,'planned_financial_replays':4,'planned_new_replays':4,'planned_proven_reuse':19,'fresh_starts':list(FRESH_STARTS),'reuse_starts':list(REUSE_STARTS),'canary_start':CANARY,'max_workers':2}
  for key,value in expected.items():
   if f.get(key)!=value:raise ValueError('stage013_frozen_scope_changed:'+key)
  head=f.get('source_head','')

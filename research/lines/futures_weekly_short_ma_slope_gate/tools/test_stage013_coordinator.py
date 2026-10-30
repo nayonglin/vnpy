@@ -10,6 +10,13 @@ class Reserve100CoordinatorTests(unittest.TestCase):
   jobs['2017-06-01|C']['status']='failed'
   with self.assertRaises(ValueError):m.select_pending(r,'resume')
  def test_max2_and_separate_namespace(self):
-  m=self.subject();self.assertEqual(m.BASE.name,'stage013_multistart');self.assertEqual(m.validate_workers(2),2)
+  m=self.subject();self.assertEqual(m.BASE.name,'stage013_multistart_v2');self.assertEqual(m.validate_workers(2),2)
   with self.assertRaises(ValueError):m.validate_workers(3)
+ def test_v2_dispatch_uses_attempt002_and_v2_freeze_gate(self):
+  import ast
+  from pathlib import Path
+  m=self.subject();self.assertEqual(m.output_path(m.CANARY).name,'stage013_C_20170101_attempt002')
+  tree=ast.parse(Path(m.__file__).read_text());strings=[node.value for node in ast.walk(tree) if isinstance(node,ast.Constant) and isinstance(node.value,str)]
+  self.assertIn('stages/stage013_freeze_v2.json',strings);self.assertIn('stages/stage013_canary_independent_review_v2.json',strings)
+  self.assertIn('002',strings);self.assertTrue(any('attempt002' in value for value in strings));self.assertFalse(any('attempt001' in value for value in strings))
 if __name__=='__main__':unittest.main()

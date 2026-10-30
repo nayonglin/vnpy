@@ -20,7 +20,7 @@ class Reserve100ContractTests(unittest.TestCase):
   with self.assertRaises(ValueError):m.settings_equivalent([bad],[old],{}, {})
  def fixture(self,root):
   m=self.subject();old=m.load(m.LINE/'stages/stage009_freeze.json')
-  f=dict(schema='stage013_frozen_reserve100k_23starts_v1',starts=list(m.STARTS),arms=['C'],cutoff=m.CUTOFF,engine_initial_capital=150000.,reserve_initial_capital=100000.,total_initial_capital=250000.,candidate_windows=23,baseline_arm_windows=23,planned_arm_windows=23,planned_financial_replays=4,planned_new_replays=4,planned_proven_reuse=19,fresh_starts=list(m.FRESH_STARTS),reuse_starts=list(m.REUSE_STARTS),canary_start=m.CANARY,max_workers=2,source_head='a'*40,data_identity=old['data_identity'],data_directory=old['data_directory'],source_files_sha256={str(p):m.sha(p) for p in m.required_financial_sources()},baseline_freeze=str(m.LINE/'stages/stage009_freeze.json'),baseline_registry=str(m.LINE/'outputs/stage009_multistart/registry.json'),baseline_delivery_manifest=str(m.LINE/'stages/stage009_delivery_manifest.json'),baseline_reporting_manifest=str(m.LINE/'stages/stage010_delivery_manifest.json'))
+  f=dict(schema='stage013_frozen_reserve100k_23starts_v2',starts=list(m.STARTS),arms=['C'],cutoff=m.CUTOFF,engine_initial_capital=150000.,reserve_initial_capital=100000.,total_initial_capital=250000.,candidate_windows=23,baseline_arm_windows=23,planned_arm_windows=23,planned_financial_replays=4,planned_new_replays=4,planned_proven_reuse=19,fresh_starts=list(m.FRESH_STARTS),reuse_starts=list(m.REUSE_STARTS),canary_start=m.CANARY,max_workers=2,source_head='a'*40,data_identity=old['data_identity'],data_directory=old['data_directory'],source_files_sha256={str(p):m.sha(p) for p in m.required_financial_sources()},baseline_freeze=str(m.LINE/'stages/stage009_freeze.json'),baseline_registry=str(m.LINE/'outputs/stage009_multistart/registry.json'),baseline_delivery_manifest=str(m.LINE/'stages/stage009_delivery_manifest.json'),baseline_reporting_manifest=str(m.LINE/'stages/stage010_delivery_manifest.json'))
   f['source_files_sha256'].update(old['source_files_sha256'])
   for name in m.BASELINE_IDENTITIES:f[name+'_sha256']=m.sha(f[name])
   p=root/'freeze.json';m.atomic_json(p,f);return m,p,f
@@ -29,11 +29,13 @@ class Reserve100ContractTests(unittest.TestCase):
   from pathlib import Path
   with tempfile.TemporaryDirectory() as td:
    m,p,f=self.fixture(Path(td));self.assertEqual(m.validate_freeze(p)[0],f)
-   for key,value in [('reserve_initial_capital',150000),('total_initial_capital',300000),('planned_financial_replays',23),('arms',['A','C']),('source_files_sha256',{}),('fresh_starts',list(m.STARTS)),('source_head','pending')]:
+   for key,value in [('schema','stage013_frozen_reserve100k_23starts_v1'),('reserve_initial_capital',150000),('total_initial_capital',300000),('planned_financial_replays',23),('arms',['A','C']),('source_files_sha256',{}),('fresh_starts',list(m.STARTS)),('source_head','pending')]:
     bad=copy.deepcopy(f);bad[key]=value;m.atomic_json(p,bad)
     with self.subTest(key=key),self.assertRaises(ValueError):m.validate_freeze(p)
    bad=copy.deepcopy(f);bad['data_identity']['receipt_sha256']='b'*64;m.atomic_json(p,bad)
    with self.assertRaises(ValueError):m.validate_freeze(p)
+ def test_recovery_contract_is_a_required_frozen_financial_source(self):
+  m=self.subject();self.assertIn(m.LINE/'stages/20261030_stage013_pre_engine_import_recovery.md',m.required_financial_sources())
  def test_checkpoint_key_refuses_A(self):
   m=self.subject()
   with self.assertRaises(ValueError):m.checkpoint_key(dict(source_head='a'*40,cutoff=m.CUTOFF),'b'*64,'A','2015-01-01')

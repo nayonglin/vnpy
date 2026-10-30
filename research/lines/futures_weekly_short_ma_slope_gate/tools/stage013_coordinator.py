@@ -7,13 +7,13 @@ import argparse,json,subprocess
 from stage013_contract import STARTS,FRESH_STARTS,REUSE_STARTS,CANARY,LINE,ROOT,sha,load,atomic_json,validate_freeze,checkpoint_key,make_checkpoint,read_checkpoint,validate_baseline_controls
 from stage013_reuse import source_independence,make_reuse_checkpoint,read_reuse_checkpoint
 
-BASE=LINE/'outputs/stage013_multistart';RUNNER=Path(__file__).with_name('run_stage013.py')
+BASE=LINE/'outputs/stage013_multistart_v2';RUNNER=Path(__file__).with_name('run_stage013.py')
 def key(start,arm='C'):
  if arm!='C' or start not in STARTS:raise ValueError('stage013_C_only_known_start')
  return start+'|C'
 def output_path(start,arm='C'):
  if arm!='C' or start not in FRESH_STARTS:raise ValueError('stage013_fixed4_fresh_C_required')
- return LINE/'outputs'/f"stage013_C_{start.replace('-','')}_attempt001"
+ return LINE/'outputs'/f"stage013_C_{start.replace('-','')}_attempt002"
 def checkpoint_path(start):return BASE/'checkpoints'/f'{start}_C.json'
 def stamp():return datetime.now(ZoneInfo('Asia/Shanghai')).isoformat()
 def validate_workers(workers):
@@ -30,7 +30,7 @@ def build_registry(freeze,freeze_sha):
  if regpath.exists():
   r=load(regpath)
   if r.get('freeze_sha256')!=freeze_sha or r.get('source_head')!=freeze['source_head'] or r.get('baseline_controls')!=controls or r.get('starts')!=list(STARTS) or r.get('arms')!=['C'] or r.get('cutoff')!=freeze['cutoff']:raise ValueError('stage013_registry_identity_changed')
- else:r=dict(schema='stage013_reserve100k_mixed23_registry_v1',freeze_sha256=freeze_sha,source_head=freeze['source_head'],starts=list(STARTS),arms=['C'],cutoff=freeze['cutoff'],created_at=stamp(),jobs={},baseline_controls=controls,baseline_registry_sha256=freeze['baseline_registry_sha256'],engine_initial_capital=150000.,reserve_initial_capital=100000.,total_initial_capital=250000.,candidate_windows=23,planned_new_replays=4,planned_proven_reuse=19,fresh_starts=list(FRESH_STARTS),reuse_starts=list(REUSE_STARTS),financial_replays_started=0)
+ else:r=dict(schema='stage013_reserve100k_mixed23_registry_v2',freeze_sha256=freeze_sha,source_head=freeze['source_head'],starts=list(STARTS),arms=['C'],cutoff=freeze['cutoff'],created_at=stamp(),jobs={},baseline_controls=controls,baseline_registry_sha256=freeze['baseline_registry_sha256'],engine_initial_capital=150000.,reserve_initial_capital=100000.,total_initial_capital=250000.,candidate_windows=23,planned_new_replays=4,planned_proven_reuse=19,fresh_starts=list(FRESH_STARTS),reuse_starts=list(REUSE_STARTS),financial_replays_started=0)
  if set(r['jobs'])-{key(s) for s in STARTS}:raise ValueError('stage013_unplanned_registry_jobs')
  for start in STARTS:
   k=key(start);cp=checkpoint_path(start);old=controls[k]
@@ -62,14 +62,14 @@ def select_pending(reg,mode):
  raise ValueError('stage013_unknown_mode')
 
 def launch(start,freeze_path,freeze):
- p=output_path(start);log=BASE/'logs'/f'{start}_C_attempt001.log';log.parent.mkdir(parents=True,exist_ok=True)
+ p=output_path(start);log=BASE/'logs'/f'{start}_C_attempt002.log';log.parent.mkdir(parents=True,exist_ok=True)
  if p.exists() or log.exists():raise ValueError('stage013_immutable_attempt_or_log_exists')
- cmd=[str(ROOT/'.py311/bin/python'),str(RUNNER),'--arm','C','--start',start,'--attempt','001','--data-dir',str(freeze['data_directory']),'--end',freeze['cutoff'],'--freeze',str(freeze_path)]
+ cmd=[str(ROOT/'.py311/bin/python'),str(RUNNER),'--arm','C','--start',start,'--attempt','002','--data-dir',str(freeze['data_directory']),'--end',freeze['cutoff'],'--freeze',str(freeze_path)]
  with log.open('x') as stream:proc=subprocess.run(cmd,cwd=ROOT,stdout=stream,stderr=subprocess.STDOUT,check=False)
  return dict(returncode=proc.returncode,path=str(p),log=str(log))
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--freeze',type=Path,default=LINE/'stages/stage013_freeze.json');ap.add_argument('--mode',choices=['prepare','canary','resume'],default='prepare');ap.add_argument('--workers',type=int,default=2);ap.add_argument('--canary-approval',type=Path,default=LINE/'stages/stage013_canary_independent_review.json');args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--freeze',type=Path,default=LINE/'stages/stage013_freeze_v2.json');ap.add_argument('--mode',choices=['prepare','canary','resume'],default='prepare');ap.add_argument('--workers',type=int,default=2);ap.add_argument('--canary-approval',type=Path,default=LINE/'stages/stage013_canary_independent_review_v2.json');args=ap.parse_args()
  validate_workers(args.workers);freeze_path=args.freeze.resolve();freeze,freeze_sha=validate_freeze(freeze_path)
  if subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()!=freeze['source_head']:raise ValueError('stage013_actual_HEAD_not_frozen')
  BASE.mkdir(parents=True,exist_ok=True);reg=build_registry(freeze,freeze_sha)
