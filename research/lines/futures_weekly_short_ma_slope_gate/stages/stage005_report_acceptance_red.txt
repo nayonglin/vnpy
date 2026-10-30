@@ -1,0 +1,13 @@
+F.....
+======================================================================
+FAIL: test_acceptance_signal_price_inclusion_and_no_rollover_are_hard_contract (test_stage005_report.ReportTests.test_acceptance_signal_price_inclusion_and_no_rollover_are_hard_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage005_report.py", line 20, in test_acceptance_signal_price_inclusion_and_no_rollover_are_hard_contract
+    with self.assertRaises(ValueError):m.validate_gate(self.pre(),{'enabled':False},proof)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.044s
+
+FAILED (failures=1)
