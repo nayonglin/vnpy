@@ -1,0 +1,80 @@
+EEEEE
+======================================================================
+ERROR: test_long_gate_prior_scope_and_breakout_are_strict_contract (test_stage007_report.ReportTests.test_long_gate_prior_scope_and_breakout_are_strict_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 11, in test_long_gate_prior_scope_and_breakout_are_strict_contract
+    m=subject();m.validate_long_gate(self.pre(),self.proof())
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 6, in subject
+    s=importlib.util.spec_from_file_location('r',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py'
+
+======================================================================
+ERROR: test_nav_dd_preserves_independent_initial_capital (test_stage007_report.ReportTests.test_nav_dd_preserves_independent_initial_capital)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 21, in test_nav_dd_preserves_independent_initial_capital
+    m=subject();n,d=m.nav_drawdown([120000,180000,150000]);np.testing.assert_allclose(n,[.8,1.2,1]);np.testing.assert_allclose(d,[-20,0,-100/6])
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 6, in subject
+    s=importlib.util.spec_from_file_location('r',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py'
+
+======================================================================
+ERROR: test_no_price_threshold_sweep_interface (test_stage007_report.ReportTests.test_no_price_threshold_sweep_interface)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 26, in test_no_price_threshold_sweep_interface
+    m=subject();self.assertEqual(m.LONG_THRESHOLD,.8);self.assertEqual(m.TOP_FRACTION,.2)
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 6, in subject
+    s=importlib.util.spec_from_file_location('r',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py'
+
+======================================================================
+ERROR: test_only_declared_source_roles_and_assigned_output (test_stage007_report.ReportTests.test_only_declared_source_roles_and_assigned_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 23, in test_only_declared_source_roles_and_assigned_output
+    m=subject();self.assertEqual(set(m.PATHS),{'original','short_only','long_top20'})
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 6, in subject
+    s=importlib.util.spec_from_file_location('r',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py'
+
+======================================================================
+ERROR: test_preflight_true_and_point8_are_required (test_stage007_report.ReportTests.test_preflight_true_and_point8_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 16, in test_preflight_true_and_point8_are_required
+    m=subject()
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_report.py", line 6, in subject
+    s=importlib.util.spec_from_file_location('r',MODULE);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=5)

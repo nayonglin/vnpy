@@ -1,0 +1,66 @@
+{
+  "schema": "stage007_reviewed_visual_receipt_v1",
+  "status": "PASS_VISUAL_REVIEWED_COPY_ONLY",
+  "generated_at": "2026-10-30T13:17:11.784732+08:00",
+  "independent_review": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage007_independent_final.json",
+  "independent_review_sha256": "5fe51f23fe684e52f7d834757099b2aa815e39bea40e94a10980bce9689a698a",
+  "independent_review_verdict": "PASS_WITH_LIMITATIONS",
+  "strategy_promotion_decision": "NO_PROMOTION",
+  "source_inputs_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage007_independent_final.json": "5fe51f23fe684e52f7d834757099b2aa815e39bea40e94a10980bce9689a698a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_comparison/comparison.json": "0fe924720bc7129154986ebaf4c7d15629c772ddbaf3c5b38a420c72f01f9ebc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_nav_drawdown.png": "811d52c3087f5d16817ea870c4a161d6e198fdef539b4408266fb50935661296",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_reviewed_visual.py": "404173ee5cc40cd233bf313966898142cb39038fbcca47842ac2fb6ffb081116",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_report.py": "212daae36eabe4bdf9276090c2648aedc71049003826d757bd5c9e90aefd15ca",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_comparison/nav_drawdown.csv": "34ef72a6efe7c0b3a6c30fe4cf406d1b10d54e0833598e0573602e2a959b043c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_A_attempt001/daily.csv": "c7a6f01640a44b86fca0a34a5e589563f6e1c080ed97087fce91dec1d619dfe3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_comparison/original_daily.csv": "9e138ec47d35d7bbf8d2bbd039178caef78cf241c040f339f766f24e901518be",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage006_C_attempt001/daily.csv": "6dfd09f96421c7cc7be715da893857f4ab6b531240a3205fcd1da2303b802c27",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_comparison/short_only_daily.csv": "048e0b4bffbb26ab924f9924b86997bd93a7d9a83c52e799321696dc4a76d0a1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage007_C_attempt001/daily.csv": "9500a1e0bf06b65b92f942becde6cf14fa193959fcc927fe382440de5b19bb75",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_comparison/long_top20_daily.csv": "3bdacc84fcc468dc9746ae5572b5cf05d7a6cdb0c83734782c561a9ed8d4bbbc"
+  },
+  "reviewed_figure": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage007_nav_drawdown_reviewed.png",
+  "reviewed_figure_sha256": "6d80352d566d3da03e5da3c6996a0037313dca055ceb25dc2e8537d57e91e046",
+  "pending_figure_bytes_preserved": true,
+  "pending_regenerated_sha_matches_original": true,
+  "axes_and_lines": [
+    {
+      "axis": 0,
+      "xlim_identical": true,
+      "ylim_identical": true,
+      "position_identical": true,
+      "line_count": 4,
+      "line_values_identical": true
+    },
+    {
+      "axis": 1,
+      "xlim_identical": true,
+      "ylim_identical": true,
+      "position_identical": true,
+      "line_count": 3,
+      "line_values_identical": true
+    }
+  ],
+  "curve_comparison": {
+    "original": {
+      "points": 2871,
+      "max_nav_error": 3.552713678800501e-15,
+      "max_drawdown_error": 7.105427357601002e-15
+    },
+    "short_only": {
+      "points": 2871,
+      "max_nav_error": 3.552713678800501e-15,
+      "max_drawdown_error": 7.105427357601002e-15
+    },
+    "long_top20": {
+      "points": 2871,
+      "max_nav_error": 4.440892098500626e-16,
+      "max_drawdown_error": 7.105427357601002e-15
+    }
+  },
+  "only_change": "title review status updated; all chart data, axes, lines and styles identical",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0
+}

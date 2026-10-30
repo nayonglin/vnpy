@@ -1,0 +1,31 @@
+{
+  "status": "PASS_CODE_PREFLIGHT",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "tests_passed": 38,
+  "reviewed_code_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage007_long_top20.py": "a17e1c8c8b8138b626b737183bea966386c615c60c3afdca55aa3d7806c237b4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage007.py": "68de066744812632f16acf8211633dee7c8ea470caebde98a6d936a6a35b713a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage007_long_top20.py": "157f29d431dac63fbfa650f4c619069c0cee4728a803e74c7cd5e29111bd7c64",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261030_stage007_long_top20_contract.md": "696f1e4bc65d2a2d259ef774ea82449642ae95a50046b2f16c8cc947197aeb0f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage007_independent_gate_tests.log": "2f85e1e1617728b5c53d1c6cc92014e9d7ea23a2a783c1ba01a7b57651dab7f8"
+  },
+  "checks": [
+    "prior cumulative high/low shifted inside identical physical epoch",
+    "entire signal day and future excluded",
+    "inclusive .8 boundary and prior high; strict close > prior high exempts only this gate",
+    "flat prior equal-high blocks/above-high allows/below-high allows; absent prior/nonfinite fail",
+    "parent sizing first, positive-volume copy-to-zero; never rescues existing zero volume",
+    "long_case1a and long_case2 sizing and final-open guard",
+    "rollover/exits keep parent behavior",
+    "short gate imports byte-frozen Stage005 code, unchanged signal-inclusive scope",
+    "2015 independent fresh capital and existing frozen data/parameters preserved"
+  ],
+  "limitations": [
+    "Financial replay not yet reviewed by this code receipt.",
+    "Available approved epoch cache is not proven complete contract listing history.",
+    "Repeated same-history development is not independent out of sample."
+  ]
+}
