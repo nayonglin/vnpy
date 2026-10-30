@@ -1,0 +1,16 @@
+{
+  "status": "PASS_READONLY_NEXT_OPEN_PHASE_ANALYSIS",
+  "event_raw_must_equal_same_day_raw": true,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/run_qmt_roll_backtest.py": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage022_historical_safety.py": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage011_bar_open_execution.py": "ceba51f9dd8edbb1e2cd42ce74212208e9866e5f0d84d12183a356d37162a3c0"
+  },
+  "md_sha256": "66d93f1d8544891bfeddd6a4dcc741313797c9fb78d56009ddabde26fcc752b4"
+}

@@ -1,0 +1,13 @@
+F......
+======================================================================
+FAIL: test_event_must_anchor_to_real_same_day_pnl (test_stage009_accounting.BucketAccounting.test_event_must_anchor_to_real_same_day_pnl)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_accounting.py", line 65, in test_event_must_anchor_to_real_same_day_pnl
+    with self.assertRaisesRegex(ValueError,'event_raw_day_anchor'):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.013s
+
+FAILED (failures=1)

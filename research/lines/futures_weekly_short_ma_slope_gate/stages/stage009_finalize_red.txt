@@ -1,0 +1,82 @@
+FFFFFFF
+======================================================================
+FAIL: test92_rows_same300k_and46_pairs_with_observation_no_vote (test_stage009_finalize.FinalizerTests.test92_rows_same300k_and46_pairs_with_observation_no_vote)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 35, in test92_rows_same300k_and46_pairs_with_observation_no_vote
+    m=subject(self);l,s,p=fixtures(m);m.require_report_rows(l,s,p)
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_atomic_manifest_last_no_overwrite_and_failed_marker_rolls_back (test_stage009_finalize.FinalizerTests.test_atomic_manifest_last_no_overwrite_and_failed_marker_rolls_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 65, in test_atomic_manifest_last_no_overwrite_and_failed_marker_rolls_back
+    m=subject(self)
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_chinese_window_separates_idle_old_run_and_funds (test_stage009_finalize.FinalizerTests.test_chinese_window_separates_idle_old_run_and_funds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 62, in test_chinese_window_separates_idle_old_run_and_funds
+    m=subject(self);l,_,_=fixtures(m);start=m.STARTS[0];text=m.render_window(l[(start,'A_idle')],l[(start,'A_R')],dict(started_at='new_start',completed_at='new_end'),dict(started_at='old_start',completed_at='old_end'),Path('/receipt'),'rsha','csha',datetime(2026,10,30,16,0,tzinfo=ZoneInfo('Asia/Shanghai')))
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_equity_ties_cannot_be_three_gate_pass (test_stage009_finalize.FinalizerTests.test_equity_ties_cannot_be_three_gate_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 42, in test_equity_ties_cannot_be_three_gate_pass
+    m=subject(self);l,s,p=fixtures(m);key=(m.STARTS[0],'A_R');l[key]['metrics'].update(end_equity=310000.,total_return_pct=10000./300000*100);s[1].update(end_equity=310000.,total_return_pct=10000./300000*100);p[0].update(reserve_end_equity=310000.,reserve_total_return_pct=10000./300000*100)
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_exact46_new_and92_cache_inventory_no_partial (test_stage009_finalize.FinalizerTests.test_exact46_new_and92_cache_inventory_no_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 30, in test_exact46_new_and92_cache_inventory_no_partial
+    m=subject(self);jobs={s+'|'+a:dict(status='validated',reused=False) for s in m.STARTS for a in ['A','C']};f=dict(starts=list(m.STARTS),cutoff=m.END,planned_financial_replays=46);reg=dict(jobs=jobs,financial_replays_started=46,financial_engine_batch_complete=True);cache={s+'|'+v for s in m.STARTS for v in m.VARIANTS};m.require_inventory(f,reg,set(jobs),cache)
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_exact_source_bytes_no_tolerance (test_stage009_finalize.FinalizerTests.test_exact_source_bytes_no_tolerance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 57, in test_exact_source_bytes_no_tolerance
+    m=subject(self)
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+======================================================================
+FAIL: test_final_review_and_five_figures_require_exact_locked_sha_scope (test_stage009_finalize.FinalizerTests.test_final_review_and_five_figures_require_exact_locked_sha_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 45, in test_final_review_and_five_figures_require_exact_locked_sha_scope
+    m=subject(self);r=dict(status='PASS_WITH_LIMITATIONS',P0=0,P1=0,P2=0,failures=0,freeze_sha256='f',arm_windows=46,paired_windows=46,independent_starts=23,report_comparison_sha256='c');m.require_final_review(r,'f','c')
+      ^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 8, in subject
+    test.assertIsNotNone(importlib.util.find_spec('stage009_finalize'),'new Stage009 finalizer missing')
+AssertionError: unexpectedly None : new Stage009 finalizer missing
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (failures=7)

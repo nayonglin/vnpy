@@ -1,0 +1,71 @@
+FFFFFF
+======================================================================
+FAIL: test_checkpoint_key_binds_amounts_scope_and_source (test_stage009_runner.ReserveRunnerTests.test_checkpoint_key_binds_amounts_scope_and_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 26, in test_checkpoint_key_binds_amounts_scope_and_source
+    m=self.subject();f=dict(source_head='a'*40,cutoff=m.CUTOFF,engine_initial_capital=150000.,reserve_initial_capital=150000.,total_initial_capital=300000.);base=m.checkpoint_key(f,'f'*64,'A','2015-01-01')
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+======================================================================
+FAIL: test_idle_controls_same300k_capital_without_replay (test_stage009_runner.ReserveRunnerTests.test_idle_controls_same300k_capital_without_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 24, in test_idle_controls_same300k_capital_without_replay
+    m=self.subject();raw,_=self.fixture();d=m.reserve_daily_bridge(raw,[],'2015-01-01');self.assertEqual(d.cumulative_transfer.tolist(),[0.,0.,0.]);self.assertEqual(d.reserve_balance.tolist(),[150000.]*3);self.assertEqual(d.total_account_equity.iloc[-1],285000.)
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+======================================================================
+FAIL: test_independent_scope_and_capital_are_fixed (test_stage009_runner.ReserveRunnerTests.test_independent_scope_and_capital_are_fixed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 12, in test_independent_scope_and_capital_are_fixed
+    m=self.subject();self.assertEqual(len(m.STARTS),23);self.assertEqual(m.CUTOFF,'2026-10-29');self.assertEqual((m.ENGINE_CAPITAL,m.RESERVE_CAPITAL,m.TOTAL_CAPITAL),(150000.,150000.,300000.));self.assertNotIn('2026-06-01',m.STARTS)
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+======================================================================
+FAIL: test_internal_transfer_does_not_create_total_profit (test_stage009_runner.ReserveRunnerTests.test_internal_transfer_does_not_create_total_profit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 18, in test_internal_transfer_does_not_create_total_profit
+    m=self.subject();raw,events=self.fixture();d=m.reserve_daily_bridge(raw,events,'2015-01-01');self.assertEqual(d.trading_account_equity.tolist(),[150000.,150000.,155000.]);self.assertEqual(d.reserve_balance.tolist(),[150000.,130000.,130000.]);self.assertEqual(d.total_account_equity.tolist(),[300000.,280000.,285000.]);self.assertEqual(d.net_pnl.sum(),-15000.);self.assertEqual(raw.account_equity.tolist(),[150000.,130000.,135000.])
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+======================================================================
+FAIL: test_reserve_daily_bridge_checks_raw_pnl_identity (test_stage009_runner.ReserveRunnerTests.test_reserve_daily_bridge_checks_raw_pnl_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 30, in test_reserve_daily_bridge_checks_raw_pnl_identity
+    m=self.subject();raw,events=self.fixture();raw.loc[2,'account_equity']+=1
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+======================================================================
+FAIL: test_transfer_before_account_duplicate_negative_or_overdraw_rejected (test_stage009_runner.ReserveRunnerTests.test_transfer_before_account_duplicate_negative_or_overdraw_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 20, in test_transfer_before_account_duplicate_negative_or_overdraw_rejected
+    m=self.subject();raw,events=self.fixture()
+      ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 8, in subject
+    self.assertIsNotNone(importlib.util.find_spec('stage009_contract'),'Stage009 independent contract not implemented')
+AssertionError: unexpectedly None : Stage009 independent contract not implemented
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=6)

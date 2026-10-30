@@ -1,0 +1,40 @@
+{
+  "status": "PASS_BOUNDARY_FORMULA_AND_UNCHANGED_OTHER_METRICS",
+  "checks": 60,
+  "cases": {
+    "positive": {
+      "source_s650_raw_sharpe": 3.7662576345652243,
+      "independent_raw_aux_sharpe": 3.7662576345652243,
+      "author_compatibility_applied": false
+    },
+    "negative": {
+      "source_s650_raw_sharpe": -18.254609533779938,
+      "independent_raw_aux_sharpe": -18.254609533779938,
+      "author_compatibility_applied": true
+    },
+    "zero_crossing": {
+      "source_s650_raw_sharpe": -9.165151389911678,
+      "independent_raw_aux_sharpe": -9.165151389911678,
+      "author_compatibility_applied": true
+    },
+    "flat": {
+      "source_s650_raw_sharpe": 0.0,
+      "independent_raw_aux_sharpe": 0.0,
+      "author_compatibility_applied": true
+    }
+  },
+  "independent_raw_AST_adapter": {
+    "changed_expressions": 1,
+    "original_function_AST_sha256": "4b6cb7e9abaab9757d8eee1dc4ec8e8ac4cc8640283fc4565abac2ad20415e62",
+    "adapted_function_AST_sha256": "7bb7c44860244945cbd48b365595d92ae23333f8cc13ae41cf4631e8f73a96d2",
+    "scope": "Only auxiliary raw150k Sharpe diagnostic uses exact frozen s650 pct_change/inf-to-NaN/fill0; all fills/PnL/inventory/fees/positions/calendar/flags and cash conservation unchanged; original file/function not replaced."
+  },
+  "source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/analyze_qmt_roll_stage650_stage526_200k_capital_reality_check.py": "b5ab107a6679c8cb99ad4fce4de085cb590fd0de3792f46b2fee29419626fd10",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_independent_window.py": "63e9ba6821b3b4c377ed7b67ca035b4daa4fc9ddd8bb824141047f280e237ac9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_derive.py": "e21e1ffa43688f018a22154c7037a2d7bc36c9d4d6c044450a37e47fa98b885e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage008_independent_window.py": "ec64da18dbb859fa4f559147398ec853066fb865230fb164223c5cce19276b24"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0
+}

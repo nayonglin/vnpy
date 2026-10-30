@@ -1,0 +1,129 @@
+EFEFFEEFEEEEFE
+======================================================================
+ERROR: test_C_bottom20_rejected_without_transfer_but_A_is_not_rejected (test_stage009_reserve.ReserveTests.test_C_bottom20_rejected_without_transfer_but_A_is_not_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 80, in test_C_bottom20_rejected_without_transfer_but_A_is_not_rejected
+    s,h=make(blocked=True,range_enabled=enabled);s.mark_pnl=-10000.;size(s,direction='short',signal='short_case1a');self.assertEqual(s.reserve_balance,expected)
+                                                                                                                                     ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+ERROR: test_direction_signal_permission_and_invalid_stop_do_not_transfer (test_stage009_reserve.ReserveTests.test_direction_signal_permission_and_invalid_stop_do_not_transfer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 71, in test_direction_signal_permission_and_invalid_stop_do_not_transfer
+    s,_=make();s.mark_pnl=-10000.;size(s,signal=signal,direction=direction);self.assertEqual(s.reserve_balance,150000.)
+                                                                                             ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+ERROR: test_partial_and_exhausted_reserve_are_exact (test_stage009_reserve.ReserveTests.test_partial_and_exhausted_reserve_are_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 58, in test_partial_and_exhausted_reserve_are_exact
+    s,_=make();s.mark_pnl=-140000.;size(s);self.assertEqual(s.reserve_balance,10000.)
+                                                            ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+ERROR: test_probe_roll_exit_add_and_warmup_do_not_transfer_or_poison_real_key (test_stage009_reserve.ReserveTests.test_probe_roll_exit_add_and_warmup_do_not_transfer_or_poison_real_key)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 67, in test_probe_roll_exit_add_and_warmup_do_not_transfer_or_poison_real_key
+    s,_=make();s.mark_pnl=-10000.;size(s,context=context);self.assertEqual(s.reserve_balance,150000.);size(s);self.assertEqual(s.reserve_balance,140000.)
+                                                                           ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+ERROR: test_reverse_can_fund_and_disabled_mode_has_no_money_effect (test_stage009_reserve.ReserveTests.test_reverse_can_fund_and_disabled_mode_has_no_money_effect)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 88, in test_reverse_can_fund_and_disabled_mode_has_no_money_effect
+    s,_=make();s.mark_pnl=-10000.;size(s,context='reverse_entry');self.assertEqual(s.reserve_balance,140000.)
+                                                                                   ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+ERROR: test_same_candidate_repeat_cannot_drain_again_even_if_mark_changes (test_stage009_reserve.ReserveTests.test_same_candidate_repeat_cannot_drain_again_even_if_mark_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 83, in test_same_candidate_repeat_cannot_drain_again_even_if_mark_changes
+    s,_=make();s.mark_pnl=-10000.;size(s);s.mark_pnl=-20000.;size(s);self.assertEqual(s.reserve_cumulative_transfer,10000.);self.assertTrue(s.reserve_signal_checks[-1]['duplicate'])
+                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_cumulative_transfer'
+
+======================================================================
+ERROR: test_same_day_multiple_symbols_use_one_shared_account_without_double_funding (test_stage009_reserve.ReserveTests.test_same_day_multiple_symbols_use_one_shared_account_without_double_funding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 85, in test_same_day_multiple_symbols_use_one_shared_account_without_double_funding
+    s,_=make();s.mark_pnl=-20000.;size(s);size(s,symbol='cu1505.SHFE');self.assertEqual(s.reserve_cumulative_transfer,20000.);self.assertEqual(len(s.reserve_transfer_events),1)
+                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_cumulative_transfer'
+
+======================================================================
+ERROR: test_snapshots_phase_and_fill_cost_conservation_with_no_warmup_rows (test_stage009_reserve.ReserveTests.test_snapshots_phase_and_fill_cost_conservation_with_no_warmup_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 94, in test_snapshots_phase_and_fill_cost_conservation_with_no_warmup_rows
+    s,_=make();self.assertEqual(s.on_bars({'x':bar('2014-12-31')}),'parent-day');self.assertEqual(len(s.reserve_daily_snapshots),0)
+                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_daily_snapshots'
+
+======================================================================
+ERROR: test_zero_and_negative_exhausted_equity_never_fall_back_to_base (test_stage009_reserve.ReserveTests.test_zero_and_negative_exhausted_equity_never_fall_back_to_base)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 64, in test_zero_and_negative_exhausted_equity_never_fall_back_to_base
+    self.assertEqual(s.reserve_balance,0.);self.assertEqual(r['selected_volume'],0);self.assertEqual(s._sizing_equity(),0.);self.assertEqual(r['limited_balance'],0.)
+                     ^^^^^^^^^^^^^^^^^
+AttributeError: 'Parent' object has no attribute 'reserve_balance'
+
+======================================================================
+FAIL: test_bad_weekly_source_raises_before_any_cash_mutation (test_stage009_reserve.ReserveTests.test_bad_weekly_source_raises_before_any_cash_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 76, in test_bad_weekly_source_raises_before_any_cash_mutation
+    with self.assertRaisesRegex(ValueError,'missing-completed-week'):size(s)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_funding_refreshes_pressure_only_preserves_risk_memory_and_reservations (test_stage009_reserve.ReserveTests.test_funding_refreshes_pressure_only_preserves_risk_memory_and_reservations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 92, in test_funding_refreshes_pressure_only_preserves_risk_memory_and_reservations
+    r=size(s);self.assertEqual(before,(s.loss_streak,s.portfolio_equity_high_water,s.return_history,s.risk_multiplier,s.pending_margin_reservation));self.assertAlmostEqual(s.portfolio_drawdown_pct,.25);self.assertAlmostEqual(s.portfolio_margin_deleverage_ratio,10000/150000);self.assertAlmostEqual(r['parent_heat_seen'],5000/150000+.25);self.assertGreater(s.current_risk_per_trade,0.)
+                                                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.16666666666666663 != 0.25 within 7 places (0.08333333333333337 difference)
+
+======================================================================
+FAIL: test_nonfinite_equity_rejected_without_mutation (test_stage009_reserve.ReserveTests.test_nonfinite_equity_rejected_without_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 100, in test_nonfinite_equity_rejected_without_mutation
+    with self.assertRaises(ValueError):size(s)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_profit_uses_all_equity_and_never_replenishes_reserve (test_stage009_reserve.ReserveTests.test_profit_uses_all_equity_and_never_replenishes_reserve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 53, in test_profit_uses_all_equity_and_never_replenishes_reserve
+    self.assertEqual(r['parent_equity_seen'],250000.);self.assertEqual(s.reserve_balance,150000.);self.assertEqual(len(s.reserve_transfer_events),0)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 150000.0 != 250000.0
+
+======================================================================
+FAIL: test_unrealized_loss_funded_before_parent_budget_and_raw_bridge (test_stage009_reserve.ReserveTests.test_unrealized_loss_funded_before_parent_budget_and_raw_bridge)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 49, in test_unrealized_loss_funded_before_parent_budget_and_raw_bridge
+    self.assertEqual(r['parent_equity_seen'],150000.);self.assertEqual(s.settled_balance,170000.);self.assertEqual(s.reserve_balance,130000.);self.assertEqual(s.reserve_cumulative_transfer,20000.)
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 150000.0 != 170000.0
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.001s
+
+FAILED (failures=5, errors=9)

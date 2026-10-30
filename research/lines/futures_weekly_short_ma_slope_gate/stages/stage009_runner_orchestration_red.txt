@@ -1,0 +1,21 @@
+.F....F.
+======================================================================
+FAIL: test_coordinator_runs46_new_and_canary2015jan (test_stage009_runner.ReserveRunnerTests.test_coordinator_runs46_new_and_canary2015jan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 39, in test_coordinator_runs46_new_and_canary2015jan
+    self.assertIsNotNone(importlib.util.find_spec('stage009_coordinator'),'Stage009 independent coordinator missing')
+AssertionError: unexpectedly None : Stage009 independent coordinator missing
+
+======================================================================
+FAIL: test_runner_preserves_engine_capital_and_rejects_hidden300k (test_stage009_runner.ReserveRunnerTests.test_runner_preserves_engine_capital_and_rejects_hidden300k)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 30, in test_runner_preserves_engine_capital_and_rejects_hidden300k
+    self.assertIsNotNone(importlib.util.find_spec('run_stage009'),'Stage009 independent runner missing')
+AssertionError: unexpectedly None : Stage009 independent runner missing
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.011s
+
+FAILED (failures=2)

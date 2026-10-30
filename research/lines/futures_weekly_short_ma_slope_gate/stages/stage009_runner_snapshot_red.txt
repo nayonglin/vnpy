@@ -1,0 +1,33 @@
+......EFF.
+======================================================================
+ERROR: test_runner_preserves_engine_capital_and_rejects_hidden300k (test_stage009_runner.ReserveRunnerTests.test_runner_preserves_engine_capital_and_rejects_hidden300k)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 39, in test_runner_preserves_engine_capital_and_rejects_hidden300k
+    import run_stage009 as r
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage009.py", line 12, in <module>
+    from stage009_contract import STARTS,validate_start,validate_freeze,reserve_daily_bridge,ENGINE_CAPITAL,RESERVE_CAPITAL,TOTAL_CAPITAL,validate_reserve_snapshots,metric_close
+ImportError: cannot import name 'validate_reserve_snapshots' from 'stage009_contract' (/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_contract.py)
+
+======================================================================
+FAIL: test_snapshot_last_sequence_matches_actual_raw_daily (test_stage009_runner.ReserveRunnerTests.test_snapshot_last_sequence_matches_actual_raw_daily)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 30, in test_snapshot_last_sequence_matches_actual_raw_daily
+    m=self.subject();self.assertTrue(hasattr(m,'validate_reserve_snapshots'),'independent snapshot reconciliation missing');raw,events=self.fixture();d=m.reserve_daily_bridge(raw,events,'2015-01-01');snaps=[]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : independent snapshot reconciliation missing
+
+======================================================================
+FAIL: test_total_metrics_use300k_curve_not_raw150k (test_stage009_runner.ReserveRunnerTests.test_total_metrics_use300k_curve_not_raw150k)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 36, in test_total_metrics_use300k_curve_not_raw150k
+    m=self.subject();self.assertTrue(hasattr(m,'total_metric_frame'),'total capital curve adapter missing');raw,events=self.fixture();d=m.reserve_daily_bridge(raw,events,'2015-01-01');frame=m.total_metric_frame(raw,d);self.assertEqual(frame.account_equity.tolist(),[300000.,280000.,285000.]);self.assertEqual(raw.account_equity.tolist(),[150000.,130000.,135000.]);self.assertEqual(frame.net_pnl.tolist(),raw.net_pnl.tolist())
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : total capital curve adapter missing
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.024s
+
+FAILED (failures=2, errors=1)

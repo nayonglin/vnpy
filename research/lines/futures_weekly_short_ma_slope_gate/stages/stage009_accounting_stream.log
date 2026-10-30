@@ -1,0 +1,195 @@
+DERIVED 2015-01-01|A_idle total_equity=3811109.999999998
+DERIVED 2015-01-01|A_R total_equity=4110504.9999999986
+DERIVED 2015-01-01|C_idle total_equity=3330474.9999999963
+DERIVED 2015-01-01|C_R total_equity=4325344.999999998
+DERIVED 2015-06-01|A_idle total_equity=4142084.9999999986
+DERIVED 2015-06-01|A_R total_equity=4142084.9999999986
+DERIVED 2015-06-01|C_idle total_equity=3880324.999999999
+DERIVED 2015-06-01|C_R total_equity=4359384.999999998
+DERIVED 2016-01-01|A_idle total_equity=1118940.0000000002
+DERIVED 2016-01-01|A_R total_equity=2905865.000000001
+DERIVED 2016-01-01|C_idle total_equity=3880425.0
+DERIVED 2016-06-01|A_idle total_equity=501719.9999999999
+DERIVED 2016-06-01|C_idle total_equity=339590.0
+DERIVED 2017-01-01|A_idle total_equity=1501195.0000000002
+DERIVED 2017-01-01|C_idle total_equity=738824.9999999998
+DERIVED 2017-06-01|A_idle total_equity=508830.0
+DERIVED 2017-06-01|C_idle total_equity=340170.0
+DERIVED 2018-01-01|A_idle total_equity=547935.0
+DERIVED 2018-01-01|C_idle total_equity=373519.9999999999
+DERIVED 2018-06-01|A_idle total_equity=1501185.0000000002
+DERIVED 2018-06-01|C_idle total_equity=739024.9999999999
+DERIVED 2019-01-01|A_idle total_equity=1370470.0000000002
+DERIVED 2019-01-01|C_idle total_equity=1066685.0000000002
+DERIVED 2019-06-01|A_idle total_equity=1501275.0000000002
+DERIVED 2019-06-01|C_idle total_equity=1827169.999999999
+DERIVED 2020-01-01|A_idle total_equity=1454010.0000000005
+DERIVED 2020-01-01|C_idle total_equity=2585919.9999999986
+DERIVED 2020-06-01|A_idle total_equity=2918045.000000001
+DERIVED 2020-06-01|C_idle total_equity=3173254.999999998
+DERIVED 2021-01-01|A_idle total_equity=926660.0
+DERIVED 2021-01-01|C_idle total_equity=880039.9999999998
+DERIVED 2021-06-01|A_idle total_equity=1403750.0
+DERIVED 2021-06-01|C_idle total_equity=737349.9999999999
+DERIVED 2022-01-01|A_idle total_equity=521275.0
+DERIVED 2022-01-01|C_idle total_equity=814719.9999999999
+DERIVED 2022-06-01|A_idle total_equity=921905.0000000002
+DERIVED 2022-06-01|C_idle total_equity=979635.0000000005
+DERIVED 2023-01-01|A_idle total_equity=1199885.0000000002
+DERIVED 2023-01-01|C_idle total_equity=769080.0
+DERIVED 2023-06-01|A_idle total_equity=869050.0000000002
+DERIVED 2023-06-01|C_idle total_equity=983205.0
+DERIVED 2024-01-01|A_idle total_equity=864415.0000000001
+DERIVED 2024-01-01|C_idle total_equity=342760.0
+DERIVED 2024-06-01|A_idle total_equity=410330.0
+DERIVED 2024-06-01|C_idle total_equity=307965.0
+DERIVED 2025-01-01|A_idle total_equity=330635.0
+DERIVED 2025-01-01|C_idle total_equity=268495.0
+DERIVED 2025-06-01|A_idle total_equity=336380.0
+DERIVED 2025-06-01|C_idle total_equity=259480.0
+DERIVED 2026-01-01|A_idle total_equity=516760.0
+DERIVED 2026-01-01|C_idle total_equity=322380.0
+{"cache_count": 51, "expected": 92, "not_final_report": true}
+DERIVED 2016-01-01|C_R total_equity=3880425.0
+DERIVED 2016-06-01|A_R total_equity=2828970.000000001
+DERIVED 2016-06-01|C_R total_equity=2298769.999999999
+{"cache_count": 54, "expected": 92, "not_final_report": true}
+{"cache_count": 54, "expected": 92, "not_final_report": true}
+{"cache_count": 54, "expected": 92, "not_final_report": true}
+{"cache_count": 54, "expected": 92, "not_final_report": true}
+{"cache_count": 54, "expected": 92, "not_final_report": true}
+DERIVED 2017-01-01|A_R total_equity=2428115.0
+{"cache_count": 55, "expected": 92, "not_final_report": true}
+DERIVED 2017-01-01|C_R total_equity=1733354.9999999993
+{"cache_count": 56, "expected": 92, "not_final_report": true}
+{"cache_count": 56, "expected": 92, "not_final_report": true}
+DERIVED 2017-06-01|A_R total_equity=2453775.0
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+{"cache_count": 57, "expected": 92, "not_final_report": true}
+DERIVED 2017-06-01|C_R total_equity=1732800.0000000002
+DERIVED 2018-01-01|A_R total_equity=2119424.9999999995
+{"cache_count": 59, "expected": 92, "not_final_report": true}
+DERIVED 2018-01-01|C_R total_equity=3874819.999999997
+DERIVED 2018-06-01|A_R total_equity=2119399.9999999995
+{"cache_count": 61, "expected": 92, "not_final_report": true}
+{"cache_count": 61, "expected": 92, "not_final_report": true}
+DERIVED 2018-06-01|C_R total_equity=1910074.9999999995
+DERIVED 2019-01-01|A_R total_equity=3249819.999999999
+{"cache_count": 63, "expected": 92, "not_final_report": true}
+DERIVED 2019-01-01|C_R total_equity=3242129.999999997
+DERIVED 2019-06-01|A_R total_equity=3289574.999999998
+{"cache_count": 65, "expected": 92, "not_final_report": true}
+DERIVED 2019-06-01|C_R total_equity=3264344.999999997
+DERIVED 2020-01-01|A_R total_equity=3297659.999999998
+{"cache_count": 67, "expected": 92, "not_final_report": true}
+DERIVED 2020-01-01|C_R total_equity=3265184.999999997
+DERIVED 2020-06-01|A_R total_equity=2918045.000000001
+{"cache_count": 69, "expected": 92, "not_final_report": true}
+{"cache_count": 69, "expected": 92, "not_final_report": true}
+DERIVED 2020-06-01|C_R total_equity=3173254.999999998
+DERIVED 2021-01-01|A_R total_equity=1500440.0000000002
+{"cache_count": 71, "expected": 92, "not_final_report": true}
+DERIVED 2021-01-01|C_R total_equity=1032165.0
+{"cache_count": 72, "expected": 92, "not_final_report": true}
+{"cache_count": 72, "expected": 92, "not_final_report": true}
+DERIVED 2021-06-01|A_R total_equity=1380585.0
+DERIVED 2022-01-01|A_R total_equity=913645.0000000002
+{"cache_count": 74, "expected": 92, "not_final_report": true}
+DERIVED 2021-06-01|C_R total_equity=859410.0
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+{"cache_count": 75, "expected": 92, "not_final_report": true}
+DERIVED 2022-06-01|A_R total_equity=1456465.0000000002
+DERIVED 2022-06-01|C_R total_equity=889890.0
+{"cache_count": 77, "expected": 92, "not_final_report": true}
+DERIVED 2022-01-01|C_R total_equity=1009795.0
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+{"cache_count": 78, "expected": 92, "not_final_report": true}
+DERIVED 2023-01-01|A_R total_equity=1460155.0000000002
+DERIVED 2023-06-01|A_R total_equity=869050.0000000002
+{"cache_count": 80, "expected": 92, "not_final_report": true}
+DERIVED 2023-01-01|C_R total_equity=980495.0000000002
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+{"cache_count": 81, "expected": 92, "not_final_report": true}
+DERIVED 2024-01-01|A_R total_equity=566335.0
+DERIVED 2024-01-01|C_R total_equity=335460.0
+{"cache_count": 83, "expected": 92, "not_final_report": true}
+DERIVED 2023-06-01|C_R total_equity=983205.0
+{"cache_count": 84, "expected": 92, "not_final_report": true}
+{"cache_count": 84, "expected": 92, "not_final_report": true}
+{"cache_count": 84, "expected": 92, "not_final_report": true}
+{"cache_count": 84, "expected": 92, "not_final_report": true}
+DERIVED 2024-06-01|A_R total_equity=384690.0
+DERIVED 2025-01-01|A_R total_equity=459555.0
+{"cache_count": 86, "expected": 92, "not_final_report": true}
+DERIVED 2024-06-01|C_R total_equity=291440.0
+{"cache_count": 87, "expected": 92, "not_final_report": true}
+{"cache_count": 87, "expected": 92, "not_final_report": true}
+{"cache_count": 87, "expected": 92, "not_final_report": true}
+{"cache_count": 87, "expected": 92, "not_final_report": true}
+DERIVED 2025-06-01|A_R total_equity=591040.0
+DERIVED 2025-06-01|C_R total_equity=398965.0
+{"cache_count": 89, "expected": 92, "not_final_report": true}
+DERIVED 2025-01-01|C_R total_equity=302500.0
+{"cache_count": 90, "expected": 92, "not_final_report": true}
+{"cache_count": 90, "expected": 92, "not_final_report": true}
+{"cache_count": 90, "expected": 92, "not_final_report": true}
+DERIVED 2026-01-01|A_R total_equity=516760.0
+DERIVED 2026-01-01|C_R total_equity=322380.0
+{"cache_count": 92, "expected": 92, "not_final_report": true}

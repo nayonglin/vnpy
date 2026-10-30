@@ -1,0 +1,21 @@
+FF
+======================================================================
+FAIL: test_flat_raw_source_sharpe_zero_and_positive_math_unchanged (test_stage009_derive.RawAuxiliaryStats.test_flat_raw_source_sharpe_zero_and_positive_math_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_derive.py", line 25, in test_flat_raw_source_sharpe_zero_and_positive_math_unchanged
+    self.assertIsNotNone(provider,'source-compatible raw statistic provider missing')
+AssertionError: unexpectedly None : source-compatible raw statistic provider missing
+
+======================================================================
+FAIL: test_legal_negative_raw_bucket_is_not_total_wealth_bankruptcy (test_stage009_derive.RawAuxiliaryStats.test_legal_negative_raw_bucket_is_not_total_wealth_bankruptcy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_derive.py", line 15, in test_legal_negative_raw_bucket_is_not_total_wealth_bankruptcy
+    self.assertIsNotNone(provider,'source-compatible raw statistic provider missing')
+AssertionError: unexpectedly None : source-compatible raw statistic provider missing
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (failures=2)

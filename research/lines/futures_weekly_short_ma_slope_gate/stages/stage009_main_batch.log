@@ -1,0 +1,89 @@
+{"event": "started", "key": "2015-06-01|A", "counts": {"pending": 43, "running": 1, "validated": 2, "failed": 0, "total": 46}}
+{"event": "started", "key": "2015-06-01|C", "counts": {"pending": 42, "running": 2, "validated": 2, "failed": 0, "total": 46}}
+{"event": "started", "key": "2016-01-01|A", "counts": {"pending": 41, "running": 3, "validated": 2, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2016-01-01|A", "counts": {"pending": 41, "running": 2, "validated": 3, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2016-01-01|C", "counts": {"pending": 40, "running": 3, "validated": 3, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2015-06-01|C", "counts": {"pending": 40, "running": 2, "validated": 4, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2016-06-01|A", "counts": {"pending": 39, "running": 3, "validated": 4, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2015-06-01|A", "counts": {"pending": 39, "running": 2, "validated": 5, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2016-06-01|C", "counts": {"pending": 38, "running": 3, "validated": 5, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2016-01-01|C", "counts": {"pending": 38, "running": 2, "validated": 6, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2017-01-01|A", "counts": {"pending": 37, "running": 3, "validated": 6, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2016-06-01|C", "counts": {"pending": 37, "running": 2, "validated": 7, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2016-06-01|A", "counts": {"pending": 37, "running": 1, "validated": 8, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2017-01-01|C", "counts": {"pending": 36, "running": 2, "validated": 8, "failed": 0, "total": 46}}
+{"event": "started", "key": "2017-06-01|A", "counts": {"pending": 35, "running": 3, "validated": 8, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2017-01-01|C", "counts": {"pending": 35, "running": 2, "validated": 9, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2017-06-01|C", "counts": {"pending": 34, "running": 3, "validated": 9, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2017-01-01|A", "counts": {"pending": 34, "running": 2, "validated": 10, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2017-06-01|A", "counts": {"pending": 34, "running": 1, "validated": 11, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2018-01-01|A", "counts": {"pending": 33, "running": 2, "validated": 11, "failed": 0, "total": 46}}
+{"event": "started", "key": "2018-01-01|C", "counts": {"pending": 32, "running": 3, "validated": 11, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2018-01-01|C", "counts": {"pending": 32, "running": 2, "validated": 12, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2017-06-01|C", "counts": {"pending": 32, "running": 1, "validated": 13, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2018-06-01|A", "counts": {"pending": 31, "running": 2, "validated": 13, "failed": 0, "total": 46}}
+{"event": "started", "key": "2018-06-01|C", "counts": {"pending": 30, "running": 3, "validated": 13, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2018-01-01|A", "counts": {"pending": 30, "running": 2, "validated": 14, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2019-01-01|A", "counts": {"pending": 29, "running": 3, "validated": 14, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2018-06-01|C", "counts": {"pending": 29, "running": 2, "validated": 15, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2019-01-01|C", "counts": {"pending": 28, "running": 3, "validated": 15, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2019-01-01|A", "counts": {"pending": 28, "running": 2, "validated": 16, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2019-06-01|A", "counts": {"pending": 27, "running": 3, "validated": 16, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2018-06-01|A", "counts": {"pending": 27, "running": 2, "validated": 17, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2019-06-01|C", "counts": {"pending": 26, "running": 3, "validated": 17, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2019-06-01|C", "counts": {"pending": 26, "running": 2, "validated": 18, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2020-01-01|A", "counts": {"pending": 25, "running": 3, "validated": 18, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2019-01-01|C", "counts": {"pending": 25, "running": 2, "validated": 19, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2019-06-01|A", "counts": {"pending": 25, "running": 1, "validated": 20, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2020-01-01|C", "counts": {"pending": 24, "running": 2, "validated": 20, "failed": 0, "total": 46}}
+{"event": "started", "key": "2020-06-01|A", "counts": {"pending": 23, "running": 3, "validated": 20, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2020-01-01|A", "counts": {"pending": 23, "running": 2, "validated": 21, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2020-06-01|C", "counts": {"pending": 22, "running": 3, "validated": 21, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2020-01-01|C", "counts": {"pending": 22, "running": 2, "validated": 22, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2021-01-01|A", "counts": {"pending": 21, "running": 3, "validated": 22, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2020-06-01|A", "counts": {"pending": 21, "running": 2, "validated": 23, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2021-01-01|C", "counts": {"pending": 20, "running": 3, "validated": 23, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2021-01-01|C", "counts": {"pending": 20, "running": 2, "validated": 24, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2021-06-01|A", "counts": {"pending": 19, "running": 3, "validated": 24, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2021-01-01|A", "counts": {"pending": 19, "running": 2, "validated": 25, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2021-06-01|C", "counts": {"pending": 18, "running": 3, "validated": 25, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2020-06-01|C", "counts": {"pending": 18, "running": 2, "validated": 26, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2022-01-01|A", "counts": {"pending": 17, "running": 3, "validated": 26, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2022-01-01|A", "counts": {"pending": 17, "running": 2, "validated": 27, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2022-01-01|C", "counts": {"pending": 16, "running": 3, "validated": 27, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2021-06-01|C", "counts": {"pending": 16, "running": 2, "validated": 28, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2022-06-01|A", "counts": {"pending": 15, "running": 3, "validated": 28, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2021-06-01|A", "counts": {"pending": 15, "running": 2, "validated": 29, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2022-06-01|C", "counts": {"pending": 14, "running": 3, "validated": 29, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2022-06-01|C", "counts": {"pending": 14, "running": 2, "validated": 30, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2023-01-01|A", "counts": {"pending": 13, "running": 3, "validated": 30, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2022-06-01|A", "counts": {"pending": 13, "running": 2, "validated": 31, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2022-01-01|C", "counts": {"pending": 13, "running": 1, "validated": 32, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2023-01-01|C", "counts": {"pending": 12, "running": 2, "validated": 32, "failed": 0, "total": 46}}
+{"event": "started", "key": "2023-06-01|A", "counts": {"pending": 11, "running": 3, "validated": 32, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2023-06-01|A", "counts": {"pending": 11, "running": 2, "validated": 33, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2023-06-01|C", "counts": {"pending": 10, "running": 3, "validated": 33, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2023-01-01|A", "counts": {"pending": 10, "running": 2, "validated": 34, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2024-01-01|A", "counts": {"pending": 9, "running": 3, "validated": 34, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2023-01-01|C", "counts": {"pending": 9, "running": 2, "validated": 35, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2024-01-01|C", "counts": {"pending": 8, "running": 3, "validated": 35, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2024-01-01|C", "counts": {"pending": 8, "running": 2, "validated": 36, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2024-06-01|A", "counts": {"pending": 7, "running": 3, "validated": 36, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2024-01-01|A", "counts": {"pending": 7, "running": 2, "validated": 37, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2024-06-01|C", "counts": {"pending": 6, "running": 3, "validated": 37, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2023-06-01|C", "counts": {"pending": 6, "running": 2, "validated": 38, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2025-01-01|A", "counts": {"pending": 5, "running": 3, "validated": 38, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2025-01-01|A", "counts": {"pending": 5, "running": 2, "validated": 39, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2025-01-01|C", "counts": {"pending": 4, "running": 3, "validated": 39, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2024-06-01|C", "counts": {"pending": 4, "running": 2, "validated": 40, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2025-06-01|A", "counts": {"pending": 3, "running": 3, "validated": 40, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2024-06-01|A", "counts": {"pending": 3, "running": 2, "validated": 41, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2025-06-01|C", "counts": {"pending": 2, "running": 3, "validated": 41, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2025-06-01|C", "counts": {"pending": 2, "running": 2, "validated": 42, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2026-01-01|A", "counts": {"pending": 1, "running": 3, "validated": 42, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2025-06-01|A", "counts": {"pending": 1, "running": 2, "validated": 43, "failed": 0, "total": 46}, "error": null}
+{"event": "started", "key": "2026-01-01|C", "counts": {"pending": 0, "running": 3, "validated": 43, "failed": 0, "total": 46}}
+{"event": "completed", "key": "2025-01-01|C", "counts": {"pending": 0, "running": 2, "validated": 44, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2026-01-01|C", "counts": {"pending": 0, "running": 1, "validated": 45, "failed": 0, "total": 46}, "error": null}
+{"event": "completed", "key": "2026-01-01|A", "counts": {"pending": 0, "running": 0, "validated": 46, "failed": 0, "total": 46}, "error": null}
+{"mode": "resume", "counts": {"pending": 0, "running": 0, "validated": 46, "failed": 0, "total": 46}, "financial_engine_batch_complete": true, "registry": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_multistart/registry.json"}

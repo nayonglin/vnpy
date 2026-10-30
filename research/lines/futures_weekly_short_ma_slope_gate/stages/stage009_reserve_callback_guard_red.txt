@@ -1,0 +1,13 @@
+..F.............
+======================================================================
+FAIL: test_callback_snapshot_failure_sets_strict_engine_failure_not_silent_partial (test_stage009_reserve.ReserveTests.test_callback_snapshot_failure_sets_strict_engine_failure_not_silent_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 118, in test_callback_snapshot_failure_sets_strict_engine_failure_not_silent_partial
+    self.assertIn('reserve_nonfinite_trading_equity',getattr(s.strategy_engine,'intraday_execution_failure',''))
+AssertionError: 'reserve_nonfinite_trading_equity' not found in ''
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.009s
+
+FAILED (failures=1)

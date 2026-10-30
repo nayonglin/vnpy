@@ -1,0 +1,55 @@
+{
+  "status": "PASS_CODE_PREFLIGHT_PENDING_FROZEN_DATA_IDENTITY",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "accepted_code": true,
+  "independent_tests_passed": 41,
+  "reviewed_source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_reserve.py": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py": "a20690024f9375faba5b4206a9e5ae8f3d228b60b591af92c0e83c8117e52283",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_accounting.py": "90ce43c26b3d4f7401deaf22570012c11bbc9ffdcef0174da51f3f7e757b05e7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_accounting.py": "0e0b0465d38440c0d197fec94125aaceefacff2c23c946bec08b2203f93701a2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage009.py": "d8a39d29e930837b2dccfaed7d3fccc1da335cc34c4491f6ec8f987577dd1543",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_contract.py": "0200499917e2b6e8e09b248c2b9a976e7756c83d86b73a83e894b59b8f70f81b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_coordinator.py": "5b5bca4eaccc162ec60016fcd251092407ebd98005bd185d961a26548a8f4027",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py": "ba0122b870aa037e6faba6268f74711074acf2366245e1c6bf1f2b6332a75447"
+  },
+  "tests_log_sha256": "f7cad42c9caa888ebe3a9fe7c3f939312e0534094dc69ac155105168e1c76122",
+  "resolved_findings": [
+    {
+      "priority": "P1",
+      "problem": "Self-consistent invented transfer raw balance was not anchored to real daily PnL.",
+      "resolution": "Pure helper and financial contract now require event raw equals same-day raw daily; runner records real fill phases and rejects post-sizing same-day fill; malformed145000-vs140000 test now rejected."
+    },
+    {
+      "priority": "P2",
+      "problem": "NATIVE_SIGNALS included disabled case3.",
+      "resolution": "Only long_case1a/long_case2/short_case1a admitted; long_case3 rejected with RED/GREEN proof."
+    }
+  ],
+  "reviewed_contract": [
+    "Raw trading initial150000; independent reserve150000; total wealth initial300000.",
+    "Only admitted native flat/reverse signals can transfer before single parent sizing; no positive old-volume prerequisite.",
+    "Probe/roll/add/exit/prewarmup/invalid weekly stop/C-blocked short cannot transfer.",
+    "Full current MTM and occurred fill costs used; original signal/date/epoch/stop and risk modules inherited.",
+    "Partial funding ratio caches refreshed without resetting histories/high-water/streak/targets/positions/reservations.",
+    "Canonical signals only; zero/nonpositive trading equity cannot regain base-capital buying power.",
+    "Strict next-open event raw daily anchor plus real fills/check/snapshot three-way reconciliation.",
+    "Runtime original vol/cooldown flags recorded and required off; original heat/margin risk kept on.",
+    "Cumulative transfer does not enter PnL; raw/T/R/W ledgers and total300k performance distinct.",
+    "All46 candidates new; exact Stage008 idle controls only reused;2015Jan dual canary then independent approval before44.",
+    "Fixed23 starts, frozenHEAD/source/data/capital checkpoint and immutable resume/failed-stop gates."
+  ],
+  "canary_admission": "No code blocker. Root may run ONLY the fixed2015Jan A/C canary after required data preflight and financial commit/freeze/source hashes pass. Remaining44 require independent canary accounting acceptance.",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "implementation_source_stable_when_reviewed": true,
+  "limitations": [
+    "No financial performance, real transfer events or runtime loaded flags yet reviewed.",
+    "Signal-planning funding is not execution-time broker buying-power qualification.",
+    "Repeated-history development and inherited cache/PIT/zero-cost/static-margin limitations remain."
+  ]
+}

@@ -1,0 +1,12 @@
+test_inconsistent_raw_pnl_fails (test_stage009_independent_aggregate.AggregateAuditTests.test_inconsistent_raw_pnl_fails) ... ok
+test_internal_flow_never_changes_total_profit (test_stage009_independent_aggregate.AggregateAuditTests.test_internal_flow_never_changes_total_profit) ... ok
+test_nan_cannot_pass_metric_comparison (test_stage009_independent_aggregate.AggregateAuditTests.test_nan_cannot_pass_metric_comparison) ... ok
+test_negative_raw_not_automatically_total_failure (test_stage009_independent_aggregate.AggregateAuditTests.test_negative_raw_not_automatically_total_failure) ... ok
+test_self_consistent_event_with_fabricated_raw_fails (test_stage009_independent_aggregate.AggregateAuditTests.test_self_consistent_event_with_fabricated_raw_fails) ... ok
+test_source_pin_collision_fails (test_stage009_independent_aggregate.AggregateAuditTests.test_source_pin_collision_fails) ... ok
+test_transfer_double_count_fails (test_stage009_independent_aggregate.AggregateAuditTests.test_transfer_double_count_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.020s
+
+OK

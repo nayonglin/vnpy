@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_independent_aggregate.py", line 202, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_independent_aggregate.py", line 198, in main
+    r=audit(args.report,args.available)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_independent_aggregate.py", line 153, in audit
+    for name,want in roundstats.items():near(getattr(row,'round_'+name),want,'closed_round_stats:'+name)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_independent_aggregate.py", line 37, in near
+    ok(np.allclose(np.asarray(a,dtype=float),np.asarray(b,dtype=float),rtol=1e-10,atol=1e-6,equal_nan=False),label)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'DEFINED'

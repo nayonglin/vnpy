@@ -1,0 +1,1 @@
+{"mode": "prepare", "counts": {"pending": 46, "running": 0, "validated": 0, "failed": 0, "total": 46}, "planned_new_replays": 46, "canary_start": "2015-01-01", "registry": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_multistart/registry.json"}

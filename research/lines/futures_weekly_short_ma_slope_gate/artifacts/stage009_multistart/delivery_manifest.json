@@ -1,0 +1,20 @@
+{
+  "schema": "stage009_pending_report_delivery_v1",
+  "files_sha256": {
+    "reserve_events.csv": "feed1c2f2df3a8fb6c45128b95288344edda387dd642ffa790f2873dd2d149fc",
+    "summary.csv": "e2ef200dde434e5bf6b44d39491b61387cca41a338cbc0ec5daa58b5702f6e54",
+    "paired.csv": "8df799b2219d783f3005948a22952d755b8798d2a04313fbe2198f79ccba215f",
+    "report.md": "74a9f6412e7f85defde94427b2c5aa8d8aa0f4071f3042be3eec5232ca27eb33",
+    "02_january_starts_nav.png": "9350d6251fcf461f404c9f4ac83bd0bcedd516908e03c8fed131ae68f56873b7",
+    "04_reserve_effect_heatmaps.png": "52582e3566fec97246909e6f199ba1c8f4d25b2dd05520c2bfa9428764ec855c",
+    "05_cohort_reserve_summary.png": "31f8d98b68a3fc148f312d14b754de9cc5f50a72d562aae9149e37af43216774",
+    "comparison.json": "06b2b601470e0eab006ab656300188115a6791fa20d8dac51da9b457e449deb3",
+    "cohort_summary.csv": "bba8dbefcfbe8f0b092291ffc143cd714402341e0cf5592a9113568e9970efbe",
+    "01_full_2015_nav_drawdown.png": "649c9d9dfad42083eb04a0e744bbfdea9268080938a22506b87b84ece01c23c5",
+    "all_daily.csv": "b624ee5cf2da09f06619fd05bde71d8164930cde20819c3d61df4a1e24824a42",
+    "decision.json": "fb940f10304d9c9739e8c0dc91942aab624c0424210a2d8b3576b82eac39044f",
+    "source_hashes.json": "6c7e92e2f63e97146442c1a4ef4cd95eb6b426eaf88d41f5d3dae73776381f66",
+    "03_june_starts_nav.png": "9b6bf9e6f900dc833ff88b633e66ca2f488e7dab9ec0ac57243582f6c546491c"
+  },
+  "self_hash_excluded": true
+}

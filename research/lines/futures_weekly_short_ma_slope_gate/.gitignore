@@ -1,0 +1,2 @@
+# Stage009 bulk daily ledger stays local; its SHA is retained in delivery manifests.
+/artifacts/stage009_multistart/all_daily.csv

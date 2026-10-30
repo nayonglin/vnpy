@@ -1,0 +1,26 @@
+....F....E.
+======================================================================
+ERROR: test_real_summary_may_omit_cohort_but_conflicting_cohort_is_rejected (test_stage009_finalize.FinalizerTests.test_real_summary_may_omit_cohort_but_conflicting_cohort_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 63, in test_real_summary_may_omit_cohort_but_conflicting_cohort_is_rejected
+    m.require_report_rows(l,s,p);s[0]['cohort']='June'
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_finalize.py", line 99, in require_report_rows
+    need(row['cohort']==('January' if start[5:7]=='01' else 'June'),'summary_cohort')
+         ~~~^^^^^^^^^^
+KeyError: 'cohort'
+
+======================================================================
+FAIL: test_comparison_requires_exact_four_variant_names_not_numeric_count (test_stage009_finalize.FinalizerTests.test_comparison_requires_exact_four_variant_names_not_numeric_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 66, in test_comparison_requires_exact_four_variant_names_not_numeric_count
+    m=subject(self);self.assertTrue(hasattr(m,'require_comparison'),'real comparison schema gate missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : real comparison schema gate missing
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.083s
+
+FAILED (failures=1, errors=1)

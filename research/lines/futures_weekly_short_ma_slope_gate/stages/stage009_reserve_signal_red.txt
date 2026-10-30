@@ -1,0 +1,13 @@
+....F............
+======================================================================
+FAIL: test_disabled_case3_signal_cannot_consume_reserve (test_stage009_reserve.ReserveTests.test_disabled_case3_signal_cannot_consume_reserve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py", line 83, in test_disabled_case3_signal_cannot_consume_reserve
+    self.assertEqual(s.reserve_balance,150000.)
+AssertionError: 140000.0 != 150000.0
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.010s
+
+FAILED (failures=1)

@@ -1,0 +1,23 @@
+...F..E..........
+======================================================================
+ERROR: test_freeze_requires_fixed46_amounts_and_all_financial_sources (test_stage009_runner.ReserveRunnerTests.test_freeze_requires_fixed46_amounts_and_all_financial_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 73, in test_freeze_requires_fixed46_amounts_and_all_financial_sources
+    required=m.required_financial_sources();f=dict(source_head='a'*40,cutoff=m.CUTOFF,starts=list(m.STARTS),data_identity={k:'b'*64 for k in m.IDENTITY_KEYS},source_files_sha256={str(p):m.sha(p) for p in required},engine_initial_capital=150000.,reserve_initial_capital=150000.,total_initial_capital=300000.,planned_arm_windows=46,planned_financial_replays=46,idle_control_registry=str(registry),idle_control_registry_sha256=m.sha(registry),idle_control_freeze=str(old),idle_control_freeze_sha256=m.sha(old));p=root/'freeze.json';p.write_text(json.dumps(f));self.assertEqual(m.validate_freeze(p)[0],f)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'stage009_contract' has no attribute 'required_financial_sources'
+
+======================================================================
+FAIL: test_coordinator_only_canary_first_and_failed_job_never_redispatched (test_stage009_runner.ReserveRunnerTests.test_coordinator_only_canary_first_and_failed_job_never_redispatched)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py", line 65, in test_coordinator_only_canary_first_and_failed_job_never_redispatched
+    self.assertTrue(hasattr(c,'select_pending'),'strict dispatch selector missing');reg={'jobs':{s+'|'+a:dict(status='pending') for s in c.STARTS for a in ['A','C']}}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : strict dispatch selector missing
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.079s
+
+FAILED (failures=1, errors=1)

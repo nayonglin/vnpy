@@ -1,0 +1,14 @@
+........F
+======================================================================
+FAIL: test_reserve_cache_metrics_match_independent_total_not_raw (test_stage009_finalize.FinalizerTests.test_reserve_cache_metrics_match_independent_total_not_raw)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 57, in test_reserve_cache_metrics_match_independent_total_not_raw
+    m=subject(self);self.assertTrue(hasattr(m,'require_independent_metrics'),'independent total metric acceptance missing');ledger=fixtures(m)[0][(m.STARTS[0],'A_R')];metrics=dict(ledger['metrics'],total_trade_count=ledger['metrics']['modeled_fill_count'],rounds=ledger['accounting']['complete_contract_rounds'],open_round_net_mtm=ledger['accounting']['open_round_net_mtm']);risk=dict(configured_margin_max_trading_pct=60.,configured_margin_over100_trading_days=0,configured_margin_undefined_trading_days=0,configured_margin_max_total_pct=30.,configured_margin_over100_total_days=0,nonpositive_total_equity_days=0);receipt=dict(metrics=metrics,risk=risk)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : independent total metric acceptance missing
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.080s
+
+FAILED (failures=1)

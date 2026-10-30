@@ -1,0 +1,20 @@
+E
+======================================================================
+ERROR: test_stage009_report (unittest.loader._FailedTest.test_stage009_report)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stage009_report
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py", line 407, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py", line 350, in _get_module_from_name
+    __import__(name)
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_report.py", line 3, in <module>
+    from stage009_report import make_pairs,cohort_summary,require_complete
+ModuleNotFoundError: No module named 'stage009_report'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

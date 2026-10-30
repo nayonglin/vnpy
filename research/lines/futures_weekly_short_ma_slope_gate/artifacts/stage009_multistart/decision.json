@@ -1,0 +1,32 @@
+{
+  "strategy_verdict": "MIXED_OR_FAIL_NO_RESCUE_TUNING",
+  "promotion_decision": "NO_PROMOTION",
+  "arms": {
+    "A": {
+      "vote_windows": 22,
+      "return_wins": 16,
+      "return_losses": 3,
+      "dd_wins": 5,
+      "sharpe_wins": 13,
+      "three_gate_pass_count": 4,
+      "reserve_negative_return_count": 0,
+      "reserve_nonpositive_total_windows": 0,
+      "reserve_nonpositive_trading_windows": 0,
+      "reserve_trading_margin_failure_windows": 22,
+      "exhausted_reserve_windows": 2
+    },
+    "C": {
+      "vote_windows": 22,
+      "return_wins": 16,
+      "return_losses": 3,
+      "dd_wins": 4,
+      "sharpe_wins": 16,
+      "three_gate_pass_count": 3,
+      "reserve_negative_return_count": 1,
+      "reserve_nonpositive_total_windows": 0,
+      "reserve_nonpositive_trading_windows": 0,
+      "reserve_trading_margin_failure_windows": 14,
+      "exhausted_reserve_windows": 3
+    }
+  }
+}

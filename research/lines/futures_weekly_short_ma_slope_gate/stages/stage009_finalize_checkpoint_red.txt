@@ -1,0 +1,14 @@
+..F.....
+======================================================================
+FAIL: test_checkpoint_hash_preserves_frozen_integer_amount_serialization (test_stage009_finalize.FinalizerTests.test_checkpoint_hash_preserves_frozen_integer_amount_serialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_finalize.py", line 57, in test_checkpoint_hash_preserves_frozen_integer_amount_serialization
+    m=subject(self);self.assertTrue(hasattr(m,'checkpoint_identity'),'literal freeze checkpoint identity missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : literal freeze checkpoint identity missing
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.083s
+
+FAILED (failures=1)

@@ -1,0 +1,50 @@
+FFFFF
+======================================================================
+FAIL: test_exact_five_names_four_curves_and_review_changes_titles_only (test_stage009_plots.PlotTests.test_exact_five_names_four_curves_and_review_changes_titles_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_plots.py", line 39, in setUp
+    def setUp(self):self.assertIsNotNone(render_five,'Stage009 pure plot renderer missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 pure plot renderer missing
+
+======================================================================
+FAIL: test_observation_never_votes_and_missing_pairs_fail_closed (test_stage009_plots.PlotTests.test_observation_never_votes_and_missing_pairs_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_plots.py", line 39, in setUp
+    def setUp(self):self.assertIsNotNone(render_five,'Stage009 pure plot renderer missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 pure plot renderer missing
+
+======================================================================
+FAIL: test_rejects_missing_duplicate_or_wrong_window_summary (test_stage009_plots.PlotTests.test_rejects_missing_duplicate_or_wrong_window_summary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_plots.py", line 39, in setUp
+    def setUp(self):self.assertIsNotNone(render_five,'Stage009 pure plot renderer missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 pure plot renderer missing
+
+======================================================================
+FAIL: test_rejects_truncated_duplicate_or_wrong_capital_daily_curve (test_stage009_plots.PlotTests.test_rejects_truncated_duplicate_or_wrong_capital_daily_curve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_plots.py", line 39, in setUp
+    def setUp(self):self.assertIsNotNone(render_five,'Stage009 pure plot renderer missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 pure plot renderer missing
+
+======================================================================
+FAIL: test_transfers_cannot_be_counted_as_profit_or_release_idle_reserve (test_stage009_plots.PlotTests.test_transfers_cannot_be_counted_as_profit_or_release_idle_reserve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_plots.py", line 39, in setUp
+    def setUp(self):self.assertIsNotNone(render_five,'Stage009 pure plot renderer missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 pure plot renderer missing
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.221s
+
+FAILED (failures=5)

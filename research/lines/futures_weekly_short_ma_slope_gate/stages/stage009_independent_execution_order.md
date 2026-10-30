@@ -1,0 +1,15 @@
+# Stage009 严格next-open相位只读审查
+
+结论：此冻结执行路径允许、并应要求**所有补资事件raw_account_equity等于同日最终原始日账account_equity**。泛化wrapper支持记录after_update_trade快照，不等于本合同允许信号后同日成交。
+
+实际链为Stage009 Engine → DailyAddonEngine（本线addon关闭，仅_fill_order透传）→ HistoricalSafetyEngine（cross_delayed_orders前做epoch检查）→ Stage847/840 → Stage827 → Stage502 ConfirmedDailyNextRealOpenEngine。
+
+Stage502.new_bars先更新当前全部bar，再cross_delayed_orders，随后strategy.on_bars，最后update_daily_close。Stage827.cross_delayed_orders按全局顺序把ordinary/synthetic队列while-drain完，finally清空队列，才回到on_bars。半R/C2关闭；即使启用其合成动作也属于前述队列。Stage009未覆写new_bars，没有信号后的第二次撮合。
+
+虽然继承树还含SameDayCloseBacktestingEngine，它的on_bars后cross_limit_order_on_close位于被Stage502覆写的new_bars内，本线不执行该方法。因此当前日全部旧订单fill/cost在新信号规划前完成，on_bars生成的委托延迟到下一交易日；当日标记价不再改变。所有补资间减去各自此前累计转账，raw必须相同并等于该日日终raw。
+
+已复现原bucket_curve缺口：真实2020-01-03日账raw140000，伪事件before/raw145000、transfer5000、after150000会被接受，但导出交易桶实际145000，与事件after150000矛盾。根已补RED/GREEN与同日raw硬锚；独审后续还将检查金融contract入口同样使用该门，以及真实fill序列在第一次signal_check后不得同日增加。
+
+若未来另换post-signal真实成交模型，必须另立合同；通用eventraw应为dayraw减去事件后各笔signed_qty×(day_close−fill_price)×size−cost的贡献，并需逻辑序列或trade_count锚定。仅凭事件自报余额或physical clock无法替代。此次无需泛化此模型，不新增成交时资金gate。
+
+只读源码审查/非金融；所有原始策略与Stage001—008产物保留。

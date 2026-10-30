@@ -1,0 +1,40 @@
+{
+  "status": "PASS_READONLY_DESIGN_ENTRY_REVIEW_WITH_IMPLEMENTATION_CONDITIONS",
+  "financial_admission": false,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "reviewed_source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_formal_no_half_r/tools/replay_audit_helpers.py": "b2a4ff35d3a24fc51a357987db61dc6f6442a103c41b7f79d7cf2ea8232da288",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage008.py": "f6cac43eeda9be15cdd342d53f183dfa9d8ddb42f21e12851f8727dc0979cef5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_freeze.json": "f285ede86164f43c906b498da3138bff7c479d783be96ec1a62ffc6907e6c992",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_independent_final.json": "8a744d0b4f99f6536eb76a7cb8d4eb14f2f26041a8082c4e4e64c6dfd942c9b4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage008_delivery_manifest.json": "7dbac3726e55f1180fe0efcb98ba6407c31acd2288743081ea49f99287306edd"
+  },
+  "recommended_hook": "Stage009 outer wrapper _calculate_entry_sizing; pure eligibility+short gate+weekly-stop qualification before atomic transfer, then original sizing exactly once",
+  "permitted_contexts": [
+    "flat_entry",
+    "reverse_entry"
+  ],
+  "never_fund_contexts": [
+    "env_probe",
+    "rollover_reopen",
+    "regular_add",
+    "donchian_add",
+    "post_quality_add",
+    "exit"
+  ],
+  "primary_accounting_identity": "T=150000+net trading PnL+F; R=150000-F; W=300000+net trading PnL",
+  "conditions": [
+    "Freeze effective-signal-vs-final-fill semantics before finance.",
+    "Verify loaded risk-history flags and cash-flow-neutral treatment if any active.",
+    "Do not reset original high-water/streak/history/positions/targets/reservations.",
+    "T==0 must not fall back to base-capital imaginary buying power.",
+    "New implementation/tests/preflight/canary independent review remain required."
+  ],
+  "review_md_sha256": "d43eeb53bcd0d59fd800d70d63b5a121c7a6c9aca86de91a70e94a6dc132aa06"
+}

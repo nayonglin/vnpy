@@ -1,0 +1,50 @@
+FFFFF
+======================================================================
+FAIL: test_atomic_publish_rollback_preserves_sources_and_rejects_existing (test_stage009_reviewed_visual.ReviewedVisualTests.test_atomic_publish_rollback_preserves_sources_and_rejects_existing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reviewed_visual.py", line 20, in setUp
+    def setUp(self):self.assertIsNotNone(visual,'Stage009 reviewed visual tool missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 reviewed visual tool missing
+
+======================================================================
+FAIL: test_exact_five_names_and_pending_manifest_no_hidden_file_drift (test_stage009_reviewed_visual.ReviewedVisualTests.test_exact_five_names_and_pending_manifest_no_hidden_file_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reviewed_visual.py", line 20, in setUp
+    def setUp(self):self.assertIsNotNone(visual,'Stage009 reviewed visual tool missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 reviewed visual tool missing
+
+======================================================================
+FAIL: test_exact_stage009_46pairs23starts_freeze_and_report_binding (test_stage009_reviewed_visual.ReviewedVisualTests.test_exact_stage009_46pairs23starts_freeze_and_report_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reviewed_visual.py", line 20, in setUp
+    def setUp(self):self.assertIsNotNone(visual,'Stage009 reviewed visual tool missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 reviewed visual tool missing
+
+======================================================================
+FAIL: test_only_suptitle_state_may_change_including_bars_scatter_images_tables (test_stage009_reviewed_visual.ReviewedVisualTests.test_only_suptitle_state_may_change_including_bars_scatter_images_tables)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reviewed_visual.py", line 20, in setUp
+    def setUp(self):self.assertIsNotNone(visual,'Stage009 reviewed visual tool missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 reviewed visual tool missing
+
+======================================================================
+FAIL: test_review_must_be_explicit_hash_locked_pass_with_zero_findings (test_stage009_reviewed_visual.ReviewedVisualTests.test_review_must_be_explicit_hash_locked_pass_with_zero_findings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reviewed_visual.py", line 20, in setUp
+    def setUp(self):self.assertIsNotNone(visual,'Stage009 reviewed visual tool missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Stage009 reviewed visual tool missing
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=5)

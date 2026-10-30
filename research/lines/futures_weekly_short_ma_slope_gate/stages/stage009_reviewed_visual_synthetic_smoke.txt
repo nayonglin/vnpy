@@ -1,0 +1,7 @@
+SYNTHETIC ONLY / NOT FINANCIAL / no real report or receipt generated
+01_full_2015_nav_drawdown.png pending_byte_identical=True title_only_artist_equivalent=True
+02_january_starts_nav.png pending_byte_identical=True title_only_artist_equivalent=True
+03_june_starts_nav.png pending_byte_identical=True title_only_artist_equivalent=True
+04_reserve_effect_heatmaps.png pending_byte_identical=True title_only_artist_equivalent=True
+05_cohort_reserve_summary.png pending_byte_identical=True title_only_artist_equivalent=True
+PASS_SYNTHETIC_ROUNDTRIP_ALL_FIVE / financial_replays=0 production_accesses=0
