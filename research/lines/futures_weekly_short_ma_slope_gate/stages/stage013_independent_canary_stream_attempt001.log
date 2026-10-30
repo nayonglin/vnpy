@@ -1,0 +1,12 @@
+{"event": "STAGE013_INDEPENDENT_STARTED", "pid": 51415, "planned": 2, "workers": 2, "auditor_sha256": "fafaa7d5ce0c66a3a4707602a6967dc405aeffcd6dcfc2ee3a1b5ccedf243d75", "freeze_sha256": "c398ed516b8b7f68ead10fb764de127a5cb8350e9e91ed9fb0f0953a255c3a7c"}
+{"event": "STAGE013_AUDIT_STARTED", "start": "2015-01-01", "method": "proven_nonbinding_reuse", "pid": 51597}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 0, "running": 1, "planned": 2}
+{"event": "STAGE013_INDEPENDENT_WINDOW_PASS", "start": "2015-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts/2015-01-01_C.json", "sha256": "c1e7ccba02429b4047e166b73a76e08756f07a90dcc8a2a663bd1866c627773a", "real_PnL": 4025344.999999998}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 1, "running": 0, "planned": 2}
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_stream.py", line 57, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_stream.py", line 56, in main
+    time.sleep(2)
+KeyboardInterrupt

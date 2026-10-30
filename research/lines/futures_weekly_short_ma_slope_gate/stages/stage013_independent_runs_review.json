@@ -1,0 +1,974 @@
+{
+  "schema": "stage013_independent_23_windows_v2",
+  "status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "freeze_sha256": "333c77c0602e566c68bdde426eab901edad82a942fd14f3e611e80ce7d6d01d4",
+  "financial_source_head": "e2606ffb2b30a101450aabcef4a39a11d72a4854",
+  "registry_sha256": "92eb361b68b6d4a4e91c9a261e8779c0e827e59e086b78f4cea6990ab74e097c",
+  "gate_sha256": "cee250eae236362c546553564d7be3bed64b2685d462f5fa0d640eeb6d854768",
+  "reuse_admission_sha256": "f218afbce3f14d6333bc97e18e9f7f0efdd366a9a0fc789e67fa14c7c5e4214b",
+  "code_review_v2_sha256": "f9a8c641010b6415e710108095de693cf2b226fd0454a0cb16e7b3c06ff2e46b",
+  "new_financial_engine_runs": 4,
+  "proven_nonbinding_reuses": 19,
+  "old_baseline_controls": 23,
+  "pre_engine_failed_dispatches": 1,
+  "failed_dispatch_engines": 0,
+  "method_counts": {
+    "proven_nonbinding_reuse": 19,
+    "fresh_engine": 4
+  },
+  "checks": {
+    "raw_core_checks": 1228666,
+    "funding_checks": 271674,
+    "stage013_checks": 36835
+  },
+  "reuse_admission_checks": 118084,
+  "actual_entry_risk_rows": 4096,
+  "actual_risk_mode_counts": {
+    "regular": 2004,
+    "volume_open_interest_surge": 873,
+    "open_interest_decline": 753,
+    "open_interest_surge": 466
+  },
+  "receipts_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2015-01-01_C.json": "ddc1ece95b9beadf99be7fa0f2b2164c8c9b344eefd467e6346c4d7056a33413",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2015-06-01_C.json": "47c000ed7fa921c829780f7133d3f360b5a7f11f0eb4b9b1b500ba74ae459dd2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2016-01-01_C.json": "485f664ce5826b8f91cd065dde9a22b5b13d5a3c01a86e1206103cfa39523abe",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2016-06-01_C.json": "cafc77b3d4c30b969f020820bd1d35464cbb97fdfd7c5a2753a68ae54c4d1808",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2017-01-01_C.json": "994ca52872df1e524868f080b8103576f4c0805a3eb2607999aef130ad975dfa",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2017-06-01_C.json": "998f8f10f84a752c51041ca0ce4bc70c91d1f3f82493f970c7a47269da5924b6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2018-01-01_C.json": "03e4f38149ed09190f37063b0b539fd7ead406d928860bc3a9462881a7065d44",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2018-06-01_C.json": "13fcbe79cca5bf20ea4d52dcbf8cd6a75cf27159ce5b8dfcfbac7c0a9b8ad777",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2019-01-01_C.json": "9c397c0d8be7af51de3200524e1531fbb634c0e9ad1f6c911711d244b4bcf6a7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2019-06-01_C.json": "88b24a0e2e8a494762416a20ef21f070e1c7ca5086a213b1407a81a597e83b78",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2020-01-01_C.json": "a9c211201adc36232033c099019ec651e0b89beda1de08d245d5f8720c6091b2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2020-06-01_C.json": "de24f5ecf4129e37b04124c789a72bf95a047360a8c9e3965c78ba79c2f578e9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2021-01-01_C.json": "0a1a97544d1ac9b2fa3df2dc14c774b69956aaebfcb4add06eb685401fb168bb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2021-06-01_C.json": "9db78c8fbf9a08508bb20ac1098dc9560add6afc8432bb41161b145eb5762e37",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2022-01-01_C.json": "6e098c936365511a956d7632d8bf6b668b6f6cbffc51a6f8b2ce0520d3adb75e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2022-06-01_C.json": "aa8be7f530b2fc7a7fe20057a5af2e97e0489b2a7e18fb1062a7e4ea826a3309",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2023-01-01_C.json": "9c27184c2a2cfcf9a6caafeee4960e5c8767eba9a61223d92042e6da96fc56df",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2023-06-01_C.json": "3f917ba87fb3458d9d48422a119b9a4b150538cf7d419b3199d234463a532159",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2024-01-01_C.json": "6b32bca9e6faa891e295faf14b644ec8c663aa9979694470484aec2b2415b69a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2024-06-01_C.json": "8120c2648ea42c34e80bd702c1bf1e4ca7841e0384c5bf3499479a79e29722d5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2025-01-01_C.json": "2c79ef97c746937da7157225d07c64998064c7c6e9ba2ee042cd427affd0bf83",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2025-06-01_C.json": "a7e7645239ba7dfe019462423e9e865dc6031c30261348c4adbd619033003f87",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2026-01-01_C.json": "08da59c135c625eb84996328af7b1871a28084d2f1488e8ea4240d7155347903"
+  },
+  "checkpoints_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2015-01-01_C.json": "390ce6f8fc1a6133ca871d5458aeb5b41e286cfe5aa66d7b1452fdfb17dbde04",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2015-06-01_C.json": "a3a76289df9b7e5b37c6810809a52b0f75ac7afb1aff7e7f6d596136addd21e2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2016-01-01_C.json": "ca01f927f64f9f0774230e9882ac314a5acd51674715427ac81de669f423581b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2016-06-01_C.json": "58851e97897c5c2ce5a81e88ec6b8ebb37a6619e8c61eeae57c062497e97c959",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2017-01-01_C.json": "fe8ac84dbefd488ffd5198569f7bd4826e8c22cafeaacc686246b717f1a17a7b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2017-06-01_C.json": "d5596f72b5a2fb11ad9ba0b9b161085a1d8b1e56ad72b2b8dec47d30e6c247e6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2018-01-01_C.json": "e897289f1918f5aa8951c8c631e22c97c1a924d906df3bf42aea55f5e983cea6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2018-06-01_C.json": "74f79c2f50fff53cfede7d50ab19d4991f5d8f5b051931fa560632d2fea199b6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2019-01-01_C.json": "eac853972841ac010a7f36d658277f604ce5bfc9895cb240bab66de02e9535d2",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2019-06-01_C.json": "d8012c91bf3f97ff1f17ccb165efe90b7dea8689f10aa6ea6f534a27941fd6cb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2020-01-01_C.json": "93727172f72b90034c27a346c79070f29e03f2807514b6732fdf14e47d8a2215",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2020-06-01_C.json": "b1b28696b672e5590725bd239bcec44f59249f11d861c1dd526b19aebef39450",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2021-01-01_C.json": "fad9b772ddf5c1faa6da1c1c78bf8552bd3e27f817655402af461ff963886611",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2021-06-01_C.json": "9e3a17adc4ecf37a9295dca4b14f2876385cfa5fd5bd12dd5433a084523588be",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2022-01-01_C.json": "4bef32cabb2e36c7393c3b2c491c8068a4e03f740c3d0efd27fa662698a0807a",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2022-06-01_C.json": "fd56fa885f6cfd75464ee7a059250c3775d39f99acc1fed3d1d56398b2785248",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2023-01-01_C.json": "9dec63a687c5296ce4b4863f77bdf0f83c923d8658f37470839314bff7c222e8",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2023-06-01_C.json": "c0215cd765bc8e2597a611e7e65b2e1afa86bad525475534622ba281479e4080",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2024-01-01_C.json": "629a04c287f33183bea353a0a3562e395eb7adbca415d3ada6844b97c98f969d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2024-06-01_C.json": "8cffbedd97eeeeb6e08049ef0a29da29c9878358510542cbc5431b6936b44862",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2025-01-01_C.json": "176d1378a073969ece84a645235dae599be146fde7e1370fa465ddbcbfc04ccc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2025-06-01_C.json": "538020ddb81af48b7f636945aedcf653264130ccf430a344b8909c75ba443a98",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_multistart_v2/checkpoints/2026-01-01_C.json": "43d08e539b1bf7b6026794d28d1d1e973bdfa9c98ce1558bcef7f350cd40f1c4"
+  },
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20150101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 4219304.999999998,
+        "total_return_pct": 2712.869999999999,
+        "max_dd_pct": -51.04702053641566,
+        "sharpe": 0.916629481781214,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 4025344.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 106.40135891740627,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 129000.00000000001,
+        "minimum_total_equity": 206040.0
+      },
+      "rounds": {
+        "count": 311,
+        "wins": 130,
+        "losses": 179,
+        "flat": 2,
+        "win_rate_pct": 41.80064308681672,
+        "average_win": 87383.57692307692,
+        "average_loss_abs": 40974.9720670391,
+        "payoff_ratio": 2.1326085782342634,
+        "profit_factor": 1.5488218724606382,
+        "closed_net_pnl": 4025344.999999999
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 318
+    },
+    {
+      "start": "2015-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20150601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 4219304.999999998,
+        "total_return_pct": 2712.869999999999,
+        "max_dd_pct": -51.04702053641568,
+        "sharpe": 0.9403922145642988,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 4059384.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 106.40135891740627,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 143160.0,
+        "minimum_total_equity": 240080.0
+      },
+      "rounds": {
+        "count": 308,
+        "wins": 130,
+        "losses": 176,
+        "flat": 2,
+        "win_rate_pct": 42.2077922077922,
+        "average_win": 87383.57692307692,
+        "average_loss_abs": 41480.0,
+        "payoff_ratio": 2.106643609524516,
+        "profit_factor": 1.5560435752169721,
+        "closed_net_pnl": 4059384.999999999
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 315
+    },
+    {
+      "start": "2016-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20160101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3730425.0,
+        "total_return_pct": 2386.95,
+        "max_dd_pct": -57.235056839017226,
+        "sharpe": 0.9406557125170273,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 3580425.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 105.2792171936431,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 150000.0,
+        "minimum_total_equity": 250000.0
+      },
+      "rounds": {
+        "count": 299,
+        "wins": 129,
+        "losses": 169,
+        "flat": 1,
+        "win_rate_pct": 43.1438127090301,
+        "average_win": 70911.7054263566,
+        "average_loss_abs": 32941.92307692308,
+        "payoff_ratio": 2.1526279829131356,
+        "profit_factor": 1.6431302354780737,
+        "closed_net_pnl": 3580425.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 306
+    },
+    {
+      "start": "2016-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20160601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 2248694.999999999,
+        "total_return_pct": 1399.1299999999994,
+        "max_dd_pct": -59.76972313752225,
+        "sharpe": 0.8372920848550194,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 1998769.999999999,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 110.05605975020404,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 106220.0,
+        "minimum_total_equity": 148395.0
+      },
+      "rounds": {
+        "count": 282,
+        "wins": 120,
+        "losses": 161,
+        "flat": 1,
+        "win_rate_pct": 42.5531914893617,
+        "average_win": 44230.875,
+        "average_loss_abs": 20552.391304347828,
+        "payoff_ratio": 2.1521035846881245,
+        "profit_factor": 1.6040523612582296,
+        "closed_net_pnl": 1998769.9999999995
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 287
+    },
+    {
+      "start": "2017-01-01",
+      "method": "fresh_engine",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_C_20170101_attempt002",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 2483255.0,
+        "total_return_pct": 1555.5033333333333,
+        "max_dd_pct": -54.33952355945959,
+        "sharpe": 0.9247945319802242,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2233255.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 98.74002131200187,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 95645.0,
+        "minimum_total_equity": 95645.0
+      },
+      "rounds": {
+        "count": 263,
+        "wins": 106,
+        "losses": 155,
+        "flat": 2,
+        "win_rate_pct": 40.3041825095057,
+        "average_win": 52612.92452830189,
+        "average_loss_abs": 21572.354838709678,
+        "payoff_ratio": 2.438905020878512,
+        "profit_factor": 1.667896336858853,
+        "closed_net_pnl": 2233255.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 267
+    },
+    {
+      "start": "2017-06-01",
+      "method": "fresh_engine",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_C_20170601_attempt002",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3175385.0,
+        "total_return_pct": 2016.9233333333334,
+        "max_dd_pct": -49.4868000190958,
+        "sharpe": 1.0006220507485037,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2925385.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 98.08164230579737,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 105810.00000000003,
+        "minimum_total_equity": 123664.99999999997
+      },
+      "rounds": {
+        "count": 258,
+        "wins": 107,
+        "losses": 149,
+        "flat": 2,
+        "win_rate_pct": 41.47286821705426,
+        "average_win": 65762.85046728973,
+        "average_loss_abs": 27592.21476510067,
+        "payoff_ratio": 2.383384263537563,
+        "profit_factor": 1.7115578268356992,
+        "closed_net_pnl": 2925384.999999999
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 263
+    },
+    {
+      "start": "2018-01-01",
+      "method": "fresh_engine",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_C_20180101_attempt002",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 749184.9999999999,
+        "total_return_pct": 399.4566666666666,
+        "max_dd_pct": -62.403159195731476,
+        "sharpe": 0.6579348885471851,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 499184.9999999999,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 110.24684727082276,
+        "configured_margin_over100_trading_days": 3,
+        "minimum_trading_equity": 62360.0,
+        "minimum_total_equity": 62360.0
+      },
+      "rounds": {
+        "count": 222,
+        "wins": 86,
+        "losses": 134,
+        "flat": 2,
+        "win_rate_pct": 38.73873873873874,
+        "average_win": 21724.127906976744,
+        "average_loss_abs": 10217.089552238805,
+        "payoff_ratio": 2.126254037013552,
+        "profit_factor": 1.364610799874369,
+        "closed_net_pnl": 499185.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 226
+    },
+    {
+      "start": "2018-06-01",
+      "method": "fresh_engine",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage013_C_20180601_attempt002",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 1910524.999999999,
+        "total_return_pct": 1173.6833333333327,
+        "max_dd_pct": -45.41785442126951,
+        "sharpe": 0.9400132230979535,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 1660524.999999999,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 97.51194047478452,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 96695.0,
+        "minimum_total_equity": 96695.0
+      },
+      "rounds": {
+        "count": 233,
+        "wins": 98,
+        "losses": 134,
+        "flat": 1,
+        "win_rate_pct": 42.06008583690987,
+        "average_win": 44668.67346938775,
+        "average_loss_abs": 20276.15671641791,
+        "payoff_ratio": 2.2030148067073703,
+        "profit_factor": 1.6111600825173307,
+        "closed_net_pnl": 1660525.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 236
+    },
+    {
+      "start": "2019-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20190101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3182584.999999998,
+        "total_return_pct": 2021.7233333333322,
+        "max_dd_pct": -44.28159954954467,
+        "sharpe": 1.1287032017225658,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2942129.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 107.20193166102621,
+        "configured_margin_over100_trading_days": 2,
+        "minimum_trading_equity": 123230.0,
+        "minimum_total_equity": 157865.0
+      },
+      "rounds": {
+        "count": 222,
+        "wins": 96,
+        "losses": 125,
+        "flat": 1,
+        "win_rate_pct": 43.24324324324324,
+        "average_win": 81104.79166666667,
+        "average_loss_abs": 38751.44,
+        "payoff_ratio": 2.0929491050311078,
+        "profit_factor": 1.6073849126638906,
+        "closed_net_pnl": 2942130.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 227
+    },
+    {
+      "start": "2019-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20190601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3182584.999999998,
+        "total_return_pct": 2021.7233333333322,
+        "max_dd_pct": -44.28159954954467,
+        "sharpe": 1.1728155749997264,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2964344.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 107.20193166102621,
+        "configured_margin_over100_trading_days": 2,
+        "minimum_trading_equity": 123230.0,
+        "minimum_total_equity": 180080.0
+      },
+      "rounds": {
+        "count": 213,
+        "wins": 94,
+        "losses": 118,
+        "flat": 1,
+        "win_rate_pct": 44.13145539906103,
+        "average_win": 82594.89361702128,
+        "average_loss_abs": 40674.36440677966,
+        "payoff_ratio": 2.0306375974557147,
+        "profit_factor": 1.6176265606850606,
+        "closed_net_pnl": 2964345.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 218
+    },
+    {
+      "start": "2020-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20200101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3182584.999999998,
+        "total_return_pct": 2021.7233333333322,
+        "max_dd_pct": -44.28159954954467,
+        "sharpe": 1.1811873290631125,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2965184.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 107.20193166102621,
+        "configured_margin_over100_trading_days": 2,
+        "minimum_trading_equity": 101800.0,
+        "minimum_total_equity": 180920.0
+      },
+      "rounds": {
+        "count": 200,
+        "wins": 90,
+        "losses": 109,
+        "flat": 1,
+        "win_rate_pct": 45.0,
+        "average_win": 86101.77777777778,
+        "average_loss_abs": 43889.678899082566,
+        "payoff_ratio": 1.9617773457799799,
+        "profit_factor": 1.619816157066038,
+        "closed_net_pnl": 2965185.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 204
+    },
+    {
+      "start": "2020-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20200601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 3023254.999999998,
+        "total_return_pct": 1915.5033333333322,
+        "max_dd_pct": -45.71267611566244,
+        "sharpe": 1.2875543482312248,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2873254.999999998,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 98.58459077500345,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 143380.0,
+        "minimum_total_equity": 243380.0
+      },
+      "rounds": {
+        "count": 193,
+        "wins": 87,
+        "losses": 105,
+        "flat": 1,
+        "win_rate_pct": 45.07772020725388,
+        "average_win": 84067.52873563218,
+        "average_loss_abs": 42291.619047619046,
+        "payoff_ratio": 1.9878058733333137,
+        "profit_factor": 1.64703915219046,
+        "closed_net_pnl": 2873255.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 196
+    },
+    {
+      "start": "2021-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20210101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 895240.0,
+        "total_return_pct": 496.82666666666665,
+        "max_dd_pct": -53.960511033681804,
+        "sharpe": 0.922345909997219,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 732165.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 106.98741301289121,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 138739.99999999988,
+        "minimum_total_equity": 235864.99999999994
+      },
+      "rounds": {
+        "count": 160,
+        "wins": 69,
+        "losses": 89,
+        "flat": 2,
+        "win_rate_pct": 43.125,
+        "average_win": 29149.202898550724,
+        "average_loss_abs": 14372.247191011236,
+        "payoff_ratio": 2.0281590283794566,
+        "profit_factor": 1.5723929545863204,
+        "closed_net_pnl": 732165.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 166
+    },
+    {
+      "start": "2021-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20210601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 763430.0,
+        "total_return_pct": 408.9533333333334,
+        "max_dd_pct": -40.5632667559223,
+        "sharpe": 0.9211497091392788,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 559410.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 108.77504868657736,
+        "configured_margin_over100_trading_days": 2,
+        "minimum_trading_equity": 138740.0,
+        "minimum_total_equity": 194020.0
+      },
+      "rounds": {
+        "count": 149,
+        "wins": 61,
+        "losses": 87,
+        "flat": 1,
+        "win_rate_pct": 40.939597315436245,
+        "average_win": 27178.44262295082,
+        "average_loss_abs": 12626.149425287356,
+        "payoff_ratio": 2.1525519544793656,
+        "profit_factor": 1.509260565784383,
+        "closed_net_pnl": 559410.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 153
+    },
+    {
+      "start": "2022-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20220101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 896985.0,
+        "total_return_pct": 497.98999999999995,
+        "max_dd_pct": -40.91631925044054,
+        "sharpe": 1.069163892240841,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 709795.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 106.75128848865813,
+        "configured_margin_over100_trading_days": 2,
+        "minimum_trading_equity": 137470.0,
+        "minimum_total_equity": 211750.0
+      },
+      "rounds": {
+        "count": 134,
+        "wins": 57,
+        "losses": 75,
+        "flat": 2,
+        "win_rate_pct": 42.53731343283582,
+        "average_win": 33578.15789473684,
+        "average_loss_abs": 16055.466666666667,
+        "payoff_ratio": 2.091384734674182,
+        "profit_factor": 1.5894523983523785,
+        "closed_net_pnl": 709795.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 139
+    },
+    {
+      "start": "2022-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20220601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 771750.0,
+        "total_return_pct": 414.49999999999994,
+        "max_dd_pct": -41.10613374883489,
+        "sharpe": 1.0984172575521802,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 589890.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 107.9422181571416,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 128620.0,
+        "minimum_total_equity": 217180.0
+      },
+      "rounds": {
+        "count": 124,
+        "wins": 53,
+        "losses": 70,
+        "flat": 1,
+        "win_rate_pct": 42.74193548387097,
+        "average_win": 29927.075471698114,
+        "average_loss_abs": 14232.07142857143,
+        "payoff_ratio": 2.1027912642159987,
+        "profit_factor": 1.592113385763542,
+        "closed_net_pnl": 589890.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 128
+    },
+    {
+      "start": "2023-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20230101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 867275.0000000002,
+        "total_return_pct": 478.1833333333335,
+        "max_dd_pct": -43.182086173148114,
+        "sharpe": 1.2295865855432249,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 680495.0000000002,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 109.00312162842549,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 131940.0,
+        "minimum_total_equity": 211260.0
+      },
+      "rounds": {
+        "count": 113,
+        "wins": 48,
+        "losses": 65,
+        "flat": 0,
+        "win_rate_pct": 42.47787610619469,
+        "average_win": 37791.5625,
+        "average_loss_abs": 17438.46153846154,
+        "payoff_ratio": 2.167138564181738,
+        "profit_factor": 1.6003484781649757,
+        "closed_net_pnl": 680495.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 116
+    },
+    {
+      "start": "2023-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20230601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 833205.0,
+        "total_return_pct": 455.47,
+        "max_dd_pct": -37.19487301423514,
+        "sharpe": 1.3894740427376144,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 683205.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 103.37954011241696,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 147040.0,
+        "minimum_total_equity": 247040.0
+      },
+      "rounds": {
+        "count": 104,
+        "wins": 49,
+        "losses": 55,
+        "flat": 0,
+        "win_rate_pct": 47.11538461538461,
+        "average_win": 31142.448979591838,
+        "average_loss_abs": 15323.181818181818,
+        "payoff_ratio": 2.0323748258758876,
+        "profit_factor": 1.8106612085076088,
+        "closed_net_pnl": 683205.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 107
+    },
+    {
+      "start": "2024-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20240101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 192240.0,
+        "total_return_pct": 28.160000000000007,
+        "max_dd_pct": -44.27110238661018,
+        "sharpe": 0.4301509948724184,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 35460.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 100.02758778190123,
+        "configured_margin_over100_trading_days": 1,
+        "minimum_trading_equity": 143530.0,
+        "minimum_total_equity": 237700.0
+      },
+      "rounds": {
+        "count": 67,
+        "wins": 25,
+        "losses": 42,
+        "flat": 0,
+        "win_rate_pct": 37.3134328358209,
+        "average_win": 12814.0,
+        "average_loss_abs": 6783.0952380952385,
+        "payoff_ratio": 1.8891080768015724,
+        "profit_factor": 1.1244690933342694,
+        "closed_net_pnl": 35460.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 68
+    },
+    {
+      "start": "2024-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20240601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 173100.0,
+        "total_return_pct": 15.399999999999991,
+        "max_dd_pct": -41.01507202931135,
+        "sharpe": 0.35623113248260013,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": -8560.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 93.86080576845502,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 141670.0,
+        "minimum_total_equity": 216610.0
+      },
+      "rounds": {
+        "count": 54,
+        "wins": 20,
+        "losses": 34,
+        "flat": 0,
+        "win_rate_pct": 37.03703703703704,
+        "average_win": 10360.0,
+        "average_loss_abs": 6345.882352941177,
+        "payoff_ratio": 1.6325546903967372,
+        "profit_factor": 0.9603262884686689,
+        "closed_net_pnl": -8560.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 56
+    },
+    {
+      "start": "2025-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20250101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 196120.0,
+        "total_return_pct": 30.746666666666677,
+        "max_dd_pct": -30.904272938058963,
+        "sharpe": 0.5758049789812663,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 2500.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 95.86045134548326,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 137790.0,
+        "minimum_total_equity": 203580.0
+      },
+      "rounds": {
+        "count": 42,
+        "wins": 17,
+        "losses": 25,
+        "flat": 0,
+        "win_rate_pct": 40.476190476190474,
+        "average_win": 9058.823529411764,
+        "average_loss_abs": 6132.0,
+        "payoff_ratio": 1.4773032500671501,
+        "profit_factor": 1.004566210045662,
+        "closed_net_pnl": 700.0
+      },
+      "open_round_net_mtm": 1800.0,
+      "entry_rows": 46
+    },
+    {
+      "start": "2025-06-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20250601_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 286770.0,
+        "total_return_pct": 91.17999999999999,
+        "max_dd_pct": -34.03791355068295,
+        "sharpe": 1.1801333583176195,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 98965.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 98.01395106715252,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 132920.0,
+        "minimum_total_equity": 206580.0
+      },
+      "rounds": {
+        "count": 31,
+        "wins": 11,
+        "losses": 20,
+        "flat": 0,
+        "win_rate_pct": 35.483870967741936,
+        "average_win": 24366.363636363636,
+        "average_loss_abs": 8453.25,
+        "payoff_ratio": 2.8824846817926404,
+        "profit_factor": 1.5853665749859522,
+        "closed_net_pnl": 98965.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 34
+    },
+    {
+      "start": "2026-01-01",
+      "method": "proven_nonbinding_reuse",
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20260101_attempt001",
+      "account_display": {
+        "initial_capital": 150000.0,
+        "end_equity": 173100.0,
+        "total_return_pct": 15.399999999999991,
+        "max_dd_pct": -36.16147793362984,
+        "sharpe": 0.6210991037060609,
+        "returns_defined": true,
+        "definition": "E/150000 includes transferred deposits; unused100k outside; not strategy return"
+      },
+      "real_net_pnl": 22380.0,
+      "risk": {
+        "nonpositive_trading_equity_days": 0,
+        "nonpositive_total_equity_days": 0,
+        "configured_margin_max_trading_pct": 93.81822992792702,
+        "configured_margin_over100_trading_days": 0,
+        "minimum_trading_equity": 147550.0,
+        "minimum_total_equity": 247550.0
+      },
+      "rounds": {
+        "count": 18,
+        "wins": 8,
+        "losses": 10,
+        "flat": 0,
+        "win_rate_pct": 44.44444444444444,
+        "average_win": 13370.0,
+        "average_loss_abs": 8458.0,
+        "payoff_ratio": 1.5807519508157957,
+        "profit_factor": 1.2646015606526366,
+        "closed_net_pnl": 22380.0
+      },
+      "open_round_net_mtm": 0,
+      "entry_rows": 20
+    }
+  ],
+  "old_admitted_graph_content_unchanged": 4675,
+  "old_admitted_graph_stat_unchanged": 4674,
+  "stat_drift_rehashed_same_content": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv": {
+      "sha256": "72c5ca576bfe8aebe12da1e750d9eac980633a43ab9944479a77a7e824a71e34",
+      "old_stat": [
+        16777231,
+        30572213,
+        6272,
+        1793357882306186874,
+        1793357882306186874
+      ],
+      "current_stat": [
+        16777231,
+        30572213,
+        6272,
+        1793360684609920749,
+        1793360684609920749
+      ],
+      "same_content": true
+    }
+  },
+  "resolved_preflight_bug": {
+    "severity": "P1",
+    "status": "fixed_before_any_engine",
+    "review_coverage_gap_preserved": true,
+    "evidence": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_code_review_v2.json"
+  },
+  "confidence": "Accounting and deterministic reuse accepted within frozen daily model. Generalization bounded by overlapping historical starts, post-history amount choice, zero fees, PIT and capacity limitations.",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "auditor_source_sha256": "10171586c9135e225640e041d2b8459844563f71cf029941748d7745662ff8e6"
+}

@@ -1,0 +1,78 @@
+...........EEE.FE.....................
+======================================================================
+ERROR: test_complete_scope_allows_proven_equal_trading_paths_with_different_reserves (test_stage013_plots.Reserve100kPlotTests.test_complete_scope_allows_proven_equal_trading_paths_with_different_reserves)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_plots.py", line 110, in test_complete_scope_allows_proven_equal_trading_paths_with_different_reserves
+    si, pi, curves = plots.validate_inputs(s, p, d)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 152, in validate_inputs
+    _require(meta.arm == 'C' and meta.funding_mode == 'external_topup' and
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 63, in _require
+    raise ValueError('stage013_plots:' + label)
+ValueError: stage013_plots:C_original_risk_reserve_method_identity
+
+======================================================================
+ERROR: test_five_figures_preserve_all_starts_pending_scope_and_overlap_annotation (test_stage013_plots.Reserve100kPlotTests.test_five_figures_preserve_all_starts_pending_scope_and_overlap_annotation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_plots.py", line 193, in test_five_figures_preserve_all_starts_pending_scope_and_overlap_annotation
+    figures = plots.render_five(s, p, d)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 424, in render_five
+    si, pi, curves = validate_inputs(summary, paired, daily)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 152, in validate_inputs
+    _require(meta.arm == 'C' and meta.funding_mode == 'external_topup' and
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 63, in _require
+    raise ValueError('stage013_plots:' + label)
+ValueError: stage013_plots:C_original_risk_reserve_method_identity
+
+======================================================================
+ERROR: test_heatmap_uses_r100_minus_r150_real_pnl_account_dd_and_deposits (test_stage013_plots.Reserve100kPlotTests.test_heatmap_uses_r100_minus_r150_real_pnl_account_dd_and_deposits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_plots.py", line 228, in test_heatmap_uses_r100_minus_r150_real_pnl_account_dd_and_deposits
+    figures = plots.render_five(s, p, d)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 424, in render_five
+    si, pi, curves = validate_inputs(summary, paired, daily)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 152, in validate_inputs
+    _require(meta.arm == 'C' and meta.funding_mode == 'external_topup' and
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 63, in _require
+    raise ValueError('stage013_plots:' + label)
+ValueError: stage013_plots:C_original_risk_reserve_method_identity
+
+======================================================================
+ERROR: test_risk_overview_counts_actual_losses_and_margin_stress_not_deposit_growth (test_stage013_plots.Reserve100kPlotTests.test_risk_overview_counts_actual_losses_and_margin_stress_not_deposit_growth)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_plots.py", line 238, in test_risk_overview_counts_actual_losses_and_margin_stress_not_deposit_growth
+    figures = plots.render_five(s, p, d)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 424, in render_five
+    si, pi, curves = validate_inputs(summary, paired, daily)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 152, in validate_inputs
+    _require(meta.arm == 'C' and meta.funding_mode == 'external_topup' and
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_plots.py", line 63, in _require
+    raise ValueError('stage013_plots:' + label)
+ValueError: stage013_plots:C_original_risk_reserve_method_identity
+
+======================================================================
+FAIL: test_reuse_identity_must_match_every_daily_trading_field_not_just_end_equity (test_stage013_plots.Reserve100kPlotTests.test_reuse_identity_must_match_every_daily_trading_field_not_just_end_equity)
+----------------------------------------------------------------------
+ValueError: stage013_plots:C_original_risk_reserve_method_identity
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_plots.py", line 184, in test_reuse_identity_must_match_every_daily_trading_field_not_just_end_equity
+    with self.assertRaisesRegex(ValueError, 'proven_reuse_daily'):
+AssertionError: "proven_reuse_daily" does not match "stage013_plots:C_original_risk_reserve_method_identity"
+
+----------------------------------------------------------------------
+Ran 38 tests in 12.039s
+
+FAILED (failures=1, errors=4)

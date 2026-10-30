@@ -1,0 +1,11 @@
+{"event": "STAGE013_INDEPENDENT_STARTED", "pid": 52457, "planned": 2, "workers": 2, "auditor_sha256": "66c3b3e0ff864588c4b28e9ec8397851337f85f691a5d305fd51b9ace2f7e439", "freeze_sha256": "333c77c0602e566c68bdde426eab901edad82a942fd14f3e611e80ce7d6d01d4"}
+{"event": "STAGE013_AUDIT_STARTED", "start": "2015-01-01", "method": "proven_nonbinding_reuse", "pid": 52598}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 0, "running": 1, "planned": 2}
+{"event": "STAGE013_INDEPENDENT_WINDOW_PASS", "start": "2015-01-01", "method": "proven_nonbinding_reuse", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2015-01-01_C.json", "sha256": "ddc1ece95b9beadf99be7fa0f2b2164c8c9b344eefd467e6346c4d7056a33413", "real_PnL": 4025344.999999998}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 1, "running": 0, "planned": 2}
+{"event": "STAGE013_AUDIT_STARTED", "start": "2017-01-01", "method": "fresh_engine", "pid": 52795}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 1, "running": 1, "planned": 2}
+{"event": "STAGE013_INDEPENDENT_WINDOW_PASS", "start": "2017-01-01", "method": "fresh_engine", "receipt": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_receipts_v2/2017-01-01_C.json", "sha256": "994ca52872df1e524868f080b8103576f4c0805a3eb2607999aef130ad975dfa", "real_PnL": 2233255.0}
+{"event": "STAGE013_AUDIT_PROGRESS", "complete": 2, "running": 0, "planned": 2}
+{"event": "STAGE013_CANARY_GATE_ACCEPTED", "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_canary_independent_review_v2.json", "sha256": "cee250eae236362c546553564d7be3bed64b2685d462f5fa0d640eeb6d854768"}
+{"event": "STAGE013_ALL_INDEPENDENT_COMPLETE", "complete": 2}

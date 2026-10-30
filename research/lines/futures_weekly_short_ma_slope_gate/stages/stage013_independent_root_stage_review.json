@@ -1,0 +1,56 @@
+{
+  "schema": "stage013_independent_root_stage_fact_review_v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "root_stage": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261030_1949_stage013_original_C_reserve100k_comparison.md",
+  "root_stage_sha256": "62811220da06a3bf492ded01eb5516f556887a5d84bca4ddcfdfaec96acaed7b",
+  "verified_2015_metrics": {
+    "期末交易权益": "4,219,305",
+    "含入金账户增长": "2712.87%",
+    "真实交易净盈亏": "4,025,345",
+    "账户最大回撤": "-51.05%",
+    "账户Sharpe，含入金": "0.916629",
+    "累计补资": "43,960",
+    "总滑点 / 手续费": "306,880 / 0",
+    "建模成交 / 闭合轮次数": "635 / 311",
+    "轮次胜率": "41.8006%",
+    "平均盈利 / 平均亏损绝对值": "87,383.58 / 40,974.97",
+    "盈亏比 / Profit Factor": "2.132609 / 1.548822"
+  },
+  "verified_fresh_window_rows": 4,
+  "verified_mature_pairs": 22,
+  "mature_PnL_higher_equal_lower": [
+    3,
+    18,
+    1
+  ],
+  "mature_DD_shallower_equal_deeper": [
+    0,
+    19,
+    3
+  ],
+  "mature_Sharpe_higher_equal_lower": [
+    3,
+    18,
+    1
+  ],
+  "mature_average_transfer": {
+    "C_R100": 48758.63636363636,
+    "C_R150": 57089.318181818184
+  },
+  "source_import_records": 39,
+  "frozen_source_files": 71,
+  "financial_engine_runs": 4,
+  "proven_nonbinding_reuses": 19,
+  "pre_engine_failed_dispatches": 1,
+  "pre_engine_failed_dispatch_engine_runs": 0,
+  "original_tiers_and_bottom20_preserved": true,
+  "initial_budget_difference_not_alpha": true,
+  "promotion_decision": "NO_PROMOTION",
+  "numeric_review_sha256": "3ac76f875fff8591e175e8fe16e766312bc020de2e8f8e592a86cb9e1a5b9159",
+  "delivery_review_sha256": "f20b95fa33308a14b4675aaf07d34b900f8dee8b552331c4b2364075fa7f94df"
+}

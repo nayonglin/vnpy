@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_code_review_v2.py", line 66, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_code_review_v2.py", line 56, in main
+    v1source=subprocess.check_output(['git','show',HEAD1+':'+str(new.relative_to(ROOT))],text=True);expected=v1source.replace("'stage013_freeze.json'","'stage013_freeze_v2.json'").replace('from stage013_ai_selection_off import','from stage012_ai_selection_off import').replace("'stage013_ai_off_contract_pointer.json'","'stage012_ai_off_contract_pointer.json'");assert ast.dump(ast.parse(expected),include_attributes=False)==ast.dump(tree,include_attributes=False),'runner_change_beyond_two_dependency_restores_and_v2_freeze';v1=ast.parse(v1source);v1imports=imports(v1);assert ('from','stage013_ai_selection_off',0,(('disable_ai_selection',None),('audit_ai_selection_off',None),('AI_FLAGS',None))) in v1imports
+                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: runner_change_beyond_two_dependency_restores_and_v2_freeze

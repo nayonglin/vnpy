@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_code_review_v2.py", line 60, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_independent_code_review_v2.py", line 43, in main
+    if q.is_file():assert str(q) in inputs and inputs[str(q)]==sha(q),'old_asset_SHA_changed:'+str(q)
+                                               ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: old_asset_SHA_changed:/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/frozen_baseline/M_attempt001/preflight.json

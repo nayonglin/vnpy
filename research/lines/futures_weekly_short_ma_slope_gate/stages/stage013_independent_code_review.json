@@ -1,0 +1,52 @@
+{
+  "schema": "stage013_independent_code_admission_v1",
+  "status": "PASS_SOURCE_FOR_FROZEN_BINDING_CANARY_WITH_LIMITATIONS",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_reserve.py": "993fd23a6c37316d113286c19582692e15c158176fc301099638eb40bae6a028",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_reuse.py": "1f949b8a8c6ce61919f69887db44b34e9ea78073b818601d449ab93a20ddd468",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_contract.py": "e8da418cfd4a14de1af9c9efac70f44052f3c7a1dc3dcbf8fba5b465192254a8",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage013.py": "ee3c70ec07c110088dbd2b0d6e0239550bd14c82e720835a1a35a0920b9e2ae6",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage013_coordinator.py": "686a57276e7c3467acd12250251bb35463d958748864c07936aa225acb717a90",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_reserve.py": "948100aba9802d6b306b8331c66c2b3f923a79a32610a283510abcb7fd820f4f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_reuse.py": "bb0977e7c5dbcb4b2983f490d68f434e3c57576a095c341297ad1d250e46291d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_contract.py": "81be3ec87f5ba60dc004640666a64a2ffa57a6abf004b2be1c38eb246474d0cb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_runner.py": "67d68934575c665476c5dc77feccde4a0169cc745ec3ddcbcd55482b949eec36",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage013_coordinator.py": "8b413b94eb1df284796cb099df65c8d6ea25b73932d282745c7ad59ebc8da719"
+  },
+  "reserve_wrapper_exact_one_constant_AST_delta": {
+    "old_sha256": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+    "new_sha256": "993fd23a6c37316d113286c19582692e15c158176fc301099638eb40bae6a028",
+    "normalized_AST_sha256": "e5beab841fe7b1f61dcb9ca0e366119f54fd0ab8f1ac3470580649d81dad4bfd",
+    "exact_one_constant_delta": true
+  },
+  "complete_financial_try_AST_unchanged_except_stage_and_witnesses": true,
+  "financial_try_AST_sha256": "34e535b46d149d5779554eaa47491fa7c853d3f7b99ea7e4bc4c99131d8d655b",
+  "engine_AST_unchanged": true,
+  "strategy_overrides_AST_unchanged": true,
+  "allowed_added_witness_statements": [
+    "dump(out / 'actual_strategy_settings.json', s901._json_safe(actual))",
+    "dump(out / 'reserve_limit_acceptance.json', reserve_limit_proof(out, freeze, start_day, baseline))"
+  ],
+  "reuse_admission_sha256": "f218afbce3f14d6333bc97e18e9f7f0efdd366a9a0fc789e67fa14c7c5e4214b",
+  "independent_core_tests": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_core_tests_attempt003.log",
+  "independent_core_tests_sha256": "ae189b41a716ab5e659f06e3233e516006b6407743f0a4649a47b1a64d87bee2",
+  "review_notes": [
+    "Original C risk tiers and every actual/effective setting must equal same-window Stage009; no Stage011 uniform-risk configuration is used.",
+    "Only reserve100k constant alters wallet trading state; unused R and auxiliary W have no trading consumers. Nineteen full-check coupling proofs are valid; four binding histories require fresh engines.",
+    "Baseline control checkpoints are validated with their original Stage009 freeze; new fresh checkpoint metadata binds schema/method/head/freeze/arm/start/end.",
+    "New freeze fixes23candidate/4fresh/19reuse, C-only, same four dataSHA/cutoff,150k trading/100k reserve,2workers.",
+    "Canary gate requires earliest binding2017Jan fresh plus2015 full-period proven reuse checkpoints before remaining3 fresh jobs.",
+    "Former metadata-hardening and stale100k/250k diagnostic labels were corrected before freeze; no financial replay was performed."
+  ],
+  "source_head_admission": "Root must bind these exact source bytes at commit/source_head and new freeze before finance",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "auditor_source_sha256": "281d13bc6bb5d029a42a20e899851a95632cef6b88f7cc78bc89f3cb3a995d9d"
+}

@@ -1,0 +1,940 @@
+{
+  "schema": "stage013_independent_nonbinding_admission_v1",
+  "accepted": true,
+  "status": "PASS_19_PROVEN_NONBINDING_4_REQUIRE_FRESH_WITH_LIMITATIONS",
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": 0,
+  "checks": 118084,
+  "source_consumer_scan": {
+    "python_sources_scanned": 631,
+    "exact_field_references": {
+      "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage009.py": [
+        [
+          323,
+          "reserve_transfer_events"
+        ],
+        [
+          324,
+          "reserve_daily_snapshots"
+        ],
+        [
+          325,
+          "reserve_transfer_events"
+        ],
+        [
+          326,
+          "reserve_signal_checks"
+        ],
+        [
+          326,
+          "reserve_transfer_events"
+        ],
+        [
+          321,
+          "research_reserve_enabled"
+        ],
+        [
+          334,
+          "reserve_transfer_events"
+        ],
+        [
+          334,
+          "reserve_signal_checks"
+        ],
+        [
+          334,
+          "reserve_daily_snapshots"
+        ],
+        [
+          337,
+          "research_reserve_enabled"
+        ],
+        [
+          184,
+          "reserve_signal_checks"
+        ],
+        [
+          337,
+          "reserve_transfer_events"
+        ],
+        [
+          337,
+          "reserve_signal_checks"
+        ],
+        [
+          337,
+          "reserve_daily_snapshots"
+        ],
+        [
+          337,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          337,
+          "reserve_balance"
+        ],
+        [
+          338,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          338,
+          "reserve_balance"
+        ],
+        [
+          337,
+          "total_account_equity"
+        ],
+        [
+          338,
+          "reserve_balance"
+        ]
+      ],
+      "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_contract.py": [
+        [
+          125,
+          "total_account_equity"
+        ],
+        [
+          149,
+          "total_account_equity"
+        ],
+        [
+          81,
+          "total_account_equity"
+        ],
+        [
+          148,
+          "total_account_equity"
+        ],
+        [
+          81,
+          "reserve_balance"
+        ],
+        [
+          123,
+          "total_account_equity"
+        ],
+        [
+          128,
+          "reserve_balance"
+        ],
+        [
+          81,
+          "reserve_balance"
+        ],
+        [
+          117,
+          "total_account_equity"
+        ],
+        [
+          117,
+          "reserve_balance"
+        ],
+        [
+          123,
+          "total_account_equity"
+        ]
+      ],
+      "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage009_reserve.py": [
+        [
+          44,
+          "reserve_balance"
+        ],
+        [
+          45,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          46,
+          "reserve_transfer_events"
+        ],
+        [
+          47,
+          "reserve_signal_checks"
+        ],
+        [
+          48,
+          "reserve_daily_snapshots"
+        ],
+        [
+          82,
+          "reserve_balance"
+        ],
+        [
+          152,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          89,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          96,
+          "reserve_signal_checks"
+        ],
+        [
+          154,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          155,
+          "reserve_balance"
+        ],
+        [
+          160,
+          "reserve_daily_snapshots"
+        ],
+        [
+          90,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          156,
+          "reserve_balance"
+        ],
+        [
+          157,
+          "reserve_transfer_events"
+        ],
+        [
+          153,
+          "reserve_daily_snapshots"
+        ],
+        [
+          121,
+          "reserve_balance"
+        ],
+        [
+          122,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          127,
+          "reserve_balance"
+        ],
+        [
+          128,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          132,
+          "reserve_transfer_events"
+        ],
+        [
+          133,
+          "reserve_transfer_events"
+        ],
+        [
+          129,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          130,
+          "reserve_balance"
+        ]
+      ],
+      "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_reserve.py": [
+        [
+          109,
+          "reserve_daily_snapshots"
+        ],
+        [
+          52,
+          "reserve_balance"
+        ],
+        [
+          52,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          53,
+          "reserve_transfer_events"
+        ],
+        [
+          56,
+          "reserve_balance"
+        ],
+        [
+          57,
+          "reserve_balance"
+        ],
+        [
+          58,
+          "reserve_balance"
+        ],
+        [
+          59,
+          "reserve_balance"
+        ],
+        [
+          61,
+          "reserve_balance"
+        ],
+        [
+          62,
+          "reserve_balance"
+        ],
+        [
+          62,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          63,
+          "reserve_balance"
+        ],
+        [
+          71,
+          "reserve_balance"
+        ],
+        [
+          80,
+          "reserve_balance"
+        ],
+        [
+          83,
+          "reserve_balance"
+        ],
+        [
+          84,
+          "reserve_transfer_events"
+        ],
+        [
+          97,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          99,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          100,
+          "reserve_cumulative_transfer"
+        ],
+        [
+          100,
+          "reserve_balance"
+        ],
+        [
+          102,
+          "reserve_balance"
+        ],
+        [
+          103,
+          "reserve_balance"
+        ],
+        [
+          56,
+          "reserve_transfer_events"
+        ],
+        [
+          63,
+          "reserve_transfer_events"
+        ],
+        [
+          67,
+          "reserve_balance"
+        ],
+        [
+          70,
+          "reserve_balance"
+        ],
+        [
+          70,
+          "reserve_balance"
+        ],
+        [
+          74,
+          "reserve_balance"
+        ],
+        [
+          76,
+          "reserve_balance"
+        ],
+        [
+          87,
+          "reserve_balance"
+        ],
+        [
+          92,
+          "reserve_balance"
+        ],
+        [
+          99,
+          "reserve_transfer_events"
+        ],
+        [
+          108,
+          "reserve_daily_snapshots"
+        ],
+        [
+          115,
+          "reserve_balance"
+        ],
+        [
+          97,
+          "reserve_signal_checks"
+        ],
+        [
+          88,
+          "reserve_signal_checks"
+        ]
+      ],
+      "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/test_stage009_runner.py": [
+        [
+          42,
+          "total_account_equity"
+        ],
+        [
+          18,
+          "reserve_balance"
+        ],
+        [
+          18,
+          "total_account_equity"
+        ],
+        [
+          24,
+          "reserve_balance"
+        ],
+        [
+          24,
+          "total_account_equity"
+        ]
+      ]
+    },
+    "external_trading_consumers": 0,
+    "runner_engine_read": "reserve_signal_checks cardinality only; phase witness; never gates fill"
+  },
+  "reserve_AST": {
+    "old_sha256": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+    "new_sha256": "993fd23a6c37316d113286c19582692e15c158176fc301099638eb40bae6a028",
+    "normalized_AST_sha256": "e5beab841fe7b1f61dcb9ca0e366119f54fd0ab8f1ac3470580649d81dad4bfd",
+    "exact_one_constant_delta": true
+  },
+  "data_identity": {
+    "daily_sqlite_sha256": "c0dfd9a238901a4630cf23dbb6beffb5d689b1b6366e5f76d6d228a59c6472f3",
+    "mapping_sha256": "bc8e436b9a07ce5f3488fc03d753a5428dce5eda5610436c439882678126b91c",
+    "physical_epoch_daily_sha256": "5caff2449302d3a600a9bdb73c99288cd8fd92be22fc2c2238058e931021c014",
+    "receipt_sha256": "6a67452119f715556a113c2bb25c92400038ecb99b3a802ed60024f02fce6a22"
+  },
+  "old_final_manifest_sha256": "b4712560c72548106fb9e4273895e1bfc80c56a6813cdfe3d71b4190b5d5a424",
+  "old_registry_sha256": "e98947f63b442c330d6511d07d1c9da5fae3724fd4e0d358eaeebc1d9d3a8ece",
+  "source_hash_cache": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_independent_hash_cache.json",
+  "source_hash_cache_sha256": "a18f6dbcb302fdc269098a45e166f3fc8ec57a827f21d3e1ba5c70086cfb52d3",
+  "deduplicated_files": 4675,
+  "deduplicated_bytes": 7021331014,
+  "starts": [
+    "2015-01-01",
+    "2015-06-01",
+    "2016-01-01",
+    "2016-06-01",
+    "2017-01-01",
+    "2017-06-01",
+    "2018-01-01",
+    "2018-06-01",
+    "2019-01-01",
+    "2019-06-01",
+    "2020-01-01",
+    "2020-06-01",
+    "2021-01-01",
+    "2021-06-01",
+    "2022-01-01",
+    "2022-06-01",
+    "2023-01-01",
+    "2023-06-01",
+    "2024-01-01",
+    "2024-06-01",
+    "2025-01-01",
+    "2025-06-01",
+    "2026-01-01"
+  ],
+  "cutoff": "2026-10-29",
+  "reuse_starts": [
+    "2015-01-01",
+    "2015-06-01",
+    "2016-01-01",
+    "2016-06-01",
+    "2019-01-01",
+    "2019-06-01",
+    "2020-01-01",
+    "2020-06-01",
+    "2021-01-01",
+    "2021-06-01",
+    "2022-01-01",
+    "2022-06-01",
+    "2023-01-01",
+    "2023-06-01",
+    "2024-01-01",
+    "2024-06-01",
+    "2025-01-01",
+    "2025-06-01",
+    "2026-01-01"
+  ],
+  "fresh_starts": [
+    "2017-01-01",
+    "2017-06-01",
+    "2018-01-01",
+    "2018-06-01"
+  ],
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20150101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 599,
+      "qualified_unique_checks": 341,
+      "positive_transfer_events": 5,
+      "cumulative_transfer": 43960.0,
+      "reserve100k_end": 56040.0,
+      "first_binding": null,
+      "check_transcript_sha256": "069405452cd0c6190d5ee79da19e04107fafcd96c09574ddf6ef8c5f0a2c2322",
+      "old_independent_receipt_sha256": "b051b832c76931bf8491b505b4c596ec607fd6125b5137034e396a1f38d9b8e6",
+      "settings_sha256": "c05880b8c737e770b725f509a5b84750d3de37bcff2cc7c6e65bd12c56c9e321",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2015-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20150601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 591,
+      "qualified_unique_checks": 337,
+      "positive_transfer_events": 2,
+      "cumulative_transfer": 9920.0,
+      "reserve100k_end": 90080.0,
+      "first_binding": null,
+      "check_transcript_sha256": "48774ccd45fc561ace2778ba062f55e0e4ffa6634e150ffb15621d61e4de3b93",
+      "old_independent_receipt_sha256": "4e9a5258c4b10180018103638ef8ec3893fec9cb3d5e9dde467543bfa12b0649",
+      "settings_sha256": "fe5798fa0d07ffdc9adbea823edc0dadbdd5d6feaef5c89c0c2d266415d7b5f3",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2016-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20160101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 573,
+      "qualified_unique_checks": 332,
+      "positive_transfer_events": 0,
+      "cumulative_transfer": 0.0,
+      "reserve100k_end": 100000.0,
+      "first_binding": null,
+      "check_transcript_sha256": "139de15125a11f8bdba88f8bb7ff03beadcd1ec9f97a1c15735705e5316c3b51",
+      "old_independent_receipt_sha256": "3d4ec6ae2f151753ccd758a2f04e31335b61d9d2ef9570fd7297f41054b0d9ab",
+      "settings_sha256": "77ec5d744848ec2d533824c2f380d5132a35f41754cdf22d3e4c67718c97c82f",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2016-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20160601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 555,
+      "qualified_unique_checks": 322,
+      "positive_transfer_events": 11,
+      "cumulative_transfer": 99925.0,
+      "reserve100k_end": 75.0,
+      "first_binding": null,
+      "check_transcript_sha256": "50ef9fff20da5ee9e1d84ba0399e8dacd2723fa078ad5f35e1c24e71b74fb4ae",
+      "old_independent_receipt_sha256": "4ca103aa039f5200fb19ca0524cebcb0c078c7e1a65a52311537bc1c98e4b95b",
+      "settings_sha256": "316393709ae2a9c3ee693b3ee34842809889bdba07a82ef40ca9f99d28988ebf",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2017-01-01",
+      "arm": "C",
+      "method": "fresh_engine_required",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20170101_attempt001",
+      "nonbinding": false,
+      "signal_checks": 529,
+      "qualified_unique_checks": 303,
+      "positive_transfer_events": 18,
+      "cumulative_transfer": 150000.0,
+      "reserve100k_end": null,
+      "first_binding": {
+        "check_index": 135,
+        "date": "2020-02-07",
+        "candidate_key": "2020-02-07|SM005.CZCE|long|long_case2|flat_entry",
+        "old_transfer": 44190.0,
+        "new100k_transfer": 4315.0,
+        "cumulative_before": 95685.0,
+        "new_remaining_before": 4315.0
+      },
+      "check_transcript_sha256": "05aa1beb74e5e7a6cc4339c1b251ef768efaec3eea5930a5b62c663abcf55075",
+      "old_independent_receipt_sha256": "71cae358f515ee09acb04f11a44e2c688f22639f953c01da8c06a6bad262cb15",
+      "settings_sha256": "aab1e434ce30807cd275672af5bad76d3b2c6ca809db64ced31e90e2fac9ff0c",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2017-06-01",
+      "arm": "C",
+      "method": "fresh_engine_required",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20170601_attempt001",
+      "nonbinding": false,
+      "signal_checks": 510,
+      "qualified_unique_checks": 293,
+      "positive_transfer_events": 16,
+      "cumulative_transfer": 133275.00000000003,
+      "reserve100k_end": null,
+      "first_binding": {
+        "check_index": 117,
+        "date": "2020-02-07",
+        "candidate_key": "2020-02-07|SM005.CZCE|long|long_case2|flat_entry",
+        "old_transfer": 44190.0,
+        "new100k_transfer": 29974.99999999997,
+        "cumulative_before": 70025.00000000003,
+        "new_remaining_before": 29974.99999999997
+      },
+      "check_transcript_sha256": "503cb9850b143ccdd81d0c70d1f35390a4f520632e8b9b318129ea06a176dadc",
+      "old_independent_receipt_sha256": "68900b53403b1029091e5ca128e4507338137c57d60ee924542fdf546c251a5e",
+      "settings_sha256": "fda7d8a79f896182c46d21933e8ee3542cdc689dc82ab848be55917cc1a4d82b",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2018-01-01",
+      "arm": "C",
+      "method": "fresh_engine_required",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20180101_attempt001",
+      "nonbinding": false,
+      "signal_checks": 490,
+      "qualified_unique_checks": 273,
+      "positive_transfer_events": 18,
+      "cumulative_transfer": 150000.0,
+      "reserve100k_end": null,
+      "first_binding": {
+        "check_index": 45,
+        "date": "2019-03-08",
+        "candidate_key": "2019-03-08|OI905.CZCE|long|long_case2|flat_entry",
+        "old_transfer": 7640.0,
+        "new100k_transfer": 1740.0,
+        "cumulative_before": 98260.0,
+        "new_remaining_before": 1740.0
+      },
+      "check_transcript_sha256": "772baa0fe01e79ad67cf3bf4c2c88e8933926817d77f8c68ff5d98b3f8aaaa94",
+      "old_independent_receipt_sha256": "1f3b4668b7c719a6bf965e18d41b2e2e7b9b5cb7e4db78224dce1384f4ef87df",
+      "settings_sha256": "913642869242eac4afea9ebe7f40c7ff871f6984fdb25a3b263702ec1e3f333b",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2018-06-01",
+      "arm": "C",
+      "method": "fresh_engine_required",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20180601_attempt001",
+      "nonbinding": false,
+      "signal_checks": 471,
+      "qualified_unique_checks": 266,
+      "positive_transfer_events": 17,
+      "cumulative_transfer": 150000.0,
+      "reserve100k_end": null,
+      "first_binding": {
+        "check_index": 30,
+        "date": "2019-03-29",
+        "candidate_key": "2019-03-29|SM905.CZCE|long|long_case2|flat_entry",
+        "old_transfer": 15360.0,
+        "new100k_transfer": 12740.0,
+        "cumulative_before": 87260.0,
+        "new_remaining_before": 12740.0
+      },
+      "check_transcript_sha256": "46a14744554875d689ef9f1b05b8e559f18259a0bcb6540ec94d6911012173b0",
+      "old_independent_receipt_sha256": "5e2e961d61c179876978aea6366b5c5ea0dcace03ce1262d5d46d0c9dcf05b2f",
+      "settings_sha256": "3c56f94d31da20911f5af189702c09b2087eb9b49680b1cb67f635908499fc77",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2019-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20190101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 449,
+      "qualified_unique_checks": 252,
+      "positive_transfer_events": 9,
+      "cumulative_transfer": 90455.0,
+      "reserve100k_end": 9545.0,
+      "first_binding": null,
+      "check_transcript_sha256": "307fb9cea56811b7a672a0ef676ab9b090156b88ab9c07d618248ddb43bd9ed0",
+      "old_independent_receipt_sha256": "a96c70fc7290b2508355b71a7f5ba3d196506041c66cb43a80df2374b4de3080",
+      "settings_sha256": "159287efd1ba320f20fd1ef3e785a2691310bccfbd6eea10de0e6b81098ab526",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2019-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20190601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 431,
+      "qualified_unique_checks": 239,
+      "positive_transfer_events": 6,
+      "cumulative_transfer": 68240.0,
+      "reserve100k_end": 31760.0,
+      "first_binding": null,
+      "check_transcript_sha256": "eb976c8a9d6ab623c097dd8b1fb4980c1059af4d65d6836c18ec32d67ab4253d",
+      "old_independent_receipt_sha256": "0e45bdd06a646e0dd8a28c532cc3c14508120cab1b6489fe5a2702005db9e3c7",
+      "settings_sha256": "e46df81f59202a14c176d5a1801f839777c97e29f66f3af9e58345ee5a4271d5",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2020-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20200101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 401,
+      "qualified_unique_checks": 226,
+      "positive_transfer_events": 3,
+      "cumulative_transfer": 67400.0,
+      "reserve100k_end": 32600.0,
+      "first_binding": null,
+      "check_transcript_sha256": "275209eca39026c2d4efe7710c86ce9490d45eca7c1f223fbfb5f4a74046af9e",
+      "old_independent_receipt_sha256": "857d54b42ee694fece044883016b28da6083efc89266ebb6ac385af8ab4b699f",
+      "settings_sha256": "db3c05c253b084eeb774cf64fb060287ab059f48f940c7faa9dc525b6a26bfe9",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2020-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20200601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 381,
+      "qualified_unique_checks": 217,
+      "positive_transfer_events": 0,
+      "cumulative_transfer": 0.0,
+      "reserve100k_end": 100000.0,
+      "first_binding": null,
+      "check_transcript_sha256": "734f57653e311a655e04dd3ea21566701be2e8dba7a3a89333e80934e99a92d5",
+      "old_independent_receipt_sha256": "dde21394624f58d2c1efa6f841a010b9d99d24586780429fd8fdde60a62104ee",
+      "settings_sha256": "fdb10aab560fd5cf2961432779c787cb5c06b6d05ff8086908c4fdda93c0ac8f",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2021-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20210101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 348,
+      "qualified_unique_checks": 198,
+      "positive_transfer_events": 5,
+      "cumulative_transfer": 13075.000000000058,
+      "reserve100k_end": 86924.99999999994,
+      "first_binding": null,
+      "check_transcript_sha256": "650754a448e2da1d85f49fd28f7106330b4185254a0db4885caab964dd68bf1d",
+      "old_independent_receipt_sha256": "cc6f2f5a7e540f66f22350c5d9f82b284ed1ed946d3cfd79ecb0429caa61a6c2",
+      "settings_sha256": "5f0bf7a19cd907162aad6dc85a3d3349657785e0d0c809047adc35e6c87dc8a5",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2021-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20210601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 334,
+      "qualified_unique_checks": 186,
+      "positive_transfer_events": 15,
+      "cumulative_transfer": 54020.0,
+      "reserve100k_end": 45980.0,
+      "first_binding": null,
+      "check_transcript_sha256": "c97452e50d3fc8d54b08caa72071de21513ad880df4f5f890be6c970a8b4a3f1",
+      "old_independent_receipt_sha256": "7d654319169f48d2cf4dba6e8a20b4b8f67c593383a0a1033bda878938e2bed5",
+      "settings_sha256": "cb97a7f18db696a8c24604a426cb6d1ab69fa8d9be4be472c4b5c77aace5d3a1",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2022-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20220101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 307,
+      "qualified_unique_checks": 169,
+      "positive_transfer_events": 7,
+      "cumulative_transfer": 37190.0,
+      "reserve100k_end": 62810.0,
+      "first_binding": null,
+      "check_transcript_sha256": "d960ad5891484ecc70917e511bb880da4123c945ae0fdb8f728d1a310f4064fd",
+      "old_independent_receipt_sha256": "3d4acd45b83b7cd7c835c8d270df15f48edb77527a9d2d5987d2a6c6d8a97bf9",
+      "settings_sha256": "84f99cefb76fc4b35e58452c2424f90dbd093b92716a7402c27195ecafa01468",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2022-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20220601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 281,
+      "qualified_unique_checks": 146,
+      "positive_transfer_events": 5,
+      "cumulative_transfer": 31860.0,
+      "reserve100k_end": 68140.0,
+      "first_binding": null,
+      "check_transcript_sha256": "33d53b292af16d596d62903806e53c43500cf7ee28f3af3675ad15c5963496d4",
+      "old_independent_receipt_sha256": "d7e75bb383bfe8e3f91c0c02a1eab2686260eec88072794246d5922ed09625f6",
+      "settings_sha256": "6f226e9378992a691b5cccfa2af19f9d7b7ce684f608a9f4da4f7221d82de681",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2023-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20230101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 247,
+      "qualified_unique_checks": 133,
+      "positive_transfer_events": 4,
+      "cumulative_transfer": 36780.0,
+      "reserve100k_end": 63220.0,
+      "first_binding": null,
+      "check_transcript_sha256": "f9e70e2556762a39fe395e9f946aa3217feb76c89347802d9f7f87629c8f1a7f",
+      "old_independent_receipt_sha256": "0fc7c02cac6fa1734a8cec6f35b1247b1d11b390c4d1dc91d178e3909cbf4345",
+      "settings_sha256": "a73a2874c0987067830d2a814f46bd96009052e5ad1d21fcba3c9cd9c98d6042",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2023-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20230601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 223,
+      "qualified_unique_checks": 119,
+      "positive_transfer_events": 0,
+      "cumulative_transfer": 0.0,
+      "reserve100k_end": 100000.0,
+      "first_binding": null,
+      "check_transcript_sha256": "1f21472db022375e35dd55e8b5db33ab94a345e75594a9a8faa8ee53eabda788",
+      "old_independent_receipt_sha256": "e938424ba8da74fe6ef814ba5b10bf1804fcdeaca66efde28376ed3ec6e4c909",
+      "settings_sha256": "33dcb1ca2c81655afad031bda50e18d55613b7a71d8f21e2adacb5bdc29a4308",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2024-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20240101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 180,
+      "qualified_unique_checks": 102,
+      "positive_transfer_events": 2,
+      "cumulative_transfer": 6780.0,
+      "reserve100k_end": 93220.0,
+      "first_binding": null,
+      "check_transcript_sha256": "dadbd296ec36d83531a64d79edd30d6c3bc91da9a7158612d366a0d301f0ebcb",
+      "old_independent_receipt_sha256": "12fc88d9feaf38e5736ef8ecfb96d6f6971ed2f70cd95561c1806a475d39095e",
+      "settings_sha256": "a34e6f664329bd5e4aed2dc24ce5df31d6d6a8ee47a9b9e9a58a24e3ef9112d3",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2024-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20240601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 155,
+      "qualified_unique_checks": 88,
+      "positive_transfer_events": 7,
+      "cumulative_transfer": 31660.0,
+      "reserve100k_end": 68340.0,
+      "first_binding": null,
+      "check_transcript_sha256": "79c7998426b6fdda85e6bb2eb98e644b5ffd5aad25a2e96c09a2dc459dd1b96d",
+      "old_independent_receipt_sha256": "f3ca33722c9ad22a8dc5e0bce9602a50a392377dcada3cfd342c03e12cd876bf",
+      "settings_sha256": "6565863e4635fed7d6d87c0f2832f9b14175efe54566f50813cb370caa624cf5",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2025-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20250101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 117,
+      "qualified_unique_checks": 68,
+      "positive_transfer_events": 8,
+      "cumulative_transfer": 43620.0,
+      "reserve100k_end": 56380.0,
+      "first_binding": null,
+      "check_transcript_sha256": "cad2be73d7a96dd9b4ce9ca32550c2f2a82b25d57223fbac1c35692a3dc1beb9",
+      "old_independent_receipt_sha256": "6d4d7147b927d1b10fb8e9237b119d7a1c709e15eb7c9d0aa711f1cccb978296",
+      "settings_sha256": "dc7e4ec882a80a2e18ef0313e0122a3784cdb1b7a65139c535e286b8b11c2135",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2025-06-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20250601_attempt001",
+      "nonbinding": true,
+      "signal_checks": 93,
+      "qualified_unique_checks": 55,
+      "positive_transfer_events": 6,
+      "cumulative_transfer": 37805.0,
+      "reserve100k_end": 62195.0,
+      "first_binding": null,
+      "check_transcript_sha256": "0ffeb0b832e255faebebd5b26bc3677911162e51e854f4c12f6e9ff219d5f4e5",
+      "old_independent_receipt_sha256": "741a55351b7d24060bb1a01b6e0e4b15e43856d4cf25b36777da5aa7d6a7443a",
+      "settings_sha256": "da3bff4be884013e73eb1cf126683ea70b7f027c8f865f3efebcc0cc8f9a8365",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    },
+    {
+      "start": "2026-01-01",
+      "arm": "C",
+      "method": "proven_nonbinding_reuse",
+      "source_path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage009_C_20260101_attempt001",
+      "nonbinding": true,
+      "signal_checks": 49,
+      "qualified_unique_checks": 28,
+      "positive_transfer_events": 1,
+      "cumulative_transfer": 720.0,
+      "reserve100k_end": 99280.0,
+      "first_binding": null,
+      "check_transcript_sha256": "8a95be66f3e2bee25a9b0a8c35cbbf14d05321742ea8790810c82999ab40dd18",
+      "old_independent_receipt_sha256": "c179fa28c005aa91632fad3fad6dd44eeedec58fb59fd85d2cf40c6bb744b468",
+      "settings_sha256": "a8063b719dabcc88a4cf6118aad5f8d7f8a9e0c890a870a2d1770942a9786ed0",
+      "effective_sha256": "5d8178b17c990a591da17dae147fdc514ea80161fd5b734bdccb633c9c3b3c84",
+      "old_input_manifest_sha256": "f92c08188e5aefcea1e9872b677a23e39f68fd0b399f6f61a3b88499b59ed18c"
+    }
+  ],
+  "induction": "Before first candidate, E/positions/orders/risk histories are equal. At every check, native eligibility and duplicate state are equal because no inherited trading consumer reads unused R or auxiliary W. Whenever old T is fully payable by new100k, the same transfer leads to the same E and unchanged funding-cache refresh; parent sizing/orders/fills/MTM/fees remain identical. This induction proves complete paths for19 windows. Four first divergent transfers invalidate reuse and require fresh engines. Future prices are never used by strategy; as-of historical T is used only to validate a saved-cache identity.",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "new_runner_admission": "Pending frozen Stage013 runner/contract source and real binding canary; this proof does not claim23 new engines",
+  "overfit_risk": "YES: fixed100k chosen after viewing same overlapping history; no amount scan",
+  "continued_value": "YES: measures commitment/capital/survival tradeoff, not alpha",
+  "seconds": 11.129455999936908,
+  "auditor_source_sha256": "274f1c89f3b009a390f225e6e0f5c656b2e2ad1ada0f9faf691fcf77b3ab1071"
+}

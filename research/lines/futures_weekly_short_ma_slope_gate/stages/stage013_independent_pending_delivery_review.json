@@ -1,0 +1,93 @@
+{
+  "schema": "stage013_independent_offline_delivery_v1",
+  "status": "PASS_PENDING_OFFLINE_LAYOUT_BINDING",
+  "accepted": true,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "data_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/summary.csv": "4f024eec77e29587f719d11c0ef36c4ef5e4698494bbf23452aaf598205d8b82",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/paired.csv": "030f3562e83dd952ebb98af16b76970d3c22e156fd24edfece86216905357863",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/daily.csv": "4bcabab1c67da29e17b9a71b081f41c917a5cfcafd1d9966eba86a9df3b0a032",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/cohort_summary.csv": "2a73a320cb72ab19d37b377ce1d7c3bfd26b692fb83ff345b4536d6c6a0258de",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/reserve_events.csv": "3c13367730bf7bd2497617a7c9189605f0c9a1fe217e7f1e2d094cda609a6283",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/comparison.json": "d01ccfbf1dbb6df1bbeecf4778ff443d1d3d23e183d968a3c0e8df8a7ef86ea0"
+  },
+  "figure_files": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/01_c_account_nav_drawdown_2015.png": {
+      "sha256": "f963b309cebe7ab438330b40f70c38a098a59fb682c0d1e8c31a64529da7e2f8",
+      "width": 2250,
+      "height": 1464,
+      "nonwhite_fraction": 0.047551608986035214
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/02_january_c_account_nav.png": {
+      "sha256": "10f09cabb840bf3e7d4f5928934715a7c9ca411150897f562452802a816994a5",
+      "width": 2439,
+      "height": 1869,
+      "nonwhite_fraction": 0.05423965957155559
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/03_june_c_account_nav.png": {
+      "sha256": "397e0b31d8f01297f238d9229c83af4bd40f97e3439705e5618146cf53a1c082",
+      "width": 2449,
+      "height": 1869,
+      "nonwhite_fraction": 0.049166288158584946
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/04_real_pnl_account_dd_deposit_deltas.png": {
+      "sha256": "273642a241a87c37200d5d64c4ba58f29a9e0674b98636346a811f32cf30bfc7",
+      "width": 2361,
+      "height": 1713,
+      "nonwhite_fraction": 0.09423886353279713
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/05_reserve_use_and_survival_overview.png": {
+      "sha256": "b1a43828ca0072a40322f9eea5756850aca293da67e581f9cc87737e9ae04351",
+      "width": 2503,
+      "height": 2055,
+      "nonwhite_fraction": 0.06081539136005164
+    }
+  },
+  "report_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/Stage013_原风险C版_10万与15万备用金对比.html": "cd34003977668f0e01c625cc58db137fadf7d50a224e2d235ed543980a5673c1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage013_reserve100k_comparison/review_pending/report.md": "7de80e29cd364452be4fcabaa76235c3c71c0bbc4259af378306290b258061a8"
+  },
+  "delivery_receipt_sha256": "183767f8111dd35e0ee42c1a4467074e3d36bdf4a467ac66cc74c49e7a3dd6be",
+  "publication_status_only_pixel_proof": {},
+  "html_rows": 46,
+  "starts": 23,
+  "rows_per_start": 2,
+  "options": 24,
+  "embedded_images": 5,
+  "active_external_resources": 0,
+  "chinese_window_records_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20180601.md": "475bf8e486e203be32fd7c972f54f2cdecdb2784bcb571c5543f4e2b0999e79e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20220601.md": "a8f777af4f647b71015492d458a91c8e2fd46a3172c74e9534c38e38e7ec5006",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20260101.md": "02e35cfe38f20d4974db2bc53e02036571e7550058505e9394aa437bc6f81b1d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20160601.md": "2e089f22ca4561b6a6dfceed07f29402b45484ba49bc8f63fd275e8ecc3489bb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20240101.md": "7824fd0cfda8cad503e5e7adb8eb1ab1071cfc4663a0b1f7d6ae8f1e7278f1cb",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20200601.md": "6203c1ecd12519bb0d68d3cc1dee66f850ac138b41cf2ad004f5e4e423a7fc7c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20200101.md": "9951617578275a87fa3b4237929f635574b0623e1cd950262e0062014b29a6dc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20240601.md": "1990f65f240256adcebf13a7a9e8a8f4f046497003ea2b414a94cdeb8d4244de",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20160101.md": "3c222728fc44ca5086facad97831b69291bbe196a32509ea755a3ddebd2f7a93",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20220101.md": "363e42fac050ec096f36765e0114b2491d0cf013f0e77b2490c3ae1fc6639053",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20180101.md": "30f2eb58502e3857eb6707618bea7a980d05eea4d1fb6f8bd91b07bcf15b5d11",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20230601.md": "a6432aa2fe2302de0551f22674a8c9671b7b7835af2cbf2594e511e8c43490a3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20190601.md": "2b5c74c7555807312b08e594bc2938c357a8e090bc8d266ca11c569b8ef5ce72",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20150601.md": "1e23e33d99d8fe8b01c9618411874a15cebe1f40d37b1a5a295a6ccf2e1f12fc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20210601.md": "552b92f8e7b8ae85945458df213292b805dd606df71db7bc87a2a22ecc384c0d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20250101.md": "7e8324e1d2e74b279809d88585cea6f28a8d62984ec9b9929db6eb4542876613",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20170601.md": "dbb5f082e6dd22e5a4e9cb92f9312b733e461f5693277b420402d460968afd0c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20170101.md": "ce3f4cfbc4b66114a46208e2084c7ed09bb35c282ea22c22539f48189ca07fc9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20250601.md": "df54c0a1a1d1567e06434f52a3f64f32e5fd3d3f2c97a9077223fe2c729a50d4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20210101.md": "cfbea483b09f58ad71025bee6dd0209da97da83433e4b323d136806a5e270ac3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20150101.md": "0e3164db36442b011521b64e2f7717438e7e81ba0dbd90e0dd78ba3240449f9c",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20190101.md": "3dbe000e989d45017136f80da8a0cf0c813b578c4671b1d74e373bcc6c5b7517",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage013_windows/20261030_1947_stage013_C_20230101.md": "d979fa5e30446b9b4a44a680cd627ecc4cd0b42beb5e2d9d3245029f6982dd16"
+  },
+  "browser_interaction_verified": false,
+  "browser_limitation": "Known automatic file URL safety restriction; noHTTP/bypass attempted",
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "promotion_decision": "NO_PROMOTION",
+  "auditor_source_sha256": "5eed223ab623978e6ea226ec49716db4a2935cf67be77b915e6861634d296cfc"
+}
