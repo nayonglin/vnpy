@@ -1,0 +1,14 @@
+{
+  "release_id": "m0001_20261031T203743+0800_e3d08592e85e",
+  "material_version": "m0001",
+  "release_dir": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0001_20261031T203743+0800_e3d08592e85e",
+  "manifest_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0001_20261031T203743+0800_e3d08592e85e/manifest.json",
+  "source_commit": "e3d08592e85e00a2a6b8fde880f69e771755f10b",
+  "production_qualified": false,
+  "release_commit": "d5243461b9cf0368723899bcce67a3dc6fb0ec1a",
+  "manifest_sha256": "1b221509b43f689cf921577059b7dfd2b0c18aab2b486baed8d7d1169886fe19",
+  "files": 371,
+  "local_candidate_only": true,
+  "current_activated": false,
+  "remote_pushed": false
+}
