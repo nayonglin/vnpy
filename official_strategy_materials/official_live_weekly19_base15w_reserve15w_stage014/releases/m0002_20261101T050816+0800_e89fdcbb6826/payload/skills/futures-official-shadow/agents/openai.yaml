@@ -1,0 +1,4 @@
+interface:
+  display_name: "Futures Official Shadow"
+  short_description: "Check receipt-bound official futures signals"
+  default_prompt: "Use $futures-official-shadow to resolve the verified active production profile and check today's receipt-bound signals and next-session orders."
