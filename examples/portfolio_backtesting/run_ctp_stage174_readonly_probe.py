@@ -1317,10 +1317,14 @@ def _run_probe(
             if connection_lifecycle.get("probe_closing") == 1:
                 return None
             expected_reqid = query_requests["positions"].get("reqid")
-            matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+            current_generation = str(connection_lifecycle.get("current_connection_generation") or "")
+            matched = bool(expected_reqid is not None and int(reqid) == int(expected_reqid)
+                and current_generation
+                and str(query_requests["positions"].get("connection_generation") or "") == current_generation)
             rows["position_query_callbacks"].append(
                 {
                     "query_generation_uuid": query_generation_uuid,
+                    "connection_generation": current_generation if matched else "",
                     "reqid": int(reqid),
                     "expected_reqid": expected_reqid,
                     "reqid_matched": int(matched),
@@ -1380,10 +1384,14 @@ def _run_probe(
             if connection_lifecycle.get("probe_closing") == 1:
                 return None
             expected_reqid = query_requests["orders"].get("reqid")
-            matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+            current_generation = str(connection_lifecycle.get("current_connection_generation") or "")
+            matched = bool(expected_reqid is not None and int(reqid) == int(expected_reqid)
+                and current_generation
+                and str(query_requests["orders"].get("connection_generation") or "") == current_generation)
             rows["order_query_callbacks"].append(
                 {
                     "query_generation_uuid": query_generation_uuid,
+                    "connection_generation": current_generation if matched else "",
                     "reqid": int(reqid),
                     "expected_reqid": expected_reqid,
                     "reqid_matched": int(matched),
@@ -1407,10 +1415,14 @@ def _run_probe(
             if connection_lifecycle.get("probe_closing") == 1:
                 return None
             expected_reqid = query_requests["trades"].get("reqid")
-            matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+            current_generation = str(connection_lifecycle.get("current_connection_generation") or "")
+            matched = bool(expected_reqid is not None and int(reqid) == int(expected_reqid)
+                and current_generation
+                and str(query_requests["trades"].get("connection_generation") or "") == current_generation)
             rows["trade_query_callbacks"].append(
                 {
                     "query_generation_uuid": query_generation_uuid,
+                    "connection_generation": current_generation if matched else "",
                     "reqid": int(reqid),
                     "expected_reqid": expected_reqid,
                     "reqid_matched": int(matched),
@@ -1435,10 +1447,14 @@ def _run_probe(
             if connection_lifecycle.get("probe_closing") == 1:
                 return None
             expected_reqid = query_requests["account"].get("reqid")
-            matched = expected_reqid is not None and int(reqid) == int(expected_reqid)
+            current_generation = str(connection_lifecycle.get("current_connection_generation") or "")
+            matched = bool(expected_reqid is not None and int(reqid) == int(expected_reqid)
+                and current_generation
+                and str(query_requests["account"].get("connection_generation") or "") == current_generation)
             rows["account_query_callbacks"].append(
                 {
                     "query_generation_uuid": query_generation_uuid,
+                    "connection_generation": current_generation if matched else "",
                     "reqid": int(reqid),
                     "expected_reqid": expected_reqid,
                     "reqid_matched": int(matched),
@@ -2208,7 +2224,15 @@ def main() -> None:
     parser.add_argument("--wait-seconds", type=int, default=15)
     parser.add_argument("--invocation-id", default="")
     parser.add_argument("--observe-reconnect", action="store_true")
+    parser.add_argument("--weekly19-material-release-id", default="")
+    parser.add_argument("--weekly19-execution-profile", default="")
+    parser.add_argument("--weekly19-private-capture-dir", default="")
     args = parser.parse_args()
+    weekly19_capture_requested = any((args.weekly19_material_release_id,
+        args.weekly19_execution_profile, args.weekly19_private_capture_dir))
+    if weekly19_capture_requested and not all((args.weekly19_material_release_id,
+        args.weekly19_execution_profile, args.weekly19_private_capture_dir, args.invocation_id)):
+        parser.error("weekly19 capture requires release, profile, private directory and invocation id")
 
     result = _run_probe(
         connect=bool(args.connect),
@@ -2342,6 +2366,15 @@ def main() -> None:
     sizing_hash = broker_sizing_sha256(result["broker_sizing"])
     query_bundle["broker_sizing_sha256"] = sizing_hash
 
+    if weekly19_capture_requested:
+        from qmt_roll_weekly19_broker_evidence import publish_stage174_capture
+        query_bundle["weekly19_capture"] = publish_stage174_capture(
+            result, rows, material_release_id=args.weekly19_material_release_id,
+            execution_profile=args.weekly19_execution_profile,
+            private_capture_dir=Path(args.weekly19_private_capture_dir),
+            invocation_id=str(args.invocation_id).strip(),
+        )
+
     # Summary is published before the manifest.  A crash at any earlier point
     # leaves either the prior manifest or no matching manifest, so consumers
     # fail closed instead of combining files from different generations.
@@ -2366,6 +2399,8 @@ def main() -> None:
             "status": _clean_ctp_text(result.get("status")),
         },
     }
+    if weekly19_capture_requested:
+        manifest["weekly19_capture"] = dict(query_bundle["weekly19_capture"])
     _atomic_write_json(QUERY_BUNDLE_MANIFEST_PATH, manifest)
 
     print(json.dumps(result, ensure_ascii=False, indent=2))

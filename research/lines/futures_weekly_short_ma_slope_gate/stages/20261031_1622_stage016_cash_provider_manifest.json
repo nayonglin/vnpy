@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-31T16:22:32.560219+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "financial_backtest_run": false,
+  "ctp_connected": false,
+  "bank_transfer_api_called": 0,
+  "native_queries_executed": "unit fake reqQryTransferSerial only; real query not executed",
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "071734c592ffdb1306259caa527331beff99e1ad50dd6a38c723fba78c07c5b3",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "484b2366140a834b84ea6415859ab38d99af168e0c57178250f436529119815d",
+    "tests/test_weekly19_broker_evidence.py": "489516b9d4488e3c130a710cd1182481e67c89770057b731ebe48385dad50778"
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_broker_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "Ran 23 tests in 0.464s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_stage174_query_bundle.py",
+      "returncode": 0,
+      "tail": [
+        "Ran 22 tests in 4.717s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_official_live_broker_account_snapshot.py",
+      "returncode": 0,
+      "tail": [
+        "Ran 25 tests in 0.866s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "09fd0f9898c44151d56929fbbcff794a8404a0dc4179fd3bd4eacf6e253d6d97"
+}
