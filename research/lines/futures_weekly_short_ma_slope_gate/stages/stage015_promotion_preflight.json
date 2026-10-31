@@ -1,0 +1,143 @@
+{
+  "schema": "stage015_weekly19_formal_promotion_preflight_v1",
+  "created_at": "2026-10-31T15:37:03.843217+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "requested_action": "replace_current_official_strategy_and_promote_master_and_production_install",
+  "user_authorization": {
+    "replace_formal_strategy": true,
+    "promote_master": true,
+    "production_install": true,
+    "order_submission": false,
+    "bank_or_broker_fund_transfer": false
+  },
+  "candidate": "Stage014 C_R150",
+  "candidate_source_commit": "e6f19df6dd41c3b2f4ad73b4f3a2c6cdf03dfbd0",
+  "financial_source_commit": "688754057ba1dc07caa9edc537ceec486f678372",
+  "data_cutoff": "2026-10-30",
+  "candidate_delivery_manifest_sha256": "50cc767eefee005e0f47eadbb2387e5dd11cf3a7ff3885057c1b93108dbec1bc",
+  "candidate_evidence_intact": {
+    "delivery_pins": 397,
+    "financial_source_pins": 71
+  },
+  "local_resolved_official_identity": {
+    "strategy_version": "ai_top10_plus_fu_official_live_v1",
+    "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+    "source_commit": "2a7420a9f9550ab912b5c4a302a61acc5740b04c",
+    "material_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "release_commit": "334d18f069de06df3aa7728203e942e3ecb94ce9",
+    "manifest_sha256": "94b6936ab4b338430981f4c2f7e0f4ff38f24534c32f1d16722c8d1367d89474"
+  },
+  "remote_master_sha": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "remote_master_observed_via": "git ls-remote origin refs/heads/master, successful live readback",
+  "remote_current_pointer": {
+    "activated_at_utc": "2026-10-08T13:20:26.688438Z",
+    "activation_mode": "active",
+    "manifest_sha256": "94b6936ab4b338430981f4c2f7e0f4ff38f24534c32f1d16722c8d1367d89474",
+    "material_version": "m0008",
+    "qualification": {
+      "cancel_order_api_called_count": 0,
+      "evidence_ids": [
+        "production-qualification:d59310ff67107db6eeec048611fa4f046b943495e210b58bfe129d98774038ba",
+        "selected-suite-aggregate:1666-passed-0-failed-0-skipped:fdc6f3f00ec16d81cf2480491d96336aa67f1a91cd9e197fd4afe4ec26fa8d80",
+        "formal-ctp-readonly:qualified-2-captures:b7fcd1bdfe1b05956dabffd11350ce9444bd24e1d58950863bd9740778266ea1",
+        "independent-review:p0-0-p1-0-p2-0:oct08-m0008-independent-review",
+        "material-release-verify:94b6936ab4b338430981f4c2f7e0f4ff38f24534c32f1d16722c8d1367d89474"
+      ],
+      "generated_at_utc": "2026-10-08T13:20:02Z",
+      "order_api_called_count": 0,
+      "qualification_kind": "material_activation_production",
+      "release_commit": "334d18f069de06df3aa7728203e942e3ecb94ce9",
+      "send_order_api_called_count": 0,
+      "status": "passed"
+    },
+    "release_commit": "334d18f069de06df3aa7728203e942e3ecb94ce9",
+    "release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+    "schema_version": 1,
+    "source_commit": "2a7420a9f9550ab912b5c4a302a61acc5740b04c",
+    "strategy_version": "ai_top10_plus_fu_official_live_v1",
+    "tree_fingerprint": "ec2ca4b747d3083fb9ad38daa7efa51e9697def801f1c91a6bc9fd814e2b6fda"
+  },
+  "remote_current_matches_local": true,
+  "old_authoritative_stable_root": {
+    "path": "/Users/bytedance/Desktop/person/vnpy_production_live",
+    "exists": false
+  },
+  "local_candidate_stable_root": {
+    "path": "/Users/mac/Desktop/person/vnpy_production_live",
+    "exists": true,
+    "git_head": "d55887e1def72629fbfa310e439dc3a879969a14",
+    "production_activation_verified": false
+  },
+  "production_state_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live",
+  "production_required_files": {
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/release-manifest.json": false,
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/qualification-bundle/qualification.json": false,
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/activation/latest.json": false,
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/runtime/state/activation_receipt.json": false,
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/data-readiness/latest.json": false
+  },
+  "verified_production_source_commit": null,
+  "candidate_material_release_id": null,
+  "candidate_qualification_status": "missing",
+  "candidate_production_qualified": false,
+  "promotion_completed": false,
+  "production_installed": false,
+  "blocking_technical_gates": [
+    "stable production/current runtime identity and exact 7-label activation not proven",
+    "new weekly19 execution profile and all consumers not ported or qualified",
+    "reserve simulation is not real funding confirmation or durable production cash ledger",
+    "new candidate immutable release and source-bound test/readonly/review qualification absent"
+  ],
+  "required_input": [
+    "production target machine and stable root",
+    "real external top-up versus same-broker-account segregated reserve"
+  ],
+  "economic_history": {
+    "natural_gate_passed": false,
+    "original_decision": "NO_PROMOTION",
+    "mature_windows": 54,
+    "mature_profitable": 51,
+    "mature_loss": 3,
+    "observation_windows": 5,
+    "observation_profitable": 3,
+    "observation_loss": 2,
+    "worst_account_dd_pct": -59.76972313752225,
+    "reserve_exhausted_windows": 5,
+    "margin_pressure_windows": 37,
+    "nonpositive_E_windows": 0,
+    "commissions_zero": true,
+    "operator_request_does_not_relabel_historical_gate": true
+  },
+  "research": {
+    "vnpy_docs": "https://www.vnpy.com/docs/cn/community/app/portfolio_strategy.html",
+    "github_live_engine": "https://github.com/vnpy/vnpy_portfoliostrategy/blob/main/vnpy_portfoliostrategy/engine.py",
+    "judgment": "live execution requires verified runtime, broker cash and durable order state; backtest balance mutation cannot certify real deposits"
+  },
+  "overfitting_risk": true,
+  "continued_value": true,
+  "financial_replays": 0,
+  "ctp_connections": 0,
+  "order_api_calls": 0,
+  "send_order_api_calls": 0,
+  "cancel_order_api_calls": 0,
+  "bank_transfer_api_calls": 0,
+  "remote_pushes": 0,
+  "production_mutations": 0,
+  "official_pointer_mutations": 0,
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_delivery_manifest.json": "50cc767eefee005e0f47eadbb2387e5dd11cf3a7ff3885057c1b93108dbec1bc",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_freeze.json": "ef706f779c5a48b760dbbfa3272f1c88a19719bfaca336afcd45e01d6d74317f",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_independent_final_review.json": "cb7d88671e1966d15591e0166d4a68558efd7cec9835d8a9ca1d43b6160657ad",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/official_strategy_materials/CURRENT.json": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/qmt_roll_official_live_config.py": "82faa02ebf4f782d6e2e2c531eafac0f95b6f8d10c62253dcc16b8922db74ac5",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/run_stage014.py": "05d255a708e55841cd15b26cd47a1a8c2c01f4a3c9a55e87604f39fe45a1bddf",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/stage014_reserve.py": "f0721782e5c728446ebb59f45c0c7d8915a52513442e739f17c50f494c5e4026",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_daemon.py": "bc56e80f0934595c9e440faae72ce9a01066d8a64ee6f9b4b79e17771cf7b6ea",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py": "665dc68d26abf75bd53215cb46c2f19e6a9964b8e11276b27e3c34b5ced24b80",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/install_qmt_roll_stage948_official_live_production.py": "99ff20a359db8ab45e6b8a08a81108fabe61dad2cce9f07590274b6293bccb24",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/skills/freeze-official-strategy-materials/SKILL.md": "d0cdc0d6c41102e5993573a56dd7f1feb5ed8c0cca2c2b75b4ecd48fc784d8e0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/skills/futures-live-execution-sop/SKILL.md": "4af05968961a5a7b26b3c134e2d8c74bdd484d82fe714b509e8f2f6e7170cb95",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/skills/version-ab-experiment/SKILL.md": "5b9a61149b4753076bb3933a6c10f5a6a5b457ff531ef13c903484cdbc08eff0"
+  }
+}
