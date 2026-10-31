@@ -1,0 +1,1077 @@
+{
+  "all_19_latest_weekly_source_values_equal": true,
+  "conditional_intents": [],
+  "files": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/actual_strategy_settings.json": {
+      "before_sha256": "360190915781cdbdbf92ef3d3005a6205f9b7e0d4a65644d8bcb298241a47199"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/entry_candidates.csv": {
+      "after_sha256": "5e7a1857a49d84348e103c2a55aab33c7adcc6a0a44d809192ce37ca4c9a01a3",
+      "before_sha256": "5e7a1857a49d84348e103c2a55aab33c7adcc6a0a44d809192ce37ca4c9a01a3"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/input_manifest.json": {
+      "before_sha256": "dc78a869d30a1b2b0cfc630d8c133cff1bde334ff908152e6e6511978ecc96d3"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/pending_orders.csv": {
+      "after_sha256": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+      "before_sha256": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/positions.csv": {
+      "after_sha256": "8fa8b3f542370de88c20022ceee7eb672ed2996ecab80a08b45a0bfc4a1d7bd2",
+      "before_sha256": "8fa8b3f542370de88c20022ceee7eb672ed2996ecab80a08b45a0bfc4a1d7bd2"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/preflight.json": {
+      "before_sha256": "0b6fee90bcc999e26e3dea9f9c5009d574b2a6611a69479560234defb98076e4"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/reserve_daily.csv": {
+      "after_sha256": "071b4b45ef3bf448d1f38b96bccd8701ce726a2508d8c19c4f5f51eb43c8616c",
+      "before_sha256": "071b4b45ef3bf448d1f38b96bccd8701ce726a2508d8c19c4f5f51eb43c8616c"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/short_price_range_decisions.csv": {
+      "after_sha256": "45f810667d0cefb5dce963a38a64aa890db85265e694d6f18a341d4b2eb8e921",
+      "before_sha256": "45f810667d0cefb5dce963a38a64aa890db85265e694d6f18a341d4b2eb8e921"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/weekly_bars.csv": {
+      "after_sha256": "5073936e63c0b06417fa4d58a1b9b3ecdabbb65b68ac46adc358ca98978388cf",
+      "before_sha256": "5073936e63c0b06417fa4d58a1b9b3ecdabbb65b68ac46adc358ca98978388cf"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001/weekly_readiness.csv": {
+      "after_sha256": "8a2e093b0e339352e185d9cd523c716bfc3de09466a2ac3ed42aba2582bda676",
+      "before_sha256": "8a2e093b0e339352e185d9cd523c716bfc3de09466a2ac3ed42aba2582bda676"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/actual_strategy_settings.json": {
+      "before_sha256": "f48e2ae77dd930720720de62a59a4e257bc8a00bef6f6fcaf75648fd60906373"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/entry_candidates.csv": {
+      "after_sha256": "c12a6960942d53a2a79f615a666fa8d33e560cae90af454e4e0a9eee2ba61dfe",
+      "before_sha256": "c12a6960942d53a2a79f615a666fa8d33e560cae90af454e4e0a9eee2ba61dfe"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/input_manifest.json": {
+      "before_sha256": "dc78a869d30a1b2b0cfc630d8c133cff1bde334ff908152e6e6511978ecc96d3"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/pending_orders.csv": {
+      "after_sha256": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093",
+      "before_sha256": "436cefadfe74a2b1d9a1048bc53814a334c3d2582ff8a13dbd31820a221dd093"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/positions.csv": {
+      "after_sha256": "1fe56b9d381b748df4fafdacd42374cdb16717dcfef335331890b531c4c2271b",
+      "before_sha256": "1fe56b9d381b748df4fafdacd42374cdb16717dcfef335331890b531c4c2271b"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/preflight.json": {
+      "before_sha256": "03a1e4a38c0c5680759a46096053d2c58bf85ff4f6957fc60c58c1adf1efcd93"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/reserve_daily.csv": {
+      "after_sha256": "400e13ef665ab31fb2e072724aa205e09512cd06080c9ec419dea4d40d006ca9",
+      "before_sha256": "400e13ef665ab31fb2e072724aa205e09512cd06080c9ec419dea4d40d006ca9"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/short_price_range_decisions.csv": {
+      "after_sha256": "ab36b7ac8b1f5b399392cac6cea05fdd71754b436369618419b9212450efd29f",
+      "before_sha256": "ab36b7ac8b1f5b399392cac6cea05fdd71754b436369618419b9212450efd29f"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/weekly_bars.csv": {
+      "after_sha256": "f3dfce221ac649382d0a6ecf533114607529d022d45b2384230ab11bce6b761d",
+      "before_sha256": "f3dfce221ac649382d0a6ecf533114607529d022d45b2384230ab11bce6b761d"
+    },
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001/weekly_readiness.csv": {
+      "after_sha256": "a8fe03e13802751a7bb47f4ef58e5e9dbc9b6a57a05f8c05a9f32256a2734a1f",
+      "before_sha256": "a8fe03e13802751a7bb47f4ef58e5e9dbc9b6a57a05f8c05a9f32256a2734a1f"
+    }
+  },
+  "financial_replays": 0,
+  "native_signals": [],
+  "original_paths_are_distinct_and_not_adopted_as_actual_positions": true,
+  "paths": [
+    {
+      "approved_input_manifest_pins": {
+        "additive_preservation_proof.json": "de7f275254f13b6c7b5f5a2c40b5fb494f59ea7b12c5383accd7110de10a47da",
+        "admitted_20261029_daily.csv": "e47aebe3702f8fe4bfa58bb103fd52df7b7ddfb0c8b50826a1f473e1030866e8",
+        "admitted_20261029_mapping.csv": "040ebef8944c23b2e9f4b67804644efdd6561abdd43b910695f2985aede54ce9",
+        "admitted_20261030_daily.csv": "56c43857e8790bb755a0af6e044fc4128ca34cf4686a241079d1dae566a2f1f9",
+        "admitted_20261030_mapping.csv": "9474723ada54eade4f835872ceccb4515a3c3c10e3316eedbfb8e8d776e5353c",
+        "admitted_new_daily.csv": "176d0db7728fc6830ca60077fc21adb77eb19c1043ed407a54e0984bf74532d0",
+        "admitted_new_mapping.csv": "03718e509882872849580df64f7ae5126bf9d300f671c79e7221a72605f0601a",
+        "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+        "known_lifecycle_excluded.csv": "5f83a23c59c2164ad5e7faab24351e7cda69412ca41695f9b17b566356db7956",
+        "known_no_trade_main.csv": "2a8f34188548e1f46f4954ce64e95a001d34b7e6afd7c282845d179ad0c58bf2",
+        "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+        "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+        "metadata_admission.json": "c8e33720a71d9df7a40390e5f9aaa7592871e5f5af9f8848c3360fd8cb34a4b8",
+        "missing_main.csv": "387f983ada88112bd7142d880b20ec2a103489139a3e9e7d6cfd542d2857c67d",
+        "new_missing_or_zero_not_bar.csv": "3757a61bcbfc3cf218faf6dd66fccd6b4e49a2b3f7a17f85baba520caac07824",
+        "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+        "physical_epochs.csv": "e84cd645d5a614d12a02db15c787a2fcb02b1d4e4ba92d62680ae13e61f47d25",
+        "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1",
+        "rejected_20261029_not_bar.csv": "3757a61bcbfc3cf218faf6dd66fccd6b4e49a2b3f7a17f85baba520caac07824",
+        "rejected_20261030_not_bar.csv": "950bbbe7e5fc26eb3b2efdfcae483061728c71dc24b34ab887069d4f9f52f8e0",
+        "source_manifest.json": "0303e201312090a900bb39ac46b43193d98f4c27875e05a6ee6d6844afa7cc84",
+        "stage001_additive_preservation_proof.json": "8599ace87bde8441e940eb03ae03f077a3a06ea424f299fc101b3c4a555a0b25",
+        "stage014_additive_preservation_proof.json": "e27e322048566f0e7f6829d067c59bb0c2f165c0020eece67370db56802ee14d",
+        "structural_unavailable_main.csv": "43fe013d5aa417de9281438cafd2970b1e4d5f0055737758713790bb5f0dce69",
+        "warmup_missing_main_2014.csv": "ffc9bcaf2185734b58d9b827267a43187cc16d526ada35168df2f274019d4a6b"
+      },
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20150101_attempt001",
+      "rows": {
+        "entry_candidates.csv": [],
+        "pending_orders.csv": [],
+        "positions.csv": [],
+        "reserve_daily.csv": [
+          {
+            "account_capital": "150000.0",
+            "broker10_margin_to_equity_pct": "0.0",
+            "broker10_total_margin_exact": "0.0",
+            "c3_active_contracts": "0",
+            "c3_active_products": "0",
+            "c3_capital": "150000.0",
+            "c3_margin_exact": "0.0",
+            "combo_variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+            "commission": "0.0",
+            "cumulative_transfer": "43960.00000000003",
+            "date": "2026-10-30",
+            "forced_margin_deleverage_closed_volume": "0",
+            "forced_margin_deleverage_count": "0",
+            "forced_margin_deleverage_max_observed_ratio": "0",
+            "forced_margin_deleverage_ratio": "0",
+            "holding_pnl": "0.0",
+            "label": "15w Stage847-C9-15w live default",
+            "minute_loaded_symbol_count": "0",
+            "minute_source": "declared_daily_bar_open_next_bar_v1",
+            "net_pnl": "0.0",
+            "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+            "profile": "research_C",
+            "raw_account_equity": "4175344.999999998",
+            "reserve_balance": "106039.99999999997",
+            "result_scope": "stage014_20150101_short_historical_bottom20_C",
+            "risk_multiplier": "0.4",
+            "slippage": "0.0",
+            "total_account_equity": "4325344.999999998",
+            "total_margin_exact": "0.0",
+            "total_net_pnl": "0.0",
+            "total_pnl": "0.0",
+            "total_slippage": "0.0",
+            "trade_count": "0",
+            "trading_account_equity": "4219304.999999998",
+            "trading_pnl": "0.0",
+            "transfer_amount": "0.0",
+            "turnover": "0.0",
+            "variant": "stage847_c9_15w_stage819_05r_stop_retry_live"
+          }
+        ],
+        "short_price_range_decisions.csv": [],
+        "weekly_bars.csv": [
+          {
+            "close": "5887.0",
+            "contract_epoch_id": "CZCE.AP.202701",
+            "high": "5888.0",
+            "low": "5365.0",
+            "open": "5712.0",
+            "open_interest": "171450.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1818474.0",
+            "vt_symbol": "AP701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "15315.0",
+            "contract_epoch_id": "CZCE.CF.202701",
+            "high": "15860.0",
+            "low": "15055.0",
+            "open": "15855.0",
+            "open_interest": "640843.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "2422346.0",
+            "vt_symbol": "CF701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "865.0",
+            "contract_epoch_id": "CZCE.FG.202701",
+            "high": "871.0",
+            "low": "823.0",
+            "open": "839.0",
+            "open_interest": "1344219.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "5455381.0",
+            "vt_symbol": "FG701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3480.0",
+            "contract_epoch_id": "CZCE.MA.202701",
+            "high": "3558.0",
+            "low": "3228.0",
+            "open": "3235.0",
+            "open_interest": "881205.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "14824968.0",
+            "vt_symbol": "MA701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "10340.0",
+            "contract_epoch_id": "CZCE.OI.202701",
+            "high": "10404.0",
+            "low": "10172.0",
+            "open": "10351.0",
+            "open_interest": "388112.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1183573.0",
+            "vt_symbol": "OI701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "966.0",
+            "contract_epoch_id": "CZCE.SA.202701",
+            "high": "993.0",
+            "low": "948.0",
+            "open": "963.0",
+            "open_interest": "1180140.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "7285511.0",
+            "vt_symbol": "SA701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "1495.0",
+            "contract_epoch_id": "CZCE.SH.202701",
+            "high": "1593.0",
+            "low": "1438.0",
+            "open": "1575.0",
+            "open_interest": "302942.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "4532757.0",
+            "vt_symbol": "SH701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "5890.0",
+            "contract_epoch_id": "CZCE.SM.202701",
+            "high": "5938.0",
+            "low": "5812.0",
+            "open": "5900.0",
+            "open_interest": "316373.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1025671.0",
+            "vt_symbol": "SM701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "855.18",
+            "contract_epoch_id": "SHFE.AU.202612",
+            "high": "875.16",
+            "low": "854.72",
+            "open": "867.0",
+            "open_interest": "184422.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1069923.0",
+            "vt_symbol": "au2612.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "108050.0",
+            "contract_epoch_id": "SHFE.CU.202612",
+            "high": "109500.0",
+            "low": "107760.0",
+            "open": "108290.0",
+            "open_interest": "186825.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "409326.0",
+            "vt_symbol": "cu2612.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "5396.0",
+            "contract_epoch_id": "SHFE.FU.202701",
+            "high": "5676.0",
+            "low": "5119.0",
+            "open": "5155.0",
+            "open_interest": "222722.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "4635559.0",
+            "vt_symbol": "fu2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3170.0",
+            "contract_epoch_id": "SHFE.HC.202701",
+            "high": "3220.0",
+            "low": "3150.0",
+            "open": "3220.0",
+            "open_interest": "1755841.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "2446292.0",
+            "vt_symbol": "hc2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "1412.5",
+            "contract_epoch_id": "DCE.JM.202701",
+            "high": "1460.5",
+            "low": "1362.0",
+            "open": "1419.0",
+            "open_interest": "429162.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "3026302.0",
+            "vt_symbol": "jm2701.DCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "88500.0",
+            "contract_epoch_id": "GFEX.LC.202701",
+            "high": "101520.0",
+            "low": "88040.0",
+            "open": "96740.0",
+            "open_interest": "443073.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1758301.0",
+            "vt_symbol": "lc2701.GFEX",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "9510.0",
+            "contract_epoch_id": "DCE.LH.202701",
+            "high": "10055.0",
+            "low": "9400.0",
+            "open": "9860.0",
+            "open_interest": "161040.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1063347.0",
+            "vt_symbol": "lh2701.DCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3030.0",
+            "contract_epoch_id": "SHFE.RB.202701",
+            "high": "3072.0",
+            "low": "3012.0",
+            "open": "3053.0",
+            "open_interest": "1780849.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "3310582.0",
+            "vt_symbol": "rb2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "19170.0",
+            "contract_epoch_id": "SHFE.RU.202701",
+            "high": "19970.0",
+            "low": "19035.0",
+            "open": "19600.0",
+            "open_interest": "136102.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1870678.0",
+            "vt_symbol": "ru2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "8685.0",
+            "contract_epoch_id": "GFEX.SI.202612",
+            "high": "8810.0",
+            "low": "8595.0",
+            "open": "8615.0",
+            "open_interest": "237633.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "667883.0",
+            "vt_symbol": "si2612.GFEX",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "4614.0",
+            "contract_epoch_id": "SHFE.SP.202701",
+            "high": "4654.0",
+            "low": "4470.0",
+            "open": "4640.0",
+            "open_interest": "378113.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1920550.0",
+            "vt_symbol": "sp2701.SHFE",
+            "week_end": "2026-10-30"
+          }
+        ],
+        "weekly_readiness.csv": [
+          {
+            "date": "2026-10-30",
+            "mapped_products": "19",
+            "newly_completed_targets": "19",
+            "ready_target_contracts": "19"
+          }
+        ]
+      },
+      "simulated_start": "20150101"
+    },
+    {
+      "approved_input_manifest_pins": {
+        "additive_preservation_proof.json": "de7f275254f13b6c7b5f5a2c40b5fb494f59ea7b12c5383accd7110de10a47da",
+        "admitted_20261029_daily.csv": "e47aebe3702f8fe4bfa58bb103fd52df7b7ddfb0c8b50826a1f473e1030866e8",
+        "admitted_20261029_mapping.csv": "040ebef8944c23b2e9f4b67804644efdd6561abdd43b910695f2985aede54ce9",
+        "admitted_20261030_daily.csv": "56c43857e8790bb755a0af6e044fc4128ca34cf4686a241079d1dae566a2f1f9",
+        "admitted_20261030_mapping.csv": "9474723ada54eade4f835872ceccb4515a3c3c10e3316eedbfb8e8d776e5353c",
+        "admitted_new_daily.csv": "176d0db7728fc6830ca60077fc21adb77eb19c1043ed407a54e0984bf74532d0",
+        "admitted_new_mapping.csv": "03718e509882872849580df64f7ae5126bf9d300f671c79e7221a72605f0601a",
+        "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+        "known_lifecycle_excluded.csv": "5f83a23c59c2164ad5e7faab24351e7cda69412ca41695f9b17b566356db7956",
+        "known_no_trade_main.csv": "2a8f34188548e1f46f4954ce64e95a001d34b7e6afd7c282845d179ad0c58bf2",
+        "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+        "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+        "metadata_admission.json": "c8e33720a71d9df7a40390e5f9aaa7592871e5f5af9f8848c3360fd8cb34a4b8",
+        "missing_main.csv": "387f983ada88112bd7142d880b20ec2a103489139a3e9e7d6cfd542d2857c67d",
+        "new_missing_or_zero_not_bar.csv": "3757a61bcbfc3cf218faf6dd66fccd6b4e49a2b3f7a17f85baba520caac07824",
+        "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+        "physical_epochs.csv": "e84cd645d5a614d12a02db15c787a2fcb02b1d4e4ba92d62680ae13e61f47d25",
+        "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1",
+        "rejected_20261029_not_bar.csv": "3757a61bcbfc3cf218faf6dd66fccd6b4e49a2b3f7a17f85baba520caac07824",
+        "rejected_20261030_not_bar.csv": "950bbbe7e5fc26eb3b2efdfcae483061728c71dc24b34ab887069d4f9f52f8e0",
+        "source_manifest.json": "0303e201312090a900bb39ac46b43193d98f4c27875e05a6ee6d6844afa7cc84",
+        "stage001_additive_preservation_proof.json": "8599ace87bde8441e940eb03ae03f077a3a06ea424f299fc101b3c4a555a0b25",
+        "stage014_additive_preservation_proof.json": "e27e322048566f0e7f6829d067c59bb0c2f165c0020eece67370db56802ee14d",
+        "structural_unavailable_main.csv": "43fe013d5aa417de9281438cafd2970b1e4d5f0055737758713790bb5f0dce69",
+        "warmup_missing_main_2014.csv": "ffc9bcaf2185734b58d9b827267a43187cc16d526ada35168df2f274019d4a6b"
+      },
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260601_attempt001",
+      "rows": {
+        "entry_candidates.csv": [],
+        "pending_orders.csv": [],
+        "positions.csv": [
+          {
+            "account_capital": "150000.0",
+            "c3_capital": "150000.0",
+            "close_price": "3030.0",
+            "combo_variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+            "commission": "0.0",
+            "date": "2026-10-30",
+            "end_pos": "-13.0",
+            "holding_pnl": "3380.0",
+            "label": "15w Stage847-C9-15w live default",
+            "net_pnl": "3380.0",
+            "pos_change": "0.0",
+            "pre_close": "3056.0",
+            "profile": "research_C",
+            "result_scope": "stage014_20260601_short_historical_bottom20_C",
+            "risk_multiplier": "0.4",
+            "slippage": "0.0",
+            "start_month": "2026-06",
+            "start_pos": "-13.0",
+            "total_pnl": "3380.0",
+            "trade_count": "0",
+            "trading_pnl": "0.0",
+            "turnover": "0.0",
+            "variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+            "vt_symbol": "rb2701.SHFE"
+          }
+        ],
+        "reserve_daily.csv": [
+          {
+            "account_capital": "150000.0",
+            "broker10_margin_to_equity_pct": "43.527048068712645",
+            "broker10_total_margin_exact": "43329.0",
+            "c3_active_contracts": "1",
+            "c3_active_products": "1",
+            "c3_capital": "150000.0",
+            "c3_margin_exact": "39390.0",
+            "combo_variant": "stage847_c9_15w_stage819_05r_stop_retry_live",
+            "commission": "0.0",
+            "cumulative_transfer": "72570.0",
+            "date": "2026-10-30",
+            "forced_margin_deleverage_closed_volume": "0",
+            "forced_margin_deleverage_count": "0",
+            "forced_margin_deleverage_max_observed_ratio": "0",
+            "forced_margin_deleverage_ratio": "0",
+            "holding_pnl": "3380.0",
+            "label": "15w Stage847-C9-15w live default",
+            "minute_loaded_symbol_count": "0",
+            "minute_source": "declared_daily_bar_open_next_bar_v1",
+            "net_pnl": "3380.0",
+            "note": "Stage748 C50 logic, but if the latest completed daily bar has OI up and price aligned with the trade direction, entry risk is doubled on top of the Stage748 0.40 risk ratio, which restores effective formal risk from 0.40 to 0.80. | Research-only AM40 minimum. AM=41 because signal compares current and previous MA40. | Stage804 yearly validation. For long entries only, use max(signal_day_low, close*(1-stop_loss_pct)) as the initial stop. | Stage813 corrected RSI ablation. enable_rsi_partial_exit=True. | Stage825 read-only intraday forensics. source=official_candidate_stage819_30w_am41_oi08_old_ai_long_tighter_stop_rsi95_v1. | Stage827 isolated strategy subclass. C2 intraday first-1R stop is enabled only for the C arm. | Stage830 live-feasible account guard. C2 intraday stop remains enabled; flat-entry sizing is reduced when projected broker10 margin/equity would exceed 100%; reverse-entry is fail-closed to close-only rather than immediately reopening in the opposite direction. | Stage847 frozen C9. After C4 entry, if entry-day price first hits 0.5R adverse before 0.5R progress, synthesize a -0.5R stop. If price later reclaims the original entry level on the same entry day, reopen once at the original entry price; if the retry again hits 0.5R adverse the same day, close and do not retry again. | Stage901 official live default operator override. C9 is promoted to live default by explicit operator request; no parameter search.",
+            "profile": "research_C",
+            "raw_account_equity": "99545.0",
+            "reserve_balance": "77430.0",
+            "result_scope": "stage014_20260601_short_historical_bottom20_C",
+            "risk_multiplier": "0.4",
+            "slippage": "0.0",
+            "total_account_equity": "249545.0",
+            "total_margin_exact": "39390.0",
+            "total_net_pnl": "3380.0",
+            "total_pnl": "3380.0",
+            "total_slippage": "0.0",
+            "trade_count": "0",
+            "trading_account_equity": "172115.0",
+            "trading_pnl": "0.0",
+            "transfer_amount": "0.0",
+            "turnover": "0.0",
+            "variant": "stage847_c9_15w_stage819_05r_stop_retry_live"
+          }
+        ],
+        "short_price_range_decisions.csv": [],
+        "weekly_bars.csv": [
+          {
+            "close": "5887.0",
+            "contract_epoch_id": "CZCE.AP.202701",
+            "high": "5888.0",
+            "low": "5365.0",
+            "open": "5712.0",
+            "open_interest": "171450.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1818474.0",
+            "vt_symbol": "AP701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "15315.0",
+            "contract_epoch_id": "CZCE.CF.202701",
+            "high": "15860.0",
+            "low": "15055.0",
+            "open": "15855.0",
+            "open_interest": "640843.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "2422346.0",
+            "vt_symbol": "CF701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "865.0",
+            "contract_epoch_id": "CZCE.FG.202701",
+            "high": "871.0",
+            "low": "823.0",
+            "open": "839.0",
+            "open_interest": "1344219.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "5455381.0",
+            "vt_symbol": "FG701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3480.0",
+            "contract_epoch_id": "CZCE.MA.202701",
+            "high": "3558.0",
+            "low": "3228.0",
+            "open": "3235.0",
+            "open_interest": "881205.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "14824968.0",
+            "vt_symbol": "MA701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "10340.0",
+            "contract_epoch_id": "CZCE.OI.202701",
+            "high": "10404.0",
+            "low": "10172.0",
+            "open": "10351.0",
+            "open_interest": "388112.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1183573.0",
+            "vt_symbol": "OI701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "966.0",
+            "contract_epoch_id": "CZCE.SA.202701",
+            "high": "993.0",
+            "low": "948.0",
+            "open": "963.0",
+            "open_interest": "1180140.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "7285511.0",
+            "vt_symbol": "SA701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "1495.0",
+            "contract_epoch_id": "CZCE.SH.202701",
+            "high": "1593.0",
+            "low": "1438.0",
+            "open": "1575.0",
+            "open_interest": "302942.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "4532757.0",
+            "vt_symbol": "SH701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "5890.0",
+            "contract_epoch_id": "CZCE.SM.202701",
+            "high": "5938.0",
+            "low": "5812.0",
+            "open": "5900.0",
+            "open_interest": "316373.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1025671.0",
+            "vt_symbol": "SM701.CZCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "855.18",
+            "contract_epoch_id": "SHFE.AU.202612",
+            "high": "875.16",
+            "low": "854.72",
+            "open": "867.0",
+            "open_interest": "184422.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1069923.0",
+            "vt_symbol": "au2612.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "108050.0",
+            "contract_epoch_id": "SHFE.CU.202612",
+            "high": "109500.0",
+            "low": "107760.0",
+            "open": "108290.0",
+            "open_interest": "186825.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "409326.0",
+            "vt_symbol": "cu2612.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "5396.0",
+            "contract_epoch_id": "SHFE.FU.202701",
+            "high": "5676.0",
+            "low": "5119.0",
+            "open": "5155.0",
+            "open_interest": "222722.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "4635559.0",
+            "vt_symbol": "fu2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3170.0",
+            "contract_epoch_id": "SHFE.HC.202701",
+            "high": "3220.0",
+            "low": "3150.0",
+            "open": "3220.0",
+            "open_interest": "1755841.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "2446292.0",
+            "vt_symbol": "hc2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "1412.5",
+            "contract_epoch_id": "DCE.JM.202701",
+            "high": "1460.5",
+            "low": "1362.0",
+            "open": "1419.0",
+            "open_interest": "429162.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "3026302.0",
+            "vt_symbol": "jm2701.DCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "88500.0",
+            "contract_epoch_id": "GFEX.LC.202701",
+            "high": "101520.0",
+            "low": "88040.0",
+            "open": "96740.0",
+            "open_interest": "443073.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1758301.0",
+            "vt_symbol": "lc2701.GFEX",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "9510.0",
+            "contract_epoch_id": "DCE.LH.202701",
+            "high": "10055.0",
+            "low": "9400.0",
+            "open": "9860.0",
+            "open_interest": "161040.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1063347.0",
+            "vt_symbol": "lh2701.DCE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "3030.0",
+            "contract_epoch_id": "SHFE.RB.202701",
+            "high": "3072.0",
+            "low": "3012.0",
+            "open": "3053.0",
+            "open_interest": "1780849.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "3310582.0",
+            "vt_symbol": "rb2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "19170.0",
+            "contract_epoch_id": "SHFE.RU.202701",
+            "high": "19970.0",
+            "low": "19035.0",
+            "open": "19600.0",
+            "open_interest": "136102.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1870678.0",
+            "vt_symbol": "ru2701.SHFE",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "8685.0",
+            "contract_epoch_id": "GFEX.SI.202612",
+            "high": "8810.0",
+            "low": "8595.0",
+            "open": "8615.0",
+            "open_interest": "237633.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "667883.0",
+            "vt_symbol": "si2612.GFEX",
+            "week_end": "2026-10-30"
+          },
+          {
+            "close": "4614.0",
+            "contract_epoch_id": "SHFE.SP.202701",
+            "high": "4654.0",
+            "low": "4470.0",
+            "open": "4640.0",
+            "open_interest": "378113.0",
+            "source_days": "['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']",
+            "volume": "1920550.0",
+            "vt_symbol": "sp2701.SHFE",
+            "week_end": "2026-10-30"
+          }
+        ],
+        "weekly_readiness.csv": [
+          {
+            "date": "2026-10-30",
+            "mapped_products": "19",
+            "newly_completed_targets": "19",
+            "ready_target_contracts": "19"
+          }
+        ]
+      },
+      "simulated_start": "20260601"
+    }
+  ],
+  "physical_source_sha256_before_after": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+  "production_qualified": false,
+  "schema": "Stage018.sealed-output-crosscheck.v1",
+  "scope": "read_only_existing_Stage014_outputs_not_actual_broker_or_new_replay",
+  "signals": [],
+  "source_weekly_OHLCVOI_parity": [
+    {
+      "close": 5887.0,
+      "high": 5888.0,
+      "low": 5365.0,
+      "open": 5712.0,
+      "open_interest": 171450.0,
+      "physical_epoch_id": "CZCE.AP.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1818474.0,
+      "vt_symbol": "AP701.CZCE"
+    },
+    {
+      "close": 15315.0,
+      "high": 15860.0,
+      "low": 15055.0,
+      "open": 15855.0,
+      "open_interest": 640843.0,
+      "physical_epoch_id": "CZCE.CF.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 2422346.0,
+      "vt_symbol": "CF701.CZCE"
+    },
+    {
+      "close": 865.0,
+      "high": 871.0,
+      "low": 823.0,
+      "open": 839.0,
+      "open_interest": 1344219.0,
+      "physical_epoch_id": "CZCE.FG.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 5455381.0,
+      "vt_symbol": "FG701.CZCE"
+    },
+    {
+      "close": 3480.0,
+      "high": 3558.0,
+      "low": 3228.0,
+      "open": 3235.0,
+      "open_interest": 881205.0,
+      "physical_epoch_id": "CZCE.MA.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 14824968.0,
+      "vt_symbol": "MA701.CZCE"
+    },
+    {
+      "close": 10340.0,
+      "high": 10404.0,
+      "low": 10172.0,
+      "open": 10351.0,
+      "open_interest": 388112.0,
+      "physical_epoch_id": "CZCE.OI.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1183573.0,
+      "vt_symbol": "OI701.CZCE"
+    },
+    {
+      "close": 966.0,
+      "high": 993.0,
+      "low": 948.0,
+      "open": 963.0,
+      "open_interest": 1180140.0,
+      "physical_epoch_id": "CZCE.SA.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 7285511.0,
+      "vt_symbol": "SA701.CZCE"
+    },
+    {
+      "close": 1495.0,
+      "high": 1593.0,
+      "low": 1438.0,
+      "open": 1575.0,
+      "open_interest": 302942.0,
+      "physical_epoch_id": "CZCE.SH.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 4532757.0,
+      "vt_symbol": "SH701.CZCE"
+    },
+    {
+      "close": 5890.0,
+      "high": 5938.0,
+      "low": 5812.0,
+      "open": 5900.0,
+      "open_interest": 316373.0,
+      "physical_epoch_id": "CZCE.SM.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1025671.0,
+      "vt_symbol": "SM701.CZCE"
+    },
+    {
+      "close": 855.18,
+      "high": 875.16,
+      "low": 854.72,
+      "open": 867.0,
+      "open_interest": 184422.0,
+      "physical_epoch_id": "SHFE.AU.202612",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1069923.0,
+      "vt_symbol": "au2612.SHFE"
+    },
+    {
+      "close": 108050.0,
+      "high": 109500.0,
+      "low": 107760.0,
+      "open": 108290.0,
+      "open_interest": 186825.0,
+      "physical_epoch_id": "SHFE.CU.202612",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 409326.0,
+      "vt_symbol": "cu2612.SHFE"
+    },
+    {
+      "close": 5396.0,
+      "high": 5676.0,
+      "low": 5119.0,
+      "open": 5155.0,
+      "open_interest": 222722.0,
+      "physical_epoch_id": "SHFE.FU.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 4635559.0,
+      "vt_symbol": "fu2701.SHFE"
+    },
+    {
+      "close": 3170.0,
+      "high": 3220.0,
+      "low": 3150.0,
+      "open": 3220.0,
+      "open_interest": 1755841.0,
+      "physical_epoch_id": "SHFE.HC.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 2446292.0,
+      "vt_symbol": "hc2701.SHFE"
+    },
+    {
+      "close": 1412.5,
+      "high": 1460.5,
+      "low": 1362.0,
+      "open": 1419.0,
+      "open_interest": 429162.0,
+      "physical_epoch_id": "DCE.JM.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 3026302.0,
+      "vt_symbol": "jm2701.DCE"
+    },
+    {
+      "close": 88500.0,
+      "high": 101520.0,
+      "low": 88040.0,
+      "open": 96740.0,
+      "open_interest": 443073.0,
+      "physical_epoch_id": "GFEX.LC.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1758301.0,
+      "vt_symbol": "lc2701.GFEX"
+    },
+    {
+      "close": 9510.0,
+      "high": 10055.0,
+      "low": 9400.0,
+      "open": 9860.0,
+      "open_interest": 161040.0,
+      "physical_epoch_id": "DCE.LH.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1063347.0,
+      "vt_symbol": "lh2701.DCE"
+    },
+    {
+      "close": 3030.0,
+      "high": 3072.0,
+      "low": 3012.0,
+      "open": 3053.0,
+      "open_interest": 1780849.0,
+      "physical_epoch_id": "SHFE.RB.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 3310582.0,
+      "vt_symbol": "rb2701.SHFE"
+    },
+    {
+      "close": 19170.0,
+      "high": 19970.0,
+      "low": 19035.0,
+      "open": 19600.0,
+      "open_interest": 136102.0,
+      "physical_epoch_id": "SHFE.RU.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1870678.0,
+      "vt_symbol": "ru2701.SHFE"
+    },
+    {
+      "close": 8685.0,
+      "high": 8810.0,
+      "low": 8595.0,
+      "open": 8615.0,
+      "open_interest": 237633.0,
+      "physical_epoch_id": "GFEX.SI.202612",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 667883.0,
+      "vt_symbol": "si2612.GFEX"
+    },
+    {
+      "close": 4614.0,
+      "high": 4654.0,
+      "low": 4470.0,
+      "open": 4640.0,
+      "open_interest": 378113.0,
+      "physical_epoch_id": "SHFE.SP.202701",
+      "source_days": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "volume": 1920550.0,
+      "vt_symbol": "sp2701.SHFE"
+    }
+  ],
+  "target_date": "2026-10-30"
+}

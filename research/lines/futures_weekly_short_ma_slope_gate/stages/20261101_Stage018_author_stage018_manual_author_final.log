@@ -1,0 +1,6 @@
+----------------------------------------------------------------------
+Ran 278 tests in 19.032s
+
+OK
+{"status": "fixture"}
+{"production_qualified": false, "reason": "fixed_19_universe_ai_off", "status": "disabled_for_fixed19"}

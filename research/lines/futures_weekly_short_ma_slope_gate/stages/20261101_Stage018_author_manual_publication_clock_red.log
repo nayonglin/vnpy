@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_publication_uses_current_acceptance_time_and_never_renews_expired_prepared_record (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_publication_uses_current_acceptance_time_and_never_renews_expired_prepared_record)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 179, in test_publication_uses_current_acceptance_time_and_never_renews_expired_prepared_record
+    with self.assertRaises(ValueError):self.manual.write_and_publish_operator_review(self.backend,record)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.029s
+
+FAILED (failures=1)

@@ -1,0 +1,15 @@
+{
+  "exit_code": 0,
+  "source_before": {
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py": "f47c382fb83630ff750a18658cf83bb52249a97ca42a1a4317a6d966586603ad",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "eda5e8cfa9c43601103b9b5094767cbb35183f2f189f81784b669bc767d4ea7d"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py": "f47c382fb83630ff750a18658cf83bb52249a97ca42a1a4317a6d966586603ad",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "eda5e8cfa9c43601103b9b5094767cbb35183f2f189f81784b669bc767d4ea7d"
+  },
+  "source_unchanged": true,
+  "script_sha256": "0a256b887cc86dfa8d96484485ffa09df0e45520e8f7672cbcae2a65bab609aa",
+  "log_sha256": "24cefc2bc38a1c71e18591075993695fc72546b32ff6b5baab3d98032ce96fb5",
+  "real_external_actions": false
+}

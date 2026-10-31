@@ -1,0 +1,85 @@
+{
+  "actual_market_calendar": {
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "expected_hashes": {
+      "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "forward_calendar.csv": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+      "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+      "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+    },
+    "forward_calendar": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/forward_calendar.csv"
+  },
+  "baseline_commit": "b086a81264383a0504dc51aef88191d9e24230c5",
+  "baseline_source_sha256": "9a7282f78281d3e28afeffd55fb1db1e4829c988ee703956209f7230297af4ec",
+  "c9_preservation": {
+    "_resolve_target_date": {
+      "ast_sha256": "ce71cd4004f016d596886f912f4ae23ffdfd47de2351770eaad47dfeb760b0a5",
+      "c9_function_body_ast_preserved_after_removing_weekly_dispatch": true
+    },
+    "_target_is_before_live_shadow_start": {
+      "ast_sha256": "5155b28f6965c5bbff87c899323c385e44d9fd214da4cd42302f8a2727d66ef5",
+      "c9_function_body_ast_preserved_after_removing_weekly_dispatch": true
+    },
+    "_validate_target_date_calendar_window": {
+      "ast_sha256": "171f8bd78f68262795b80f28f4f39f5b17d363aa4f5dc91730152487eee918c0",
+      "c9_function_body_ast_preserved_after_removing_weekly_dispatch": true
+    }
+  },
+  "cold_start_skip": true,
+  "ctp_connections": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "resolved_target": "2026-10-30",
+  "resolver_payload": {
+    "cold_start_date": "2026-10-31",
+    "execution_profile": "weekly19-15w-r150k",
+    "material_release_id": "STAGE018_ACTUAL_CALENDAR_PROOF_NOT_ACTUAL_ACCOUNT",
+    "order_api_called_count": 0,
+    "resolved_target_date": "2026-10-30",
+    "resolver_evidence": {
+      "as_of": "2026-11-02T09:00:00+08:00",
+      "calendar_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/forward_calendar.csv",
+      "calendar_sha256": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+      "cold_start_date": "2026-10-31",
+      "context_file": "/private/tmp/tmp_5hmierq/runtime/weekly19/context.json",
+      "data_ready_time": "16:30",
+      "immutable_context_sha256": "cce655ca595e66db837545020f2400287b0fe7e7ddbfb521083b4a1ac2bba1c6",
+      "next_trading_session_date": "2026-11-02",
+      "source_hashes": {
+        "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+        "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+        "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+        "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+        "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+      },
+      "trading_calendar_source": "weekly19_private_context_pinned_market_calendar",
+      "trading_dates": [
+        "2026-10-30",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-09",
+        "2026-11-10",
+        "2026-11-11",
+        "2026-11-12",
+        "2026-11-13",
+        "2026-11-16",
+        "2026-11-17",
+        "2026-11-18",
+        "2026-11-19",
+        "2026-11-20"
+      ],
+      "wall_clock_cutoff_date": "2026-11-01"
+    },
+    "resolver_status": "weekly19_target_before_context_cold_start_waiting_fail_closed",
+    "target_before_cold_start": 1
+  },
+  "schema": "Stage018.launcher945-weekly-source-proof.v1",
+  "scope": "actual_calendar_plus_explicit_conditional_private_context_not_production_account",
+  "smtp_calls": 0,
+  "source_sha256": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3"
+}

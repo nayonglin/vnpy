@@ -1,0 +1,38 @@
+{
+  "schema": "Stage018.interrupted-ci-triage.v1",
+  "reason": "stopped_for_independent_manual_io_durability_retry_finding",
+  "junit_available": false,
+  "counts_in_attempt001_are_not_final_test_counts": true,
+  "source_changed_during_attempt001": false,
+  "collected_cases": 2309,
+  "observed_progress": 1352,
+  "production_qualified": false,
+  "approximate_failed_nodes_from_current_collection": [
+    "tests/test_stage174_query_bundle.py::Stage174ReadonlyQueryBundleTest::test_native_ctp_mutation_firewall_covers_every_non_readonly_surface",
+    "tests/test_stage174_query_bundle.py::Stage174ReadonlyQueryBundleTest::test_trade_joins_queried_order_sysid_to_stable_vt_orderid",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_canonical_stage905_spool_payload_reconstructs_legacy_validation_columns",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_cycle_authorization_allow_list_is_passed_into_atomic_lease",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_final_query_reports_shared_absolute_deadline_phase",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_incomplete_order_api_readiness_blocks_before_send",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_lease_execution_guard_covers_lease_send_and_durable_result",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_real_cli_no_submit_prewarm_never_opens_spool_or_loads_ctp",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_revoke_kill_or_disconnect_between_children_blocks_second_native",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_single_open_native_reqid_accepts_exact_plus_one_and_rejects_jump",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_socket_loss_is_recovered_by_point_one_second_poll",
+    "tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_spool_sending_cas_loss_after_api_slot_never_calls_broker",
+    "tests/test_stage179_activation_receipt_builder.py::Stage179ActivationReceiptBuilderTest::test_validator_rejects_noncanonical_or_group_readable_receipt",
+    "tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_canary_paths_are_independent_and_have_no_live_submit",
+    "tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_production_support_jobs_are_serialized_and_never_enable_submit",
+    "tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_stage372_postclose_job_precomputes_without_ctp_or_submit"
+  ],
+  "node_alignment_limitation": "Current collection includes one new manual fsync-retry case absent from interrupted attempt001; these node names are approximate adjacent-case locators only.",
+  "confirmed_first_failure": "tests/test_stage174_query_bundle.py::Stage174ReadonlyQueryBundleTest::test_output_paths_follow_official_live_output_dir",
+  "confirmed_first_cause": "vn.py subprocess default home logger denied by sandbox: /Users/mac/.vntrader/log/vt_20261101.log",
+  "same_source_with_required_local_runtime_log_permission": {
+    "test_invocations": 88,
+    "failures": 0,
+    "errors": 0,
+    "junit": "Stage018_root_legacy_runtime_log_permission.xml"
+  }
+}

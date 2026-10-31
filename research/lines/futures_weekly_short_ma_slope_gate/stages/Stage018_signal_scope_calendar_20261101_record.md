@@ -1,0 +1,54 @@
+# Stage018 真实TQ前向日历与inactive完整market generation
+
+时间：2026-11-01T04:38+08:00。所属研究线futures_weekly_short_ma_slope_gate；安装准备，非策略优化、非金融回测、非生产activation。所有production_qualified=false。
+
+结论：真实TQ source已捕获到2026-11-22请求终点（交易日实际至11/20），覆盖本日之后21个自然日。11/2下一交易日以及11/2–6、11/9–13、11/16–20可用于有界前向calendar。旧仅至11/2的日历在11/2 09:00由原public resolver拒coverage_expired；新源按实际pin解析同一时点completed target=10/30，反例/正例已落盘。
+
+本次只读网络来自用户授权TQ日历准备，不启动HTTP服务。此前信号记录中“禁止所有HTTP”的措辞已纠正并更新该记录自己的artifact SHA；信号代码/输入/结果未改。
+
+## 真实来源与凭证读取
+
+已检查现有TqReadOnlyBackend.fetch_mapping→Stage173 _fetch_mapping_rows：只读取进程内vn.py SETTINGS，不自行定位stable文件。新树空.vntrader不足以提供TQ身份，不能机械声称已读stable。
+
+本次独立进程从实际/Users/mac/Desktop/person/vnpy_production_live/.vntrader/vt_setting.json只读两datafeed字段，自有0600验证通过；只进入内存SETTINGS，未打印值、未写回、未复制凭证。日志禁用debug；auth response/token/username均不保存。
+
+直接复用当前安装TqAuth.login+TqContCalendar同接口，未构造TqApi/TqSim、CTP或账户。HTTP allowlist仅TQ auth POST与官方shinny_chinese_holiday.json、continuous_table.json两个GET；TLS验证保留。两个实际HTTP200原response已private0600/复制后0400保存，附observed_at/Date/ETag等非敏感headers和SHA。holiday文件6036 bytes/SHA ce629194f931068269fac0ec7f1a510764b4204310f42b6a8508f447d374b69a；continuous表159577 bytes/SHA cb4fae0a9afaeb748bbde8bb63a57fad323770f3ca86ad016ad695516cbd717d。实际holiday年份覆盖2003–2026，已验证本次range完全在覆盖年内。
+
+日历语义为安装TQSDK用其vendor真实holiday表与周末规则计算；不是调用方猜bdate_range。未来主连列由vendor表延续，仅作calendar source，不当作未来真实执行合约/行情。固定19列完整；未新增或回填任何日K。
+
+## 独立完整数据generation
+
+原5来源只读copy2到新私有inactive路径，不硬链接、不改oldapproved、不放active production-live/runtime：
+
+/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8
+
+同目录真实forward_calendar.csv SHA 46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8。expected_hashes按真实文件名含daily.sqlite/mapping.csv/physical_epoch_daily.csv/metadata.csv/receipt.json/forward_calendar.csv，避免别名forward_calendar或外部文件让LocalBackend._market_stats解析root/name失败。
+
+market_context_fragment.json仅包含market_data接线片段，不是完整live context或生产五件套。calendar_generation_source_receipt.json单列新calendar来源与原五pin；原receipt.json原字节保留，只继承它的有界source身份，不冒充本次production qualified。原始calendar两response与实际capture receipt也保存在新generation，原研究路径仅作为provenance，不作为市场读入依赖。
+
+五个源copy前/后及原snapshot前/后SHA相同，SQLite readonly integrity_check=ok且原源无未checkpoint sidecar。source资产各自0400、private目录0700。
+
+## 实际公共组件接入验证
+
+- 原public resolve_completed_target：Monday2026-11-02 09:00，旧calendar严格coverage_expired；新真实calendar→2026-10-30。
+- 实际LocalEvidenceBackend._market_stats：目录+6真实basename文件共7项成功；无symlink。
+- 实际LocalEvidenceBackend.load_inputs(preview=True)市场部分成功缓存，严格SQL/CSV OHLCV+closeOI parity392382条、0重复/0不一致；固定19主力完整，目标185个positive contractbars；max bar仍10/30，不存在11/2或futurebar。AM输入历史仍是完全相同原五源。
+- 完整load_inputs随后在真实broker source缺失处BrokerEvidenceError阻断：未mock返回broker成功、未造账户/flat回执，不声称整个实盘backend已可用。
+- 没有active context写入/activation/Git/CTP/send/cancel/SMTP/行情日K下载/金融回测。
+
+## Root接线与周一边界
+
+Root可采用新market_context_fragment里的asset_root/forward_calendar/expected_hashes，经自己的context CAS与资格流程接线；不要仅把外部calendar塞旧asset_root。原五pin保持：
+
+- daily.sqlite：fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4
+- forward_calendar.csv：46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8
+- mapping.csv：2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204
+- metadata.csv：b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22
+- physical_epoch_daily.csv：130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24
+- receipt.json：5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1
+
+这只解决前向calendar覆盖和独立市场输入路径，不解决实际CTP、人工cash review或生产qualification。周一09:00解析的是已完成10/30；11/2收盘后仍须真实更新11/2 OHLCV/closeOI/epoch并取得实际held集合，不得用calendar表制造新日K。
+
+过拟合：否，未改规则/alpha/参数。继续价值：是，修复确定的calendar过期阻断并消除部署对原研究数据目录的读取依赖；后续价值仅在root实际资格/账户核验。金融结果新增/修改/删除均无，各收益/回撤/Sharpe等不适用。
+
+证据：Stage018_signal_scope_calendar_generation_receipt.json、Stage018_signal_scope_calendar_resolution_proof.json、Stage018_signal_scope_complete_market_generation_receipt.json及对应脚本/日志。实际source来源可追溯，但production_qualified=false。

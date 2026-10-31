@@ -1,0 +1,6 @@
+PHASE strict_read_inputs {'seconds': 16.186231666011736}
+PHASE build_frozen_runtime {'seconds': 8.90823783306405}
+PHASE pure_am_warmup_before_target {'seconds': 37.77969870902598}
+PHASE single_completed_day {'seconds': 34.57224837504327}
+PRELIMINARY_INTENTS []
+SIGNAL_SCOPE_SUMMARY {"native_signals": [], "intents": [], "candidate_snapshots": [], "result_file": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_20261030_result.json"}

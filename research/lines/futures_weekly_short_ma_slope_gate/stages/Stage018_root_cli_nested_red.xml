@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.116" timestamp="2026-11-01T04:47:02.645644+08:00" hostname="macdeMacBook-Pro.local"><testcase classname="tests.test_weekly19_manual_cash_cli.ManualCashCliTest" name="test_malformed_nested_review_is_blocked_without_traceback_or_private_text" time="0.002"><failure message="TypeError: SECRET_NESTED_INPUT">self = &lt;test_weekly19_manual_cash_cli.ManualCashCliTest testMethod=test_malformed_nested_review_is_blocked_without_traceback_or_private_text&gt;
+
+    def test_malformed_nested_review_is_blocked_without_traceback_or_private_text(self):
+     with patch.object(cli,'prepare_operator_review',side_effect=TypeError('SECRET_NESTED_INPUT'))as prepare,\
+      patch.object(cli,'write_and_publish_operator_review')as publish:
+&gt;     code,result,_,_=self.run_cli(self.confirm_args())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_weekly19_manual_cash_cli.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_weekly19_manual_cash_cli.py:25: in run_cli
+    code=cli.main(self.base+extra)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py:62: in main
+    envelope=prepare_operator_review(backend,review,operator_id=args.operator_id,review_id=args.review_id,now=now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1124: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;MagicMock name='prepare_operator_review' id='4479214672'&gt;
+args = (&lt;Mock id='4479213968'&gt;, {'cash_verification_mode': 'operator_manual_v1', 'schema': 'weekly19.live-context.v1'})
+kwargs = {'now': datetime.datetime(2026, 11, 1, 4, 47, 2, 702459, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'operator_id': 'operator-fixture', 'review_id': 'review-fixture'}
+effect = TypeError('SECRET_NESTED_INPUT')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+&gt;               raise effect
+E               TypeError: SECRET_NESTED_INPUT
+
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1183: TypeError</failure></testcase></testsuite></testsuites>

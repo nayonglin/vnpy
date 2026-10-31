@@ -3,6 +3,12 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'examples/portfolio_backtesting'))
 import qmt_roll_weekly19_official_config as cfg
 class PolicyTest(unittest.TestCase):
+ def test_live_cash_verification_is_explicitly_operator_manual(self):
+  policy=cfg.build_weekly19_policy_manifest()['execution_policy']
+  self.assertEqual(policy['cash_verification_mode'],'operator_manual_v1')
+  self.assertEqual(policy['funding_credit'],'operator_review_of_actual_broker_cashflow_only')
+  self.assertEqual(policy['risk_capital'],'actual_trading_account_equity_including_mark_to_market')
+  self.assertFalse(policy['funding_transfer_api_enabled'])
  def test_full_frozen_settings_match_after_only_asset_resolution(self):
   raw=json.loads((cfg.ASSETS/'actual_settings.json').read_text())['settings'];actual=cfg.build_weekly19_strategy_overrides()
   self.assertEqual(set(raw),set(actual))

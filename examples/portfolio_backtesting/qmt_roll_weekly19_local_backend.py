@@ -70,6 +70,8 @@ class LocalEvidenceBackend:
    official_version=PROFILE.official_version,capital=PROFILE.capital,capital_label=PROFILE.capital_label)
   if blockers:raise LocalBackendError('weekly19_activation_receipt_invalid')
   if identity.get('material_release_id')!=self.config['material_release_id']:raise LocalBackendError('weekly19_context_release_mismatch')
+  from qmt_roll_weekly19_manual_cash import assert_manual_mode
+  assert_manual_mode(self)
   self._gate=dict(manifest=manifest,qualification=evidence,identity=identity,production_source_commit=head)
   return deepcopy(self._gate)
  def _broker_policy(self,now):
@@ -152,6 +154,39 @@ class LocalEvidenceBackend:
   funds.validate_state(state);original=deepcopy(state);updated=deepcopy(state);self.cash_source_blocker=None
   sources=self.config.get('cash_sources',{})
   current=funds._broker(snapshot['account'],updated,now);checkpoint=updated['cashflow_checkpoint']
+  mode=self.config.get('cash_verification_mode','broker_automatic_v1'if self.preview else None)
+  if mode=='operator_manual_v1':
+   from qmt_roll_weekly19_manual_cash import assert_manual_mode,load_private_manual_review,_calendar,ManualCashError
+   try:
+    if not self.preview:assert_manual_mode(self)
+    if not isinstance(sources,dict):raise ManualCashError('manual_cash_sources_object_required')
+    references=sources.get('manual_reviews',[])
+    if not isinstance(references,list)or len(references)>1000:raise ManualCashError('manual_cash_reference_list_invalid')
+    if checkpoint is None:
+     if references:raise ManualCashError('initial_real_cash_observation_required_before_manual_review')
+     return funds.begin_cash_observation(updated,snapshot['account'],now)
+    # Load EVERY reference before changing even the candidate state. A later
+    # invalid reference cannot be hidden by a successful earlier review.
+    records={}
+    for reference in references:
+     record=load_private_manual_review(reference)
+     raw=funds._parse(record,'weekly19.operator-cash-review.v1','operator_manual')
+     prior=records.setdefault(raw['record_id'],record)
+     if prior!=record:raise ManualCashError('manual_cash_review_id_content_conflict')
+    new=[key for key in records if key not in updated.get('manual_cash_reviews',{})]
+    if len(new)>1:raise ManualCashError('one_new_manual_review_per_actor_commit_required')
+    calendar=_calendar(self)if records else None
+    for record in records.values():
+     updated=funds.apply_operator_cash_review(updated,record,snapshot['account'],now,trading_calendar=calendar)
+    funds._cashflow_match(updated,current)
+    return updated
+   except (ValueError,OSError)as exc:
+    reason=str(exc)if isinstance(exc,(funds.FundingError,ManualCashError))else type(exc).__name__
+    self.cash_source_blocker='manual_cash_review_pending:'+reason
+    return original
+  if mode!='broker_automatic_v1'or not self.preview:
+   self.cash_source_blocker='manual_cash_review_pending:immutable_cash_verification_mode_not_configured'
+   return original
   if checkpoint is None:
    return funds.begin_cash_observation(updated,snapshot['account'],now)
   try:

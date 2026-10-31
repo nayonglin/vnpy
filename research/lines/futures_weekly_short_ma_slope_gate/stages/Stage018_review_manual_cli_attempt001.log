@@ -1,0 +1,30 @@
+F
+======================================================================
+FAIL: test_malformed_topup_container_returns_redacted_blocked_without_publication (__main__.ManualCliIndependent.test_malformed_topup_container_returns_redacted_blocked_without_publication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_cli_adversarial.py", line 20, in test_malformed_topup_container_returns_redacted_blocked_without_publication
+    try:code,result=self.invoke(bad)
+                    ^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_cli_adversarial.py", line 16, in invoke
+    code=cli.main(self.base+self.confirm)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py", line 62, in main
+    envelope=prepare_operator_review(backend,review,operator_id=args.operator_id,review_id=args.review_id,now=now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 171, in prepare_operator_review
+    for row in review_input['topups']:
+TypeError: 'NoneType' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_cli_adversarial.py", line 21, in test_malformed_topup_container_returns_redacted_blocked_without_publication
+    except BaseException as exc:self.fail('CLI leaked an uncaught '+type(exc).__name__+' for ordinary malformed JSON container')
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CLI leaked an uncaught TypeError for ordinary malformed JSON container
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (failures=1)

@@ -1,0 +1,14 @@
+======================================================================
+ERROR: test_original_decision_cash_history_can_cover_two_separate_manual_commits (tests.test_weekly19_manual_cash.ManualFundingTests.test_original_decision_cash_history_can_cover_two_separate_manual_commits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 143, in test_original_decision_cash_history_can_cover_two_separate_manual_commits
+    FundingStore._forward_ledger(state,full)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py", line 164, in _forward_ledger
+    raise FundingError('store_one_manual_review_per_commit_required')
+qmt_roll_weekly19_funding.FundingError: store_one_manual_review_per_commit_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

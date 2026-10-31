@@ -1,0 +1,104 @@
+{
+  "active_context_writes": 0,
+  "actual_calendar_sources": [
+    {
+      "headers": {
+        "Content-Type": "application/json",
+        "Date": "Sat, 31 Oct 2026 20:32:30 GMT",
+        "Last-Modified": "Wed, 05 Nov 2025 07:59:06 GMT"
+      },
+      "observed_at": "2026-11-01T04:33:21.236817+08:00",
+      "raw_bytes": 6036,
+      "raw_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/raw_calendar/shinny_chinese_holiday.json",
+      "raw_sha256": "ce629194f931068269fac0ec7f1a510764b4204310f42b6a8508f447d374b69a",
+      "status_code": 200,
+      "url": "https://files.shinnytech.com/shinny_chinese_holiday.json"
+    },
+    {
+      "headers": {
+        "Content-Type": "application/json",
+        "Date": "Sat, 31 Oct 2026 20:32:32 GMT",
+        "Last-Modified": "Fri, 30 Oct 2026 08:45:43 GMT"
+      },
+      "observed_at": "2026-11-01T04:33:23.246909+08:00",
+      "raw_bytes": 159577,
+      "raw_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/raw_calendar/continuous_table.json",
+      "raw_sha256": "cb4fae0a9afaeb748bbde8bb63a57fad323770f3ca86ad016ad695516cbd717d",
+      "status_code": 200,
+      "url": "https://files.shinnytech.com/continuous_table.json"
+    }
+  ],
+  "all_generation_pins_verified": true,
+  "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+  "calendar_capture_receipt_sha256": "ce20bea204a2f78bef1233ca9af5a93ae092231b82c8fcfaea5bf4a78962ea15",
+  "calendar_generation_source_receipt_sha256": "d55d67682bfef9d82065022b92ab77f02dffbabfa39778776cb5768f9cd7ac1e",
+  "ctp_connections": 0,
+  "financial_replays": 0,
+  "full_load_inputs_broker_boundary": {
+    "error_type": "BrokerEvidenceError",
+    "status": "blocked_as_required_actual_broker_source_missing",
+    "success_not_claimed": true
+  },
+  "market_context_fragment_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/market_context_fragment.json",
+  "market_context_fragment_sha256": "df35793a7390b5ae2419dc815fddabb176598db95b8821004ed7ba7b7dc6cd1c",
+  "market_data": {
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "expected_hashes": {
+      "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "forward_calendar.csv": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+      "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+      "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+    },
+    "forward_calendar": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/forward_calendar.csv"
+  },
+  "market_validation": {
+    "actual_load_inputs_market_cache_admitted": true,
+    "actual_local_backend_market_stats_entries": 7,
+    "conditional_read": true,
+    "fixed_products": 19,
+    "forward_calendar_max": "2026-11-20",
+    "forward_calendar_next": "2026-11-02",
+    "max_bar_date": "2026-10-30",
+    "monday_0900_resolved_completed_target": "2026-10-30",
+    "no_future_bar": true,
+    "sql_physical_parity": {
+      "checked_rows": 392382,
+      "duplicates": 0,
+      "mismatches": 0,
+      "positive_source_keys": 392382,
+      "production_qualified": false,
+      "reader": "python_sqlite3_readonly_explicit_DTO_v1"
+    },
+    "target_contract_bars": 185,
+    "target_main_coverage": 19
+  },
+  "order_api_calls": 0,
+  "original_five_hashes_after": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "original_five_hashes_before": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "original_five_unchanged": true,
+  "production_qualified": false,
+  "recorded_at": "2026-11-01T04:35:52.958032+08:00",
+  "schema": "Stage018.inactive-complete-market-generation.v1",
+  "scope": "inactive_install_preparation_no_broker_or_activation",
+  "source_code_hashes": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "de93c676f614a0367979d18e2ce4ac5e839926f4db77b4a4dc67677d6bb6ad99",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_full_market_generation.py": "e8095e63690d9483165b791e00cd7ba2f41726ebd3a217f63cd76ecff99e8d62"
+  },
+  "source_receipt_identity": "original_five_source_receipt_bytes_preserved; additional_actual_TQ_calendar_receipt_is_separate_and_unqualified"
+}

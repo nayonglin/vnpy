@@ -1341,5 +1341,141 @@ print("CONTRACT=" + json.dumps({
                 )
 
 
+class Weekly19TargetRoutingTest(unittest.TestCase):
+    """Private pinned calendar fixtures, never a production/broker authority."""
+    def setUp(self):
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+        from zoneinfo import ZoneInfo
+        import hashlib
+        self.tmp = tempfile.TemporaryDirectory(dir='/private/tmp')
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name).resolve(); self.root.chmod(0o700)
+        self.runtime = self.root / 'runtime'; self.context = self.runtime / 'weekly19/context.json'
+        self.context.parent.mkdir(parents=True, mode=0o700)
+        self.assets = self.root / 'market'; self.assets.mkdir(mode=0o700)
+        self.pins = {}
+        for name in ('daily.sqlite','mapping.csv','physical_epoch_daily.csv','metadata.csv','receipt.json'):
+            path = self.assets/name; path.write_text('offline-source-pin:'+name)
+            self.pins[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        self.calendar = self.assets/'forward_calendar.csv'
+        self.calendar.write_text('date\n2026-10-29\n2026-10-30\n2026-11-02\n2026-11-03\n2026-11-04\n2026-11-05\n2026-11-06\n2026-11-09\n2026-11-10\n')
+        self.pins['forward_calendar.csv'] = hashlib.sha256(self.calendar.read_bytes()).hexdigest()
+        self.cfg = dict(schema='weekly19.live-context.v1',execution_profile=WEEKLY19_15W_R150K_PROFILE.profile_key,
+            account_key='a'*64,material_release_id='OFFLINE-weekly945',cold_start_date='2026-10-31',
+            market_data=dict(asset_root=str(self.assets),forward_calendar=str(self.calendar),expected_hashes=self.pins),cash_sources={})
+        self.write_context()
+        self.monday = datetime(2026,11,2,9,0,tzinfo=ZoneInfo('Asia/Shanghai'))
+        p = patch.object(launcher,'PRODUCTION_RUNTIME_ROOT',self.runtime); p.start(); self.addCleanup(p.stop)
+        p = patch.object(launcher,'resolve_configured_execution_profile',return_value=WEEKLY19_15W_R150K_PROFILE); p.start(); self.addCleanup(p.stop)
+        p = patch.object(launcher.os,'execve',side_effect=AssertionError('no real exec')); p.start(); self.addCleanup(p.stop)
+
+    def write_context(self):
+        self.context.write_text(json.dumps(self.cfg)); self.context.chmod(0o600)
+
+    def resolve(self, now=None):
+        return launcher._resolve_target_date({},now=now or self.monday)
+
+    def receipt(self, target='2026-10-30', following='2026-11-02'):
+        return dict(execution_profile=self.cfg['execution_profile'],material_release_id=self.cfg['material_release_id'],
+            target_cutoff_date=target,data_receipt=dict(trading_date=target,calendar_provenance=dict(sha256=self.pins['forward_calendar.csv']),
+                source_hashes={k:v for k,v in self.pins.items() if k!='forward_calendar.csv'}),
+            data_inventory=dict(semantic_freshness=dict(next_trading_session_date=following)))
+
+    def test_weekly_target_never_calls_stage922_or_old_mapping_calendar(self):
+        class Frozen(datetime):
+            @classmethod
+            def now(cls,tz=None): return self.monday if tz is None else self.monday.astimezone(tz)
+        with patch.object(launcher,'datetime',Frozen),patch.object(launcher.subprocess,'run',side_effect=AssertionError('weekly must never run C9 Stage922')):
+            target,payload=launcher._resolve_target_date({})
+        self.assertEqual(target,'2026-10-30')
+        self.assertEqual(payload['resolver_evidence']['trading_calendar_source'],'weekly19_private_context_pinned_market_calendar')
+        self.assertEqual(payload['cold_start_date'],'2026-10-31')
+        self.assertNotIn('official_live_shadow_analysis_start_date',payload)
+
+    def test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean(self):
+        target,payload=self.resolve()
+        with patch.object(launcher,'OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE','2026-07-23'):
+            self.assertTrue(launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=payload))
+        forged=json.loads(json.dumps(payload)); forged['cold_start_date']='2026-07-23'
+        with self.assertRaises(launcher.ProductionSessionLaunchError):
+            launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=forged)
+        forged=json.loads(json.dumps(payload)); forged['target_before_cold_start']=0
+        with self.assertRaises(launcher.ProductionSessionLaunchError):
+            launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=forged)
+
+    def test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed(self):
+        for key,value in [('execution_profile','c9-15w'),('cold_start_date','2026-99-99')]:
+            old=self.cfg[key];self.cfg[key]=value;self.write_context()
+            with self.assertRaises(launcher.ProductionSessionLaunchError):self.resolve()
+            self.cfg[key]=old;self.write_context()
+        self.calendar.write_text(self.calendar.read_text()+'2026-11-11\n')
+        with self.assertRaises(launcher.ProductionSessionLaunchError):self.resolve()
+
+    def test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift(self):
+        _,payload=self.resolve()
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(),resolver_payload=payload,now=self.monday),'authorized_trading_session')
+        bad=self.receipt(following='2026-11-03')
+        with self.assertRaises(launcher.ProductionSessionLaunchError):launcher._validate_target_date_calendar_window(receipt=bad,resolver_payload=payload,now=self.monday)
+        bad=self.receipt();bad['data_receipt']['calendar_provenance']['sha256']='f'*64
+        with self.assertRaises(launcher.ProductionSessionLaunchError):launcher._validate_target_date_calendar_window(receipt=bad,resolver_payload=payload,now=self.monday)
+        self.cfg['cold_start_date']='2026-11-01';self.write_context()
+        with self.assertRaises(launcher.ProductionSessionLaunchError):launcher._validate_target_date_calendar_window(receipt=self.receipt(),resolver_payload=payload,now=self.monday)
+
+    def test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context(self):
+        target,payload=self.resolve();self.cfg['cash_sources']={'manual_review':{'path':'not-admitted-reference','sha256':'b'*64}};self.write_context()
+        self.assertTrue(launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=payload))
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(),resolver_payload=payload,now=self.monday),'authorized_trading_session')
+
+    def test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules(self):
+        from zoneinfo import ZoneInfo
+        early=self.monday.replace(hour=15,minute=30);target,payload=self.resolve(early)
+        self.assertEqual(target,'2026-10-30')
+        night=self.monday.replace(hour=21);target,payload=self.resolve(night)
+        self.assertEqual(target,'2026-11-02');self.assertFalse(launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=payload))
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(target,'2026-11-03'),resolver_payload=payload,now=night),'authorized_trading_session')
+        saturday=datetime(2026,11,7,1,0,tzinfo=ZoneInfo('Asia/Shanghai'));target,payload=self.resolve(saturday)
+        with patch.object(launcher,'_active_session_names',return_value=('late_night',)):
+            self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(target,'2026-11-09'),resolver_payload=payload,now=saturday),'authorized_trading_session')
+        later=saturday.replace(hour=10);_,payload=self.resolve(later)
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(target,'2026-11-09'),resolver_payload=payload,now=later),'skipped_non_trading_day')
+
+    def test_weekly_stale_resolution_and_legacy_payload_are_rejected(self):
+        _,payload=self.resolve()
+        with self.assertRaises(launcher.ProductionSessionLaunchError):launcher._validate_target_date_calendar_window(receipt=self.receipt(),resolver_payload=payload,now=self.monday.replace(day=3))
+        payload['resolver_evidence']['trading_calendar_source']='main_contract_mapping_trading_calendar'
+        with self.assertRaises(launcher.ProductionSessionLaunchError):launcher._target_is_before_live_shadow_start(target_date='2026-10-30',resolver_payload=payload)
+
+    def test_weekly_five_source_drift_and_insecure_context_are_rejected(self):
+        path=self.assets/'metadata.csv';old=path.read_bytes();path.write_bytes(old+b'changed')
+        with self.assertRaises(launcher.ProductionSessionLaunchError):self.resolve()
+        path.write_bytes(old);self.context.chmod(0o644)
+        with self.assertRaises(launcher.ProductionSessionLaunchError):self.resolve()
+
+    def test_weekly_holiday_is_not_guessed_as_a_weekday_session(self):
+        import hashlib
+        self.calendar.write_text(self.calendar.read_text().replace('2026-11-02\n',''))
+        self.pins['forward_calendar.csv']=hashlib.sha256(self.calendar.read_bytes()).hexdigest();self.write_context()
+        target,payload=self.resolve();self.assertEqual(target,'2026-10-30')
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(target,'2026-11-03'),resolver_payload=payload,now=self.monday),'skipped_non_trading_day')
+        tuesday=self.monday.replace(day=3);target,payload=self.resolve(tuesday)
+        self.assertEqual(launcher._validate_target_date_calendar_window(receipt=self.receipt(target,'2026-11-03'),resolver_payload=payload,now=tuesday),'authorized_trading_session')
+
+    def test_weekly_post_cold_target_still_requires_original_daily_receipt_gate(self):
+        target,payload=self.resolve(self.monday.replace(hour=21));self.assertFalse(launcher._target_is_before_live_shadow_start(target_date=target,resolver_payload=payload))
+        import qmt_roll_weekly19_daily_receipt as daily_module
+        with patch.object(daily_module,'load_and_validate_weekly19_daily_receipt',side_effect=daily_module.Weekly19DailyReceiptError('actual receipt missing')) as validate:
+            with self.assertRaisesRegex(daily_module.Weekly19DailyReceiptError,'actual receipt missing'):
+                launcher._validate_daily_data_readiness(manifest=dict(source_commit='a'*40,manifest_sha256='b'*64),target_date=target,resolver_payload=payload)
+        validate.assert_called_once()
+        self.assertEqual(validate.call_args.kwargs['context_file'],self.context)
+
+    def test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec(self):
+        target,payload=self.resolve();args=argparse.Namespace(session='day',release_manifest=str(launcher.PRODUCTION_RELEASE_MANIFEST),activation_receipt=str(launcher.PRODUCTION_ACTIVATION_RECEIPT),stage179_runtime_root=str(self.runtime),output_root=str(launcher.PRODUCTION_OUTPUT_ROOT),signal_input_root=str(launcher.PRODUCTION_SIGNAL_INPUT_ROOT))
+        output=io.StringIO()
+        with patch.object(launcher.os,'getppid',return_value=1),patch.dict(os.environ,{'XPC_SERVICE_NAME':launcher.PRODUCTION_LABELS['day']}),patch.object(launcher,'_assert_stable_deploy_root'),patch.object(launcher,'_validate_current_owned_launchd_surface',return_value=(True,'fixture')),patch.object(launcher,'_validate_activation_success_barrier',return_value=(True,'fixture')),patch.object(launcher,'_session_is_active',return_value=True),patch.object(launcher,'_assert_canonical_paths'),patch.object(launcher,'_validate_release_and_receipt',return_value=dict(source_commit='a'*40,manifest_sha256='b'*64)),patch.object(launcher,'_build_preflight_environment',return_value={}),patch.object(launcher,'_resolve_target_date',return_value=(target,payload)),patch.object(launcher,'_validate_code_qualification'),patch.object(launcher,'_validate_daily_data_readiness') as daily,patch.object(launcher,'_build_production_environment') as environment,redirect_stdout(output):
+            launcher.launch_session(args)
+        result=json.loads(output.getvalue());self.assertEqual(result['launcher_status'],'skipped_before_live_shadow_start');self.assertEqual(result['weekly19_context_cold_start_date'],'2026-10-31');self.assertEqual(result['order_api_called_count'],0)
+        daily.assert_not_called();environment.assert_not_called()
+
 if __name__ == "__main__":
     unittest.main()

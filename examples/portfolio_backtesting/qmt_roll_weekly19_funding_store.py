@@ -16,7 +16,7 @@ from pathlib import Path
 import stat
 import uuid
 
-from qmt_roll_weekly19_funding import FundingError, _canonical, _time, upgrade_funding_state, validate_state
+from qmt_roll_weekly19_funding import FundingError, _canonical, _time, _hash, _parse, upgrade_funding_state, validate_state
 
 
 class FundingStore:
@@ -152,13 +152,23 @@ class FundingStore:
                    ('account_key', 'material_release_id', 'cold_start_date', 'initial_trading_fen', 'reserve_initial_fen'))
 
     @staticmethod
-    def _forward_ledger(current, following):
+    def _forward_ledger(current, following, *, strict_manual_parent=False):
         if current==following: return
         if current['schema']=='weekly19.external-funding.v1':
             if following!=upgrade_funding_state(current):
                 raise FundingError('store_explicit_v2_migration_required')
         elif following['schema']!='weekly19.external-funding.v2' or following.get('migration')!=current.get('migration'):
             raise FundingError('store_schema_downgrade_or_migration_rewrite')
+        new_manual=[row for key,row in following.get('manual_cash_reviews',{}).items()if key not in current.get('manual_cash_reviews',{})]
+        if strict_manual_parent and len(new_manual)>1:
+            raise FundingError('store_one_manual_review_per_commit_required')
+        if strict_manual_parent and new_manual:
+            raw=_parse(new_manual[0],'weekly19.operator-cash-review.v1','operator_manual')
+            if (raw['before_funding_revision']!=current['revision'] or raw['before_funding_sha256']!=_hash(current)
+                    or raw['before_checkpoint']!=current['cashflow_checkpoint']):
+                raise FundingError('store_manual_review_parent_mismatch')
+        if any(following.get('manual_cash_reviews',{}).get(key)!=row for key,row in current.get('manual_cash_reviews',{}).items()):
+            raise FundingError('store_manual_review_ledger_rollback')
         if current['schema']=='weekly19.external-funding.v2':
             if any(following['retirements'].get(rid)!=proof for rid,proof in current['retirements'].items()):
                 raise FundingError('store_retirement_ledger_rollback')
@@ -178,7 +188,9 @@ class FundingStore:
                     or _time(new_cp['observed_at']) < _time(old_cp['observed_at'])):
                 raise FundingError('store_checkpoint_rollback_forbidden')
             if new_cp['trading_day'] == old_cp['trading_day']:
-                if (new_cp['withdraw_fen'] != old_cp['withdraw_fen']
+                new_manual=[row for key,row in following.get('manual_cash_reviews',{}).items()if key not in current.get('manual_cash_reviews',{})]
+                reviewed_withdrawal=any(row['after_checkpoint']==new_cp for row in new_manual)
+                if ((new_cp['withdraw_fen'] != old_cp['withdraw_fen']and not reviewed_withdrawal)
                         or new_cp['deposit_fen'] - old_cp['deposit_fen']
                         != following['confirmed_topup_fen'] - current['confirmed_topup_fen']):
                     raise FundingError('store_checkpoint_cashflow_invalid')
@@ -204,7 +216,7 @@ class FundingStore:
         elif journal['revision'] != current['revision'] + 1 or not self._same_identity(current, journal):
             raise FundingError('journal_revision_or_identity_invalid')
         if current is not None:
-            self._forward_ledger(current, journal)
+            self._forward_ledger(current, journal, strict_manual_parent=True)
         self._atomic(directory, self.name, journal)
         os.unlink(self.journal_name, dir_fd=directory)
         os.fsync(directory)
@@ -243,7 +255,7 @@ class FundingStore:
                 raise FundingError('next_revision_required')
             if not self._same_identity(current, state):
                 raise FundingError('store_identity_change_forbidden')
-            self._forward_ledger(current, state)
+            self._forward_ledger(current, state, strict_manual_parent=True)
             self._atomic(directory, self.journal_name, state)
             self._atomic(directory, self.name, state)
             os.unlink(self.journal_name, dir_fd=directory)

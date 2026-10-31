@@ -1,0 +1,38 @@
+======================================================================
+ERROR: test_existing_bridge_consumes_manual_day_review_with_same_actor_and_atomic_bundle (tests.test_weekly19_manual_cash.ManualActorIntegrationTests.test_existing_bridge_consumes_manual_day_review_with_same_actor_and_atomic_bundle)
+Actual warm reader/store/actor chain; literal authority is NOT production.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 243, in test_existing_bridge_consumes_manual_day_review_with_same_actor_and_atomic_bundle
+    native=bridge.native_capture_factory(transport_context=fx.context);native.admit_completed_startup(transport_context=fx.context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py", line 468, in native_capture_factory
+    try:native.__init__(self,transport_context)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py", line 504, in __init__
+    owner._commit(remember)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py", line 138, in _commit
+    before=self.runtime_actor.export_state();result={}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 1602, in export_state
+    strategy=_pack_section(_encode(strategy,shared=shared)), engine=_pack_section(_encode(engine,shared=shared)),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 126, in _encode
+    'value': [[enc(k), enc(v)] for k, v in sorted(value.items(),key=lambda item:_json(enc(item[0])))]}
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 126, in <listcomp>
+    'value': [[enc(k), enc(v)] for k, v in sorted(value.items(),key=lambda item:_json(enc(item[0])))]}
+                       ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 106, in <lambda>
+    enc = lambda obj: _encode(obj, shared=shared)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 134, in _encode
+    _fail('unsupported_durable_state_type:' + type(value).__name__)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 45, in _fail
+    raise RuntimeContractError(reason)
+qmt_roll_weekly19_runtime.RuntimeContractError: unsupported_durable_state_type:MagicMock
+
+----------------------------------------------------------------------
+Ran 1 test in 0.412s
+
+FAILED (errors=1)

@@ -275,12 +275,14 @@ def validate_state(state: Any) -> None:
             _text(row['statement_id'], 'statement_id')
             if (row['following']['trading_day'] <= row['closing']['trading_day']
                     or _time(row['following']['observed_at']) < _time(row['closing']['observed_at'])
-                    or row['following']['deposit_fen'] != 0 or row['following']['withdraw_fen'] != 0
+                    or (row.get('source_kind')!='operator_manual'and
+                        (row['following']['deposit_fen'] != 0 or row['following']['withdraw_fen'] != 0))
                     or (previous_following and row['closing']['trading_day'] != previous_following['trading_day'])):
                 _fail('day_roll_chain_invalid')
             previous_following = row['following']
         if previous_following and (cp is None or cp['trading_day'] != previous_following['trading_day']):
             _fail('day_roll_checkpoint_invalid')
+        _validate_operator_cash_ledger(state)
         if is_v2:
             if set(state['request_attempts'])!=set(state['admitted_entries']):
                 _fail('admission_attempt_ledger_keys_invalid')
@@ -337,7 +339,8 @@ def _request_chain(state,request,checkpoint):
         if len(candidates)!=1: _fail('retirement_continuity_chain_incomplete')
         row=candidates[0]; closing=row['closing']
         if (_time(closing['observed_at'])<_time(cursor['observed_at'])
-                or closing['withdraw_fen']!=cursor['withdraw_fen'] or closing['deposit_fen']<cursor['deposit_fen']):
+                or (closing['withdraw_fen']<cursor['withdraw_fen']if row.get('source_kind')=='operator_manual'else closing['withdraw_fen']!=cursor['withdraw_fen'])
+                or closing['deposit_fen']<cursor['deposit_fen']):
             _fail('retirement_continuity_chain_invalid')
         hashes.append(_hash(row)); cursor=row['following']
     active=request['active_baseline']
@@ -685,3 +688,220 @@ def reconcile_trading_day(state: dict, closing_broker: dict, next_broker: dict, 
         return _finish(state, changed)
     except (KeyError, TypeError, AttributeError):
         _fail('cashflow_day_close_fields_missing')
+
+# Explicit operator attestation; never a bank callback, capture HMAC or order permission.
+OPERATOR_CASH_ASSERTION = 'I_HAVE_MANUALLY_VERIFIED_ACTUAL_CASHFLOWS_AND_OFFSITE_RESERVE'
+OPERATOR_REVIEW_SECONDS = 1800
+
+def _operator_review(envelope, state):
+    raw = _parse(envelope, 'weekly19.operator-cash-review.v1', 'operator_manual')
+    _binding(raw, state)
+    try:
+        for key in ('record_id','operator_id','os_user','notes'):
+            _text(raw[key], key)
+        _integer(raw['os_uid'])
+        if (raw['assertion'] != OPERATOR_CASH_ASSERTION or raw['no_unlisted_cashflows'] is not True
+                or raw['broker_automatically_verified'] is not False or raw['production_qualified'] is not False
+                or raw.get('source_qualified', False) is not False):
+            _fail('operator_cash_attestation_required')
+        created, expires = _time(raw['created_at']), _time(raw['expires_at'])
+        if not 0 < (expires-created).total_seconds() <= OPERATOR_REVIEW_SECONDS:
+            _fail('operator_review_acceptance_window_invalid')
+        _integer(raw['before_funding_revision']); _sha(raw['before_funding_sha256'])
+        _checkpoint_valid(raw['before_checkpoint'])
+        if _hash(raw['before_checkpoint']) != _sha(raw['before_checkpoint_sha256']):
+            _fail('operator_review_baseline_hash_invalid')
+        reserve = _integer(raw['reserve_remaining_fen_before'])
+        total = _integer(raw['confirmed_topup_fen_before'])
+        if reserve+total != INITIAL_FEN or _integer(raw['expected_reserve_remaining_fen']) > reserve:
+            _fail('operator_review_reserve_conservation_invalid')
+        reviewed = _broker(raw['reviewed_account'],state,created)
+        _money(_parse(raw['reviewed_account'],'weekly19.ctp-account.v1','ctp_account_callback')['Available'],nonnegative=True)
+        if not isinstance(raw['topups'],list) or len(raw['topups'])>1000 or not isinstance(raw['closed_days'],list) or len(raw['closed_days'])>1000:
+            _fail('operator_review_cash_rows_invalid')
+        receipt_ids=[]
+        for row in raw['topups']:
+            if set(row)!={'request_id','receipt_id','amount_fen','occurred_at','trading_day','admitted_entry_ids','target_week_end','source_sha256'}:
+                _fail('operator_topup_fields_invalid')
+            _sha(row['request_id']); _text(row['receipt_id'],'receipt_id'); _integer(row['amount_fen'],1)
+            _time(row['occurred_at']); _day(row['trading_day']); _day(row['target_week_end']); _sha(row['source_sha256'])
+            if not isinstance(row['admitted_entry_ids'],list) or not row['admitted_entry_ids']:
+                _fail('operator_topup_admission_missing')
+            receipt_ids.append(row['receipt_id'])
+        if len(set(receipt_ids))!=len(receipt_ids): _fail('operator_review_receipt_duplicate')
+        dates=[]
+        for row in raw['closed_days']:
+            if set(row)!={'trading_day','final_deposit_fen','final_withdraw_fen','closed_at','statement_reference','cashflows_complete'}:
+                _fail('operator_closed_day_fields_invalid')
+            dates.append(_day(row['trading_day'])); _integer(row['final_deposit_fen']); _integer(row['final_withdraw_fen'])
+            _time(row['closed_at']); _text(row['statement_reference'],'statement_reference')
+            if row['cashflows_complete'] is not True: _fail('operator_closed_day_incomplete')
+        if dates!=sorted(set(dates)): _fail('operator_closed_days_order_invalid')
+        return raw, reviewed
+    except (KeyError,TypeError,AttributeError):
+        _fail('operator_review_fields_missing')
+
+
+def _operator_closing(row):
+    return dict(trading_day=row['trading_day'],observed_at=_time(row['closed_at']).isoformat(),raw_sha256=_hash(row),
+                deposit_fen=row['final_deposit_fen'],withdraw_fen=row['final_withdraw_fen'])
+
+
+def _operator_cash_totals(raw, snapshot):
+    """Revalidate persisted gross facts, not just their self-consistent hashes."""
+    cp=raw['before_checkpoint'];days=[row['trading_day']for row in raw['closed_days']]
+    same=snapshot['trading_day']==cp['trading_day']
+    if (snapshot['trading_day']<cp['trading_day'] or _time(snapshot['observed_at'])<_time(cp['observed_at'])
+            or (same and days) or (not same and (not days or days[0]!=cp['trading_day'] or days[-1]>=snapshot['trading_day']))):
+        _fail('operator_review_day_sequence_invalid')
+    byday={day:0 for day in days+[snapshot['trading_day']]}
+    for row in raw['topups']:
+        if row['trading_day']not in byday: _fail('operator_topup_trading_day_outside_review')
+        byday[row['trading_day']]+=row['amount_fen']
+    previous_time=_time(cp['observed_at'])
+    for row in raw['closed_days']:
+        base_deposit=cp['deposit_fen']if row['trading_day']==cp['trading_day']else 0
+        base_withdraw=cp['withdraw_fen']if row['trading_day']==cp['trading_day']else 0
+        closed=_time(row['closed_at'])
+        if (row['final_deposit_fen']!=base_deposit+byday[row['trading_day']] or row['final_withdraw_fen']<base_withdraw
+                or not previous_time<=closed<=_time(snapshot['observed_at'])):
+            _fail('operator_closed_day_gross_cash_or_time_mismatch')
+        for transfer in raw['topups']:
+            if transfer['trading_day']==row['trading_day']and not previous_time<=_time(transfer['occurred_at'])<=closed:
+                _fail('operator_topup_outside_declared_trading_day_window')
+        previous_time=closed
+    if any(row['trading_day']==snapshot['trading_day']and not previous_time<=_time(row['occurred_at'])<=_time(snapshot['observed_at']) for row in raw['topups']):
+        _fail('operator_topup_outside_declared_trading_day_window')
+    if (snapshot['deposit_fen']!=(cp['deposit_fen']if same else 0)+byday[snapshot['trading_day']]
+            or snapshot['withdraw_fen']<(cp['withdraw_fen']if same else 0)):
+        _fail('operator_review_unlisted_or_regressing_cashflow')
+    if raw['expected_reserve_remaining_fen']!=raw['reserve_remaining_fen_before']-sum(byday.values()):
+        _fail('operator_review_offsite_reserve_mismatch')
+    return byday
+
+
+def _validate_operator_cash_ledger(state):
+    ledger=state.get('manual_cash_reviews',{})
+    if not isinstance(ledger,dict): _fail('operator_review_ledger_invalid')
+    covered_receipts=set();covered_rolls=set()
+    for record_id, item in ledger.items():
+        raw, reviewed=_operator_review(item,state)
+        if record_id!=raw['record_id'] or item.get('source_kind')!='operator_manual': _fail('operator_review_ledger_identity_invalid')
+        applied=_broker(item['applied_account'],state,_time(item['applied_at']))
+        if (_time(item['applied_at'])<_time(raw['created_at']) or _time(item['applied_at'])>=_time(raw['expires_at'])
+                or _time(applied['observed_at'])<_time(reviewed['observed_at'])
+                or any(applied[k]!=reviewed[k] for k in ('trading_day','deposit_fen','withdraw_fen'))
+                or item['after_checkpoint']!=_checkpoint(applied)):
+            _fail('operator_review_applied_source_invalid')
+        _operator_cash_totals(raw,applied)
+        amount=sum(row['amount_fen']for row in raw['topups'])
+        if (item['reserve_remaining_fen_after']!=raw['reserve_remaining_fen_before']-amount
+                or item['confirmed_topup_fen_after']!=raw['confirmed_topup_fen_before']+amount
+                or item['reserve_remaining_fen_after']!=raw['expected_reserve_remaining_fen']):
+            _fail('operator_review_ledger_cash_invalid')
+        for row in raw['topups']:
+            receipt=state['receipts'][row['receipt_id']]
+            if (receipt.get('source_kind')!='operator_manual' or receipt.get('manual_review_id')!=record_id
+                    or receipt['request_id']!=row['request_id'] or receipt['amount_fen']!=row['amount_fen']
+                    or receipt['occurred_at']!=_time(row['occurred_at']).isoformat() or receipt.get('trading_day')!=row['trading_day']
+                    or receipt['raw_sha256']!=item['raw_sha256'] or receipt['broker_sha256']!=item['applied_account']['raw_sha256']
+                    or row['receipt_id'] in covered_receipts):
+                _fail('operator_receipt_ledger_binding_invalid')
+            request=state['requests'][row['request_id']]
+            if (not _time(request['created_at'])<=_time(row['occurred_at'])<=_time(reviewed['observed_at'])
+                    or _time(raw['created_at'])>=_time(request['expires_at'])
+                    or _time(item['applied_at'])>=_time(request['expires_at']) or row['amount_fen']>request['amount_fen']):
+                _fail('operator_receipt_request_window_invalid')
+            if any(row[k]!=request[k] for k in ('admitted_entry_ids','target_week_end','source_sha256')):
+                _fail('operator_receipt_admission_binding_invalid')
+            covered_receipts.add(row['receipt_id'])
+        if raw['closed_days']:
+            index=item['day_roll_index'];_integer(index)
+            roll=state['day_rolls'][index]
+            if (index in covered_rolls or roll.get('source_kind')!='operator_manual' or roll.get('manual_review_id')!=record_id
+                    or roll['closing']!=_operator_closing(raw['closed_days'][0]) or roll['following']!=item['after_checkpoint']
+                    or roll['continuity_sha256']!=item['raw_sha256'] or roll['statement_id']!='operator:'+record_id):
+                _fail('operator_day_roll_ledger_binding_invalid')
+            covered_rolls.add(index)
+        elif item['day_roll_index'] is not None: _fail('operator_day_roll_unexpected')
+    if covered_receipts!={key for key,row in state['receipts'].items()if row.get('source_kind')=='operator_manual'}:
+        _fail('operator_receipt_ledger_coverage_invalid')
+    if covered_rolls!={i for i,row in enumerate(state['day_rolls'])if row.get('source_kind')=='operator_manual'}:
+        _fail('operator_day_roll_ledger_coverage_invalid')
+
+
+def apply_operator_cash_review(state,review_envelope,broker,now,*,trading_calendar):
+    """Apply explicitly reviewed cash facts. Never alter E/Available or send money.
+
+    This pure transition is not source qualification. The production backend
+    admits the fresh CTP source independently and commits cash with its actor.
+    """
+    validate_state(state);_require_v2(state);now=_time(now)
+    raw,reviewed=_operator_review(review_envelope,state);snapshot=_broker(broker,state,now)
+    _money(_parse(broker,'weekly19.ctp-account.v1','ctp_account_callback')['Available'],nonnegative=True)
+    known=state.get('manual_cash_reviews',{}).get(raw['record_id'])
+    if known is not None:
+        if known['raw_sha256']!=review_envelope['raw_sha256'] or known['raw_payload']!=review_envelope['raw_payload']:
+            _fail('operator_review_id_reused_with_different_content')
+        # Replaying an old fact does not reconcile a new cash change; the caller
+        # still runs the final cashflow gate after processing ALL references.
+        return copy.deepcopy(state)
+    if not _time(raw['created_at'])<=now<_time(raw['expires_at']): _fail('operator_review_expired_or_future')
+    if (state['revision']!=raw['before_funding_revision'] or _hash(state)!=raw['before_funding_sha256']
+            or state['cashflow_checkpoint']!=raw['before_checkpoint']
+            or state['reserve_remaining_fen']!=raw['reserve_remaining_fen_before']
+            or state['confirmed_topup_fen']!=raw['confirmed_topup_fen_before']):
+        _fail('operator_review_stale_funding_baseline')
+    if (any(snapshot[k]!=reviewed[k]for k in ('trading_day','deposit_fen','withdraw_fen'))
+            or _time(snapshot['observed_at'])<_time(reviewed['observed_at'])):
+        _fail('operator_review_current_cash_counters_changed')
+    cp=state['cashflow_checkpoint']
+    if cp is None: _fail('operator_review_initial_cash_observation_required')
+    if (_time(snapshot['observed_at'])<_time(cp['observed_at']) or snapshot['trading_day']<cp['trading_day']):
+        _fail('operator_review_checkpoint_rollback')
+    calendar=[_day(day)for day in trading_calendar]
+    if calendar!=sorted(set(calendar)) or cp['trading_day']not in calendar or snapshot['trading_day']not in calendar:
+        _fail('operator_review_authoritative_calendar_required')
+    expected=[day for day in calendar if cp['trading_day']<=day<snapshot['trading_day']]
+    if [row['trading_day']for row in raw['closed_days']]!=expected:
+        _fail('operator_review_closed_trading_days_incomplete')
+    byday={day:0 for day in expected+[snapshot['trading_day']]};changed=copy.deepcopy(state)
+    for row in raw['topups']:
+        if row['receipt_id']in changed['receipts']: _fail('operator_receipt_already_consumed')
+        request=changed['requests'].get(row['request_id'])
+        if request is None: _fail('request_unknown')
+        if any(row[k]!=request[k]for k in ('admitted_entry_ids','target_week_end','source_sha256')):
+            _fail('operator_topup_original_admission_mismatch')
+        occurred=_time(row['occurred_at'])
+        if (row['request_id']in state['retirements'] or not _active(request)
+                or now>=_time(request['expires_at'])): _fail('operator_topup_request_retired_or_expired')
+        if not _time(request['created_at'])<=occurred<=_time(reviewed['observed_at']) or occurred<_time(cp['observed_at']):
+            _fail('operator_topup_occurrence_out_of_window')
+        if row['trading_day']not in byday: _fail('operator_topup_trading_day_outside_review')
+        amount=row['amount_fen']
+        if amount>request['amount_fen']-request['confirmed_fen'] or amount>changed['reserve_remaining_fen']:
+            _fail('amount_exceeds_request_or_reserve')
+        changed['reserve_remaining_fen']-=amount;changed['confirmed_topup_fen']+=amount;request['confirmed_fen']+=amount
+        request['status']='confirmed'if request['confirmed_fen']==request['amount_fen']else'partially_confirmed'
+        byday[row['trading_day']]+=amount
+        changed['receipts'][row['receipt_id']]=dict(request_id=row['request_id'],amount_fen=amount,occurred_at=occurred.isoformat(),
+            trading_day=row['trading_day'],raw_sha256=review_envelope['raw_sha256'],broker_sha256=broker['raw_sha256'],
+            source_kind='operator_manual',manual_review_id=raw['record_id'])
+    _operator_cash_totals(raw,snapshot)
+    same=snapshot['trading_day']==cp['trading_day']
+    if raw['expected_reserve_remaining_fen']!=changed['reserve_remaining_fen']:
+        _fail('operator_review_offsite_reserve_mismatch')
+    checkpoint=_checkpoint(snapshot);index=None
+    if not same:
+        index=len(changed['day_rolls'])
+        changed['day_rolls'].append(dict(closing=_operator_closing(raw['closed_days'][0]),following=checkpoint,
+            continuity_sha256=review_envelope['raw_sha256'],statement_id='operator:'+raw['record_id'],
+            source_kind='operator_manual',manual_review_id=raw['record_id']))
+    changed['cashflow_checkpoint']=checkpoint
+    for request in changed['requests'].values():
+        if _active(request):
+            request['active_baseline']=copy.deepcopy(checkpoint);request['confirmed_before_active_day_fen']=request['confirmed_fen']
+    changed.setdefault('manual_cash_reviews',{})[raw['record_id']]=dict(review_envelope,source_kind='operator_manual',
+        applied_at=now.isoformat(),applied_account=copy.deepcopy(broker),after_checkpoint=checkpoint,day_roll_index=index,
+        reserve_remaining_fen_after=changed['reserve_remaining_fen'],confirmed_topup_fen_after=changed['confirmed_topup_fen'])
+    return _finish(state,changed)

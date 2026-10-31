@@ -1,0 +1,31 @@
+{
+  "files": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_calendar_20261101_record.md": "1883b99ae9ef8e197f8a2838ea7ae7482f80fdf0c84b2111e84bf542fbe4330b",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_calendar_generation_receipt.json": "efa92b82c7aed0e286327591e836dd3945b8eb15fda7230c8a4a0ed6e8b6cf3c",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_calendar_generation_run.log": "e2ed7155b7162422c4bb41913e709098fb9678f8f226d60e993ae9d3467b346c",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_calendar_resolution_proof.json": "32a48921a55b63ea2c0023b6e10b535cff04630aa7eacdfdfc078a5e915a59a4",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_calendar_resolution_verify.log": "97d107fae0e0ff6a765dd560d60e20a3b091ff3c4e1955741ec40ea644ef5c88",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_complete_market_generation_receipt.json": "7c17dd50fd6fca0c700f7881ee5481f63c1b6a609cfd37895692ffa1da263ede",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_full_market_generation_run.log": "ee37c9e5d2a0448277e22e4891bc27005ff0171594f54d8500e7dbf01e6d6c67",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_calendar_generation.py": "b2e0876eb702b6a0da89d29b32b855fa0a499b5c897985361c80cce6dbfe1865",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_calendar_resolution_verify.py": "7f89ba1f2750d386239a53dc3f7b92b7b50669c36bb425b7367499e0d3fcd8e1",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_full_market_generation.py": "e8095e63690d9483165b791e00cd7ba2f41726ebd3a217f63cd76ecff99e8d62"
+  },
+  "market_data": {
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "expected_hashes": {
+      "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "forward_calendar.csv": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+      "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+      "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+    },
+    "forward_calendar": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/forward_calendar.csv"
+  },
+  "private_source_receipt_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/calendar_generation_source_receipt.json",
+  "private_source_receipt_sha256": "d55d67682bfef9d82065022b92ab77f02dffbabfa39778776cb5768f9cd7ac1e",
+  "production_qualified": false,
+  "schema": "Stage018.calendar-artifact-pins.v1",
+  "scope_correction": "Stage017 removed automatic finalstatement/bank producers; pending actual CTP, manual cash review and qualification."
+}

@@ -1,0 +1,30 @@
+PHASE strict_read_inputs {'seconds': 16.221343957819045}
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py", line 85, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py", line 52, in main
+    actor=phase('build_frozen_runtime',lambda:runtime.build_weekly19_runtime(runtime.DEFAULT_SETTINGS_ASSET,inputs['metadata'],inputs['calendar'],inputs['physical_epoch_daily'],snapshot,None,cash,clock=lambda:ASOF))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py", line 46, in phase
+    start=time.monotonic();result=call();report['phases'][name]=dict(seconds=time.monotonic()-start);print('PHASE',name,report['phases'][name],flush=True);return result
+                                  ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py", line 52, in <lambda>
+    actor=phase('build_frozen_runtime',lambda:runtime.build_weekly19_runtime(runtime.DEFAULT_SETTINGS_ASSET,inputs['metadata'],inputs['calendar'],inputs['physical_epoch_daily'],snapshot,None,cash,clock=lambda:ASOF))
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 1722, in build_weekly19_runtime
+    return Runtime(settings_asset, metadata, session_calendar, physical_epoch_daily,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 527, in __init__
+    self.reconcile_broker_snapshot(broker_snapshot, confirmed_cash_state)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 631, in reconcile_broker_snapshot
+    result=self._reconcile_broker_snapshot(snapshot,confirmed_cash_state,quote_snapshot=quote_snapshot)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 653, in _reconcile_broker_snapshot
+    account = funding._broker(snapshot['account'], confirmed_cash_state, self.clock())
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 154, in _broker
+    _fail('raw_account_mismatch')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 49, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: raw_account_mismatch

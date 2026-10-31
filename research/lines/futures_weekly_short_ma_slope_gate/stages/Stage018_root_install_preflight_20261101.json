@@ -1,0 +1,78 @@
+{
+  "schema": "Stage018.root-inactive-install-preflight.v1",
+  "recorded_at": "2026-11-01T04:38:16.637331+08:00",
+  "market_verification": {
+    "all_six_byte_pins": {
+      "daily.sqlite": true,
+      "forward_calendar.csv": true,
+      "mapping.csv": true,
+      "metadata.csv": true,
+      "physical_epoch_daily.csv": true,
+      "receipt.json": true
+    },
+    "raw_vendor_pins_verified": true,
+    "vendor_holiday_table_includes_2026_entries": true,
+    "independent_trading_dates_match": true,
+    "date_start": "2026-10-30",
+    "date_end": "2026-11-20",
+    "source_record_sha256": "7c17dd50fd6fca0c700f7881ee5481f63c1b6a609cfd37895692ffa1da263ede",
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "limitation": "future_calendar_uses_vendor_published_holiday_list_not_future_market_bars"
+  },
+  "production": {
+    "stable_root": "/Users/mac/Desktop/person/vnpy_production_live",
+    "head": "d55887e1def72629fbfa310e439dc3a879969a14",
+    "worktree_clean": true,
+    "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "current_strategy_version": "ai_top10_plus_fu_official_live_v1",
+    "authority_files": {
+      "release-manifest.json": false,
+      "qualification-bundle/qualification.json": false,
+      "activation/latest.json": false,
+      "runtime/state/activation_receipt.json": false,
+      "data-readiness/latest.json": false
+    },
+    "launchd": {
+      "local.qmt-roll.official-live.15w.c9-production-live-day-session": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-night-session": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-day-close-readonly": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-postclose-precompute": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-postclose-report": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool": {
+        "return_code": 113,
+        "loaded": false
+      },
+      "local.qmt-roll.official-live.15w.c9-production-live-health": {
+        "return_code": 113,
+        "loaded": false
+      }
+    }
+  },
+  "automation": {
+    "id": "9-19",
+    "kind": "heartbeat",
+    "one_time": true,
+    "scheduled_for": "2026-11-02T09:00:00+08:00"
+  },
+  "production_qualified": false,
+  "activation_performed": false,
+  "ctp_connection_attempted": false,
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0
+}

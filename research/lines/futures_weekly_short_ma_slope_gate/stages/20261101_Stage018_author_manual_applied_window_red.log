@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_persisted_manual_consumption_cannot_move_beyond_original_request_expiry (tests.test_weekly19_manual_cash.ManualFundingTests.test_persisted_manual_consumption_cannot_move_beyond_original_request_expiry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 134, in test_persisted_manual_consumption_cannot_move_beyond_original_request_expiry
+    with self.assertRaises(ValueError):funds.validate_state(bad)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

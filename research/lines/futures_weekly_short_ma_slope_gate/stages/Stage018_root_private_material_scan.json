@@ -1,0 +1,8 @@
+{
+  "candidate_paths_checked": 141,
+  "private_secret_values_printed": false,
+  "credential_files_tracked": false,
+  "secret_matches": 0,
+  "scope": "Uncommitted tracked changes and nonignored new files; exact boundary matches against private local secret values",
+  "production_qualified": false
+}

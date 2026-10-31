@@ -1,0 +1,74 @@
+{
+  "schema": "weekly19.operator-manual-cash-candidate.v2",
+  "generated_at": "2026-11-01T04:57:31.500164+08:00",
+  "production_qualified": false,
+  "source_lock": "author_complete_pending_independent_increment_and_root_full_90_suite",
+  "previous_author_manifest": "20261101_Stage018_manual_cash_author_manifest.json",
+  "previous_source_scope_validation": {
+    "suites": 13,
+    "tests": 278,
+    "seconds": 19.032,
+    "result": "OK",
+    "manual_source": "f6b87af89298ddd6167d6ceeda8635d6bdc4ee32ad4a37c466ef66bcb101b24e"
+  },
+  "final_minimal_fix_validation": {
+    "suites": 4,
+    "tests": 51,
+    "seconds": 2.254,
+    "result": "OK",
+    "red_tests": 1
+  },
+  "fix": "existing manual reference retry must fsync context directory and revalidate visible parent/record before upgrading publication to success",
+  "preserved_global_ci_attempt001": "root-interrupted exit -15/noXML; 288 critical hashes unchanged; not a pass",
+  "actual_money_trade_fields_modified": false,
+  "real_external_actions": false,
+  "git_index_modified": false,
+  "old_m0001_modified": false,
+  "files": [
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py",
+      "bytes": 51668,
+      "sha256": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py",
+      "bytes": 12921,
+      "sha256": "07cb5c3360ed4f7475842aa0e71a70d8c2dfafc17ef8aeb3344706ce285aa7c2"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py",
+      "bytes": 8502,
+      "sha256": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py",
+      "bytes": 14966,
+      "sha256": "bda2ed872273756e3eb695c5b458af2dff5b80daea4245e4b6f80a380e2ec1fa"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py",
+      "bytes": 26706,
+      "sha256": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c"
+    },
+    {
+      "path": "tests/test_weekly19_manual_cash.py",
+      "bytes": 28139,
+      "sha256": "65bc68e2d1e2b12c567d5423fa0b07d639193ccb4dca5446506827e08bcb9728"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_weekly19_manual_ref_retry_fsync_red.log",
+      "bytes": 925,
+      "sha256": "959988ee94f396d23c7679ed35707c2d1c14d1a38dd54a914d4a94854ef99f2c"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_weekly19_stage018_manual_author_retry_fsync_green.log",
+      "bytes": 98,
+      "sha256": "9d92fd765732cad47d191f4e69bc1fdb7ae8d86dd9b4e58d864a7274878746da"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_0457_Stage018_manual_cash_implementation.md",
+      "bytes": 6344,
+      "sha256": "353e20fa614ad576d207e641a1a390b5a72aa221ed6b03526d979a96529c1d95"
+    }
+  ]
+}

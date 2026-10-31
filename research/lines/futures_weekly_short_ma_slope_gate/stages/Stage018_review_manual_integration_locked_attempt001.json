@@ -1,0 +1,39 @@
+{
+  "tests": 52,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "07cb5c3360ed4f7475842aa0e71a70d8c2dfafc17ef8aeb3344706ce285aa7c2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "bda2ed872273756e3eb695c5b458af2dff5b80daea4245e4b6f80a380e2ec1fa",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py": "f47c382fb83630ff750a18658cf83bb52249a97ca42a1a4317a6d966586603ad",
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py": "50f6bdc4de1e51b4b67bd97c71a0edfa145129c5c6f4c1dfac478fb231610ec9",
+    "tests/test_weekly19_manual_cash.py": "65bc68e2d1e2b12c567d5423fa0b07d639193ccb4dca5446506827e08bcb9728",
+    "tests/test_weekly19_manual_cash_cli.py": "eaa69a9c99051dc556f400ef43d68c472dcd0783b15679a4caca6d1a1717a741",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "07cb5c3360ed4f7475842aa0e71a70d8c2dfafc17ef8aeb3344706ce285aa7c2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "bda2ed872273756e3eb695c5b458af2dff5b80daea4245e4b6f80a380e2ec1fa",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py": "f47c382fb83630ff750a18658cf83bb52249a97ca42a1a4317a6d966586603ad",
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py": "50f6bdc4de1e51b4b67bd97c71a0edfa145129c5c6f4c1dfac478fb231610ec9",
+    "tests/test_weekly19_manual_cash.py": "65bc68e2d1e2b12c567d5423fa0b07d639193ccb4dca5446506827e08bcb9728",
+    "tests/test_weekly19_manual_cash_cli.py": "eaa69a9c99051dc556f400ef43d68c472dcd0783b15679a4caca6d1a1717a741",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002"
+  },
+  "source_unchanged": true,
+  "independent_tests": 20,
+  "pure85_repeated": false,
+  "source_qualified": false,
+  "production_qualified": false,
+  "real_external_actions": false,
+  "log_sha256": "e44fe07d191727f910e4a8be72ae835e9c2ab5a2c7ff72d6251f55282eb2675d"
+}

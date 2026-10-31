@@ -1,0 +1,155 @@
+{
+  "schema": "Stage018.independent-manual-integration-launcher-review.v1",
+  "recorded_at": "2026-11-01T05:01:18.580905+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "status": "PASS_OFFLINE_INTEGRATION_WITH_LIMITATIONS",
+  "accepted": true,
+  "accepted_scope": "Current pinned manual CLI/private IO/backend/same-actor strict CAS and weekly Stage945 source/calendar wiring; not production qualification",
+  "failures": [],
+  "open_findings": [],
+  "severity_open": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "fixed_findings": [
+    {
+      "id": "MANUAL_CLI_NESTED_TYPEERROR",
+      "severity": "P2"
+    },
+    {
+      "id": "MANUAL_RECORD_PARENT_MOVED",
+      "severity": "P2"
+    },
+    {
+      "id": "MANUAL_EXISTING_REF_RETRY_MISSING_DIR_FSYNC",
+      "severity": "P2"
+    }
+  ],
+  "verification": {
+    "test_invocations": 52,
+    "author_direct_wiring_cases": 32,
+    "independent_tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "source_drift": false,
+    "pure85_repeated": false,
+    "counts_not_globally_deduplicated": true
+  },
+  "source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "07cb5c3360ed4f7475842aa0e71a70d8c2dfafc17ef8aeb3344706ce285aa7c2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "bda2ed872273756e3eb695c5b458af2dff5b80daea4245e4b6f80a380e2ec1fa",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py": "f47c382fb83630ff750a18658cf83bb52249a97ca42a1a4317a6d966586603ad",
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py": "50f6bdc4de1e51b4b67bd97c71a0edfa145129c5c6f4c1dfac478fb231610ec9",
+    "tests/test_weekly19_manual_cash.py": "65bc68e2d1e2b12c567d5423fa0b07d639193ccb4dca5446506827e08bcb9728",
+    "tests/test_weekly19_manual_cash_cli.py": "eaa69a9c99051dc556f400ef43d68c472dcd0783b15679a4caca6d1a1717a741",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669"
+  },
+  "strict_parent_actual_calls": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": [
+      {
+        "function": "_recover",
+        "keywords": {
+          "strict_manual_parent": "Constant(value=True)"
+        }
+      },
+      {
+        "function": "commit",
+        "keywords": {
+          "strict_manual_parent": "Constant(value=True)"
+        }
+      }
+    ],
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": [
+      {
+        "function": "_validate",
+        "keywords": {}
+      },
+      {
+        "function": "transact",
+        "keywords": {
+          "strict_manual_parent": "Constant(value=True)"
+        }
+      }
+    ]
+  },
+  "historical_validation_can_span_two_real_commits": true,
+  "real_cas_parent_binding_not_json_configurable": true,
+  "legacy_945_body_ast_proof": {
+    "_resolve_target_date": true,
+    "_target_is_before_live_shadow_start": true,
+    "_validate_target_date_calendar_window": true
+  },
+  "legacy_945_interface_delta": {
+    "_resolve_target_date": "New optional keyword-only now=None for weekly resolver; C9 body unchanged"
+  },
+  "legacy_945_baseline_commit": "b086a81264383a0504dc51aef88191d9e24230c5",
+  "legacy_945_baseline_blob_sha256": "9a7282f78281d3e28afeffd55fb1db1e4829c988ee703956209f7230297af4ec",
+  "source_qualified_by_real_capture": false,
+  "production_qualified": false,
+  "real_cash_verified": false,
+  "broker_automatically_verified": false,
+  "record_publication_is_not_funding_consumption": true,
+  "automatic_final_parser_required": false,
+  "automatic_bank_producer_required": false,
+  "real_ctp_account_positions_quote_gates_required": true,
+  "real_ctp_connected": false,
+  "real_bank_transfer": false,
+  "real_order_submitted": false,
+  "real_smtp_sent": false,
+  "financial_replays": 0,
+  "git_index_modified": false,
+  "production_changed": false,
+  "master_promoted": false,
+  "full_selected_ci_pass_claimed": false,
+  "full_selected_ci": "ROOT_OWNED_SEPARATE_COMPLETE_RETRY_REQUIRED",
+  "component_receipts_sha256": {
+    "pure_funding": "3e1ed34245ae32684fd89a58af487c89c08cbed03727fb19bbe897c898cd8945",
+    "signal_scope": "d61b205fe57eded876dbfac3a31aea9e1bf201d7c0ff91c2644de3641a6a462e"
+  },
+  "prior_pure_store_pin_not_inherited": true,
+  "code_policy": "Actual current files pinned; no old whole-source acceptance is substituted",
+  "evidence_files_sha256": {
+    "Stage018_review_manual_integration_locked_attempt001.json": "b86d27718bd6189456674976682a861166a42137bf7dd4aac7e0a6e21bcce481",
+    "Stage018_review_manual_integration_locked_attempt001.log": "e44fe07d191727f910e4a8be72ae835e9c2ab5a2c7ff72d6251f55282eb2675d",
+    "Stage018_review_manual_cli_adversarial.py": "0a256b887cc86dfa8d96484485ffa09df0e45520e8f7672cbcae2a65bab609aa",
+    "Stage018_review_manual_cli_attempt001.json": "9f92bafd269f83237c4651d0d71255a0e76ea3f4b5e6aed15f81766d94a2bb74",
+    "Stage018_review_manual_cli_attempt001.log": "a50fd352ba62dd31d113b36859ac32a80c8abf4cbba5317d1595cc5f21482c64",
+    "Stage018_review_manual_cli_attempt002.json": "c61eed40e8d6f2e5b3caaa7e15511cea1850d277be456c70e8ed7f2bb3cf4c0e",
+    "Stage018_review_manual_cli_attempt002.log": "24cefc2bc38a1c71e18591075993695fc72546b32ff6b5baab3d98032ce96fb5",
+    "Stage018_review_manual_io_adversarial.py": "45f79c4b68f9689b2ccc484ec09cb9062281bb8b48e9c674b54bbff68c58ffba",
+    "Stage018_review_manual_io_adversarial_v2.py": "2c4da8c93134e846ca05a662eec785f2f5634a0992348d6fd54a71f7860a45de",
+    "Stage018_review_manual_io_attempt001.json": "3593aec1fb0540e9d42c5e7eafa2945f547b569713cdb093207d1e601f496541",
+    "Stage018_review_manual_io_attempt001.log": "7b6d98337a526555a8bc83577be0a1a0f62d21d71b01b0671c20129df6d527d3",
+    "Stage018_review_manual_io_attempt002.json": "fed8264cf3347eaafb4fe7d6769abfbcc0ed9e885f9cb19666fded30fdb79685",
+    "Stage018_review_manual_io_attempt002.log": "ad3adba03ce7ef8755f66d872a369f7059072d133653aa8a66f6c9151152e9ae",
+    "Stage018_review_strict_parent.py": "dd76fb7077435d6f2f4a70af1ea88638c3248ae28fb94709f2f190c4d911f977",
+    "Stage018_review_strict_parent_attempt001.log": "1683faffcdfbe110d76dbff5223ec6c50e28683becee8feb448717707418bee4",
+    "Stage018_review_manual_backend.py": "22f8b2eb255c3a9bffbee0e8b8119bdb629dfc032e06f8f423af917cb127691b",
+    "Stage018_review_launcher945.py": "79ec236bce64697c1a6dab51a89b1ead725112d37aabd5421b969baa1be9c0ce",
+    "Stage018_review_launcher945_precheck_attempt001.json": "0ae717e344a15c776b15e5661c49ad878cd7c97503ab203f1e5988be08f90606",
+    "Stage018_review_launcher945_attempt002.json": "662f371f04905785c5b77b226a3c1581f3535ea443df942e4d59df04619d8452",
+    "Stage018_review_launcher945_attempt002.log": "2362f829317889ee4f6342e919a202b196c6c4b3688d4459274a0044ded879b2",
+    "Stage018_review_manual_pure_acceptance.json": "3e1ed34245ae32684fd89a58af487c89c08cbed03727fb19bbe897c898cd8945",
+    "Stage018_review_signal_acceptance.json": "d61b205fe57eded876dbfac3a31aea9e1bf201d7c0ff91c2644de3641a6a462e",
+    "Stage018_operator_manual_cash_runbook.md": "c537973ce61457ac61e60f171765e631358eeace08805b0d45416c3ee5013467",
+    "20261101_0457_Stage018_manual_cash_implementation.md": "353e20fa614ad576d207e641a1a390b5a72aa221ed6b03526d979a96529c1d95",
+    "20261101_Stage018_manual_cash_author_manifest_v2.json": "323f88a4dea6ff1e258c6b9318c3dad2e61752190a43c0866d3e2b45e1e6283f"
+  },
+  "chinese_record_sha256": "6ecba0961ccef966d8320291aa991814c877fa0159c2c4ec82c61a245ecad2b2",
+  "remaining": [
+    "Complete offline selected CI in appropriate local runtime environment",
+    "New immutable release/source qualification and activation chain",
+    "Fresh actual CTP account/positions/orders/quotes after user-specified 2026-11-02 09:00 boundary",
+    "Operator truthful cash verification and controlled actor consumption",
+    "Master/production install/readback/loaded scheduler evidence"
+  ],
+  "overfitting": false,
+  "continuing_value": true
+}

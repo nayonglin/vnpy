@@ -1,0 +1,11 @@
+{
+  "status": "TEST_ONLY_POST_RUN_APPEND_OBSERVED",
+  "implementation_drift": false,
+  "post_run_test_drift": {
+    "tests/test_weekly19_manual_cash.py": {
+      "tested": "42ee33362d9c962935e7b4fe1a3cbca8d839008235293ba12ba27290dd1d2ace",
+      "current": "fae101636e861acb3f5c2aae08c0bf1ba3534cc86333a1fbbc71f66ce35195df"
+    }
+  },
+  "prior_seal_wrote_no_acceptance": true
+}

@@ -1,0 +1,33 @@
+{
+  "approved_source_hashes": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "core_source_hashes": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/weekly19_assets/actual_settings.json": "513ef478b031ad819dd0a81baf11b76f1fee1bad8671de6526966ad68e6b71ab",
+    "examples/portfolio_backtesting/weekly19_assets/source_manifest.json": "b473e88f21d2d139615e638c9df0e0fac5358596d919624f55411438926a303c",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py": "813beb6fa61c71040a013c0a5faea622268da7b58481c03fcd73028007d83627"
+  },
+  "files": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_20261030_attempt001_failed.log": "fd0d4161629676f2ecaf57c6c7b148dd9dab19ca37e724e6f40a96fd4a51c93e",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_20261030_result.json": "1215d9d30ff4ffde7aa4efd1916f6daa0e290033b6a649f5a57ecd08dedb1a30",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_20261030_run.log": "136cc33bc51f61f39c4e137f22b71528dec1ce7de153d5135538eb3f25283dc5",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_20261101_record.md": "b3128989af21afd5349d4552631fe4012085c6eb5ec10c79cdd53841e87db55f",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_crosscheck_result.json": "5e91386d120a4f386274f0138cf62848157793aa41a3af886e9758ac4ce5126f",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_signal_scope_crosscheck_run.log": "39df3e93f53d3108a9b0e791f05f14c18d2a07568e72ffbc6f39456840c575e4",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_20261030.py": "813beb6fa61c71040a013c0a5faea622268da7b58481c03fcd73028007d83627",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_crosscheck.py": "5e1069216bc0e1cabb28102fce27ec8f3222ad32e7bd9f8675687135d35fa617"
+  },
+  "forward_calendar_sha256": "f4699f7e95651e04acce40d6dedb394691ab3e493f558292123c52e30e283174",
+  "production_qualified": false,
+  "recorded_at": "2026-11-01T04:28+08:00",
+  "schema": "Stage018.signal-scope-artifacts.v1",
+  "scope_wording_corrected_at": "2026-11-01T04:36:09.329298+08:00",
+  "scope_wording_correction": "HTTP service was not started. The signal run used frozen local data; separate calendar preparation is authorized actual TQ read-only networking. No claim that user forbade all HTTP."
+}

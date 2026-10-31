@@ -1,0 +1,13 @@
+test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context) ... ok
+test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean) ... ok
+test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed) ... ok
+test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec) ... ok
+test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules) ... ok
+test_weekly_stale_resolution_and_legacy_payload_are_rejected (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_stale_resolution_and_legacy_payload_are_rejected) ... ok
+test_weekly_target_never_calls_stage922_or_old_mapping_calendar (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_target_never_calls_stage922_or_old_mapping_calendar) ... ok
+test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.084s
+
+OK

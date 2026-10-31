@@ -1,0 +1,169 @@
+{
+  "schema": "Stage018.independent-pure-manual-funding-review.v1",
+  "recorded_at": "2026-11-01T04:43:27.150510+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "status": "PASS_OFFLINE_PURE_MANUAL_FUNDING_WITH_LIMITATIONS",
+  "accepted": true,
+  "accepted_scope": "Pure funding API, validator and FundingStore forward semantics only; CLI/backend/integrated runtime not accepted",
+  "failures": [],
+  "open_findings": [],
+  "severity_open": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "fixed_findings": [
+    {
+      "id": "MANUAL_PERSISTED_GROSS_INCONSISTENCY",
+      "severity": "P1",
+      "red": "2 failures; self-consistent hashes unsupported by declared gross deposits",
+      "status": "FIXED"
+    },
+    {
+      "id": "MANUAL_PERSISTED_APPLIED_AFTER_REQUEST_EXPIRY",
+      "severity": "P1",
+      "red": "4 tests / 2 failures / 2 pass after prior gross fix",
+      "status": "FIXED"
+    }
+  ],
+  "verification": {
+    "test_invocations": 85,
+    "independent_cases": 12,
+    "legacy_funding_regression": 61,
+    "author_manual_cases": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "source_drift": false,
+    "prior_adapter_error_preserved": true
+  },
+  "source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "4617b1b9509a83e5d4c8b2ae2fae983950811256d022a233b38e9b5da2f7ef47"
+  },
+  "tested_source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "4617b1b9509a83e5d4c8b2ae2fae983950811256d022a233b38e9b5da2f7ef47",
+    "tests/test_weekly19_manual_cash.py": "42ee33362d9c962935e7b4fe1a3cbca8d839008235293ba12ba27290dd1d2ace",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "post_run_test_file_changes": {
+    "tests/test_weekly19_manual_cash.py": {
+      "tested": "42ee33362d9c962935e7b4fe1a3cbca8d839008235293ba12ba27290dd1d2ace",
+      "current": "fae101636e861acb3f5c2aae08c0bf1ba3534cc86333a1fbbc71f66ce35195df"
+    }
+  },
+  "legacy_ast_relations": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": {
+      "old_source_commit": "e3d08592e85e00a2a6b8fde880f69e771755f10b",
+      "old_source_sha256": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+      "current_source_sha256": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+      "changed_legacy_functions": [
+        "validate_state",
+        "_request_chain"
+      ],
+      "unchanged_legacy_functions_sha256": {
+        "_fail": "b4ce5b9c61ce7decfac379b8211a309f0b80c04781aa316d7b5c7d6287c1e04a",
+        "_text": "9884bfcb3decfd8e560c46f870c543f704c7a637f5e24a677dec7c0952da5f1f",
+        "_sha": "4c20de7a118cd561650725bf3da3363c912bea11dc610117c64a7fe029a2ac7d",
+        "_canonical": "dfb92d9a8c662fa45dfb8cccd7767bc2b2de1c62aa44c174d9bc341e64dbf04a",
+        "_hash": "b87fe01817461a9e22235dbb2f5653f8cda5d6d4f03eac0a31daf5ebdf54f969",
+        "_time": "bfef2740e768d937819ab6822eadef65342ebeed8fe8127653bb6edec7d5066b",
+        "_day": "697d918b0127aee3925f4d32d194f915fdf86b67bd0c8ca04a395f6a04592a58",
+        "_money": "5c451a768bcee48c623e4fc1d796c9f9a173418cc43cc126e988082108fab2de",
+        "_integer": "24987b8fc4818900a57ffca71734bb49c597f4b7b873f1b2198101fc612ade8b",
+        "_parse": "94d703dbf2d6e5870e92baa603ba42e21073e70a7660b6b84cab489381f59109",
+        "_binding": "5bedc10cda3238426fd56bd25e1c68e0bfd874af14f92ce140c5efe4b0f9c35a",
+        "_broker": "151ed155e6d387855c72005e877229b2e789b2415b9e438e3d0cdf0aa841ee21",
+        "initial_state": "5c8ba70f5296c152fd62d0a257c024c47b0013c60437043863180f4d00ce4cfc",
+        "_require_v2": "c1fd873cdb2d6a2e0a88a3ff31d16015558789c81a5f6c999cdbf69ec5624c20",
+        "_active": "98a1ff1e0a685e585cd7cb646702d61eb0b5ac4e0ae15731588ff776732d400d",
+        "upgrade_funding_state": "d0ebc0456dab7413aa5c83c0bd7f82ae99c854ae81317b2a85949cd2c4c798b9",
+        "_validate_retirement": "ea836f542eaa9f7321380fcb20850d68e097e7686d449530702cfc3d7bba69d2",
+        "retire_topup_request": "158632030b3c4da794fcb1c6a908d1895d70cea1e64aef254301fd8d4013aabc",
+        "_checkpoint_valid": "bc3add583c34fe24f242dca17c8c9ac9fa83c58add9f9b51254c066e7f1a3062",
+        "_checkpoint": "17a2ca00fb607445d55daa811340d46788a4eda39ee85f64f00bf4d0b993e825",
+        "_cashflow_match": "28fd3a2ce1c0f7598ee75172a5e32c9441fe7ef1263d818ff58357334248a5da",
+        "_finish": "04400407ba59ee7aec1ee9ae1862b5b0c38fdc4b23ecaf75f4d629d1084f96d2",
+        "begin_cash_observation": "cc61ccce8b9cae6dbaf3254f4725f086ba1fb1325c2ab56a1d24521b50ba8b91",
+        "_admission_key": "dfa62af3b80dedc80f1b5504d84a5aa8a91d4095acd9d6160b48ba13f01ecc8c",
+        "_recommendation": "2a8a847feeb5373eea3e47e162c97b68220c06f1a99dedc469db785e396daf92",
+        "recommend_topup": "5cec944a3ea6e4aaf958fd0827f5ee09e4bf25bab5e621a426c4a9cb83e407e7",
+        "confirm_topup": "d18bc3f8f8d85f1eabb6d000fd15e5248a00c7ae6023eb4014b4ccd8fd407a23",
+        "assert_open_funding_ready": "92f90344a8e3ca2667bcd6e5746ad3b6c08432ce17685f7688557efb0ad13113",
+        "reconcile_trading_day": "efc9b269f1b09755c8cb84f821b862b8cd8a171afb142577dae193bfa6a56389"
+      },
+      "new_functions_sha256": {
+        "_operator_review": "45dfa8d3f49f09b6014b3071116845a1708678449d7a5f91fbb812d88724c0ac",
+        "_operator_closing": "f86929a7cf5c8b029d8a70a0b2cd94ffaac3e0a1119c14b45281062ec846467a",
+        "_operator_cash_totals": "62958665342343d8562697aeac183487c7c9834b69360ee01a972239074360d3",
+        "_validate_operator_cash_ledger": "daa13860a37f965da75374fb55025d06291e7b0454f82bbab52e60f48ef31998",
+        "apply_operator_cash_review": "52437d1bc85f18a359236a63a2db792ea4ab4a2203eb41efcfd8c35b554ac727"
+      }
+    },
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": {
+      "old_source_commit": "e3d08592e85e00a2a6b8fde880f69e771755f10b",
+      "old_source_sha256": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+      "current_source_sha256": "4617b1b9509a83e5d4c8b2ae2fae983950811256d022a233b38e9b5da2f7ef47",
+      "changed_legacy_functions": [
+        "_forward_ledger"
+      ],
+      "unchanged_legacy_functions_sha256": {
+        "__init__": "15b6f56b543f2d6cf8d8e95893890a795035c92f1d1247fba723d501c2ba097d",
+        "_locked": "1fc5008c6414c3169ed6934b715ed14343e65ae058156a02cd86ebfe39903721",
+        "_open_lock": "2b56d538500a636a81ac896aa1440a6a3f3adf55b705a2071243896e3319410d",
+        "_private_file": "bdb076956a758c81034ab9d12a4678ea2141eed3237b97d92a9d4fd68f670a36",
+        "_read": "d1fd5e8a4bdcd8f6964caf98dca81f0c0a5e29187154f286d33448a8d590dd32",
+        "_record": "928e925ee89a7de29f582cfbfc081b608148cb736e1302ae8e44452f2e9304f8",
+        "_atomic": "7811e4bc1e81216c55cbd2f6b7134a252dd4623562cef543b76609d3dcdc617c",
+        "_same_identity": "8f8e559b315ce1c5c953d5a1f033f7c3ce4940f114efd37054898911dfec4614",
+        "_recover": "f43c597827b075148e885742bed4d94daf259078395a97743c5d0b931718f395",
+        "create": "489cd2e659bdeeb24c1a732228d57c9fc0c6f80c39ffb81015c2b3f8310de628",
+        "load": "b459be77635a8e0eace1b361f03de4f8fbd5927287a6003e5810907eaa3b3c97",
+        "commit": "e6198881b29594749dd9d0f0bd0857e87fc43e6d45a4f10f17fda414e93113f8",
+        "unique": "0897a0129cded72aae762663fedf3bbddfb9b05467146a7dfa8526906acf5e1e"
+      },
+      "new_functions_sha256": {}
+    }
+  },
+  "source_qualified": false,
+  "production_qualified": false,
+  "real_bank_cashflow_verified": false,
+  "broker_automatically_verified": false,
+  "manual_mode_integrated": false,
+  "cli_backend_accepted": false,
+  "full_selected_ci_claimed": false,
+  "financial_replays": 0,
+  "real_external_actions": false,
+  "git_index_modified": false,
+  "old_records_modified": false,
+  "automatic_final_parser_required": false,
+  "automatic_bank_producer_required": false,
+  "real_ctp_account_positions_quote_gates_required": true,
+  "evidence_files_sha256": {
+    "Stage018_review_manual_ledger_adversarial.py": "c6fbefaa05cb911a97bbf6e642743315e3044d7aa816f9af5548a51305aaae4b",
+    "Stage018_review_manual_ledger_adversarial_v2.py": "94389c3b2f9d70ee5ff528b8a1e2f3cdf7f40723d072797e366e475f1d29a0a2",
+    "Stage018_review_manual_ledger_attempt001.json": "cf68aa58b37d9524ede7473cc6149864636abb5e6298bf85c8320d2fdd5a3fa4",
+    "Stage018_review_manual_ledger_attempt001.log": "4117e592cb20b711a69a5241b31e0ff7f0d6b58c71d1ee9b41520c78a92cd413",
+    "Stage018_review_manual_ledger_attempt002.json": "726128a8a267e06d2fd6656e8db91ca6ccd27495d3e8e5298e76212bb923df1e",
+    "Stage018_review_manual_ledger_attempt002.log": "ca788ea35202c6462220e905acd73d802193608412bfac00ebd6d2566d7d7b90",
+    "Stage018_review_manual_pure_boundaries.py": "aa18aa8c3d90cf7baff6e4928f3b5d7a96cd5fc89fd9202b292a7c59ed4e3dfa",
+    "Stage018_review_manual_pure_boundaries_v2.py": "677dfe59882322a50c51dd65c6d421ee96c8fb7773e1f558cac6ff83e18bfc6a",
+    "Stage018_review_manual_pure_locked_attempt001.json": "1c1ceab95d800391a8d5157cc215cd83f1a3848a89819262efa7aa3adbc5fd99",
+    "Stage018_review_manual_pure_locked_attempt001.log": "6daee19b5c4eaaa4eb83245af3784f4226e720dd651d62f5c41293fc73cc9a41",
+    "Stage018_review_manual_pure_locked_attempt002.json": "2e67ae49f77e5721f3d1c07f3077f2bf041772d4ecbc618056ea2341c9db5859",
+    "Stage018_review_manual_pure_locked_attempt002.log": "9fca387965e2aa833306111948ef43c7272bcf3b3cd0bdaf52d17b7d1fe784ed",
+    "Stage018_review_manual_design_preflight.json": "e6cf872b8e5f4897f63f53f8daadafe24568a1f07ad796b34ca14a3af0945659",
+    "Stage018_review_manual_design_input.md": "68f798106b3834a3530f43a8366a049f2e80c7a7d85e8ea0aaa5d1a2f4455525",
+    "Stage018_review_signal_acceptance.json": "d61b205fe57eded876dbfac3a31aea9e1bf201d7c0ff91c2644de3641a6a462e"
+  },
+  "chinese_record_sha256": "2b7a6b9526e7cbc0502741ede75e1ee2e401a0a6ecfe3b0101cbc5fa6a3c1705",
+  "remaining_validation": [
+    "Private immutable manual review IO / context ref CAS / retry and crash behavior",
+    "Backend mode policy and provider-source gate before raw data use",
+    "Same actor atomic cash/runtime consumption and multi-reference failure behavior",
+    "Actual authoritative calendar provenance and complete production source/qualification/activation chain"
+  ],
+  "overfitting": false,
+  "continuing_value": true
+}

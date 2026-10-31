@@ -1,0 +1,30 @@
+{
+  "exit_code": 0,
+  "independent_tests": 6,
+  "source_before": {
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669"
+  },
+  "source_unchanged": true,
+  "legacy_baseline_commit": "b086a81264383a0504dc51aef88191d9e24230c5",
+  "legacy_blob_sha256": "9a7282f78281d3e28afeffd55fb1db1e4829c988ee703956209f7230297af4ec",
+  "three_c9_bodies_ast_preserved_after_dispatch_strip": {
+    "_resolve_target_date": true,
+    "_target_is_before_live_shadow_start": true,
+    "_validate_target_date_calendar_window": true
+  },
+  "argument_changes": {
+    "_resolve_target_date": "New optional keyword-only now=None for weekly resolver; C9 body unchanged"
+  },
+  "script_sha256": "79ec236bce64697c1a6dab51a89b1ead725112d37aabd5421b969baa1be9c0ce",
+  "log_sha256": "2362f829317889ee4f6342e919a202b196c6c4b3688d4459274a0044ded879b2",
+  "source_qualified": false,
+  "production_qualified": false,
+  "real_external_actions": false
+}

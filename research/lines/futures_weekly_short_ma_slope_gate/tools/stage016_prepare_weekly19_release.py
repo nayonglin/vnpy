@@ -7,7 +7,9 @@ ROOT=Path.cwd();sys.path.insert(0,str(ROOT/'examples/portfolio_backtesting'))
 from qmt_roll_strategy_material_discovery import discover_materials,MaterialDeclaration,assert_discovery_publishable
 from qmt_roll_strategy_material_manifest import MaterialRole
 from build_qmt_roll_official_strategy_material_release import ReleaseRequest,prepare_release
-p=argparse.ArgumentParser();p.add_argument('--prepare',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--prepare',action='store_true')
+p.add_argument('--receipt-output',type=Path,default=Path('/private/tmp/weekly19_prepared_candidate.json'));args=p.parse_args()
+if args.prepare and args.receipt_output.exists():p.error('receipt already exists; choose a new output and preserve the old record')
 tree=ast.parse((ROOT/'examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py').read_text())
 node=next(n for n in tree.body if isinstance(n,ast.Assign)and any(isinstance(t,ast.Name)and t.id=='DEFAULT_CRITICAL_FILES'for t in n.targets));paths=[Path(x)for x in ast.literal_eval(node.value)]
 # Tests are frozen explicitly; their fixture-only dynamic module dispatch is
@@ -50,9 +52,10 @@ request=ReleaseRequest(repo_root=ROOT,official_version='official_live_weekly19_b
  created_at_utc=now.isoformat(),created_at_cst=now.astimezone(ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%dT%H:%M:%S%z'),discovery=result,
  provenance=dict(generator='research/lines/futures_weekly_short_ma_slope_gate/tools/stage016_prepare_weekly19_release.py',data_cutoff='2026-10-30',eval_date='2026-10-30',training_label_cutoff=None,ai_enabled=False,
   financial_source_commit='688754057ba1dc07caa9edc537ceec486f678372',research_verdict='NO_PROMOTION',operator_scope='replace_formal_after_real_qualification',
-  test_dispatch_declarations='fixed FAULT_CASES test modules and existing critical ownership validator; no runtime dynamic import waived'),
+  test_dispatch_declarations='fixed FAULT_CASES test modules and existing critical ownership validator; no runtime dynamic import waived',
+  cash_verification_mode='operator_manual_v1',operator_cash_decision='Stage017_manual_cash_verification; Stage018_explicit_operator_record_and_actor_CAS'),
  qualification=dict(status='candidate',evidence_ids=[],production_qualified=False,order_api_called_count=0,cancel_order_api_called_count=0))
 prepared=prepare_release(request)
 info=dict(release_id=prepared.release_id,material_version=prepared.material_version,release_dir=str(prepared.release_dir),manifest_path=str(prepared.manifest_path),staged_paths=list(prepared.staged_paths),
  commit_confirmation='I_UNDERSTAND_THIS_COMMITS_OFFICIAL_STRATEGY_MATERIALS:'+prepared.release_id,source_commit=head,production_qualified=False)
-Path('/private/tmp/weekly19_prepared_candidate.json').write_text(json.dumps(info,indent=2));print(json.dumps(info,sort_keys=True))
+args.receipt_output.write_text(json.dumps(info,indent=2));print(json.dumps(info,sort_keys=True))

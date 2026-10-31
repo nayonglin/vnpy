@@ -135,6 +135,6 @@ class PipelineStateStore:
    if following.get('runtime_mode','preview')!=current.get('runtime_mode','preview'):raise PipelineStateError('pipeline_runtime_mode_immutable')
    if following['revision']!=current['revision']:raise PipelineStateError('pipeline_revision_owned_by_store')
    if not FundingStore._same_identity(current['funding'],following['funding']):raise PipelineStateError('pipeline_funding_identity_change')
-   FundingStore._forward_ledger(current['funding'],following['funding'])
+   FundingStore._forward_ledger(current['funding'],following['funding'],strict_manual_parent=True)
    if following['funding']['revision']<current['funding']['revision']or (following['funding']!=current['funding']and following['funding']['revision']==current['funding']['revision']):raise PipelineStateError('pipeline_funding_revision_rollback')
    following=deepcopy(following);following['revision']+=1;self._write(directory,following);return deepcopy(following)

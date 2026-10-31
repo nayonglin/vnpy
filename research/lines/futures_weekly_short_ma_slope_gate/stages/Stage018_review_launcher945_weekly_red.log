@@ -1,0 +1,117 @@
+test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context) ... ERROR
+test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean) ... ERROR
+test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed) ... ERROR
+test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec) ... ERROR
+test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules) ... ERROR
+test_weekly_stale_resolution_and_legacy_payload_are_rejected (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_stale_resolution_and_legacy_payload_are_rejected) ... ERROR
+test_weekly_target_never_calls_stage922_or_old_mapping_calendar (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_target_never_calls_stage922_or_old_mapping_calendar) ... FAIL
+test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift) ... ERROR
+
+======================================================================
+ERROR: test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1425, in test_weekly_cash_source_append_does_not_invalidate_immutable_calendar_context
+    target,payload=self.resolve();self.cfg['cash_sources']={'manual_review':{'path':'not-admitted-reference','sha256':'b'*64}};self.write_context()
+                   ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1396, in test_weekly_cold_skip_uses_private_context_not_old_constant_or_boolean
+    target,payload=self.resolve()
+                   ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1409, in test_weekly_context_profile_cold_date_and_calendar_pins_fail_closed
+    with self.assertRaises(launcher.ProductionSessionLaunchError):self.resolve()
+                                                                  ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1449, in test_weekly_main_cold_skip_precedes_daily_receipt_environment_and_exec
+    target,payload=self.resolve();args=argparse.Namespace(session='day',release_manifest=str(launcher.PRODUCTION_RELEASE_MANIFEST),activation_receipt=str(launcher.PRODUCTION_ACTIVATION_RECEIPT),stage179_runtime_root=str(self.runtime),output_root=str(launcher.PRODUCTION_OUTPUT_ROOT),signal_input_root=str(launcher.PRODUCTION_SIGNAL_INPUT_ROOT))
+                   ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1431, in test_weekly_ready_time_night_and_saturday_continuation_preserve_calendar_rules
+    early=self.monday.replace(hour=15,minute=30);target,payload=self.resolve(early)
+                                                                ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_stale_resolution_and_legacy_payload_are_rejected (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_stale_resolution_and_legacy_payload_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1443, in test_weekly_stale_resolution_and_legacy_payload_are_rejected
+    _,payload=self.resolve()
+              ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+ERROR: test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1415, in test_weekly_window_binds_receipt_next_day_source_and_rejects_context_drift
+    _,payload=self.resolve()
+              ^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1376, in resolve
+    return launcher._resolve_target_date({},now=now or self.monday)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _resolve_target_date() got an unexpected keyword argument 'now'
+
+======================================================================
+FAIL: test_weekly_target_never_calls_stage922_or_old_mapping_calendar (tests.test_stage945_production_launcher.Weekly19TargetRoutingTest.test_weekly_target_never_calls_stage922_or_old_mapping_calendar)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage945_production_launcher.py", line 1389, in test_weekly_target_never_calls_stage922_or_old_mapping_calendar
+    target,payload=launcher._resolve_target_date({})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py", line 643, in _resolve_target_date
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1124, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1128, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1183, in _execute_mock_call
+    raise effect
+AssertionError: weekly must never run C9 Stage922
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.019s
+
+FAILED (failures=1, errors=7)

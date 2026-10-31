@@ -1,9 +1,22 @@
 ---
 name: futures-official-shadow
-description: Use when users ask whether the canonical C9/15w production shadow has actionable futures orders today, tonight, tomorrow morning, or the next session, including open, close, and reconcile questions.
+description: Use when users ask whether the verified official futures production cohort has signals or actionable orders today, tonight, tomorrow morning, or the next session, including C9/15w and qualified weekly19 profiles.
 ---
 
 # Futures Official Shadow
+
+## Weekly19 查询分支（2026-11-01）
+
+先读实盘SOP，核实实际stable HEAD、CURRENT、release-manifest、qualification、activation及daily receipt。仅当它们一致为`weekly19-15w-r150k` / `official_live_weekly19_base15w_reserve15w_stage014` / `stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1`时，使用本分支，并停止套用后文C9/Stage901/Stage922专用查询步骤。本机stable目标曾确认为`/Users/mac/Desktop/person/vnpy_production_live`；路径存在不能替代激活证据。
+
+- 从私有`production-live/runtime/weekly19/context.json`读取明确profile、material、account、cold_start_date及已封存市场generation。用weekly19自己的pinned forward calendar解析完成日；不使用旧C9日历或固定2026-07-23作为新cohort起点。
+- 通过`PipelineStateStore.read()`读取该context指定的原子bundle，再用`load_and_validate_weekly19_daily_receipt()`核对实际source commit、manifest SHA和目标完成日。只读既有`decision`、`decision_state`、`runtime`、funding及实际成交/委托证据，不在聊天查询中运行会发送邮件的postclose任务，也不私自刷新CTP或重跑历史on_bars。
+- 19品种完成周全量就绪后，从原`decision.intents`、native admission与candidate snapshots说明新开、拒开、退出或换月。若没有原始候选，明确“没有新开信号”；若有信号但资金/保证金/来源闸阻断，分别列真实原因；数据不完整时报告未知。
+- 真实新开还要当前CTP账户、持仓、委托、Available、报价和同actor授权；旧receipt中的意向不足以证明现在可委托。已有持仓的平仓/减仓/换月与新开信号分别核对，不把回测仓位当真实持仓。
+- 场外15万元不计权益或手数；补资采用明确`operator_manual_v1`，只把原actor已消费的实际到账计入T。人工记录仅发布pending、未知现金流或跨日人工复核未完成时，不能称资金已就绪；自动最终结算解析和自动银行到账producer已由用户取消，不再当作本次必需前置。
+- 未激活或缺生产证据时，可在用户明确要求下做固定19品种的离线技术信号核对；必须标明真实数据截止日、空仓/权益假设和未取得的实际账户范围，不签发正式daily receipt，不追补启用前仓位。2026-10-30周的Stage018结果就是这一类条件诊断。
+
+本查询不改变alpha，不构成参数优化；继续价值在防止漏信号、旧数据或重复委托。
 
 ## Purpose
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="13" time="4.636" timestamp="2026-11-01T04:57:17.034464+08:00" hostname="macdeMacBook-Pro.local"><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_account_fingerprint_preserves_leading_zero_identity" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_ambiguous_order_sysid_mapping_fails_closed" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_atomic_csv_hash_binds_exact_published_bytes" time="0.005" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_authoritative_reconnect_fails_when_disconnect_happened_before_ready" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_authoritative_reconnect_fails_without_contract_snapshot_on_new_generation" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_authoritative_reconnect_requires_full_snapshot_and_real_readiness_transition" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_dry_run_publishes_exact_zero_order_api_counters" time="0.046" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_firewall_freezes_evidence_before_restore_and_blocks_fresh_lookup" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_frozen_broker_trading_day_never_falls_back_to_native" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_missing_order_sysid_mapping_fails_bundle_join" time="0.000" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_mocked_ctp_slow_callbacks_rebuild_full_snapshot_after_reconnect" time="3.551" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_native_ctp_mutation_firewall_covers_every_non_readonly_surface" time="0.001" /><testcase classname="tests.test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest" name="test_output_paths_follow_official_live_output_dir" time="0.468"><failure message="AssertionError: 1 != 0 : Traceback (most recent call last):&#10;  File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;&#10;  File &quot;/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py&quot;, line 28, in &lt;module&gt;&#10;    from vnpy.trader.engine import MainEngine&#10;  File &quot;/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/engine.py&quot;, line 44, in &lt;module&gt;&#10;    from .logger import logger, DEBUG, INFO, WARNING, ERROR, CRITICAL&#10;  File &quot;/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/logger.py&quot;, line 55, in &lt;module&gt;&#10;    logger.add(sink=file_path, level=level, format=format)&#10;  File &quot;/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_logger.py&quot;, line 802, in add&#10;    wrapped_sink = FileSink(path, **kwargs)&#10;                   ^^^^^^^^^^^^^^^^^^^^^^^^&#10;  File &quot;/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py&quot;, line 192, in __init__&#10;    self._create_file(path)&#10;  File &quot;/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py&quot;, line 226, in _create_file&#10;    self._file = open(path, **self._kwargs)&#10;                 ^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;PermissionError: [Errno 1] Operation not permitted: '/Users/mac/.vntrader/log/vt_20261101.log'">self = &lt;test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest testMethod=test_output_paths_follow_official_live_output_dir&gt;
+
+    def test_output_paths_follow_official_live_output_dir(self) -&gt; None:
+        with tempfile.TemporaryDirectory() as tmp:
+            environment = dict(os.environ)
+            environment["OFFICIAL_LIVE_OUTPUT_DIR"] = tmp
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import json, run_ctp_stage174_readonly_probe as m;"
+                        "print(json.dumps({"
+                        "'output':str(m.OUTPUT_DIR),"
+                        "'summary':str(m.SUMMARY_PATH),"
+                        "'positions':str(m.POSITION_PATH),"
+                        "'manifest':str(m.QUERY_BUNDLE_MANIFEST_PATH)"
+                        "},sort_keys=True))"
+                    ),
+                ],
+                cwd=PORTFOLIO_DIR,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+&gt;           self.assertEqual(result.returncode, 0, result.stderr)
+E           AssertionError: 1 != 0 : Traceback (most recent call last):
+E             File "&lt;string&gt;", line 1, in &lt;module&gt;
+E             File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py", line 28, in &lt;module&gt;
+E               from vnpy.trader.engine import MainEngine
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/engine.py", line 44, in &lt;module&gt;
+E               from .logger import logger, DEBUG, INFO, WARNING, ERROR, CRITICAL
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/logger.py", line 55, in &lt;module&gt;
+E               logger.add(sink=file_path, level=level, format=format)
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_logger.py", line 802, in add
+E               wrapped_sink = FileSink(path, **kwargs)
+E                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py", line 192, in __init__
+E               self._create_file(path)
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py", line 226, in _create_file
+E               self._file = open(path, **self._kwargs)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mac/.vntrader/log/vt_20261101.log'
+
+tests/test_stage174_query_bundle.py:96: AssertionError</failure></testcase></testsuite></testsuites>

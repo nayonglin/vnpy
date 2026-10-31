@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_record_parent_move_during_freeze_cannot_publish_a_missing_visible_path (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_record_parent_move_during_freeze_cannot_publish_a_missing_visible_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 192, in test_record_parent_move_during_freeze_cannot_publish_a_missing_visible_path
+    with self.assertRaises((ValueError,OSError)):self.manual.write_and_publish_operator_review(self.backend,record)
+AssertionError: (<class 'ValueError'>, <class 'OSError'>) not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.027s
+
+FAILED (failures=1)

@@ -1,0 +1,22 @@
+{
+  "c9_ast_preserved_functions": 3,
+  "ctp_connections": 0,
+  "files": {
+    "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py": "bf43bd03ea358cdc8a8599a9423c63c1bd9e46eaa70852a99e32555d34a448d3",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_related_regression.log": "29160be16699b7ce9ff538cf50c727a18b4ae075bf3ac9df6f8b0761c18596ef",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_source_proof.json": "ba48e138ca08e4b75f9f2b166e9fe5f4b8b609f384a2101cfd62699e766e624a",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_source_proof.log": "2f4a1cb8375d93eefeb331420b94e7ae15b3cd79e20513d080a987b10c097842",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_weekly_first_green.log": "a4336d2ef96d56132b4dca80a5399ecd0f03d3dbd0a072a2bc92ec056275ad08",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_weekly_red.log": "1e4277c0ab5dc03efa0bd2504adbc01938dee8ea80fc1171ffa099d97434ce2a",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_launcher945_weekly_target_20261101.md": "60a945a277a06df5d5adc2f4c06b4bdbd149ef04e90c5a8ac217ae6f9ccb0821",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_review_launcher945_source_preservation.py": "bc90a98d96d7ccc5f51814f1f549a973bf74f47b0f5810995ef2dcbc2d0aff2d",
+    "tests/test_stage945_production_launcher.py": "f5d244cc7a881a33ee077cf7ea42febee722ab63f6054f9031c2c60c32bc4002"
+  },
+  "financial_replays": 0,
+  "new_weekly_tests": 11,
+  "production_qualified": false,
+  "recorded_at": "2026-11-01T04:52:30.652293+08:00",
+  "schema": "Stage018.launcher945-candidate-lock.v1",
+  "test_seconds": 3.046,
+  "tests": 106
+}

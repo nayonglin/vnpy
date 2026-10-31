@@ -105,7 +105,8 @@ def load_weekly19_controller_authority(*,backend,daily_receipt_path,context_file
   'qmt_roll_weekly19_session_bridge.py','qmt_roll_weekly19_runtime.py','qmt_roll_weekly19_pipeline_state.py','qmt_roll_weekly19_data.py',
   'qmt_roll_weekly19_data_update.py','qmt_roll_weekly19_quote_spool.py','qmt_roll_weekly19_context_update.py',
   'qmt_roll_weekly19_local_backend.py','qmt_roll_weekly19_live_pipeline.py','qmt_roll_weekly19_daily_receipt.py',
-  'qmt_roll_weekly19_funding.py','qmt_roll_weekly19_funding_store.py','qmt_roll_weekly19_warm_evidence.py',
+  'qmt_roll_weekly19_funding.py','qmt_roll_weekly19_funding_store.py','qmt_roll_weekly19_manual_cash.py',
+  'run_qmt_roll_weekly19_manual_cash.py','qmt_roll_weekly19_warm_evidence.py',
   'qmt_roll_weekly19_broker_evidence.py','qmt_roll_weekly19_friday_advice.py','qmt_roll_weekly19_friday_report.py',
   'qmt_roll_weekly19_official_config.py','qmt_roll_weekly19_session_clock.py','run_qmt_roll_weekly19_live.py'))
  _require(required.issubset({row['path']for row in manifest['critical_files']}),'weekly19_controller_critical_source_closure_missing')

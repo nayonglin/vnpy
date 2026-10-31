@@ -1,0 +1,13 @@
+{
+  "exit_code": 1,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "eda5e8cfa9c43601103b9b5094767cbb35183f2f189f81784b669bc767d4ea7d"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py": "eda5e8cfa9c43601103b9b5094767cbb35183f2f189f81784b669bc767d4ea7d"
+  },
+  "source_unchanged": true,
+  "script_sha256": "45f79c4b68f9689b2ccc484ec09cb9062281bb8b48e9c674b54bbff68c58ffba",
+  "log_sha256": "7b6d98337a526555a8bc83577be0a1a0f62d21d71b01b0671c20129df6d527d3",
+  "real_external_actions": false
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "weekly19.operator-manual-cash-candidate.v1",
+  "generated_at": "2026-11-01T04:53:33.964073+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "production_activated": false,
+  "production_installed": false,
+  "real_ctp_connected": false,
+  "real_smtp_sent": false,
+  "real_order_submitted": false,
+  "real_funds_moved": false,
+  "git_index_modified": false,
+  "user_decision": "Stage017 operator_manual; automatic final statement parser/bank transfer producer cancelled",
+  "author_validation": {
+    "suites": 13,
+    "tests": 278,
+    "seconds": 19.032,
+    "result": "OK",
+    "conditional_fixtures_not_production": true,
+    "compile_and_whitespace": "PASS"
+  },
+  "public_api": [
+    "funding.apply_operator_cash_review(state,envelope,current_broker,now,trading_calendar=...)",
+    "manual.manual_cash_status(backend,now=...)",
+    "manual.prepare_operator_review(backend,review_input,operator_id=...,review_id=...,now=...)",
+    "manual.write_and_publish_operator_review(backend,envelope)",
+    "manual.load_private_manual_review(reference)"
+  ],
+  "source_mode": "operator_manual_v1",
+  "funding_schema": "weekly19.external-funding.v2",
+  "review_schema": "weekly19.operator-cash-review.v1",
+  "acceptance_window_seconds": 1800,
+  "actual_equity_available_source": "fresh independently source-qualified CTP; never changed by manual record",
+  "ledger_rules": {
+    "reserve_initial_fen": 15000000,
+    "strict_integer_fen": true,
+    "reserve_plus_confirmed_topup_fen": 15000000,
+    "withdrawal_does_not_refill_reserve": true,
+    "one_new_manual_review_per_actual_commit": true,
+    "history_can_span_multiple_manual_commits": true
+  },
+  "actual_write_strict_manual_parent_callers": [
+    "FundingStore.commit",
+    "FundingStore._recover",
+    "PipelineStateStore.transact"
+  ],
+  "original_signal_decision_and_alpha_unchanged": true,
+  "automatic_source_history_preserved": true,
+  "old_m0001_unchanged": true,
+  "new_release_required": "m0002_or_later",
+  "independent_review": "pure gross/time P1s repaired and reviewer incremental review pending; see separate Stage018_review records",
+  "global_qualification": "root-owned fresh 90-suite run and release/activation/install pending; real CTP not before 2026-11-02 09:00",
+  "files": [
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py",
+      "bytes": 51668,
+      "sha256": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py",
+      "bytes": 12921,
+      "sha256": "07cb5c3360ed4f7475842aa0e71a70d8c2dfafc17ef8aeb3344706ce285aa7c2"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py",
+      "bytes": 8502,
+      "sha256": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py",
+      "bytes": 14706,
+      "sha256": "f6b87af89298ddd6167d6ceeda8635d6bdc4ee32ad4a37c466ef66bcb101b24e"
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py",
+      "bytes": 26706,
+      "sha256": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c"
+    },
+    {
+      "path": "tests/test_weekly19_manual_cash.py",
+      "bytes": 27132,
+      "sha256": "fa13c67f18bf17c25271cb1b0ff51480fdf4edadb555dd13dddef08ef36ac9fc"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_cash_red.log",
+      "bytes": 19479,
+      "sha256": "4d7f89b391e28b433f8c47a7821f3a2654c26bdc9de3d3db415d72bbf57acf5a"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_cash_funding_green.log",
+      "bytes": 98,
+      "sha256": "75d4d99e2c09c8086c79ba16888370737cafbfdddd4b3a39481dde0f8f2a43b0"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_day_window_red.log",
+      "bytes": 854,
+      "sha256": "16d6292ade4bcd527d226a5cded64fc678e8e3dc60a4146aff7c029043dccac7"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_cash_store_green.log",
+      "bytes": 98,
+      "sha256": "a28790414c93bfd145155ac43f384eba3be0d5311410deded1a6bf41fd7446b3"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_gross_validator_green.log",
+      "bytes": 98,
+      "sha256": "d79d3cbbf0032e62796a26c41d52c7045c1fa9915305923dde3d231de2668d08"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_applied_window_red.log",
+      "bytes": 802,
+      "sha256": "f2ed085fc2151f22293127278ed9e91d0de32ace538b4023fbf04ec13e1ffb09"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_persisted_window_green.log",
+      "bytes": 98,
+      "sha256": "9e1236e477a6e61a9ba6996a7d2a0af5f7cd3e7b3c35bafb1a3746c1c51c424f"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_private_entry_red.log",
+      "bytes": 3144,
+      "sha256": "47b9b2dbacc28e62e71f8abffb1737e78e5fc05455e8844591552950e0c63027"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_private_entry_green.log",
+      "bytes": 97,
+      "sha256": "78bab3e0a410918707006aca26d290b7f9843011f8f54f8c2d0f8565548a7c57"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_publication_clock_red.log",
+      "bytes": 878,
+      "sha256": "e7e1756378a6b246d56dd717abad3f36a11ef071d4e088d109cf0c2e4a8e83c3"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_publication_clock_green.log",
+      "bytes": 97,
+      "sha256": "baac8585fe61c0b4e40d95dabc08f4a19b486f161cc89d12ea6bad37a51d3c7f"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_backend_red.log",
+      "bytes": 3011,
+      "sha256": "afcdf5768479a8a91bb6d597e4f07624af0d860e115c848c7ce364ba4ba9219b"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_backend_green.log",
+      "bytes": 225,
+      "sha256": "138d470db10f4bc6ea9e825c9852bf480a59cc414504b24272b48426bff916df"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_actor_integration.log",
+      "bytes": 3434,
+      "sha256": "8a6089a3c1d478ef942cabc9758cda86e9ba57a1e5d7de70d3cb9d305d92dce6"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_actor_integration_green.log",
+      "bytes": 96,
+      "sha256": "a9b4d6326c17e637e831deaec61f92e0bdf68fc2d42bfb8a5165860bba21267b"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_history_parent_red.log",
+      "bytes": 1053,
+      "sha256": "42eaaca1e9cd181d239c24b89c8a8eed51a86024c9a03f64dafed30c632442d4"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_history_actor_green.log",
+      "bytes": 100,
+      "sha256": "ddf953f747bbbdf6a0b8dbb77e75f57275ee03ca32e154d47215aeb4b6c54d30"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_input_shape_red.log",
+      "bytes": 2328,
+      "sha256": "b070e67880f9f4d32cb22c9857e87797575bbfb85398cf05d2e35d1522921854"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_input_shape_green.log",
+      "bytes": 98,
+      "sha256": "314da2d6bef5099d587cf95f128b585b481886262a2e25bd4cc8663f28f5bebe"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_cashref_shape_red.log",
+      "bytes": 9264,
+      "sha256": "6272f3fa4a7f961f9117b28ac8cde1cacd346400aaa4536968b5d801db5e5557"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_cashref_shape_green.log",
+      "bytes": 98,
+      "sha256": "d8116114613555f735dbbb4e865da7a4641f80d2ce4274a8c23df3e9a4cd73f4"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_record_parent_red.log",
+      "bytes": 886,
+      "sha256": "4d4a1e951027ebf7d4a9dd67e036a71630b35d271b290868b6d2e297a759090b"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_record_parent_green.log",
+      "bytes": 98,
+      "sha256": "1d53b454f82e075371bf958da547495d00127c1a7abe1a312357bba081c40dc5"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_manual_pending_close_gate.log",
+      "bytes": 96,
+      "sha256": "42bb4a31114240a4608ac793c9368b604bdd5a7a866cc23fe47d666333cf0747"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_Stage018_author_stage018_manual_author_final.log",
+      "bytes": 226,
+      "sha256": "cc7d8a5cfe1058e71270ab7e8e7f66d8757613dff4bdfd37f13c8f6c99e4a9e4"
+    }
+  ]
+}

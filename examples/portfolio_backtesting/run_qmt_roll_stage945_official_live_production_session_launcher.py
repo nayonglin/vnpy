@@ -636,9 +636,135 @@ def _assert_canonical_paths(
             )
 
 
+_WEEKLY19_CALENDAR_SOURCE = 'weekly19_private_context_pinned_market_calendar'
+
+
+def _resolve_weekly19_target_date(*, data_ready_time: str, now: datetime | None = None):
+    """Resolve only the weekly private context; never Stage922/C9 mapping."""
+    from csv import DictReader
+    from datetime import date
+    from types import SimpleNamespace
+    from zoneinfo import ZoneInfo
+    from qmt_roll_weekly19_local_backend import private_json
+    from qmt_roll_weekly19_context_update import resolve_completed_target
+    from qmt_roll_weekly19_controller import immutable_context_digest
+    from qmt_roll_weekly19_data import FILES, _sha
+    context_path = PRODUCTION_RUNTIME_ROOT / 'weekly19/context.json'
+    try:
+        at = now or datetime.now().astimezone()
+        if at.tzinfo is None:
+            raise ValueError('aware_clock_required')
+        at = at.astimezone(ZoneInfo('Asia/Shanghai'))
+        cfg = private_json(context_path)
+        profile = resolve_configured_execution_profile()
+        if (cfg.get('schema') != 'weekly19.live-context.v1'
+                or cfg.get('execution_profile') != profile.profile_key
+                or profile.decision_mode != 'weekly19'):
+            raise ValueError('weekly_profile_required')
+        cold = cfg['cold_start_date']
+        if not isinstance(cold, str) or not _DATE_RE.fullmatch(cold) or date.fromisoformat(cold).isoformat() != cold:
+            raise ValueError('context_cold_start_date_invalid')
+        ready_hour, ready_minute = [int(v) for v in data_ready_time.split(':')]
+        if not (0 <= ready_hour <= 23 and 0 <= ready_minute <= 59 and (ready_hour, ready_minute) >= (15, 0)):
+            raise ValueError('weekly_completed_data_ready_time_invalid')
+        # This public resolver verifies all five source pins, the explicit
+        # calendar hash, real date values and forward coverage beyond today.
+        completed = resolve_completed_target(SimpleNamespace(config=cfg), at)
+        market = cfg['market_data']; calendar_path = Path(market['forward_calendar'])
+        if not calendar_path.is_absolute() or calendar_path.is_symlink():
+            raise ValueError('weekly_pinned_calendar_file_required')
+        calendar_sha = market['expected_hashes'].get('forward_calendar') or market['expected_hashes'].get(calendar_path.name)
+        if not calendar_sha or _sha(calendar_path) != calendar_sha:
+            raise ValueError('weekly_calendar_pin_mismatch')
+        with calendar_path.open() as stream:
+            days = sorted(row['date'] for row in DictReader(stream))
+        today = at.date().isoformat(); ready = (at.hour, at.minute) >= (ready_hour, ready_minute)
+        eligible = [day for day in days if day <= completed and (day < today or ready and day == today)]
+        if not eligible:
+            raise ValueError('weekly_ready_completed_target_missing')
+        target = max(eligible); following = next(day for day in days if day > target)
+        context_sha = immutable_context_digest(cfg)
+        if (immutable_context_digest(private_json(context_path)) != context_sha
+                or _sha(calendar_path) != calendar_sha):
+            raise ValueError('weekly_context_or_calendar_changed_during_resolution')
+        before = target < cold
+        payload = dict(
+            resolver_status='weekly19_target_before_context_cold_start_waiting_fail_closed' if before else 'weekly19_target_date_resolved',
+            resolved_target_date=target, execution_profile=profile.profile_key,
+            material_release_id=cfg['material_release_id'], cold_start_date=cold,
+            target_before_cold_start=int(before), order_api_called_count=0,
+            resolver_evidence=dict(trading_calendar_source=_WEEKLY19_CALENDAR_SOURCE,
+                as_of=at.isoformat(), data_ready_time=data_ready_time,
+                wall_clock_cutoff_date=(at.date() if ready else at.date()-timedelta(days=1)).isoformat(),
+                context_file=str(context_path), immutable_context_sha256=context_sha,
+                cold_start_date=cold, calendar_path=str(calendar_path), calendar_sha256=calendar_sha,
+                source_hashes={name:market['expected_hashes'][name] for name in FILES},
+                trading_dates=days, next_trading_session_date=following))
+        return target, payload
+    except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+        raise ProductionSessionLaunchError('production_launcher_weekly19_target_context_invalid') from exc
+
+
+def _validate_weekly19_resolution(resolver_payload):
+    """Recheck source bindings; only cash_sources may change independently."""
+    try:
+        evidence = resolver_payload['resolver_evidence']
+        if evidence['trading_calendar_source'] != _WEEKLY19_CALENDAR_SOURCE:
+            raise ValueError('weekly_calendar_source_required')
+        as_of = datetime.fromisoformat(evidence['as_of'])
+        target, expected = _resolve_weekly19_target_date(data_ready_time=evidence['data_ready_time'], now=as_of)
+        if resolver_payload != expected:
+            raise ValueError('weekly_resolution_or_cold_start_binding_changed')
+        return target, evidence
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ProductionSessionLaunchError('production_launcher_weekly19_resolver_evidence_invalid') from exc
+
+
+def _validate_weekly19_calendar_window(*, receipt, resolver_payload, now=None):
+    from zoneinfo import ZoneInfo
+    target, evidence = _validate_weekly19_resolution(resolver_payload)
+    at = now or datetime.now().astimezone()
+    if at.tzinfo is None:
+        raise ProductionSessionLaunchError('production_launcher_weekly19_calendar_aware_clock_required')
+    at = at.astimezone(ZoneInfo('Asia/Shanghai'))
+    as_of = datetime.fromisoformat(evidence['as_of'])
+    if as_of.date() != at.date() or as_of > at:
+        raise ProductionSessionLaunchError('production_launcher_weekly19_calendar_evidence_stale_or_future')
+    current_target, _ = _resolve_weekly19_target_date(data_ready_time=evidence['data_ready_time'], now=at)
+    inner = receipt.get('data_receipt', {})
+    semantic = receipt.get('data_inventory', {}).get('semantic_freshness', {})
+    following = evidence['next_trading_session_date']
+    if (receipt.get('execution_profile') != resolver_payload['execution_profile']
+            or receipt.get('material_release_id') != resolver_payload['material_release_id']
+            or receipt.get('target_cutoff_date') != target or target != current_target
+            or inner.get('trading_date') != target
+            or inner.get('calendar_provenance', {}).get('sha256') != evidence['calendar_sha256']
+            or inner.get('source_hashes') != evidence['source_hashes']
+            or semantic.get('next_trading_session_date') != following):
+        raise ProductionSessionLaunchError('production_launcher_weekly19_calendar_receipt_binding_invalid')
+    today = at.date().isoformat(); days = evidence['trading_dates']
+    if today not in days:
+        continuation = (at.weekday() == 5 and 'late_night' in _active_session_names(at)
+                        and target == (at.date()-timedelta(days=1)).isoformat())
+        if continuation:
+            return 'authorized_trading_session'
+        if target < today < following:
+            return 'skipped_non_trading_day'
+        raise ProductionSessionLaunchError('production_launcher_weekly19_today_not_in_calendar')
+    hour, minute = [int(v) for v in evidence['data_ready_time'].split(':')]
+    if (at.hour, at.minute) < (hour, minute):
+        if following != today:
+            raise ProductionSessionLaunchError('production_launcher_weekly19_today_not_next_session')
+    elif target != today:
+        raise ProductionSessionLaunchError('production_launcher_weekly19_after_close_target_mismatch')
+    return 'authorized_trading_session'
+
+
 def _resolve_target_date(
-    environment: Mapping[str, str], *, data_ready_time: str = "16:30"
+    environment: Mapping[str, str], *, data_ready_time: str = "16:30", now: datetime | None = None
 ) -> tuple[str, dict[str, Any]]:
+    if resolve_configured_execution_profile().decision_mode == "weekly19":
+        return _resolve_weekly19_target_date(data_ready_time=data_ready_time, now=now)
     try:
         result = subprocess.run(
             [
@@ -692,6 +818,11 @@ def _target_is_before_live_shadow_start(
     target_date: str,
     resolver_payload: Mapping[str, Any],
 ) -> bool:
+    if resolve_configured_execution_profile().decision_mode == "weekly19":
+        bound_target, _ = _validate_weekly19_resolution(resolver_payload)
+        if bound_target != target_date:
+            raise ProductionSessionLaunchError("production_launcher_weekly19_cold_start_target_mismatch")
+        return target_date < resolver_payload["cold_start_date"]
     waiting_status = (
         "target_date_before_live_shadow_start_waiting_fail_closed"
     )
@@ -716,6 +847,8 @@ def _validate_target_date_calendar_window(
     resolver_payload: Mapping[str, Any],
     now: datetime | None = None,
 ) -> str:
+    if resolve_configured_execution_profile().decision_mode == "weekly19":
+        return _validate_weekly19_calendar_window(receipt=receipt, resolver_payload=resolver_payload, now=now)
     evidence = resolver_payload.get("resolver_evidence")
     inventory = receipt.get("data_inventory")
     semantic = inventory.get("semantic_freshness") if isinstance(inventory, dict) else None
@@ -1124,9 +1257,10 @@ def launch_session(args: argparse.Namespace) -> None:
                     "session": spec.session,
                     "launcher_status": "skipped_before_live_shadow_start",
                     "target_date": target_date,
-                    "official_live_shadow_analysis_start_date": (
-                        OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE
-                    ),
+                    **({"weekly19_context_cold_start_date": resolver["cold_start_date"],
+                        "cold_start_source": _WEEKLY19_CALENDAR_SOURCE}
+                        if resolve_configured_execution_profile().decision_mode == "weekly19"
+                        else {"official_live_shadow_analysis_start_date": OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE}),
                     "stage930_exec_called_count": 0,
                     "ctp_connection_attempted_count": 0,
                     "send_order_api_called_count": 0,

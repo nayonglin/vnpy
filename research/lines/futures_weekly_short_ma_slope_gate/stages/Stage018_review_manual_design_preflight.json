@@ -1,0 +1,48 @@
+{
+  "schema": "Stage018.independent-manual-design-preflight.v1",
+  "recorded_at": "2026-11-01T04:30:54.689415+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "status": "DESIGN_CONDITIONALLY_ACCEPTED_IMPLEMENTATION_NOT_REVIEWED",
+  "accepted_design_scope": true,
+  "implementation_accepted": false,
+  "production_qualified": false,
+  "source_qualified": false,
+  "scope_findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "mandatory_implementation_validation": [
+    "人工现金来源与broker自动核验分列：operator_manual，不生成自动HMAC，不赋source/production qualified；人工记录不是订单许可。",
+    "E与Available永远来自当前fresh/source-qualified真实CTP；手填金额/余额差/历史模拟仓位不能credit账户；真实持仓、订单、报价、session/原风险全部仍验。",
+    "新生产模式及manual目录是immutable context；缺mode不能默认通过。人工文件只append私有cashrefs，由同actor+PipelineStateStore CAS消费；CLI不直接写活跃fund/runtime。",
+    "唯一record_id和receipt_id跨review去重；同id异bytes拒，已消费不重复扣R或续期；R+T=15000000分，T/R非负，上限不变，提现不恢复R。",
+    "同TradingDay gross Deposit/Withdraw非负且不低于已知checkpoint，closed_days final也不得倒退；新增Deposit逐笔人工T覆盖，未知cash不silent ready。",
+    "所有闭日按实际交易日历精确覆盖并有单调时序；真实TradingDay处理Friday夜盘到Monday，不用自然日猜测重置；无自动final parser仍可用明示人工责任。",
+    "30分钟是未消费review受理窗口，已消费历史事实不因过期抹掉；新现金计数/TradingDay仍需新review，不可永久toggle豁免。",
+    "原fund revision/checkpoint/amount/release/account/request/admission/data source全部绑定；stale或错误refs不得部分消费或吞掉失败。",
+    "落人工文件、cashref CAS和actor消费三个状态分清；失败显示pending并保留原bytes，重试不延寿、不重复入账；恢复需与实际store一致。",
+    "建议不是债务，E恢复15万不强迫补旧差；缺人工记录只限制未核现金支持的新开，保留真实减风险/平仓路径。"
+  ],
+  "automatic_final_parser_required": false,
+  "automatic_bank_transfer_producer_required": false,
+  "user_manual_verification_responsibility_accepted": true,
+  "real_ctp_account_positions_quote_gates_required": true,
+  "real_ctp_not_before": "2026-11-02T09:00:00+08:00",
+  "weekend_retry": false,
+  "source_design_sha256": "68f798106b3834a3530f43a8366a049f2e80c7a7d85e8ea0aaa5d1a2f4455525",
+  "snapshot_file": "Stage018_review_manual_design_input.md",
+  "snapshot_sha256": "68f798106b3834a3530f43a8366a049f2e80c7a7d85e8ea0aaa5d1a2f4455525",
+  "stage017_decision_sha256": {
+    "20261031_2139_stage017_manual_cash_verification_decision.md": "fd36011bf220ab5b4056d43f99304fc44d8bb8d1354d5170174b23c08bcd33c6",
+    "20261031_2139_stage017_manual_cash_verification_decision.json": "5f7b6efc6d0719b4919b7da7e88760073245f908a9542208fcff2831b9a206ae"
+  },
+  "chinese_record_sha256": "b835f91df81bf4048cb071e4a5d30be4416ac28d90e0e8db652fc446e0b0826d",
+  "signal_review_sha256": "d61b205fe57eded876dbfac3a31aea9e1bf201d7c0ff91c2644de3641a6a462e",
+  "financial_replays": 0,
+  "real_external_actions": false,
+  "git_index_modified": false,
+  "old_records_modified": false,
+  "overfitting": false,
+  "continuing_value": true
+}

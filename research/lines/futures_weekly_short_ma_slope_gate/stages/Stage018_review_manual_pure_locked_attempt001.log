@@ -1,0 +1,14 @@
+................................................................................E....
+======================================================================
+ERROR: test_manual_schema_cannot_create_auto_receipt_or_qualification (Stage018_review_manual_pure_boundaries.ManualPureIndependent.test_manual_schema_cannot_create_auto_receipt_or_qualification)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_pure_boundaries.py", line 38, in test_manual_schema_cannot_create_auto_receipt_or_qualification
+    with self.assertRaises(ValueError):funds.confirm_topup(state,record,current,at)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: confirm_topup() missing 1 required positional argument: 'now'
+
+----------------------------------------------------------------------
+Ran 85 tests in 0.235s
+
+FAILED (errors=1)

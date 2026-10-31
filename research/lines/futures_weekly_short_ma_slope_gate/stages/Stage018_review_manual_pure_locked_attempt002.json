@@ -1,0 +1,25 @@
+{
+  "tests": 85,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "4617b1b9509a83e5d4c8b2ae2fae983950811256d022a233b38e9b5da2f7ef47",
+    "tests/test_weekly19_manual_cash.py": "42ee33362d9c962935e7b4fe1a3cbca8d839008235293ba12ba27290dd1d2ace",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "4617b1b9509a83e5d4c8b2ae2fae983950811256d022a233b38e9b5da2f7ef47",
+    "tests/test_weekly19_manual_cash.py": "42ee33362d9c962935e7b4fe1a3cbca8d839008235293ba12ba27290dd1d2ace",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "source_unchanged": true,
+  "independent_cases": 12,
+  "log_sha256": "9fca387965e2aa833306111948ef43c7272bcf3b3cd0bdaf52d17b7d1fe784ed",
+  "production_qualified": false,
+  "source_qualified": false,
+  "real_external_actions": false,
+  "prior_attempt_adapter_error": "Auditor omitted request_id in confirm_topup call; only new audit-script version changed, implementation unchanged"
+}

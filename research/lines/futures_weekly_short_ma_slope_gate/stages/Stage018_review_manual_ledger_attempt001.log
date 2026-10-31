@@ -1,0 +1,21 @@
+FF
+======================================================================
+FAIL: test_store_rejects_same_parent_corrupt_manual_review_before_commit (__main__.ManualLedgerIndependent.test_store_rejects_same_parent_corrupt_manual_review_before_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_ledger_adversarial.py", line 29, in test_store_rejects_same_parent_corrupt_manual_review_before_commit
+    with self.assertRaises(ValueError,msg='Crossday CAS cannot accept T increase unsupported by manual gross Deposit'):
+AssertionError: ValueError not raised : Crossday CAS cannot accept T increase unsupported by manual gross Deposit
+
+======================================================================
+FAIL: test_validate_rejects_claimed_topup_without_declared_gross_deposit (__main__.ManualLedgerIndependent.test_validate_rejects_claimed_topup_without_declared_gross_deposit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_ledger_adversarial.py", line 22, in test_validate_rejects_claimed_topup_without_declared_gross_deposit
+    with self.assertRaises(ValueError,msg='Closed Friday Deposit0 cannot support Friday manual T30000 even with self-consistent hashes'):
+AssertionError: ValueError not raised : Closed Friday Deposit0 cannot support Friday manual T30000 even with self-consistent hashes
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.006s
+
+FAILED (failures=2)

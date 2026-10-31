@@ -1,0 +1,40 @@
+======================================================================
+FAIL: test_prepared_record_is_private_and_only_cash_reference_is_published (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_prepared_record_is_private_and_only_cash_reference_is_published)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 134, in setUp
+    self.assertIsNotNone(manual,'manual private record component missing');self.manual=manual
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : manual private record component missing
+
+======================================================================
+FAIL: test_private_source_hash_permissions_symlinks_and_mode_are_enforced (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_private_source_hash_permissions_symlinks_and_mode_are_enforced)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 134, in setUp
+    self.assertIsNotNone(manual,'manual private record component missing');self.manual=manual
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : manual private record component missing
+
+======================================================================
+FAIL: test_record_written_but_reference_cas_failure_is_explicit_and_retry_keeps_original_bytes (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_record_written_but_reference_cas_failure_is_explicit_and_retry_keeps_original_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 134, in setUp
+    self.assertIsNotNone(manual,'manual private record component missing');self.manual=manual
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : manual private record component missing
+
+======================================================================
+FAIL: test_repeat_reuses_bytes_without_extending_expiry_or_duplicate_ref (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_repeat_reuses_bytes_without_extending_expiry_or_duplicate_ref)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 134, in setUp
+    self.assertIsNotNone(manual,'manual private record component missing');self.manual=manual
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : manual private record component missing
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+FAILED (failures=4)

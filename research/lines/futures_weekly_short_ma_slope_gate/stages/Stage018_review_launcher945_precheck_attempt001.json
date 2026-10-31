@@ -1,0 +1,9 @@
+{
+  "status": "AUDITOR_AST_SCOPE_CORRECTED",
+  "initial_precheck_asserted_whole_function_instead_of_legacy_body": true,
+  "tests_run": 0,
+  "source_unchanged": true,
+  "argument_changes": {
+    "_resolve_target_date": "New optional keyword-only now=None for weekly resolver; C9 body unchanged"
+  }
+}

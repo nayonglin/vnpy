@@ -1,0 +1,13 @@
+======================================================================
+FAIL: test_reference_retry_repeats_failed_context_directory_durability_barrier (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_reference_retry_repeats_failed_context_directory_durability_barrier)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 199, in test_reference_retry_repeats_failed_context_directory_durability_barrier
+    self.assertTrue(second['reference_published']);self.assertGreaterEqual(len(barriers),2)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 not greater than or equal to 2
+
+----------------------------------------------------------------------
+Ran 1 test in 0.028s
+
+FAILED (failures=1)

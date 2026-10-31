@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_topup_cannot_be_assigned_to_a_day_closed_before_the_actual_transfer (tests.test_weekly19_manual_cash.ManualFundingTests.test_topup_cannot_be_assigned_to_a_day_closed_before_the_actual_transfer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 86, in test_topup_cannot_be_assigned_to_a_day_closed_before_the_actual_transfer
+    with self.assertRaises(ValueError):self.apply(state,review(state,current,closed=[close(dep=3000000)],topups=[wrong]),current)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

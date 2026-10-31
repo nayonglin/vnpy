@@ -1,0 +1,101 @@
+{
+  "calendar_end": "2026-11-22",
+  "calendar_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/forward_calendar.csv",
+  "calendar_semantics": "installed_TQSDK_weekday_and_actual_vendor_holiday_table; no caller_bdate_guess; future main assignments are calendar-only estimates not execution metadata",
+  "calendar_sha256": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+  "calendar_start": "2026-10-30",
+  "code_sources_after": {
+    "examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py": "4584e1e290138a10c9f5c3d0130f0070534e7ae831d55c45e4874f973dbfbedb",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_calendar_generation.py": "b2e0876eb702b6a0da89d29b32b855fa0a499b5c897985361c80cce6dbfe1865"
+  },
+  "code_sources_before": {
+    "examples/portfolio_backtesting/build_qmt_roll_stage173_forward_main_contract_data_update.py": "4584e1e290138a10c9f5c3d0130f0070534e7ae831d55c45e4874f973dbfbedb",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "research/lines/futures_weekly_short_ma_slope_gate/tools/Stage018_signal_scope_calendar_generation.py": "b2e0876eb702b6a0da89d29b32b855fa0a499b5c897985361c80cce6dbfe1865"
+  },
+  "code_unchanged": true,
+  "credential_source_path": "/Users/mac/Desktop/person/vnpy_production_live/.vntrader/vt_setting.json",
+  "credential_values_serialized": false,
+  "ctp_connections": 0,
+  "fixed19_columns": [
+    "KQ.m@CZCE.AP",
+    "KQ.m@CZCE.CF",
+    "KQ.m@CZCE.FG",
+    "KQ.m@CZCE.MA",
+    "KQ.m@CZCE.OI",
+    "KQ.m@CZCE.SA",
+    "KQ.m@CZCE.SH",
+    "KQ.m@CZCE.SM",
+    "KQ.m@DCE.jm",
+    "KQ.m@DCE.lh",
+    "KQ.m@GFEX.lc",
+    "KQ.m@GFEX.si",
+    "KQ.m@SHFE.au",
+    "KQ.m@SHFE.cu",
+    "KQ.m@SHFE.fu",
+    "KQ.m@SHFE.hc",
+    "KQ.m@SHFE.rb",
+    "KQ.m@SHFE.ru",
+    "KQ.m@SHFE.sp"
+  ],
+  "future_calendar_days_coverage": 21,
+  "generation_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28",
+  "holiday_source_coverage": [
+    "2003-01-01",
+    "2026-12-31"
+  ],
+  "market_daily_downloads": 0,
+  "next_trading_day": "2026-11-02",
+  "old_frozen_sources_after": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/raw/fresh_calendar.csv": "f4699f7e95651e04acce40d6dedb394691ab3e493f558292123c52e30e283174"
+  },
+  "old_frozen_sources_before": {
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/raw/fresh_calendar.csv": "f4699f7e95651e04acce40d6dedb394691ab3e493f558292123c52e30e283174"
+  },
+  "old_frozen_sources_unchanged": true,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "receipt_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/receipt.json",
+  "receipt_sha256": "ce20bea204a2f78bef1233ca9af5a93ae092231b82c8fcfaea5bf4a78962ea15",
+  "recorded_at": "2026-11-01T04:33:15.857490+08:00",
+  "reuse_old_snapshot": false,
+  "schema": "Stage018.actual-tq-calendar-generation.v1",
+  "scope": "calendar_only_no_strategy_or_account",
+  "sdk": {
+    "calendar_source_path": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/tqsdk/calendar.py",
+    "calendar_source_sha256": "2cd3b619b3d2dd683297d12541ca8a2722bf993fd309c5d5f1273fa46f458d47",
+    "version": "3.10.2"
+  },
+  "status": "captured_actual_tq_calendar_conditional",
+  "tq_auth_http_status": 200,
+  "trading_dates": [
+    "2026-10-30",
+    "2026-11-02",
+    "2026-11-03",
+    "2026-11-04",
+    "2026-11-05",
+    "2026-11-06",
+    "2026-11-09",
+    "2026-11-10",
+    "2026-11-11",
+    "2026-11-12",
+    "2026-11-13",
+    "2026-11-16",
+    "2026-11-17",
+    "2026-11-18",
+    "2026-11-19",
+    "2026-11-20"
+  ],
+  "trading_dates_sha256": "7d20064c642019f9384a94c021804957c777b60c80dd8e6122d976f3d420ad04"
+}

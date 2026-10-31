@@ -1,0 +1,109 @@
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (badref_type='NoneType')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 244, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 171, in reconcile_cash
+    record=load_private_manual_review(reference)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 55, in load_private_manual_review
+    path=Path(reference['path'])
+              ~~~~~~~~~^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (badref_type='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 244, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 171, in reconcile_cash
+    record=load_private_manual_review(reference)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 55, in load_private_manual_review
+    path=Path(reference['path'])
+              ~~~~~~~~~^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (badref_type='dict')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 244, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 171, in reconcile_cash
+    record=load_private_manual_review(reference)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 55, in load_private_manual_review
+    path=Path(reference['path'])
+              ~~~~~~~~~^^^^^^^^
+KeyError: 'path'
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (badref_type='dict')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 244, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 171, in reconcile_cash
+    record=load_private_manual_review(reference)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 55, in load_private_manual_review
+    path=Path(reference['path'])
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py", line 871, in __new__
+    self = cls._from_parts(args)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py", line 509, in _from_parts
+    drv, root, parts = self._parse_args(args)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py", line 493, in _parse_args
+    a = os.fspath(a)
+        ^^^^^^^^^^^^
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (sources_type='NoneType')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 249, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 162, in reconcile_cash
+    references=sources.get('manual_reviews',[])
+               ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (sources_type='list')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 249, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 162, in reconcile_cash
+    references=sources.get('manual_reviews',[])
+               ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+ERROR: test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit (tests.test_weekly19_manual_cash.ManualBackendTests.test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit) (sources_type='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 249, in test_mutable_cash_json_shapes_remain_readable_pending_without_partial_credit
+    output=self.backend.reconcile_cash(self.state,dict(account=self.current),self.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 162, in reconcile_cash
+    references=sources.get('manual_reviews',[])
+               ^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'get'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.031s
+
+FAILED (errors=7)

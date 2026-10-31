@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_renamed_record_parent_cannot_publish_success_for_a_missing_visible_record (__main__.ManualIOIndependent.test_renamed_record_parent_cannot_publish_success_for_a_missing_visible_record)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_io_adversarial.py", line 20, in test_renamed_record_parent_cannot_publish_success_for_a_missing_visible_record
+    self.assertFalse(result.get('reference_published')is True and not Path(result['reference']['path']).is_file(),
+AssertionError: True is not false : CLI reported reference publication success for an already-missing visible manual record
+
+----------------------------------------------------------------------
+Ran 1 test in 0.294s
+
+FAILED (failures=1)

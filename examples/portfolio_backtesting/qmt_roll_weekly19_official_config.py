@@ -22,7 +22,8 @@ OPERATOR_REQUEST='replace_formal_master_and_local_production_after_qualification
 EXECUTION_POLICY=dict(execution_profile=PROFILE.profile_key,base_capital=CAPITAL,external_reserve=EXTERNAL_RESERVE,
  risk_capital='actual_trading_account_equity_including_mark_to_market',reserve_participates_in_equity=False,
  reserve_participates_in_margin=False,funding_recommendation='native_admission_before_sizing_friday_afternoon',
- funding_credit='actual_broker_cashflow_confirmed_only',funding_transfer_api_enabled=False,
+ cash_verification_mode='operator_manual_v1',
+ funding_credit='operator_review_of_actual_broker_cashflow_only',funding_transfer_api_enabled=False,
  protection_timing='fresh_completed_week_close',intraday_stop_retry_enabled=False,
  signal_sources=sorted(PROFILE.allowed_intent_sources),ai_enabled=False,add_on_enabled=False)
 

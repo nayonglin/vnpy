@@ -1,0 +1,14 @@
+.F
+======================================================================
+FAIL: test_retry_after_context_directory_fsync_failure_retries_that_durability_barrier (__main__.ManualIOIndependent.test_retry_after_context_directory_fsync_failure_retries_that_durability_barrier)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_io_adversarial_v2.py", line 34, in test_retry_after_context_directory_fsync_failure_retries_that_durability_barrier
+    self.assertTrue(second['reference_published']);self.assertGreaterEqual(len(root_sync),2,
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 not greater than or equal to 2 : Existing reference retry skipped context directory fsync and falsely upgraded unknown durability to success
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.298s
+
+FAILED (failures=1)

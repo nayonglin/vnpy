@@ -1,0 +1,202 @@
+======================================================================
+FAIL: test_balance_profit_never_becomes_a_transfer (tests.test_weekly19_manual_cash.ManualFundingTests.test_balance_profit_never_becomes_a_transfer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 59, in test_balance_profit_never_becomes_a_transfer
+    unchanged=self.apply(state,review(state,profit),profit)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_confirmed_actual_deposit_debits_reserve_only_and_keeps_raw_equity_untouched (tests.test_weekly19_manual_cash.ManualFundingTests.test_confirmed_actual_deposit_debits_reserve_only_and_keeps_raw_equity_untouched)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 42, in test_confirmed_actual_deposit_debits_reserve_only_and_keeps_raw_equity_untouched
+    updated=self.apply(state,record,current)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_cross_day_manual_close_and_already_received_current_day_cash_need_no_auto_parser (tests.test_weekly19_manual_cash.ManualFundingTests.test_cross_day_manual_close_and_already_received_current_day_cash_need_no_auto_parser)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 72, in test_cross_day_manual_close_and_already_received_current_day_cash_need_no_auto_parser
+    updated=self.apply(state,record,current)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_duplicate_receipt_across_reviews_and_rewritten_record_are_rejected (tests.test_weekly19_manual_cash.ManualFundingTests.test_duplicate_receipt_across_reviews_and_rewritten_record_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 93, in test_duplicate_receipt_across_reviews_and_rewritten_record_are_rejected
+    record=review(state,current,topups=[topup(rid,1000000)]);updated=self.apply(state,record,current)
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_missing_closed_day_and_unlisted_holiday_window_cash_fail_atomically (tests.test_weekly19_manual_cash.ManualFundingTests.test_missing_closed_day_and_unlisted_holiday_window_cash_fail_atomically)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 80, in test_missing_closed_day_and_unlisted_holiday_window_cash_fail_atomically
+    with self.assertRaises(ValueError):self.apply(state,review(state,current,closed=good[:1],topups=transfers),current)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_negative_regressing_gross_counters_and_withdrawal_never_refill_reserve (tests.test_weekly19_manual_cash.ManualFundingTests.test_negative_regressing_gross_counters_and_withdrawal_never_refill_reserve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 85, in test_negative_regressing_gross_counters_and_withdrawal_never_refill_reserve
+    updated=self.apply(state,review(state,current),current)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_partial_then_full_and_replay_after_expiry_never_debits_twice (tests.test_weekly19_manual_cash.ManualFundingTests.test_partial_then_full_and_replay_after_expiry_never_debits_twice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 51, in test_partial_then_full_and_replay_after_expiry_never_debits_twice
+    partial=self.apply(state,record,one);self.assertEqual(partial['requests'][rid]['status'],'partially_confirmed')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_stale_parent_hash_cannot_consume_any_amount_and_store_cannot_rollback_manual_history (tests.test_weekly19_manual_cash.ManualFundingTests.test_stale_parent_hash_cannot_consume_any_amount_and_store_cannot_rollback_manual_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 115, in test_stale_parent_hash_cannot_consume_any_amount_and_store_cannot_rollback_manual_history
+    with self.assertRaises(ValueError):self.apply(moved,record,current)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_unknown_deposit_or_counter_change_cannot_be_covered_by_a_manual_flag (tests.test_weekly19_manual_cash.ManualFundingTests.test_unknown_deposit_or_counter_change_cannot_be_covered_by_a_manual_flag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 65, in test_unknown_deposit_or_counter_change_cannot_be_covered_by_a_manual_flag
+    with self.assertRaises(ValueError):self.apply(state,review(state,current,topups=[topup(rid)]),current)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (key='account_key')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 103, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(key=key),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (key='material_release_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 103, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(key=key),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (key='source_kind')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 103, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(key=key),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (key='expected_reserve_remaining_fen')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 103, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(key=key),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (value=3000000.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 106, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(value=value),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 106, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(value=value),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (value=-1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 106, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(value=value),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract) (value=15000001)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 106, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.subTest(value=value),self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+======================================================================
+FAIL: test_wrong_account_release_admission_mode_expired_stale_and_integer_contract (tests.test_weekly19_manual_cash.ManualFundingTests.test_wrong_account_release_admission_mode_expired_stale_and_integer_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 108, in test_wrong_account_release_admission_mode_expired_stale_and_integer_contract
+    with self.assertRaises(ValueError):self.apply(state,envelope(raw),current)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 37, in apply
+    self.assertTrue(callable(getattr(funds,'apply_operator_cash_review',None)),'manual funding transition missing')
+AssertionError: False is not true : manual funding transition missing
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.004s
+
+FAILED (failures=18)

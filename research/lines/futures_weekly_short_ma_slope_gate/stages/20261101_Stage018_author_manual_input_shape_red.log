@@ -1,0 +1,26 @@
+======================================================================
+ERROR: test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion) (key='topups', value_type='NoneType')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 193, in test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion
+    self.manual.prepare_operator_review(self.backend,bad,operator_id='offline',review_id='bad-input',now=self.at)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py", line 171, in prepare_operator_review
+    for row in review_input['topups']:
+TypeError: 'NoneType' object is not iterable
+
+======================================================================
+FAIL: test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion (tests.test_weekly19_manual_cash.ManualPrivateEntryTests.test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_manual_cash.py", line 194, in test_malformed_input_is_rejected_before_live_source_reads_or_record_expansion
+    self.manual._live_inputs.assert_not_called();self.assertEqual(list(self.records.iterdir()),[])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 900, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected '_live_inputs' to not have been called. Called 1 times.
+Calls: [call(<qmt_roll_weekly19_local_backend.LocalEvidenceBackend object at 0x10e689150>, datetime.datetime(2026, 10, 30, 16, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=28800))))].
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+FAILED (failures=1, errors=1)

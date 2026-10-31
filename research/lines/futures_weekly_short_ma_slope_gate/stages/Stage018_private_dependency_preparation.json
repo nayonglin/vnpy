@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-11-01T04:53:29.802534+08:00",
+  "private_runtime_files": [
+    {
+      "path": "examples/portfolio_backtesting/ctp_live.local.env",
+      "status": "private_exact_copy_from_existing_stable",
+      "ignored": true,
+      "mode": "0600"
+    },
+    {
+      "path": "examples/portfolio_backtesting/official_live_email.local.env",
+      "status": "private_exact_copy_from_existing_stable",
+      "ignored": true,
+      "mode": "0600"
+    },
+    {
+      "path": ".vntrader/vt_setting.json",
+      "status": "private_exact_copy_from_existing_stable",
+      "ignored": true,
+      "mode": "0600"
+    }
+  ],
+  "credentials_printed": false,
+  "credentials_in_git": false,
+  "ctp_connections": 0,
+  "smtp_connections": 0,
+  "production_activation": false
+}

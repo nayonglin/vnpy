@@ -1,0 +1,9 @@
+{
+  "exit_code": 1,
+  "source_before": "f6b87af89298ddd6167d6ceeda8635d6bdc4ee32ad4a37c466ef66bcb101b24e",
+  "source_after": "f6b87af89298ddd6167d6ceeda8635d6bdc4ee32ad4a37c466ef66bcb101b24e",
+  "source_unchanged": true,
+  "script_sha256": "2c4da8c93134e846ca05a662eec785f2f5634a0992348d6fd54a71f7860a45de",
+  "log_sha256": "ad3adba03ce7ef8755f66d872a369f7059072d133653aa8a66f6c9151152e9ae",
+  "real_external_actions": false
+}

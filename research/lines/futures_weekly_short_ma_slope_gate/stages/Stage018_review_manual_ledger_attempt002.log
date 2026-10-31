@@ -1,0 +1,21 @@
+FF..
+======================================================================
+FAIL: test_persisted_manual_application_after_request_expiry_is_rejected (__main__.ManualLedgerIndependent.test_persisted_manual_application_after_request_expiry_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_ledger_adversarial_v2.py", line 41, in test_persisted_manual_application_after_request_expiry_is_rejected
+    with self.assertRaises(ValueError,msg='Application after request expiry must be rejected even if review was created earlier'):
+AssertionError: ValueError not raised : Application after request expiry must be rejected even if review was created earlier
+
+======================================================================
+FAIL: test_store_rejects_late_application_even_if_raw_parent_and_review_still_match (__main__.ManualLedgerIndependent.test_store_rejects_late_application_even_if_raw_parent_and_review_still_match)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_manual_ledger_adversarial_v2.py", line 48, in test_store_rejects_late_application_even_if_raw_parent_and_review_still_match
+    with self.assertRaises(ValueError):store.commit(state['revision'],bad)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+FAILED (failures=2)
