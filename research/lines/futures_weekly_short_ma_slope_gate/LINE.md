@@ -27,3 +27,5 @@ Stage014 C_R150固定规则迁移到独立weekly19-15w-r150k来源工作区；�
 ## 2026-11-01T05:06+08:00 Stage018 安装准备与本周信号
 
 Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件），已独审原始数据；人工资金核验与独立日历启动接线已实现、独审及完整90套件2309通过/0失败/0跳过，288关键源无漂移。新代码待官方发布器冻结m0002，不覆盖m0001。独立market generation及真实未来日历已备好；实际stable/CURRENT/master/7jobs尚未切换，CTP未连。11/2周一09:00一次性本对话任务9-19先只读核验，再继续已授权的真实资格/正式激活和安装。自动final/parser与银行producer已取消，不再列为前置。详见stages/20261101_0506_stage018_manual_candidate_ready.md；原Stage014金融和NO_PROMOTION保留，与44品种线隔离。
+
+- Stage018本地m0002已冻结：m0002_20261101T050816+0800_e89fdcbb6826，source e89fdcbb68260a647372f03626800110470f61dd，release 48839375c26081bf6aeb5610aab70c72c688c59c，378物料fresh clone/LFS/执行位复核通过，m1完全保留。当前仍未activate/promote-master/生产安装；周一任务从stages/20261101_stage018_local_m0002_and_monday_handoff.md继续。

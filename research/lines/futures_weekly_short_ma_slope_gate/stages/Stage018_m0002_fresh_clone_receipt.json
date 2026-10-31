@@ -1,0 +1,35 @@
+{
+  "schema": "Stage018.candidate-fresh-clone.v1",
+  "clone_path": "/private/tmp/weekly19-stage018-m2-fresh-i8o9o39a/clone",
+  "no_local_clone": true,
+  "git_alternates_absent": true,
+  "empty_lfs_cache_initially": true,
+  "lfs_fetch_completed": true,
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "release_commit": "48839375c26081bf6aeb5610aab70c72c688c59c",
+  "material_release_id": "m0002_20261101T050816+0800_e89fdcbb6826",
+  "manifest_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "payload_files_checked": 378,
+  "top_level_files_match_candidate": true,
+  "all_git_executable_modes_match": true,
+  "manual_entry_executable": true,
+  "historical_lfs_actual": [
+    {
+      "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66",
+      "bytes": 2865
+    }
+  ],
+  "all_release_manifests_verified": true,
+  "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+  "current_is_new_candidate": false,
+  "clone_runtime_tests_run": false,
+  "remote_master_clone": false,
+  "production_qualified": false,
+  "ctp_protocol_login_attempted": false,
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0,
+  "manifest_file_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "manifest_canonical_sha256": "85425232204ab3af875167705afbc58d57f8000985e86f0e46ff8373d0eaa7b4",
+  "manifest_sha256_field_meaning": "raw_manifest_file_bytes_alias"
+}

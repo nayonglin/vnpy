@@ -1,0 +1,101 @@
+{
+  "ctp_connections": 0,
+  "financial_replays": 0,
+  "fresh_clone": {
+    "actual_alternates_absent": true,
+    "actual_git_and_filesystem_modes_match": true,
+    "actual_git_object_files_single_link": true,
+    "actual_head": "48839375c26081bf6aeb5610aab70c72c688c59c",
+    "actual_payload_and_top_files_verified": 378,
+    "actual_worktree_clean": true,
+    "all_release_manifests_verified": 30,
+    "clone_path": "/private/tmp/weekly19-stage018-m2-fresh-i8o9o39a/clone",
+    "current_is_old_m8": true,
+    "historical_lfs_actual": [
+      {
+        "bytes": 2865,
+        "path": "official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0012_20261019T191034+0800_7e13664e0912/payload/ai/stage182/pairwise/model.joblib",
+        "proof": "exact_RELEASE_Git_LFS_pointer_oid_and_size_vs_actual_smudged_file",
+        "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66"
+      }
+    ],
+    "manual_entry_executable": true,
+    "no_local_clone_and_initial_empty_cache_flags": "receipt_historical_claims_not_reexecuted_by_reviewer",
+    "production_qualified": false,
+    "receipt_path": "/private/tmp/weekly19_stage018_m0002_fresh_clone_receipt.json",
+    "receipt_sha256": "b0e245041d9a947c65543d396124d6bcc364fac1335fcf13a281892fbc84113a",
+    "remote_master_clone": false,
+    "runtime_tests_rerun": false
+  },
+  "inactive_market_and_stable": {
+    "all_six_pins": {
+      "daily.sqlite": true,
+      "forward_calendar.csv": true,
+      "mapping.csv": true,
+      "metadata.csv": true,
+      "physical_epoch_daily.csv": true,
+      "receipt.json": true
+    },
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "production_qualified": false,
+    "raw_calendar_source_pins_unchanged": true,
+    "stable_current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "stable_head": "d55887e1def72629fbfa310e439dc3a879969a14",
+    "stable_worktree_clean": true
+  },
+  "m1_current": {
+    "candidate_activated": false,
+    "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+    "current_sha256": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+    "m1_introduction_commit": "d5243461b9cf0368723899bcce67a3dc6fb0ec1a",
+    "m1_tree_oid": "1c4347e235dc1fda9a0608022cc6c14c9ed4e234",
+    "m1_tree_unchanged": true
+  },
+  "material": {
+    "candidate_only": true,
+    "changed_commit_paths": 383,
+    "index_binding_verified": true,
+    "inventory_checksums_verified": true,
+    "manifest_embedded_digest": "85425232204ab3af875167705afbc58d57f8000985e86f0e46ff8373d0eaa7b4",
+    "manifest_file_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+    "manual_mode_declared": true,
+    "payloads_source_git_blob_and_current_bytes_match": 378,
+    "required_manual_launcher_skill_paths": [
+      "examples/portfolio_backtesting/qmt_roll_weekly19_manual_cash.py",
+      "examples/portfolio_backtesting/run_qmt_roll_weekly19_manual_cash.py",
+      "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_operator_manual_cash_runbook.md",
+      "skills/futures-live-execution-sop/SKILL.md",
+      "skills/futures-official-shadow/SKILL.md",
+      "examples/portfolio_backtesting/run_qmt_roll_stage945_official_live_production_session_launcher.py"
+    ],
+    "tree_fingerprint": "7d64ca37430f4b9f008a63a5310721927ff8ab237fce5ed4101f1444fc1ad5a2"
+  },
+  "offline_ci": {
+    "critical_subset_verified": 288,
+    "errors": 0,
+    "failed": 0,
+    "junit_sha256": "febf4f069c723175a891f95d4586f364cf2c291c81043a859a71323f4ba0076a",
+    "production_qualified": false,
+    "skipped": 0,
+    "source_binding_method": "all_288_exact_tested_before_after_SHA_equal_SOURCE_Git_blobs_and_material_subset",
+    "source_bound_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+    "summary_original_source_commit": "b086a81264383a0504dc51aef88191d9e24230c5",
+    "summary_sha256": "e9d2fa3394a37c6923b418afa8d1b807830dd72674308bf2ec95cd786e3a9a0c",
+    "xml_modules": 90,
+    "xml_tests": 2309
+  },
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "recorded_at": "2026-11-01T05:14:42.923862+08:00",
+  "release_commit": "48839375c26081bf6aeb5610aab70c72c688c59c",
+  "release_id": "m0002_20261101T050816+0800_e89fdcbb6826",
+  "ruleset_binding_source": "source-and-payload execution profile bytes; generic manifest has no top-level ruleset field",
+  "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+  "schema": "Stage018.m0002-independent-readback.v1",
+  "scope": "source-material-offline-ci-clone-readback-only",
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "source_script_sha256": "aaed4135d512ac4f3b3b54375e8fc26c8acd34380af72b5c48d553d00deb3712",
+  "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+  "tests_executed": 0,
+  "verdict": "PASS_CANDIDATE_BINDINGS_ONLY_NOT_PRODUCTION_QUALIFICATION"
+}

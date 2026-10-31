@@ -1,0 +1,43 @@
+{
+  "schema": "Stage018.manual-weekly19-local-release-handoff.v1",
+  "recorded_at": "2026-11-01T05:17:03.078581+08:00",
+  "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+  "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "material_release_id": "m0002_20261101T050816+0800_e89fdcbb6826",
+  "release_commit": "48839375c26081bf6aeb5610aab70c72c688c59c",
+  "manifest_file_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "manifest_canonical_sha256": "85425232204ab3af875167705afbc58d57f8000985e86f0e46ff8373d0eaa7b4",
+  "remote_master_sha": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "production_source_commit": "d55887e1def72629fbfa310e439dc3a879969a14",
+  "production_qualified": false,
+  "current_activated": false,
+  "master_promoted": false,
+  "production_installed": false,
+  "ctp_connection_attempted": false,
+  "automation_id": "9-19",
+  "scheduled_ctp_readonly_at": "2026-11-02T09:00:00+08:00",
+  "initial_cohort_date_planned": "2026-11-02",
+  "initial_cohort_date_activated": false,
+  "market_data": {
+    "asset_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8",
+    "expected_hashes": {
+      "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "forward_calendar.csv": "46bf1447d11aa32fb9cd58ad2ca47ca802f0e49463bff23e88b47075b49bcce8",
+      "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+      "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+    },
+    "forward_calendar": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-calendar-candidates/Stage018_calendar_20261101T043315_ad4afb28/Stage018_complete_market_20261101T043552_3f8943b8/forward_calendar.csv"
+  },
+  "full_ci": {
+    "suites": 90,
+    "tests": 2309,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "critical_byte_locks": 288
+  },
+  "candidate_clone": "/private/tmp/weekly19-stage018-m2-fresh-i8o9o39a/clone"
+}

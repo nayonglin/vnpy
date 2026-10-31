@@ -1,0 +1,12 @@
+{
+  "release_id": "m0002_20261101T050816+0800_e89fdcbb6826",
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "release_commit": "48839375c26081bf6aeb5610aab70c72c688c59c",
+  "manifest_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "payload_files": 378,
+  "critical_ci_files_matched": 288,
+  "production_qualified": false,
+  "manifest_file_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "manifest_canonical_sha256": "85425232204ab3af875167705afbc58d57f8000985e86f0e46ff8373d0eaa7b4",
+  "manifest_sha256_field_meaning": "raw_manifest_file_bytes_alias"
+}

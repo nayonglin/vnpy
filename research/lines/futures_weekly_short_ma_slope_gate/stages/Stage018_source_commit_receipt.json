@@ -1,0 +1,14 @@
+{
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "critical_git_blobs_matched": 288,
+  "ci_tests": {
+    "tests": 2309,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "staged_file_count": 150,
+  "worktree_clean": true,
+  "preserved_failed_test_artifact_whitespace": true,
+  "production_qualified": false
+}

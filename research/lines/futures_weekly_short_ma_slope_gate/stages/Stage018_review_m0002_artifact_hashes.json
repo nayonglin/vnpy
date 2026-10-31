@@ -1,0 +1,16 @@
+{
+  "files": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback.py": "aaed4135d512ac4f3b3b54375e8fc26c8acd34380af72b5c48d553d00deb3712",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback_20261101.md": "d83d764e9f1622a6e7c31aba3c93a1781d61b1bac3f481b372a581a5566c7271",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback_attempt001_git_lfs_unavailable.log": "85268b789eb8def2b6009f7e3ae02a727ea0a26c183e83cda859f0c60572f4ee",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback_result.json": "b6200c95153ccd0ce615ebd25e9a8382b7ae1b8336b37d058418120aa49da398",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback_run.log": "97ab77d0e509d27529a2fc9b6c88e824d8a9300ad8410e53e6e8f109bfb2251c"
+  },
+  "manifest_embedded_digest": "85425232204ab3af875167705afbc58d57f8000985e86f0e46ff8373d0eaa7b4",
+  "manifest_file_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+  "material_release_id": "m0002_20261101T050816+0800_e89fdcbb6826",
+  "production_qualified": false,
+  "release_commit": "48839375c26081bf6aeb5610aab70c72c688c59c",
+  "schema": "Stage018.m2-readback-artifact-pins.v1",
+  "source_commit": "e89fdcbb68260a647372f03626800110470f61dd"
+}

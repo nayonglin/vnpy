@@ -1,0 +1,11 @@
+{
+  "recorded_at": "2026-11-01T05:14:45.441021+08:00",
+  "remote_master_sha": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "status": "verified_via_GitHub_connector_branch_API",
+  "source": "https://api.github.com/repos/nayonglin/vnpy/branches/master",
+  "native_git_read_attempt": "timeout_60_seconds",
+  "native_git_transport_not_proven": true,
+  "read_only": true,
+  "push_performed": false,
+  "production_qualified": false
+}
