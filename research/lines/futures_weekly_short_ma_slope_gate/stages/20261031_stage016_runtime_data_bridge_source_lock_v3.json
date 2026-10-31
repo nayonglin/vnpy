@@ -1,0 +1,111 @@
+{
+  "all_weekly19_test_invocations": 444,
+  "all_weekly19_test_seconds": 32.69,
+  "bridge_owned_test_seconds": 9.971,
+  "bridge_owned_tests": 17,
+  "evidence": {
+    "audit_stage016_runtime_technical_benchmark_ohlcvoi.py": "5dac274a4a3a777b6c4cb9fb2af7cfe27c59161b2bbef46068feb52349bf44cf",
+    "stage016_runtime_bridge_atomicity_independent_green.log": "9d8ebf32adc6d4c4c06cc7e488ccf71ba68371ce46ddee1589fb7ddc93b3c519",
+    "stage016_runtime_bridge_atomicity_owned_red.log": "79f37ae255b822deece516595f30f0cfaac35a36021389eb23ed79df828994d9",
+    "stage016_runtime_bridge_full_weekly19_candidate_green.log": "26dc525de61e1487272e60b9dba749bf17c25fb7990eff911369352fcf71e5c6",
+    "stage016_runtime_bridge_owned_candidate_green.log": "ca233f4f8e621ca33945ca69bd57d107a3048b6e41fb48d2541f76c099b0a1a9",
+    "stage016_runtime_known_epoch_candidate_green.log": "7c9a7190ba86a343cfd303599af07330e960bfb761ca36f5dad04104db0d0ce5",
+    "stage016_runtime_ohlcvoi_candidate_green.log": "4422b10a6d3ff3ace3247a8836eb66cce90a5fd0f0014bf24ce6b194804904d1",
+    "stage016_runtime_technical_benchmark_ohlcvoi.json": "2c636aa743425c9e04820be074e999ac57a2737d6f2dd35f295d1bbd7e8cf1f0",
+    "stage016_runtime_technical_benchmark_ohlcvoi.log": "f24a6800363a04eeba88a63b4218fbe2aca47c87453e777edea39130fd1adb58"
+  },
+  "files": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py": "4207284a4c2166d9f6e909e6895f1d0acdd0b007b523050327036a04e9d54474",
+    "examples/portfolio_backtesting/weekly19_assets/source_manifest.json": "b473e88f21d2d139615e638c9df0e0fac5358596d919624f55411438926a303c",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "419ecbccc3a539236724b362c1143cf6d2347db44cce0bba691ca2336a9e9b42",
+    "tests/test_weekly19_runtime.py": "c8b45408dffdd6f4cd8f619535d9b37d08bb91a0b3ced6e9ef312103dfce7774",
+    "tests/test_weekly19_session_bridge.py": "b5671856000d4721d4cfeeb53aa6d336a09e73aef07da637982066284b546730",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd"
+  },
+  "financial_replays": 0,
+  "frozen_method_AST_count": 565,
+  "independent_atomicity_probe_seconds": 0.403,
+  "independent_atomicity_probe_tests": 1,
+  "market_downloads": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "recorded_at": "2026-10-31T20:04:01.266725+08:00",
+  "schema": "weekly19.runtime-data-bridge-source-lock.v3",
+  "supersedes_for_current_source": "20261031_stage016_runtime_data_source_lock_v2.json",
+  "technical_benchmark": {
+    "actual_pipeline_bundle_bytes": 10186712,
+    "actual_pipeline_bundle_sha_preserved": true,
+    "actual_pipeline_bundle_under_64000000": true,
+    "bundle_two_states_under_64MiB": true,
+    "durable_json_bytes": 5090984,
+    "financial_replays": 0,
+    "market_downloads": 0,
+    "on_bars_calls": 0,
+    "order_api_calls": 0,
+    "phases": {
+      "build": {
+        "maxrss": 1993211904,
+        "seconds": 8.704240208026022
+      },
+      "export": {
+        "maxrss": 2081914880,
+        "seconds": 9.142254791921005
+      },
+      "export_for_fsync_restore": {
+        "maxrss": 2081914880,
+        "seconds": 3.8586823327932507
+      },
+      "json_fsync_read": {
+        "maxrss": 2081914880,
+        "seconds": 0.025770791107788682
+      },
+      "pipeline_bundle_initialize_fsync": {
+        "maxrss": 2813247488,
+        "seconds": 0.14064150000922382
+      },
+      "pipeline_bundle_read_validate": {
+        "maxrss": 2813247488,
+        "seconds": 0.12796033406630158
+      },
+      "pure_warmup": {
+        "maxrss": 1993211904,
+        "seconds": 36.98279812512919
+      },
+      "read_inputs": {
+        "maxrss": 1128267776,
+        "seconds": 16.07338866707869
+      },
+      "restore": {
+        "maxrss": 2813247488,
+        "seconds": 27.068036457989365
+      },
+      "revalidate_open_intent": {
+        "maxrss": 2081914880,
+        "seconds": 3.923578584101051
+      },
+      "sizing_clone": {
+        "maxrss": 2081914880,
+        "seconds": 0.12638145801611245
+      }
+    },
+    "production_qualified": false,
+    "restore_state_sha_equal": true,
+    "revalidate_context": "synthetic_request_real_approved_history_no_signal_qualification",
+    "schema": "weekly19.technical-benchmark.v1",
+    "source_files_unchanged_during_benchmark": true,
+    "source_reader_sha256_before": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "source_runtime_sha256": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "source_runtime_sha256_before": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "strict_fixture_broker": true,
+    "synthetic_decision_binding_ok": true
+  },
+  "unsupported": [
+    "unsubmitted/unknown physical child after partial dispatch requires explicit manual reconciliation; broker query absence is not terminal proof",
+    "native actual fills ahead of signed four-query positions block new sends pending real source reconciliation",
+    "missing real cash final-statement/registry/production qualification cannot be supplied by fixtures"
+  ]
+}

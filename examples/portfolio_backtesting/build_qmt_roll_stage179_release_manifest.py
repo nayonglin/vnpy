@@ -30,6 +30,7 @@ from qmt_roll_official_live_release_manifest import (
 from qmt_roll_official_live_runtime_profile import ExecutionRuntimeProfile
 from qmt_roll_official_execution_profile import (
     C9_15W_PROFILE,
+    resolve_configured_execution_profile,
     ExecutionStrategyMode,
     assert_profile_identity,
     resolve_execution_profile,
@@ -56,6 +57,33 @@ PRODUCTION_QUALIFICATION_EVIDENCE_KIND = (
 PRODUCTION_QUALIFICATION_MAX_AGE = timedelta(days=7)
 PRODUCTION_QUALIFICATION_MAX_FUTURE_SKEW = timedelta(minutes=5)
 PRODUCTION_REQUIRED_TEST_SUITES = (
+    'tests/test_weekly19_physical_gate.py',
+    'tests/test_weekly19_backend_execution.py',
+    'tests/test_weekly19_settlement_capture.py',
+    'tests/test_weekly19_capture_capability.py',
+    'tests/test_weekly19_context_update.py',
+    'tests/test_weekly19_data_update.py',
+    'tests/test_weekly19_friday_advice.py',
+    'tests/test_weekly19_official_config.py',
+    'tests/test_weekly19_session_bridge.py',
+    'tests/test_weekly19_session_clock.py',
+    'tests/test_weekly19_controller.py',
+    'tests/test_weekly19_execution_service.py',
+    'tests/test_weekly19_broker_evidence.py',
+    'tests/test_weekly19_daily_receipt.py',
+    'tests/test_weekly19_data.py',
+    'tests/test_weekly19_friday_report.py',
+    'tests/test_weekly19_live_entry.py',
+    'tests/test_weekly19_live_pipeline.py',
+    'tests/test_weekly19_native_execution.py',
+    'tests/test_weekly19_pipeline_state.py',
+    'tests/test_weekly19_readonly_refresh.py',
+    'tests/test_weekly19_runtime.py',
+    'tests/test_weekly19_strategy_equivalence.py',
+    'tests/test_weekly19_warm_evidence.py',
+    "tests/test_weekly19_execution.py",
+    "tests/test_weekly19_quote_spool.py",
+    "tests/test_weekly19_external_funding.py",
     "tests/test_official_live_c9_detector.py",
     "tests/test_official_live_c9_intraday_state.py",
     "tests/test_official_live_broker_account_snapshot.py",
@@ -380,6 +408,94 @@ _TRUSTED_READONLY_INVOCATION_FIELDS = {
     "environment_sha256",
 }
 DEFAULT_CRITICAL_FILES = (
+    'tests/test_weekly19_physical_gate.py',
+    'tests/test_weekly19_backend_execution.py',
+    'tests/test_weekly19_settlement_capture.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_settlement_capture.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_session_clock.py',
+    'tests/test_weekly19_capture_capability.py',
+    'tests/test_weekly19_context_update.py',
+    'tests/test_weekly19_data_update.py',
+    'tests/test_weekly19_friday_advice.py',
+    'tests/test_weekly19_official_config.py',
+    'tests/test_weekly19_session_bridge.py',
+    'tests/test_weekly19_session_clock.py',
+    'tests/weekly19_legacy_c9_fixture.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_controller.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_execution_service.py',
+    'tests/test_weekly19_controller.py',
+    'tests/test_weekly19_execution_service.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_daily_receipt.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_data.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py',
+    'examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py',
+    'examples/portfolio_backtesting/weekly19_assets/actual_settings.json',
+    'examples/portfolio_backtesting/weekly19_assets/portfolio_eligibility.csv',
+    'examples/portfolio_backtesting/weekly19_assets/source_manifest.json',
+    'examples/portfolio_backtesting/weekly19_assets/static19.csv',
+    'examples/portfolio_backtesting/weekly19_assets/structural_prefilter.csv',
+    'examples/portfolio_backtesting/weekly19_frozen/__init__.py',
+    'examples/portfolio_backtesting/weekly19_frozen/base772.py',
+    'examples/portfolio_backtesting/weekly19_frozen/base804.py',
+    'examples/portfolio_backtesting/weekly19_frozen/base827.py',
+    'examples/portfolio_backtesting/weekly19_frozen/base830.py',
+    'examples/portfolio_backtesting/weekly19_frozen/base847.py',
+    'examples/portfolio_backtesting/weekly19_frozen/build_qmt_roll_ai_candidate_selection_pairwise_samples.py',
+    'examples/portfolio_backtesting/weekly19_frozen/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py',
+    'examples/portfolio_backtesting/weekly19_frozen/build_qmt_roll_ai_candidate_training_samples.py',
+    'examples/portfolio_backtesting/weekly19_frozen/build_qmt_roll_ai_position_training_samples.py',
+    'examples/portfolio_backtesting/weekly19_frozen/contract_metadata.py',
+    'examples/portfolio_backtesting/weekly19_frozen/main_contract_mapping.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_alignment_portfolio_strategy.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_ai_candidate_selection_label_v2.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_ai_path_damage_runtime.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_ai_selection_pairwise_runtime.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_intraday_execution.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_official_ai_pool_policy.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_roll_portfolio_strategy.py',
+    'examples/portfolio_backtesting/weekly19_frozen/qmt_universe.py',
+    'examples/portfolio_backtesting/weekly19_frozen/run_qmt_alignment_backtest.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage005_short_bottom20.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage008_three_ma.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage012_ai_selection_off.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage014_no_macd.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage018_short_case2.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage020_no_position_cap.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage022_historical_safety.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage029_week_close_exits.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage029_week_close_exits_v2.py',
+    'examples/portfolio_backtesting/weekly19_frozen/stage032_daily_addon.py',
+    'examples/portfolio_backtesting/weekly19_frozen/weekly_adapter.py',
+    'tests/test_weekly19_broker_evidence.py',
+    'tests/test_weekly19_daily_receipt.py',
+    'tests/test_weekly19_data.py',
+    'tests/test_weekly19_friday_report.py',
+    'tests/test_weekly19_live_entry.py',
+    'tests/test_weekly19_live_pipeline.py',
+    'tests/test_weekly19_native_execution.py',
+    'tests/test_weekly19_pipeline_state.py',
+    'tests/test_weekly19_readonly_refresh.py',
+    'tests/test_weekly19_runtime.py',
+    'tests/test_weekly19_strategy_equivalence.py',
+    'tests/test_weekly19_warm_evidence.py',
+    "examples/portfolio_backtesting/qmt_roll_weekly19_execution.py",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py",
+    "tests/test_weekly19_quote_spool.py",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py",
+    "tests/test_weekly19_execution.py",
+    "tests/test_weekly19_external_funding.py",
     ".lfsconfig",
     "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
     "examples/portfolio_backtesting/qmt_roll_intraday_execution.py",
@@ -1275,7 +1391,7 @@ def derive_formal_ctp_readonly_capture(
         stage907_summary.get("mode") == "refresh"
         and stage907_summary.get("env_profile") == "production-live"
         and stage907_summary.get("official_live_version")
-        == C9_15W_PROFILE.official_version
+        == resolve_configured_execution_profile().official_version
         and stage907_summary.get("refresh_status")
         == "readonly_refresh_completed_snapshot_ready"
         and stage907_summary.get("refresh_attempted") == 1
@@ -2546,7 +2662,7 @@ def build_release_manifest_file(
         dict.fromkeys((*requested_critical_files, *material_files))
     )
     if production_requested:
-        if profile.profile_key != ExecutionStrategyMode.C9_15W.value:
+        if profile.profile_key not in {ExecutionStrategyMode.C9_15W.value, ExecutionStrategyMode.WEEKLY19_15W_R150K.value}:
             raise ReleaseManifestError(
                 "release_builder_production_live_requires_c9_15w"
             )
@@ -2660,7 +2776,7 @@ def main() -> None:
     args = parser.parse_args()
     profile = resolve_execution_profile(args.execution_profile)
     if args.allow_production_live:
-        if profile.profile_key != ExecutionStrategyMode.C9_15W.value:
+        if profile.profile_key not in {ExecutionStrategyMode.C9_15W.value, ExecutionStrategyMode.WEEKLY19_15W_R150K.value}:
             raise ReleaseManifestError(
                 "release_builder_production_live_requires_c9_15w"
             )

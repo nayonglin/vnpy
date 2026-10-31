@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_holiday_thursday_native_batch_gets_canonical_friday_advice_without_rerun (tests.test_weekly19_friday_advice.FridayAdviceTest.test_holiday_thursday_native_batch_gets_canonical_friday_advice_without_rerun)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 75, in test_holiday_thursday_native_batch_gets_canonical_friday_advice_without_rerun
+    self.assertEqual(replay['original_offer_remaining_fen'],result['original_offer_remaining_fen'])
+AssertionError: 3000000 != 0
+
+----------------------------------------------------------------------
+Ran 10 tests in 2.158s
+
+FAILED (failures=1)

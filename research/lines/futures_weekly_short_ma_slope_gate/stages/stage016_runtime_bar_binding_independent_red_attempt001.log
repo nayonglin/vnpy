@@ -1,0 +1,118 @@
+test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) ... 
+  test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=nan) ... FAIL
+  test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=inf) ... FAIL
+  test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=-1.0) ... FAIL
+  test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=987654321.0) ... FAIL
+test_exact_real_source_and_zero_close_oi_remain_legal (__main__.BarBindingIndependent.test_exact_real_source_and_zero_close_oi_remain_legal) ... ok
+test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) ... 
+  test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) (field='high_price') ... FAIL
+  test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) (field='low_price') ... FAIL
+test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) ... 
+  test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) (value=nan) ... FAIL
+  test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) (value=inf) ... FAIL
+test_open_and_volume_cannot_differ_from_source_even_when_positive (__main__.BarBindingIndependent.test_open_and_volume_cannot_differ_from_source_even_when_positive) ... 
+  test_open_and_volume_cannot_differ_from_source_even_when_positive (__main__.BarBindingIndependent.test_open_and_volume_cannot_differ_from_source_even_when_positive) (field='volume') ... FAIL
+
+======================================================================
+FAIL: test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 22, in test_close_oi_must_be_finite_and_equal_to_approved_source
+    with self.subTest(value=value):self.reject('open_interest',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=inf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 22, in test_close_oi_must_be_finite_and_equal_to_approved_source
+    with self.subTest(value=value):self.reject('open_interest',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=-1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 22, in test_close_oi_must_be_finite_and_equal_to_approved_source
+    with self.subTest(value=value):self.reject('open_interest',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) (value=987654321.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 22, in test_close_oi_must_be_finite_and_equal_to_approved_source
+    with self.subTest(value=value):self.reject('open_interest',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) (field='high_price')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 25, in test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid
+    with self.subTest(field=field):self.reject(field,value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) (field='low_price')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 25, in test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid
+    with self.subTest(field=field):self.reject(field,value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) (value=nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 19, in test_nonfinite_volume_never_reaches_an_array_manager
+    with self.subTest(value=value):self.reject('volume',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) (value=inf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 19, in test_nonfinite_volume_never_reaches_an_array_manager
+    with self.subTest(value=value):self.reject('volume',value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+======================================================================
+FAIL: test_open_and_volume_cannot_differ_from_source_even_when_positive (__main__.BarBindingIndependent.test_open_and_volume_cannot_differ_from_source_even_when_positive) (field='volume')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 28, in test_open_and_volume_cannot_differ_from_source_even_when_positive
+    with self.subTest(field=field):self.reject(field,value)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bar_binding_independent.py", line 16, in reject
+    with self.assertRaises(runtime.RuntimeContractError):self.actor._validate_bars({fixture.SYMBOL:bar},expected_day='2026-10-29')
+AssertionError: RuntimeContractError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.014s
+
+FAILED (failures=9)

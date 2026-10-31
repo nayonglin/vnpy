@@ -1,0 +1,21 @@
+{
+  "schema": "stage016.independent-bridge-recovery-verification.v1",
+  "exit_code": 0,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py": "4207284a4c2166d9f6e909e6895f1d0acdd0b007b523050327036a04e9d54474",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "tests/test_weekly19_session_bridge.py": "b5671856000d4721d4cfeeb53aa6d336a09e73aef07da637982066284b546730"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py": "4207284a4c2166d9f6e909e6895f1d0acdd0b007b523050327036a04e9d54474",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "tests/test_weekly19_session_bridge.py": "b5671856000d4721d4cfeeb53aa6d336a09e73aef07da637982066284b546730"
+  },
+  "source_unchanged": true,
+  "script_sha256": "cf81415c4433db38a8effb30e610dbe8c61b728c8e1bf5fdb04f3403db4ed127",
+  "log_sha256": "473153dd8d3b850b80ac91bf249e96baf6ffb885254e76808b8f39ff0cf5a305",
+  "production_qualified": false,
+  "external_actions": false
+}

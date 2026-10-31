@@ -1,0 +1,28 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ Weekly19LegacyAiDisabledTest.test_current_weekly_manual_entry_stops_before_files_download_training_and_mail _
+tests/test_stage935_ai_pool_path_consistency.py:1479: in test_current_weekly_manual_entry_stops_before_files_download_training_and_mail
+    stage935.main()
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:1577: in main
+    with _stage935_lock(enabled=not bool(args.disable_lock)) as lock_result:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1124: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py:1183: in _execute_mock_call
+    raise effect
+E   AssertionError: must stop before locking files
+_ Weekly19LegacyAiDisabledTest.test_current_weekly_material_request_rejects_even_if_caller_labels_old_ai_material _
+RuntimeError: stage935_material_artifact_set_invalid
+
+During handling of the above exception, another exception occurred:
+tests/test_stage935_ai_pool_path_consistency.py:1489: in test_current_weekly_material_request_rejects_even_if_caller_labels_old_ai_material
+    with (patch.object(stage935, "resolve_configured_execution_profile", return_value=WEEKLY19_15W_R150K_PROFILE, create=True),
+E   AssertionError: "disabled_for_weekly19_fixed_universe" does not match "stage935_material_artifact_set_invalid"
+=========================== short test summary info ============================
+FAILED tests/test_stage935_ai_pool_path_consistency.py::Weekly19LegacyAiDisabledTest::test_current_weekly_manual_entry_stops_before_files_download_training_and_mail
+FAILED tests/test_stage935_ai_pool_path_consistency.py::Weekly19LegacyAiDisabledTest::test_current_weekly_material_request_rejects_even_if_caller_labels_old_ai_material
+2 failed in 1.18s

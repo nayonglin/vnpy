@@ -1,0 +1,129 @@
+{
+  "recorded_at": "2026-10-31T18:35:18.860602+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "real_ctp_connected": false,
+  "real_registry_created": false,
+  "real_key_created": false,
+  "real_qualification_executed": false,
+  "real_bank_cashflow_verified": false,
+  "financial_backtest_run": false,
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "81bd0c46a911628a6f2359cf5e3398857789a5630d05ae883a4b62bd68ae3fec",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "7c8881f3dbc2ba1c31ab6e720c6e14ccfda46f4fc5dceeec33b167d7392f206d",
+    "tests/test_weekly19_broker_evidence.py": "caa820c2a00a293623bfd6fdc196252a15cb21b0b1082509669c785a3a088cb5",
+    "tests/test_weekly19_warm_evidence.py": "a88b9ff3541981e319453dd635f71526a012845abb9053cf0a55bccc21c96a5a",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_broker_evidence.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 58 tests in 1.235s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_warm_evidence.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 14 tests in 0.087s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_external_funding.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 61 tests in 0.203s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_stage174_query_bundle.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 22 tests in 4.742s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_official_live_broker_account_snapshot.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 25 tests in 0.963s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19*.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 343 tests in 17.015s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_official_live_execution_ledger_cycles.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 63 tests in 0.103s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "1bbe7a1550c2b0d1e7e6e7f2447f1ebfb567be847d238bc6a61c9a24cd51ac01",
+  "mandatory_capture_source_count": 6,
+  "mandatory_authority_source_count": 13,
+  "capture_source_sha256": {
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "81bd0c46a911628a6f2359cf5e3398857789a5630d05ae883a4b62bd68ae3fec",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py": "77cd1057977fb6ac8e5d912bd1bb59d4bba1dcf6e10bad76f28988b69a40fd26",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_official_live_broker_account_snapshot.py": "df64c22d38a0dbf5a6478e4e9708137138317312d52ecb6a2f92ac0e84bf351f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66"
+  },
+  "authority_source_sha256": {
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "81bd0c46a911628a6f2359cf5e3398857789a5630d05ae883a4b62bd68ae3fec",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py": "77cd1057977fb6ac8e5d912bd1bb59d4bba1dcf6e10bad76f28988b69a40fd26",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_official_live_broker_account_snapshot.py": "df64c22d38a0dbf5a6478e4e9708137138317312d52ecb6a2f92ac0e84bf351f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "7c8881f3dbc2ba1c31ab6e720c6e14ccfda46f4fc5dceeec33b167d7392f206d",
+    "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py": "e85fae9b6b0a0f056b03a261d2595056fde7cb014d5c692819deb17cb8a4d093",
+    "examples/portfolio_backtesting/build_qmt_roll_stage179_production_qualification_bundle.py": "938a53a712c65f9b9f8a762b93b68ff37a855796c61b87bf822b66383f2deb48",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_release_manifest.py": "b0be08db6b930f723c2606d1e7e8f2ef25ae977bd73e59da296f92c3ba8ada92",
+    "examples/portfolio_backtesting/run_qmt_roll_stage914_official_live_ctp_runtime_preflight.py": "6ec1c9f307cb8b78b9effca8c683b5b883537f6c1c609e3bd413ca8c2939148c",
+    "examples/portfolio_backtesting/qmt_roll_official_baseline_identity.py": "1821c098c92997e0785c7592d00e6379aa9620aa721bf37442df300d9fe0c152"
+  },
+  "execution_ledger_checksums_are_not_hash_chain": true,
+  "real_native_insert_hook_executed": false,
+  "real_931_reserve_quota_and_callback_builder_fixture_exercised": true,
+  "integration_source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+    "tests/test_weekly19_runtime.py": "08f0ea79f4898987bbc5644ee834be5cff2a917bf400881613909b6f6000f095",
+    "tests/test_weekly19_native_execution.py": "516530c9e1f71fb501c6603f51175c1b81c1c7fcd79b38e1cd39b20508b61cad"
+  }
+}

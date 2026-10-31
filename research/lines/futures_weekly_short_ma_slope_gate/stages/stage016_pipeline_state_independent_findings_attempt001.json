@@ -1,0 +1,26 @@
+{
+  "schema": "stage016_pipeline_independent_initial_findings_v1",
+  "status": "CHANGES_REQUESTED",
+  "P0": 0,
+  "P1": 2,
+  "P2": 0,
+  "findings": [
+    {
+      "id": "PIPELINE_SNAPSHOT_BINDING",
+      "severity": "P1",
+      "initial_source_sha256": "995a097701a0da8992a81630dfa29247da996ab5d7a357710a995c3150ca04df",
+      "observed": "An invalid runtime digest/cash plus foreign decision account/release/afterhash persisted at revision1; only outer runtime identity was checked."
+    },
+    {
+      "id": "PIPELINE_COLD_START_IDENTITY",
+      "severity": "P1",
+      "observed": "After first structural fix, changing funding.cold_start_date10/30->10/29 and incrementing funding.revision persisted successfully. Pipeline used _forward_ledger but omitted _same_identity from FundingStore.commit."
+    }
+  ],
+  "all_fixtures_synthetic": true,
+  "financial_runs": 0,
+  "CTP_connections": 0,
+  "SMTP_calls": 0,
+  "implementation_writes_by_reviewer": 0,
+  "audit_source_sha256_at_recording": "f3c37dcb5e4af09283eb54156fc3ce2094abe4ee144feab4d1c95eb0f1c91136"
+}

@@ -35,7 +35,14 @@ from qmt_roll_official_live_release_manifest import (
 
 
 class Stage179ReleaseManifestTest(unittest.TestCase):
+    """Historical C9 release chain; the installed-profile fixture is explicit."""
     def setUp(self) -> None:
+        profile_patch = patch.object(builder, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        profile_patch.start()
+        self.addCleanup(profile_patch.stop)
+        wrapper_profile = patch.object(bundle_builder, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        wrapper_profile.start()
+        self.addCleanup(wrapper_profile.stop)
         self.tempdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(self.tempdir.cleanup)
         self.repo = Path(self.tempdir.name) / "repo"

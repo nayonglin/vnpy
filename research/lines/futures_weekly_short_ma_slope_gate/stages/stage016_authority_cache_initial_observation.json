@@ -1,0 +1,21 @@
+{
+  "finding": "CACHED_AUTHORITY_REGISTRY_BODY_NOT_BOUND",
+  "severity": "P1",
+  "observed_before_root_fix": true,
+  "old_whole_source_sha256": null,
+  "hash_limit": "Pre-freeze pure probe was not byte-pinned before author repair. No reconstructed old SHA is claimed.",
+  "fixture_only": true,
+  "real_registry_created": false,
+  "observation": {
+    "disk_allowed_capture_kinds": [
+      "stage174_query"
+    ],
+    "mutated_cached_allowed_capture_kinds": [
+      "stage174_query",
+      "transfer_serial_query"
+    ],
+    "old_helper_returned_same_mutated_capability": true
+  },
+  "current_fixed_tests": "audit_stage016_authority_cache_independent.py",
+  "current_fixed_source_sha256": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d"
+}

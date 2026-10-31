@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-31T16:36:50.885184+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "contract": "weekly19.external-funding.v2",
+  "supersedes_semantics_only": "V1 pending-as-debt opening block",
+  "preserved_v1_checkpoint": "09e7e07e8",
+  "production_qualified": false,
+  "financial_backtest_run": false,
+  "bank_api_called_count": 0,
+  "ctp_api_called_count": 0,
+  "smtp_api_called_count": 0,
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "8b015f3bc6aeda6fc15a1c7649fa30a58f9cb4ec4d31ae1f35d1e0afbe260eea",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "e519e709b3fb50b9f0b361ca5fea22280178228d9441fd5b0e523d413306bff6",
+    "tests/test_weekly19_external_funding.py": "3b4b4990665527d5167008a8a62abe8da6f2edc0b6f0c716f0495be01dd76629"
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_external_funding.py",
+      "returncode": 0,
+      "tail": [
+        "Ran 51 tests in 0.034s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_broker_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "Ran 23 tests in 0.459s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "3fdfb126cfcd665e2b868e10c37e8917d4a5fce6b50d5c06534241678463ed5a"
+}

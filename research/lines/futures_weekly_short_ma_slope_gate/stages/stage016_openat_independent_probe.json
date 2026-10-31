@@ -1,0 +1,364 @@
+{
+  "schema": "stage016_independent_openat_probe_v1",
+  "system": "Darwin",
+  "release": "27.0.0",
+  "mac_version": "27.0",
+  "results": {
+    "dirfd_create_or_open_same": [
+      [
+        {
+          "ok": false,
+          "errno": 2
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": false,
+          "errno": 2
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": false,
+          "errno": 2
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": false,
+          "errno": 2
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": false,
+          "errno": 2
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": false,
+          "errno": 2
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    ],
+    "different_names": [
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    ],
+    "absolute_same": [
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    ],
+    "exclusive_then_existing": [
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    ]
+  },
+  "summary": {
+    "dirfd_create_or_open_same": {
+      "opens": 20,
+      "failures": 6
+    },
+    "different_names": {
+      "opens": 20,
+      "failures": 0
+    },
+    "absolute_same": {
+      "opens": 20,
+      "failures": 0
+    },
+    "exclusive_then_existing": {
+      "opens": 20,
+      "failures": 0
+    }
+  },
+  "auditor_source_sha256": "6afb1d80c8ad218755c30412d64c66bedaae66ef1b657e0ba3c1034ff25a52c6",
+  "CTP_connections": 0,
+  "SMTP_calls": 0,
+  "production_writes": 0
+}

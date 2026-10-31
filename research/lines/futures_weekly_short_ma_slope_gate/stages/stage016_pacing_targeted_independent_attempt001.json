@@ -1,0 +1,25 @@
+{
+  "exit_code": 0,
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 20.413,
+  "source_before": {
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10",
+    "tests/test_stage931_ctp_readiness.py": "7c96ddb904ad71b32efe37c9b7dae2fc98c2a634ef91d74626530332b24152b0",
+    "tests/test_stage931_broker_open_date_seal.py": "f13f9d80e1df7f9196f3319039613953277bea03d741724afbaf544e9909947a",
+    "tests/test_stage947_production_support_launcher.py": "27892396068d3a201e8c8af28a11011d76f74392e9bec0d62cdf6f04990c1404"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10",
+    "tests/test_stage931_ctp_readiness.py": "7c96ddb904ad71b32efe37c9b7dae2fc98c2a634ef91d74626530332b24152b0",
+    "tests/test_stage931_broker_open_date_seal.py": "f13f9d80e1df7f9196f3319039613953277bea03d741724afbaf544e9909947a",
+    "tests/test_stage947_production_support_launcher.py": "27892396068d3a201e8c8af28a11011d76f74392e9bec0d62cdf6f04990c1404"
+  },
+  "source_unchanged": true,
+  "log_sha256": "e0ea33353c8ef543f9c94db4ec822821f127a7fa8a81e19a13a28194890d5775",
+  "junit_sha256": "1479059418e9d0906e38c44b2b367f109a8c7a93b2c6e92a781c24541d523311",
+  "qualification": false,
+  "real_external_actions": false
+}

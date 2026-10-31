@@ -1,0 +1,18 @@
+======================================================================
+FAIL: test_outside_session_is_rejected_before_any_readonly_connection (tests.test_weekly19_live_entry.EntryTest.test_outside_session_is_rejected_before_any_readonly_connection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_live_entry.py", line 86, in test_outside_session_is_rejected_before_any_readonly_connection
+    entry.run_session(dict(backend=Backend(),target_date='2026-10-30',preview=False),duration_seconds=3,names=['day_am','day_pm'],clock=lambda:at)
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py", line 56, in run_session
+    backend.refresh_readonly(now);now=clock()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_live_entry.py", line 83, in refresh_readonly
+    def refresh_readonly(self,now):raise AssertionError('outside-session must not connect')
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: outside-session must not connect
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

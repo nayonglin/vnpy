@@ -1,0 +1,11 @@
+read_inputs {'seconds': 16.561486333142966, 'maxrss': 1128808448}
+build {'seconds': 9.007654750021175, 'maxrss': 1719304192}
+pure_warmup {'seconds': 32.00270837498829, 'maxrss': 1719304192}
+export {'seconds': 8.910234707873315, 'maxrss': 1972518912}
+sizing_clone {'seconds': 0.12274458282627165, 'maxrss': 1972518912}
+revalidate_open_intent {'seconds': 3.809319833992049, 'maxrss': 1972518912}
+export_for_fsync_restore {'seconds': 3.668507083086297, 'maxrss': 1972518912}
+json_fsync_read {'seconds': 0.024943665834143758, 'maxrss': 1972518912}
+restore {'seconds': 26.64655637484975, 'maxrss': 2983968768}
+pipeline_bundle_initialize_fsync {'seconds': 0.13972379197366536, 'maxrss': 2983968768}
+pipeline_bundle_read_validate {'seconds': 0.5312905418686569, 'maxrss': 2983968768}

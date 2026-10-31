@@ -1,0 +1,35 @@
+{
+  "schema": "weekly19.technical-benchmark.v1",
+  "strict_fixture_broker": true,
+  "financial_replays": 0,
+  "on_bars_calls": 0,
+  "market_downloads": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "phases": {
+    "read_inputs": {
+      "seconds": 16.259022457990795,
+      "maxrss": 1127301120
+    },
+    "build": {
+      "seconds": 34.48312970879488,
+      "maxrss": 3615817728
+    },
+    "pure_warmup": {
+      "seconds": 29.197828333824873,
+      "maxrss": 3615817728
+    },
+    "export": {
+      "seconds": 31.635737917153165,
+      "maxrss": 4132651008
+    },
+    "sizing_clone": {
+      "seconds": 154.08500287495553,
+      "maxrss": 5303205888
+    }
+  },
+  "durable_json_bytes": 247476098,
+  "source_runtime_sha256": "df29e004d6d99c0fa8aef0db28d1b55b17335c6e484fa19983f37c4d31829979",
+  "sizing_clone_status": "completed_154.085_seconds_deadline_failure",
+  "technical_deadline_failure": true
+}

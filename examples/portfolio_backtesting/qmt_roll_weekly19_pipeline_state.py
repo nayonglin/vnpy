@@ -15,6 +15,7 @@ import uuid
 import qmt_roll_weekly19_funding as funds
 from qmt_roll_weekly19_funding_store import FundingStore
 
+MAX_STATE_BYTES=64_000_000
 class PipelineStateError(ValueError):pass
 
 def canonical(value):
@@ -61,6 +62,7 @@ class PipelineStateStore:
   if (not isinstance(value,dict)or value.get('schema')!='weekly19.pipeline-state.v1'
    or value.get('account_key')!=self.account or value.get('material_release_id')!=self.release
    or type(value.get('revision'))is not int or value['revision']<0):raise PipelineStateError('pipeline_state_identity_invalid')
+  if value.get('runtime_mode','preview')not in {'preview','production'}:raise PipelineStateError('pipeline_runtime_mode_invalid')
   f=value['funding'];funds.validate_state(f)
   if f['account_key']!=self.account or f['material_release_id']!=self.release:raise PipelineStateError('pipeline_cash_identity_invalid')
   rt=value.get('runtime');origin=value.get('decision_state');decision=value.get('decision')
@@ -73,6 +75,7 @@ class PipelineStateStore:
    origin_cash=_decode(origin.get('runtime',{})).get('confirmed_cash_state')
    original=self._runtime_state(origin,origin_cash)
    if not FundingStore._same_identity(origin_cash,f):raise PipelineStateError('pipeline_funding_identity_change')
+   if origin_cash['revision']>f['revision']:raise PipelineStateError('pipeline_origin_cash_revision_future')
    FundingStore._forward_ledger(origin_cash,f)
    if (not isinstance(decision,dict)or decision.get('schema')!='weekly19.runtime-decision.v1'
     or decision.get('account_fingerprint')!=self.account or decision.get('material_release_id')!=self.release
@@ -98,8 +101,8 @@ class PipelineStateStore:
   try:fd=os.open(self.path.name,os.O_RDONLY|os.O_NOFOLLOW,dir_fd=directory)
   except FileNotFoundError:return None
   with os.fdopen(fd,'rb')as f:
-   self._file(f.fileno());raw=f.read(64_000_001)
-  if len(raw)>64_000_000:raise PipelineStateError('pipeline_state_oversized')
+   self._file(f.fileno());raw=f.read(MAX_STATE_BYTES+1)
+  if len(raw)>MAX_STATE_BYTES:raise PipelineStateError('pipeline_state_oversized')
   try:
    rec=json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in()).throw(PipelineStateError('pipeline_nonfinite_json')))
    if rec['schema']!='weekly19.pipeline-store.v1'or rec['state_sha256']!=digest(rec['state']):raise PipelineStateError('pipeline_checksum_invalid')
@@ -108,6 +111,7 @@ class PipelineStateStore:
  def _write(self,directory,value):
   self._validate(value);temp='.'+uuid.uuid4().hex+'.tmp'
   payload=canonical(dict(schema='weekly19.pipeline-store.v1',state_sha256=digest(value),state=value))
+  if len(payload)>MAX_STATE_BYTES:raise PipelineStateError('pipeline_state_oversized')
   fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
   try:
    with os.fdopen(fd,'wb')as f:f.write(payload);f.flush();os.fsync(f.fileno())
@@ -128,6 +132,7 @@ class PipelineStateStore:
    if current is None:raise PipelineStateError('pipeline_initialization_required')
    following=transform(deepcopy(current));self._validate(following)
    if following==current:return deepcopy(current)
+   if following.get('runtime_mode','preview')!=current.get('runtime_mode','preview'):raise PipelineStateError('pipeline_runtime_mode_immutable')
    if following['revision']!=current['revision']:raise PipelineStateError('pipeline_revision_owned_by_store')
    if not FundingStore._same_identity(current['funding'],following['funding']):raise PipelineStateError('pipeline_funding_identity_change')
    FundingStore._forward_ledger(current['funding'],following['funding'])

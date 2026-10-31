@@ -2,6 +2,7 @@
 import copy, hashlib, json, os, sys, tempfile, unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'examples/portfolio_backtesting'))
 import qmt_roll_weekly19_funding as funds
@@ -61,6 +62,14 @@ class StateTest(unittest.TestCase):
   def bad(b):b['funding']['reserve_remaining_fen']+=1;return b
   with self.assertRaises((PipelineStateError,funds.FundingError)):self.store.transact(bad)
   self.assertEqual(old,self.path.read_bytes())
+ def test_preview_or_missing_legacy_mode_cannot_be_promoted_in_place(self):
+  self.store.initialize(bundle())
+  with self.assertRaisesRegex(PipelineStateError,'mode_immutable'):self.store.transact(lambda b:dict(b,runtime_mode='production'))
+ def test_oversized_next_bundle_never_replaces_readable_current_file(self):
+  self.store.initialize(bundle());before=self.path.read_bytes()
+  with patch('qmt_roll_weekly19_pipeline_state.MAX_STATE_BYTES',6000):
+   with self.assertRaisesRegex(PipelineStateError,'oversized'):self.store.transact(lambda b:dict(b,diagnostics={'oversized':'x'*8000}))
+  self.assertEqual(self.path.read_bytes(),before);self.assertEqual(self.store.read(),bundle())
  def test_cross_release_or_account_cannot_resume(self):
   self.store.initialize(bundle())
   with self.assertRaises(PipelineStateError):PipelineStateStore(self.path,ACCOUNT,'foreign').read()

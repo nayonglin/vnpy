@@ -1,0 +1,77 @@
+{
+  "recorded_at": "2026-10-31T17:53:47.239552+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "source_qualified_by_real_capture": false,
+  "real_ctp_connected": false,
+  "real_registry_created": false,
+  "real_key_created": false,
+  "real_qualification_executed": false,
+  "real_bank_cashflow_verified": false,
+  "financial_backtest_run": false,
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "cbd462ca1eacb41f976b393501aa3816211af68451470106266ffbf772b60c9f",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "a99b1ad768990254c014b8f2ce28bd83957c78906df7b9fc226cb833a2ae8310",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "81bd0c46a911628a6f2359cf5e3398857789a5630d05ae883a4b62bd68ae3fec",
+    "tests/test_weekly19_broker_evidence.py": "a8c8c518ad906f4428465faa1664de09f31601103add75ccfc9141b614cd7f23",
+    "tests/test_weekly19_warm_evidence.py": "889022ccf52f978f43e8df870c70ad22840d67fc12540ab192f550203cfc5ad2",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_broker_evidence.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 50 tests in 1.102s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_warm_evidence.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 13 tests in 0.074s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_external_funding.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 61 tests in 0.249s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_stage174_query_bundle.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 22 tests in 5.200s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_official_live_broker_account_snapshot.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 25 tests in 0.870s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "51b4fee5eb9a55cfe6f9de2cf6e2385678d1a491547b9eb4e2a715439e122c09",
+  "mandatory_capture_source_count": 5,
+  "mandatory_authority_source_count": 12
+}

@@ -1,0 +1,9 @@
+read_inputs {'seconds': 16.21307870792225, 'maxrss': 1126776832}
+build {'seconds': 8.613733165897429, 'maxrss': 1828356096}
+pure_warmup {'seconds': 32.394525999901816, 'maxrss': 1828356096}
+export {'seconds': 9.450454707955942, 'maxrss': 2021457920}
+sizing_clone {'seconds': 0.13120508403517306, 'maxrss': 2021457920}
+revalidate_open_intent {'seconds': 4.038282291032374, 'maxrss': 2021457920}
+export_for_fsync_restore {'seconds': 3.794868709053844, 'maxrss': 2021457920}
+json_fsync_read {'seconds': 0.02484275004826486, 'maxrss': 2021457920}
+restore {'seconds': 26.632857541088015, 'maxrss': 2820800512}

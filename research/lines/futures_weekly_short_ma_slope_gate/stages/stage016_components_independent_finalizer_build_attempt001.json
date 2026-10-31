@@ -1,0 +1,9 @@
+{
+  "status": "AUDIT_SCRIPT_GENERATION_SYNTAX_ERROR",
+  "cause": "nested triple-single-quoted Markdown text closed outer audit-source string",
+  "implementation_modified": false,
+  "financial_runs": 0,
+  "CTP_connections": 0,
+  "target_source_created": false,
+  "resolution": "Use inner triple-double-quoted Markdown; new audit finalizer only."
+}

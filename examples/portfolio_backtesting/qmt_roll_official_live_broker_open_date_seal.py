@@ -71,15 +71,15 @@ def _number(value: Any, *, zero: bool = False, integer: bool = False) -> float:
 
 
 def _direction(value: Any) -> str:
-    if value in ("long", "多", "0"):
+    if value in ("long", "Long", "多", "0"):
         return "long"
-    if value in ("short", "空", "1"):
+    if value in ("short", "Short", "空", "1"):
         return "short"
     _fail("direction")
 
 
 def _open(value: Any) -> None:
-    if value not in ("open", "开", "0"):
+    if value not in ("open", "Open", "开", "0"):
         _fail("not_open")
 
 

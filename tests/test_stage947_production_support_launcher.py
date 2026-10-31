@@ -31,10 +31,20 @@ from qmt_roll_official_ai_pool_policy import (  # noqa: E402
     OFFICIAL_AI_RANKED_PRODUCT_COUNT,
     OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
 )
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
     def setUp(self) -> None:
+        no_external_exec = patch.object(launcher.os, "execve", side_effect=AssertionError("test must explicitly mock the external exec boundary"))
+        no_external_exec.start()
+        self.addCleanup(no_external_exec.stop)
+        # These cases exercise the historical C9 pipeline. A weekly default
+        # must never make a legacy worker fixture call real os.execve.
+        for module in (launcher, session_launcher):
+            configured = patch.object(module, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+            configured.start()
+            self.addCleanup(configured.stop)
         class FixtureClock(RealDatetime):
             @classmethod
             def now(cls, tz=None):
@@ -498,6 +508,10 @@ print("CONTRACT=" + json.dumps({
                     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
                     STAGE183_SUMMARY_PATH=stage183_summary,
                 ),
+                # This is the frozen historical C9 monthly-AI publication
+                # fixture, not an authorization for the weekly fixed pool.
+                patch.object(stage935, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE),
+                patch.object(stage935, "OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION", OFFICIAL_AI_PRODUCT_POOL_STRATEGY),
                 patch.object(stage935, "_run_command", return_value=success) as run_command,
             ):
                 result = stage935._run(args)
@@ -2125,11 +2139,13 @@ print("CONTRACT=" + json.dumps({
                 launcher,
                 "_run_precompute_and_issue_daily_receipt",
             ) as legacy,
+            patch.object(launcher.os, "execve") as execute,
         ):
             launcher.launch_support_job(args)
 
         pipeline_run.assert_called_once()
         legacy.assert_not_called()
+        execute.assert_not_called()
 
     def test_watchdog_and_noop_retry_do_not_require_worker_credentials(self) -> None:
         args = argparse.Namespace(job="postclose-report")
@@ -2209,6 +2225,34 @@ print("CONTRACT=" + json.dumps({
         ):
             launcher.launch_support_job(args)
         stable.assert_not_called()
+
+
+class Weekly19ConfiguredSupportRouteTest(unittest.TestCase):
+    """Current formal defaults stay weekly while historical C9 cases remain."""
+    def test_weekly_default_support_commands_keep_exact_profile_and_context(self):
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+        self.assertIs(launcher.resolve_configured_execution_profile(), WEEKLY19_15W_R150K_PROFILE)
+        for spec in launcher.SUPPORT_JOB_SPECS.values():
+            command = launcher.build_support_command(spec)
+            self.assertTrue(command[1].endswith("run_qmt_roll_weekly19_live.py"))
+            self.assertEqual(command[command.index("--execution-profile") + 1], WEEKLY19_15W_R150K_PROFILE.profile_key)
+            self.assertIn("--context-file", command)
+
+    def test_weekly_exec_boundary_is_mocked_and_legacy_pipeline_never_called(self):
+        spec = launcher.SUPPORT_JOB_SPECS["postclose-precompute"]
+        with (patch.object(launcher.os, "getppid", return_value=1),
+              patch.dict(os.environ, {"XPC_SERVICE_NAME": spec.label}),
+              patch.object(launcher, "_assert_stable_deploy_root"), patch.object(launcher, "_assert_canonical_paths"),
+              patch.object(launcher, "_validate_release_and_receipt", return_value={}),
+              patch.object(launcher, "_validate_code_qualification"),
+              patch.object(launcher, "_build_support_environment", return_value={}),
+              patch.object(launcher, "_run_postclose_pipeline") as legacy,
+              patch.object(launcher.os, "execve") as execute):
+            launcher.launch_support_job(argparse.Namespace(job=spec.job))
+        execute.assert_called_once()
+        self.assertTrue(execute.call_args.args[1][1].endswith("run_qmt_roll_weekly19_live.py"))
+        self.assertIn("weekly19-15w-r150k", execute.call_args.args[1])
+        legacy.assert_not_called()
 
 
 if __name__ == "__main__":

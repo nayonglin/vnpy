@@ -1,0 +1,19 @@
+test_changed_gap_retires_only_unpaid_offer_without_mutating_origin_or_credit (__main__.AdviceIndependent.test_changed_gap_retires_only_unpaid_offer_without_mutating_origin_or_credit) ... ok
+test_confirmed_portfolio_batch_does_not_offer_again_after_market_loss (__main__.AdviceIndependent.test_confirmed_portfolio_batch_does_not_offer_again_after_market_loss) ... ok
+test_holiday_advice_origin_never_reruns_strategy_or_changes_decision (__main__.AdviceIndependent.test_holiday_advice_origin_never_reruns_strategy_or_changes_decision) ... ok
+test_unknown_day_close_blocks_advice_with_original_cash_unchanged (__main__.AdviceIndependent.test_unknown_day_close_blocks_advice_with_original_cash_unchanged) ... ok
+test_concurrent_same_generation_has_one_winner_without_lost_cash (__main__.ContextIndependent.test_concurrent_same_generation_has_one_winner_without_lost_cash) ... ok
+test_context_and_lock_hardlinks_or_duplicate_json_cannot_be_admitted (__main__.ContextIndependent.test_context_and_lock_hardlinks_or_duplicate_json_cannot_be_admitted) ... ok
+test_parent_replaced_at_leaf_open_fails_before_any_visible_advance (__main__.ContextIndependent.test_parent_replaced_at_leaf_open_fails_before_any_visible_advance) ... ok
+test_renamed_parent_at_actual_replace_fails_and_visible_context_stays_original (__main__.ContextIndependent.test_renamed_parent_at_actual_replace_fails_and_visible_context_stays_original) ... ok
+test_stale_expected_market_is_cas_failure_but_latest_cash_fields_are_preserved (__main__.ContextIndependent.test_stale_expected_market_is_cas_failure_but_latest_cash_fields_are_preserved) ... ok
+test_cache_hit_rehashes_actual_bytes_and_does_not_decode_again (__main__.QuoteIndependent.test_cache_hit_rehashes_actual_bytes_and_does_not_decode_again) ... ok
+test_committed_old_cursor_ignores_tail_but_tail_cannot_become_durable (__main__.QuoteIndependent.test_committed_old_cursor_ignores_tail_but_tail_cannot_become_durable) ... ok
+test_monotonic_expiry_still_rejects_valid_cached_epoch_quote (__main__.QuoteIndependent.test_monotonic_expiry_still_rejects_valid_cached_epoch_quote) ... ok
+test_new_cursor_checks_old_admitted_prefix_before_incremental_reuse (__main__.QuoteIndependent.test_new_cursor_checks_old_admitted_prefix_before_incremental_reuse) ... ok
+test_same_size_mtime_restored_rewrite_cannot_pass_cached_prefix (__main__.QuoteIndependent.test_same_size_mtime_restored_rewrite_cannot_pass_cached_prefix) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.089s
+
+OK

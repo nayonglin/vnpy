@@ -1,0 +1,49 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+...............................                                          [100%]
+=============================== warnings summary ===============================
+tests/test_stage904_durable_state_integration.py::Stage904DurableStateIntegrationTest::test_broker_fifo_reconstruction_discards_a_flattened_old_epoch
+tests/test_stage904_durable_state_integration.py::Stage904DurableStateIntegrationTest::test_manual_reopen_uses_new_broker_epoch_instead_of_old_ledger_cycle
+  /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py:2041: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
+    frame["_dt"] = pd.to_datetime(date_source, errors="coerce")
+
+tests/test_stage904_durable_state_integration.py: 15 warnings
+  /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py:2295: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
+    series = pd.to_datetime(frame[key], errors="coerce")
+
+tests/test_stage904_durable_state_integration.py::Stage904DurableStateIntegrationTest::test_true_per_symbol_sequence_gap_still_latches
+  /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage904_official_live_c9_intraday_monitor.py:1604: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
+    received = pd.to_datetime(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--- generated xml file: /private/tmp/weekly19_selected_final_attempt002.xml ----
+2263 passed, 18 warnings in 401.12s (0:06:41)

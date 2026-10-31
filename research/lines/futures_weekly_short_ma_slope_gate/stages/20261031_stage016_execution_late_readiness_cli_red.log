@@ -1,0 +1,30 @@
+======================================================================
+FAIL: test_actual_readiness_is_sampled_after_slow_original_risk_proof (tests.test_weekly19_controller.Weekly19LateReadinessTest.test_actual_readiness_is_sampled_after_slow_original_risk_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_controller.py", line 95, in test_actual_readiness_is_sampled_after_slow_original_risk_proof
+    self.assertEqual(result['status'],'published',result);self.assertEqual(order,['risk_proof','readiness'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'published'
+- blocked
++ published
+ : {'schema': 'weekly19.controller-publication.v1', 'status': 'blocked', 'blockers': ["'function' object has no attribute 'get'"], 'production_qualified': False, 'order_api_called_count': 0}
+
+======================================================================
+FAIL: test_cli_resolves_current_completed_target_and_sets_private_context_reference (tests.test_weekly19_live_entry.EntryTest.test_cli_resolves_current_completed_target_and_sets_private_context_reference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_live_entry.py", line 70, in test_cli_resolves_current_completed_target_and_sets_private_context_reference
+    self.assertEqual(run.call_args.kwargs['context']['target_date'],'2026-10-30')
+AssertionError: '2026-10-29' != '2026-10-30'
+- 2026-10-29
+?         ^^
++ 2026-10-30
+?         ^^
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.123s
+
+FAILED (failures=2)
+{"status": "fixture"}

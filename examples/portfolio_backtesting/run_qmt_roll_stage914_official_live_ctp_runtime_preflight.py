@@ -23,6 +23,7 @@ from qmt_roll_official_execution_profile import (
     ExecutionStrategyMode,
     OfficialExecutionProfile,
     resolve_execution_profile,
+    resolve_configured_execution_profile,
 )
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
@@ -284,10 +285,10 @@ def evaluate_stage179_pre_adapter_gate(
 
     if resolved.profile is ExecutionRuntimeProfile.PRODUCTION_LIVE:
         if (
-            expected_execution_profile != C9_15W_PROFILE.profile_key
-            or expected_official_version != C9_15W_PROFILE.official_version
-            or expected_capital != C9_15W_PROFILE.capital
-            or expected_capital_label != C9_15W_PROFILE.capital_label
+            expected_execution_profile != resolve_configured_execution_profile().profile_key
+            or expected_official_version != resolve_configured_execution_profile().official_version
+            or expected_capital != resolve_configured_execution_profile().capital
+            or expected_capital_label != resolve_configured_execution_profile().capital_label
         ):
             blockers.append(
                 "production_live_execution_profile_not_current_official"

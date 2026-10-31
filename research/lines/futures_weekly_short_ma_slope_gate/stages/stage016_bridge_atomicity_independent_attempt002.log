@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_post_replace_fsync_failure_preserves_actor_store_consistency (__main__.BridgeAtomicityIndependent.test_post_replace_fsync_failure_preserves_actor_store_consistency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bridge_atomicity_independent_v2.py", line 39, in test_post_replace_fsync_failure_preserves_actor_store_consistency
+    self.assertEqual(current['state_sha256'],actual['runtime']['state_sha256'],
+AssertionError: 'a70b623d0ff85ac22a8aad4c589dae337b5aa4c0158911c2020990d78db305cb' != '827aead33ff14c6b209c6829417602c15dd33f43feb026ead0216c6b0ae7eed0'
+- a70b623d0ff85ac22a8aad4c589dae337b5aa4c0158911c2020990d78db305cb
++ 827aead33ff14c6b209c6829417602c15dd33f43feb026ead0216c6b0ae7eed0
+ : Post-replace failure left durable new runtime but rolled actor back to old runtime
+
+----------------------------------------------------------------------
+Ran 1 test in 0.389s
+
+FAILED (failures=1)

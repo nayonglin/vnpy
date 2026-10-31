@@ -1799,6 +1799,60 @@ def _build_report(summary: dict[str, Any], intents: pd.DataFrame) -> str:
     )
 
 
+def _run_weekly19_dry_run(*, target_date, mode, decision, context, profile, clock, write_compat_outputs):
+    from qmt_roll_weekly19_execution import evaluate_intent
+    from qmt_roll_official_execution_profile import assert_canonical_execution_profile
+    assert_canonical_execution_profile(profile)
+    if mode != "dry-run":
+        raise ValueError("weekly19_stage905_dry_run_only")
+    if not isinstance(decision, Mapping) or not isinstance(context, Mapping):
+        raise ValueError("weekly19_fresh_execution_context_required")
+    if (decision.get("schema") != "weekly19.runtime-decision.v1"
+            or decision.get("material_release_id") != context.get("material_release_id")
+            or decision.get("account_fingerprint") != context.get("account_fingerprint")
+            or decision.get("trading_date") != target_date
+            or context.get("target_cutoff_date") != target_date):
+        raise ValueError("weekly19_runtime_decision_identity_mismatch")
+    intents = decision.get("intents")
+    if not isinstance(intents, list):
+        raise ValueError("weekly19_runtime_intents_missing")
+    now = datetime.fromtimestamp(clock.epoch_ns() / 1_000_000_000, tz=timezone.utc)
+    rows = []
+    for intent in intents:
+        gate = evaluate_intent(intent, context, now=now)
+        symbol, exchange = intent["vt_symbol"].rsplit(".", 1)
+        payload = {**intent, "target_date": target_date, "symbol": symbol, "exchange": exchange,
+            "direction": Direction.LONG.value if intent["direction"] == "long" else Direction.SHORT.value,
+            "offset": Offset.OPEN.value if intent["offset"] == "open" else Offset.CLOSE.value,
+            "type": OrderType.FAK.value if intent["offset"] == "open" else OrderType.LIMIT.value,
+            "physical_tif_policy_version": "stage179_open_fak_v1" if intent["offset"] == "open" else "stage179_limit_gfd_v1",
+            "volume": gate["volume"], "price": intent["limit_price"],
+            "gateway_name": "CTP", "reference": f"Stage905PhaseD:{intent['intent_id']}"}
+        rows.append({**intent, "weekly19_gate": gate, "target_date": target_date,
+            "symbol": symbol, "exchange": exchange,
+            "signal_identity_json": json.dumps(intent["signal_identity"], sort_keys=True),
+            "order_request_json": json.dumps(payload, sort_keys=True, ensure_ascii=False),
+            "order_request_price": payload["price"], "order_request_volume": payload["volume"],
+            "executor_status": "dry_run_order_request_payload_ready" if gate["allowed"] else "blocked",
+            "executor_reason": ";".join(gate["blockers"]),
+            "planned_volume": gate["volume"], "send_order_api_called": 0, "cancel_order_api_called": 0})
+    ready = sum(row["executor_status"] == "dry_run_order_request_payload_ready" for row in rows)
+    summary = dict(model_tag=MODEL_TAG, generated_at=now.isoformat(), target_date=target_date,
+        execution_profile=profile.profile_key, official_live_version=profile.official_version,
+        official_live_alias=profile.alias, capital=profile.capital, capital_label=profile.capital_label,
+        ruleset_version=profile.ruleset_version, intraday_stop_retry_enabled=0,
+        intent_count=len(rows), ready_count=ready, blocked_count=len(rows)-ready,
+        executor_status="executor_dry_run_blocked" if ready != len(rows) else "executor_dry_run_ready" if rows else "executor_no_intents",
+        production_qualified=False, send_order_api_called_count=0, cancel_order_api_called_count=0, order_api_called_count=0)
+    paths = _paths(target_date)
+    if write_compat_outputs:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        _atomic_write_df(paths["intents_csv"], pd.DataFrame(rows))
+        _atomic_write_text(paths["summary_json"], json.dumps(summary, ensure_ascii=False, indent=2))
+        _atomic_write_text(paths["report_md"], _build_report(summary, pd.DataFrame(rows)))
+    return Stage905RunResult(intents=pd.DataFrame(rows), summary=summary, paths=paths)
+
+
 def run_executor_dry_run(
     target_date: str,
     mode: str = "dry-run",
@@ -1813,6 +1867,8 @@ def run_executor_dry_run(
         OfficialExecutionProfile | str | ExecutionStrategyMode
     ) = C9_15W_PROFILE,
     stage260_decisions: pd.DataFrame | None = None,
+    weekly19_decision: Mapping[str, Any] | None = None,
+    weekly19_context: Mapping[str, Any] | None = None,
     clock: Clock = SYSTEM_CLOCK,
     write_compat_outputs: bool = True,
     existing_open_intent_ids: Sequence[str] = (),
@@ -1825,6 +1881,17 @@ def run_executor_dry_run(
         if isinstance(execution_profile, OfficialExecutionProfile)
         else resolve_execution_profile(execution_profile)
     )
+    if profile.decision_mode == "weekly19":
+        if (stage904_actions is not None or stage904_summary is not None
+                or stage260_decisions is not None or snapshots is not None):
+            raise ValueError("weekly19_legacy_execution_inputs_forbidden")
+        return _run_weekly19_dry_run(
+            target_date=target_date, mode=mode, decision=weekly19_decision,
+            context=weekly19_context, profile=profile, clock=clock,
+            write_compat_outputs=write_compat_outputs,
+        )
+    if weekly19_decision is not None or weekly19_context is not None:
+        raise ValueError("weekly19_inputs_for_nonweekly_profile_forbidden")
     intraday_inputs_supplied = (
         stage904_actions is not None or stage904_summary is not None
     )

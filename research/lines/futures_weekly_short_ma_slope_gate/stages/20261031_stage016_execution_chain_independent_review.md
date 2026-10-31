@@ -1,0 +1,32 @@
+# Stage016 执行整链接线独立条件审查
+
+记录时间：2026-10-31T20:09:43.612010+08:00。研究线 futures_weekly_short_ma_slope_gate。结论：PASS_OFFLINE_COMPONENTS_WITH_LIMITATIONS；只接受本次锁源离线技术边界，production_qualified=false、真实来源资格=false。用户已授权迁移和真正场外备用金安排，授权不等于技术资格。
+
+本轮只读 LocalBackend、CLI、ExecutionService、Controller、SessionBridge 和实际 Stage931 API 边界；未修改作者实现、旧冻结证据或Git，未连接CTP/SMTP/银行/网络、未发单、未做金融回放。调研依据为当前源码、原生接口及既有独审原始证据；没有用网上新版本替换本机协议。
+
+## 已确认与修复
+
+发现1项P1：store在os.replace后目录fsync失败，Bridge无条件回滚actor，使磁盘新状态与内存旧状态分叉。原失败脚本和两次日志保留；首次unittest还顺带发现导入的fixture，相关作者fixture局部变量error未误报为实现bug。第二次隔离为1测试/1失败/0error。作者修复后独审4例通过：旧状态读回、新状态读回仍抛原错、读回失败poison、restore失败poison；不确定持久化不返回applied。当前桥SHA 4207284a4c2166d9f6e909e6895f1d0acdd0b007b523050327036a04e9d54474。
+
+最终94次测试调用（78次直接接线作者测试、16次独审）15.137秒，0失败/0错误/0跳过。另3例纯Stage907命令构造通过，合计97次本轮最终验收调用；不是全局去重测试数。独审覆盖过期/漂移authority在runner前阻断、漂移后恢复文件仍撤权、同actor串行和publication互斥、绝对deadline与stop后不重启、typed quota绑定污染/foreign lease、真实partial fill父cap守恒，以及cash_sources伪金额/伪qualified不改变E或磁盘账本。Stage907仅验证参数转发和shell引用，未执行构造的命令。
+
+## 接线结论
+
+首次来源/生产manifest/qualification/activation/daily receipt/私有ledger/行情代次闸门位于连接前；当前实现不能由JSON的qualified或sender字段生成能力。旧material source与实际production HEAD分列，不能把祖先关系当精确HEAD资格。现金引用是待核实证据，只有实际provider和完整现金链可增加E。
+
+同一Runtime actor贯穿会话；真实query/readiness等待不持actor锁，callback/store提交用同锁。当前owner的非cash_sources配置或文件权限变化会永久撤权，需新owner恢复。CLI时限同时限制runner存活与实际授权expiry；stop_pending不提前关桥。Controller纯发布的API零与并发执行器未知计数分开。
+
+最终API边界核真实父delivery和子单remaining，不接受签100却风险50仍发100，也不允许拆小子单绕过父cap。typed私有quota reader证明实际lease/payload/service/connection/child全集；普通JSON列表不是等价能力。931七个quota/native/deferred函数AST逐项匹配18:57参考，当前整文件精确绑定13604c4d15bc5dc60002a78d1851d0b39e5ad4129783491e9815fa7fe4de4f16；不继承18:35旧V6整文件等价。
+
+此前两封已接受组件证据不可变引用：runtime/data/V6审查69eee5fe…与root增量审查84ecb050…。本轮核实原9root文件、原runtime/data/updater/ledger哈希和9个支持/邮件函数AST仍精确相同；只增补新的session/API接线，未重复金融或无关整批测试。
+
+## 必须保留的生产阻断与能力边界
+
+- 无本轮实际已接纳capture authority registry、实际TD/MD原生样本、真实账户/成交恢复E2E；root报告TCP超时不是CTP身份验证。本审查没有亲自连接。
+- 最终结算statement的vendor解析与现金最终性证据仍缺；raw settlement全文collector只证明原始chunk完整，不能证明最终日切。load_cashflow_day_close继续stub/fail-closed，跨TradingDay缺链不能增加E或新开，减风险路径保留。
+- TransferSerial自动producer尚未安装；添加raw路径、邮件建议、余额恢复都不是实际到账证明。
+- 第一child真实Trade领先旧四查询positions时，后续child明确requires_source_reconciliation；保持严格quote/state门，不保证同batch自动续发或无人工恢复。真实查询/受控恢复后才能重新取得完整来源。
+- 尚未完成不可变新release、真实production qualification/activation、master readback或安装/loaded scheduler证明；这里的0项未修复scope内P0/P1/P2不等于生产review通过。
+- 私有typed ledger逐record checksum不是抗同owner篡改的hashchain；实际源与宿主权限/资格证据仍必需。离线通过不证明真实延迟/可用性/容量。
+
+本轮未调alpha、金额或阈值，不构成新的收益过拟合；Stage014同历史选择/零手续费/静态margin和容量局限保留，经济NO_PROMOTION不重写。继续有价值，因为资金真实性、数量守恒和崩溃一致性是固定策略执行前置。没有新增回测结果，金融指标均N/A。

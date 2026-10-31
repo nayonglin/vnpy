@@ -1,0 +1,284 @@
+{
+  "schema": "stage016.runtime-data-v6-independent.v1",
+  "recorded_at": "2026-10-31T11:12:55.852785+00:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "reviewer": "/root/stage011_independent_reviewer",
+  "accepted": true,
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "failures": [],
+  "open_findings": [],
+  "findings": [
+    {
+      "id": "RUNTIME_DTO_OHLCVOI_NOT_BOUND",
+      "severity": "P1",
+      "status": "FIXED_INDEPENDENTLY_VERIFIED",
+      "old_runtime_sha256": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+      "new_runtime_sha256": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+      "red": "stage016_runtime_bar_binding_independent_red_attempt001.json",
+      "green_tests": 7,
+      "scope": "finite complete OHLCV/closeOI actual-source equality plus future/current-forming completion guard; source OI0 remains legal"
+    },
+    {
+      "id": "EXPLICIT_EPOCH_QUOTE_DECADE_MISMATCH_ACCEPTED",
+      "severity": "P1",
+      "status": "FIXED_INDEPENDENTLY_VERIFIED",
+      "old_updater_sha256": "f4ed5475649a873bd3698391dd99973385096f0fbdc1ccd108d2b828dd88e691",
+      "new_updater_sha256": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+      "red": "stage016_epoch_quote_independent_red_attempt001.json",
+      "green_tests": 2,
+      "scope": "known explicit registry quote YYYYMM must equal selected appended epoch; AP6122036 cannot enter202612; matching positive remains admitted"
+    }
+  ],
+  "severity_open": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "severity_fixed_this_batch": {
+    "P1": 2
+  },
+  "production_qualified": false,
+  "source_qualified_by_real_capture": false,
+  "real_ctp_connected": false,
+  "real_registry_created": false,
+  "real_bank_cashflow_verified": false,
+  "real_smtp_sent": false,
+  "financial_replays": 0,
+  "master_promoted": false,
+  "production_installed": false,
+  "test_invocations": {
+    "author_targeted": 333,
+    "new_independent": 28,
+    "total_successful": 361,
+    "globally_unique_claimed": false
+  },
+  "locked_component_source_sha256": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66"
+  },
+  "tested_source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "tests/test_weekly19_runtime.py": "c8b45408dffdd6f4cd8f619535d9b37d08bb91a0b3ced6e9ef312103dfce7774",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "419ecbccc3a539236724b362c1143cf6d2347db44cce0bba691ca2336a9e9b42",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd",
+    "tests/test_weekly19_broker_evidence.py": "caa820c2a00a293623bfd6fdc196252a15cb21b0b1082509669c785a3a088cb5",
+    "tests/test_weekly19_warm_evidence.py": "a88b9ff3541981e319453dd635f71526a012845abb9053cf0a55bccc21c96a5a",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+    "tests/test_official_live_execution_ledger_cycles.py": "4df39dae32faad853548d6ee38437650333a1069059d9ac4bfc07d8b1c06cd6f",
+    "tests/test_stage174_query_bundle.py": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+    "tests/test_official_live_broker_account_snapshot.py": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec"
+  },
+  "tested_source_after_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "tests/test_weekly19_runtime.py": "c8b45408dffdd6f4cd8f619535d9b37d08bb91a0b3ced6e9ef312103dfce7774",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "419ecbccc3a539236724b362c1143cf6d2347db44cce0bba691ca2336a9e9b42",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd",
+    "tests/test_weekly19_broker_evidence.py": "caa820c2a00a293623bfd6fdc196252a15cb21b0b1082509669c785a3a088cb5",
+    "tests/test_weekly19_warm_evidence.py": "a88b9ff3541981e319453dd635f71526a012845abb9053cf0a55bccc21c96a5a",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+    "tests/test_official_live_execution_ledger_cycles.py": "4df39dae32faad853548d6ee38437650333a1069059d9ac4bfc07d8b1c06cd6f",
+    "tests/test_stage174_query_bundle.py": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+    "tests/test_official_live_broker_account_snapshot.py": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec"
+  },
+  "source_drift_during_tests": {},
+  "independent_counterexample_source_snapshots": {
+    "before": {
+      "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+      "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+      "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+      "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+      "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+      "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+      "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+    },
+    "after": {
+      "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+      "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+      "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+      "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+      "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+      "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+      "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+    },
+    "source_drift": {},
+    "suites": [
+      {
+        "audit": "audit_stage016_bar_binding_independent_v2.py",
+        "returncode": 0,
+        "log_sha256": "9f0ebe32953824f7a4e6dd3650b585541d3565aea60710ea38824a885cd9e9c6",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 7 tests in 0.019s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "audit": "audit_stage016_epoch_quote_independent_v2.py",
+        "returncode": 0,
+        "log_sha256": "080ab29aa587f0d6ddb8e1afbcbcd3a912c9fcd008f4aef2da529a23b5ab378f",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 2 tests in 0.190s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "audit": "audit_stage016_compact_data_v6_independent.py",
+        "returncode": 0,
+        "log_sha256": "85c0e495f2da3cf66632ee375ba4d8628dfe4a237dbea8137b39c275dbc4a3b9",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 19 tests in 0.441s",
+          "",
+          "OK"
+        ]
+      }
+    ],
+    "financial_replays": 0,
+    "real_ctp": false
+  },
+  "original_source_ast_review_sha256": "027ed4dc090b1e28d9bc5a79fdf6a5d805f3761acd3bbd817022d1733f7d27dc",
+  "original_method_ast_count": 565,
+  "original_source_file_count": 31,
+  "settings_strategy_parameter_count": 170,
+  "settings_removed_non_strategy_fields": {
+    "account_capital": 150000.0,
+    "c3_capital": 150000.0
+  },
+  "settings_path_relocations": {
+    "ai_product_pool_eligibility_path": "@DISABLED/ai_eligibility.csv",
+    "mapping_csv_path": "@INPUT/mapping",
+    "product_universe_csv_path": "@ASSET/static19.csv",
+    "supply_demand_signal_path": "@EMPTY/supply_demand.csv"
+  },
+  "actual_history": {
+    "admitted_rows": 392382,
+    "independent_sql_field_checks": 234,
+    "am_count": 2093,
+    "durable_bytes": 5086416,
+    "exact_restore": true,
+    "reserve_remaining_fen": 15000000,
+    "confirmed_topup_fen": 0,
+    "phases": {
+      "strict_reader": {
+        "seconds": 16.091106000123546,
+        "maxrss": 1128579072
+      },
+      "build": {
+        "seconds": 8.845694500021636,
+        "maxrss": 1943601152
+      },
+      "pure_warmup": {
+        "seconds": 37.88281650003046,
+        "maxrss": 1943601152
+      },
+      "export": {
+        "seconds": 9.502066583838314,
+        "maxrss": 2154987520
+      },
+      "restore": {
+        "seconds": 27.27738045807928,
+        "maxrss": 3035103232
+      },
+      "restored_export": {
+        "seconds": 3.5554427499882877,
+        "maxrss": 3035103232
+      }
+    },
+    "data_identity": {
+      "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+      "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+      "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+      "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+    },
+    "real_broker_source": false,
+    "on_bars_calls": 0,
+    "financial_replays": 0
+  },
+  "v6_mandatory_capture_sources": 6,
+  "v6_mandatory_authority_sources": 13,
+  "post_v6_931_dependency": {
+    "original_manifest_sha256": "7c8881f3dbc2ba1c31ab6e720c6e14ccfda46f4fc5dceeec33b167d7392f206d",
+    "tested_current_sha256": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "observed_current_sha256": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "old_whole_file_equivalence_proven": false,
+    "whole_file_accepted": false
+  },
+  "evidence_files_sha256": {
+    "stage016_original_source_ast_independent_review.json": "027ed4dc090b1e28d9bc5a79fdf6a5d805f3761acd3bbd817022d1733f7d27dc",
+    "stage016_v6_runtime_independent_admission_attempt001.json": "c2018380a97f35c7368f0d9622d8ccd9e21e529eaa0d3cb747700218c4e7b8cd",
+    "stage016_runtime_bar_binding_independent_red_attempt001.json": "fce8724b11c8dbd3b575829c7e0a101642e659737ad802ebd79c998c6efe9c76",
+    "stage016_runtime_bar_binding_independent_red_attempt001.log": "dd07105f90732f218cf1fc6729eb6a82139cacb624d11253958411ae3e67f189",
+    "audit_stage016_bar_binding_independent.py": "4017a07ebbdbb883531a46e5ed9ffe44aadd8b49ae7557067a681a0ac0c9913b",
+    "stage016_epoch_quote_independent_red_attempt001.json": "789a7471cf67adc02480c4aec5f193bc548c6030e07d14e6ba8aeff05c6990ba",
+    "stage016_epoch_quote_independent_red_attempt001.log": "0714f42221c5fbd954154e920f5a381cb0b604c7b81919de263cd37ebf4076c4",
+    "audit_stage016_epoch_quote_independent.py": "c9f5b7ddf4c46beeb37d46768d317fba0fefa905f3508bce5c2e6609314f443f",
+    "stage016_runtime_data_v6_independent_green_counterexamples_attempt001.json": "80474b861ce0e74b1ea9b004b40823dcd0ef6aeea32d0cb24abf3b31aa8e2689",
+    "stage016_v6_runtime_independent_verification_attempt002.json": "b9a62fcd7c0522a3a6b1ca7e3bda6f88cbe9a66df617fc2771b65efc434565cd",
+    "stage016_actual_history_independent_attempt001.json": "d78ff6194696347c5119d6d4f0e8889ed1d55d3c009b4ee3ec714804f829b28a",
+    "stage016_actual_history_independent_attempt001.log": "cfb8669e33b1435c8b3527afd9f403359417321812b050d3f86a8af60da5608a",
+    "audit_stage016_actual_history_independent.py": "41ed4457a59ef4ddc4e6accc7c316227562b44dd42f8daca3f86e97cf6e35341",
+    "audit_stage016_v6_runtime_verify_independent.py": "b0722ec243f1c9300e87ab2ab5486e79a75a24dce151e45f2f61bf379094feac",
+    "audit_stage016_bar_binding_independent_v2.py": "1a96972a4039b98586b46b77f87bc9fd8abef25636fc8cf81c6014e69d188798",
+    "audit_stage016_epoch_quote_independent_v2.py": "6e7c8e6660e666fc27cb5dc1ac64539debf20c0baf59504b9cd51e8bc16cb98b",
+    "audit_stage016_compact_data_v6_independent.py": "56164df2d0c52082fdb3899e71a562f93d968ed43ec8747b865d10e3e6b64849",
+    "20261031_stage016_runtime_data_source_lock_v2.json": "9ff9f137c43120ba4864d53d5c3483131eaa0bb507100524025759c7ce42cf26",
+    "20261031_stage016_runtime_final_api.md": "7d3cf69ba5877c0d7ad1926302110c13340180172ae39df5dfdddc619e67dad3",
+    "20261031_1835_stage016_cash_provider_v6_quota_child_proof_manifest.json": "8a69eec220035a1552952e76a0f74a901182821b8deb4214c5ac5bc366d83f15",
+    "20261031_1835_stage016_cash_provider_v6_quota_child_proof.md": "643237cc36066dc46c103e462a583dbc61f0769ef85c231a339d51b9e41f82e3",
+    "20261031_stage016_execution_selected_compatibility_manifest.json": "128d4b602a956567ccc499c6ae14af06fc3a07b6c4c722bf006154a8400b6236",
+    "stage016_v5_components_independent_review.json": "eaf000c97dd716820b48a0bfc37eca42c8c7ada7aabd9369ce93ed95b5422c00"
+  },
+  "logs_sha256": {
+    "stage016_v6_runtime_independent_test_official_live_execution_ledger_cycles_attempt002.log": "00bbc0c99a60d1bf8b8e3ffc4e224de9bc9dd2c5d6bf8819c268edaaccbceb1c",
+    "stage016_v6_runtime_independent_test_weekly19_warm_evidence_attempt002.log": "4a85d2a43c6034f9b14ea3922c162f436f208e934b47a7549ec7bacbfa479cbf",
+    "stage016_v6_runtime_independent_test_weekly19_runtime_attempt002.log": "987377969e6972d86c024e6451549dfc1424888c2d4fc544d415f8608c1180c6",
+    "stage016_v6_runtime_independent_test_weekly19_external_funding_attempt002.log": "783ebabb5901cd0335d0d1f6302d75725bc05f64dd0db80209e146626c7d7d8b",
+    "stage016_v6_runtime_independent_test_official_live_broker_account_snapshot_attempt002.log": "7d75f8e2ef1abb69791452b83223eb0cb0ca2eadeca160cd2762a8d959074ba7",
+    "stage016_v6_runtime_independent_test_weekly19_data_attempt002.log": "591badc0fab88fccaf741850b9731904e51c3ff301cf2e1ca55e6f4ecee9b6ad",
+    "stage016_v6_runtime_independent_test_weekly19_strategy_equivalence_attempt002.log": "a789193d08c0ee03b746c3448b9271dd13e630b48b5793d959f845aae9606249",
+    "stage016_v6_runtime_independent_test_weekly19_data_update_attempt002.log": "dc7ba9a446fe9daea2448374b88a7e41cd957c57c8ffbab15a9328109b9c6a35",
+    "stage016_v6_runtime_independent_test_weekly19_broker_evidence_attempt002.log": "5616a51113ea9376756f7e176159d309c7e5dafa03d86d7c55ae93f836baa78b",
+    "stage016_v6_runtime_independent_test_stage174_query_bundle_attempt002.log": "83fb4925a6057457c74d4e7db04b71894991c87d4d6817f53f69d60ed3463463",
+    "audit_stage016_compact_data_v6_independent_green_attempt001.log": "85c0e495f2da3cf66632ee375ba4d8628dfe4a237dbea8137b39c275dbc4a3b9",
+    "audit_stage016_epoch_quote_independent_v2_green_attempt001.log": "080ab29aa587f0d6ddb8e1afbcbcd3a912c9fcd008f4aef2da529a23b5ab378f",
+    "audit_stage016_bar_binding_independent_v2_green_attempt001.log": "9f0ebe32953824f7a4e6dd3650b585541d3565aea60710ea38824a885cd9e9c6"
+  },
+  "limitations": [
+    "Only offline component acceptance. No real CTP connection, bank transfer, SMTP, native insert hook, authority registry/key creation, financial replay, Git index/commit, master promotion or production installation was performed.",
+    "The actual-history check uses approved frozen local market data and a synthetic broker account under a fixed aware clock. Indicator-only warmup patched on_bars/send_order to fail if called. It confers no broker provenance or strategy production qualification.",
+    "No real capture authority registry/native/account/TransferSerial positive sample or final cashflow day-close statement parser has been accepted. SHA/HMAC and private per-record checksums are integrity only, not same-owner adversarial authentication or a ledger hash chain.",
+    "The post-1835 931 source was explicitly changed under root authorization. Exact old-V6 whole-file byte/AST equivalence is unproven. This receipt pins the tested current dependency separately; it does not accept the new whole 931, quote/service/root bridge/legacy CI or complete physical execution chain.",
+    "Test counts are successful invocations, not globally deduplicated unique tests: inherited data fixtures run more than once. Baseline333 and new independent28 are separately shown. Failed original RED attempts remain immutable.",
+    "Technical warmup/restore RSS and duration are local observations, not service deadline/capacity/host-readiness proof. Full state can grow after live events; 64,000,000-byte write admission is enforced before replacement.",
+    "Stage014 economic NO_PROMOTION, zero-cost, PIT/static-margin/capacity limitations remain preserved. This review changes no alpha, risk percentage or research performance result."
+  ],
+  "component": "runtime_data_updater_after_P1_repairs",
+  "chinese_record_sha256": "2f3ca311c524d1526bb54d6424a26a40111cd268b9f09f57933397a5bb20afe3"
+}

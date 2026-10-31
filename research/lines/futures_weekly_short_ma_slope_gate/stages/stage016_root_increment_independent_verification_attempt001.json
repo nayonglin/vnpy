@@ -1,0 +1,249 @@
+{
+  "freeze": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_settlement_capture.py": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "8a891f36df3cd1391ecaf36c3911b4f743c52487f3cc1b00b6294da419d737f5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py": "46e7db31412e7c774b56a72174f37eedda7327709b64262def5dc285673ef1df",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "4dce7f98f092fdf358b609ba4ff4e6d6f38f31a0f865c9c723abd3c43a586ee1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+    "examples/portfolio_backtesting/qmt_roll_official_live_config.py": "612daefa50aed78d2a6201d8e2c7ab0f6e8351babf65eb4a072f1b33de88032b"
+  },
+  "freeze_file_sha256": "a72a80db808c34ceed086707795c7080c246b96ef66ffcf8d1e158fcd64a20e3",
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_settlement_capture.py": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "8a891f36df3cd1391ecaf36c3911b4f743c52487f3cc1b00b6294da419d737f5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py": "46e7db31412e7c774b56a72174f37eedda7327709b64262def5dc285673ef1df",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "4dce7f98f092fdf358b609ba4ff4e6d6f38f31a0f865c9c723abd3c43a586ee1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+    "examples/portfolio_backtesting/qmt_roll_official_live_config.py": "612daefa50aed78d2a6201d8e2c7ab0f6e8351babf65eb4a072f1b33de88032b",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "4d71f9a3b3cecfe43ec3e2ec8f187669235bbfa621155b8ae5d76602dc9a5c3d",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py": "a0d9fa21af1cf5761b5ddba9b2813dc684c04251e1d61229843122bc5e035e7c",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py": "972ed74f31b0343131f47345fdb5380eeaf37e06aa06a0af0d860f8204833ab9"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_settlement_capture.py": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "8a891f36df3cd1391ecaf36c3911b4f743c52487f3cc1b00b6294da419d737f5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py": "46e7db31412e7c774b56a72174f37eedda7327709b64262def5dc285673ef1df",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "4dce7f98f092fdf358b609ba4ff4e6d6f38f31a0f865c9c723abd3c43a586ee1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+    "examples/portfolio_backtesting/qmt_roll_official_live_config.py": "612daefa50aed78d2a6201d8e2c7ab0f6e8351babf65eb4a072f1b33de88032b",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "4d71f9a3b3cecfe43ec3e2ec8f187669235bbfa621155b8ae5d76602dc9a5c3d",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_reader.py": "a0d9fa21af1cf5761b5ddba9b2813dc684c04251e1d61229843122bc5e035e7c",
+    "examples/portfolio_backtesting/qmt_roll_official_live_tick_journal.py": "972ed74f31b0343131f47345fdb5380eeaf37e06aa06a0af0d860f8204833ab9"
+  },
+  "source_drift": {},
+  "pipeline_ast_scope_before": {
+    "_parts": "bdf7d23ef165b3c624c75d43befdb3d7b672f6579f44ef00bc38c3668b76a13b",
+    "pipeline_store": "8dd97a9ada1da294e113ef5eb8ea8b4e60a2055a7a06958b7c58e2ca89e554cb",
+    "_initial": "2aeedb8e78a74eafb893112d5c6fb7c646cafd239730326c0b8d876a8271f90e",
+    "_load": "acb41dcb18d6e594b0a5f0507d1ec69b2f5af353f095e68de91a053b3ca7196d",
+    "_runtime": "7b5a26212484c7ff51c9716ecb0fe95edc5b4f4b2e4fed58191c2772eb62d744",
+    "_report": "ee575e4c996f25266ef974084d6a839769fb41b0d73ffae6f2f80ee3481768d1",
+    "_refresh_advice": "7e6a1976fd22e592bb74b0ae89c4717ffaddd72d1730a487bf8e14f97b7fdd0d",
+    "run_weekly19_support_job": "fbad5e08a29ce8e6c72e6af25730ef99c3de584118c5d76cc4f98f81dfa675a4"
+  },
+  "pipeline_ast_scope_after": {
+    "_parts": "bdf7d23ef165b3c624c75d43befdb3d7b672f6579f44ef00bc38c3668b76a13b",
+    "pipeline_store": "8dd97a9ada1da294e113ef5eb8ea8b4e60a2055a7a06958b7c58e2ca89e554cb",
+    "_initial": "2aeedb8e78a74eafb893112d5c6fb7c646cafd239730326c0b8d876a8271f90e",
+    "_load": "acb41dcb18d6e594b0a5f0507d1ec69b2f5af353f095e68de91a053b3ca7196d",
+    "_runtime": "7b5a26212484c7ff51c9716ecb0fe95edc5b4f4b2e4fed58191c2772eb62d744",
+    "_report": "ee575e4c996f25266ef974084d6a839769fb41b0d73ffae6f2f80ee3481768d1",
+    "_refresh_advice": "7e6a1976fd22e592bb74b0ae89c4717ffaddd72d1730a487bf8e14f97b7fdd0d",
+    "run_weekly19_support_job": "fbad5e08a29ce8e6c72e6af25730ef99c3de584118c5d76cc4f98f81dfa675a4"
+  },
+  "pipeline_session_cycle_excluded": true,
+  "suites": [
+    {
+      "name": "test_weekly19_friday_report.py",
+      "returncode": 0,
+      "tail": [
+        ".....................",
+        "----------------------------------------------------------------------",
+        "Ran 21 tests in 0.047s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "5fe4c07a76de26e73e19495aaa326c49ea969b088d027c2a693a060218282749"
+    },
+    {
+      "name": "test_weekly19_friday_advice.py",
+      "returncode": 0,
+      "tail": [
+        "..........",
+        "----------------------------------------------------------------------",
+        "Ran 10 tests in 2.231s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "8ceffd70a7c2802956a83230500c51f632c50a585166b1a9102761cd53624336"
+    },
+    {
+      "name": "test_weekly19_live_pipeline.py",
+      "returncode": 0,
+      "tail": [
+        "...............",
+        "----------------------------------------------------------------------",
+        "Ran 15 tests in 3.228s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "579313faf2706ab937d897921bc772200373726f05813665793b356e6d29ab36"
+    },
+    {
+      "name": "test_weekly19_context_update.py",
+      "returncode": 0,
+      "tail": [
+        "...........",
+        "----------------------------------------------------------------------",
+        "Ran 11 tests in 0.014s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "d2fb41082e408e2f5f8300e0c9aff827e840b3ea83198866cf636f19a4657296"
+    },
+    {
+      "name": "test_weekly19_quote_spool.py",
+      "returncode": 0,
+      "tail": [
+        "............",
+        "----------------------------------------------------------------------",
+        "Ran 12 tests in 0.801s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "f5d496b8eb3d02e9e8028316813702c2efa5ba25dae4328983cf0b6f05152be1"
+    },
+    {
+      "name": "test_weekly19_capture_capability.py",
+      "returncode": 0,
+      "tail": [
+        ".....",
+        "----------------------------------------------------------------------",
+        "Ran 5 tests in 0.020s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "86794120640779cb671ba5e0c86a20ba9e34a1c58d875f22e893ed52afef9026"
+    },
+    {
+      "name": "test_weekly19_settlement_capture.py",
+      "returncode": 0,
+      "tail": [
+        ".......",
+        "----------------------------------------------------------------------",
+        "Ran 7 tests in 0.011s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "3cd02e884955c8b49b809ce57755ae46aacba4d9ef1382b84e081568bb3f04a5"
+    },
+    {
+      "name": "test_weekly19_broker_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "..........................................................",
+        "----------------------------------------------------------------------",
+        "Ran 58 tests in 1.266s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "c113b1803de59466360f7e8745b0a4de1fb4e79a3bcb4f5c1b85272e1f85c85e"
+    },
+    {
+      "name": "test_weekly19_warm_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "..............",
+        "----------------------------------------------------------------------",
+        "Ran 14 tests in 0.082s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "551f61623db6caeca16bbc7f93d78aaab1b42e7a4268f2181e4eee18f74c0bf7"
+    },
+    {
+      "name": "test_stage174_query_bundle.py",
+      "returncode": 0,
+      "tail": [
+        "......................",
+        "----------------------------------------------------------------------",
+        "Ran 22 tests in 4.801s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "caa6ef927a862fb6fd88763a5586108d235353d3e4affc95ad4a2b0c5a45b40b"
+    },
+    {
+      "name": "test_weekly19_official_config.py",
+      "returncode": 0,
+      "tail": [
+        "....",
+        "----------------------------------------------------------------------",
+        "Ran 4 tests in 0.153s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "b5fb8c841222849b3f81e9f665b36f7c86e97e0272b4221b3b09cd5decc5c085"
+    },
+    {
+      "name": "test_official_live_config_import.py",
+      "returncode": 0,
+      "tail": [
+        "...........",
+        "----------------------------------------------------------------------",
+        "Ran 11 tests in 2.767s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "7c8d5b2235222a1af7b5ce65ef7c4b25b5aa26b3d86cc0403d014595ca6e2159"
+    },
+    {
+      "name": "audit_stage016_context_quote_advice_independent.py",
+      "returncode": 0,
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 14 tests in 1.089s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "3b4820fbb2dcb81651fe77d64c422a1564dc00a76427c4bd61dcd6d13dfb4320"
+    },
+    {
+      "name": "audit_stage016_authority_cache_independent.py",
+      "returncode": 0,
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 8 tests in 0.029s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "45f21ecfb6fe7d3354a76ba9f0cd9bc0f639fd169ccf2b724abcdd7075ba1848"
+    },
+    {
+      "name": "audit_stage016_settlement_capture_independent.py",
+      "returncode": 0,
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 8 tests in 0.019s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "17996a1b1ed3ab5d9bedcf00879ae8dd98c1d23d334492c1d2b83f63b99ae10f"
+    }
+  ],
+  "real_ctp": false,
+  "production_qualified": false,
+  "financial_replays": 0
+}

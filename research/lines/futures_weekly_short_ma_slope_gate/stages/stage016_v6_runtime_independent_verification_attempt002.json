@@ -1,0 +1,178 @@
+{
+  "locked_component_source_expected": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66"
+  },
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "tests/test_weekly19_runtime.py": "c8b45408dffdd6f4cd8f619535d9b37d08bb91a0b3ced6e9ef312103dfce7774",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "419ecbccc3a539236724b362c1143cf6d2347db44cce0bba691ca2336a9e9b42",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd",
+    "tests/test_weekly19_broker_evidence.py": "caa820c2a00a293623bfd6fdc196252a15cb21b0b1082509669c785a3a088cb5",
+    "tests/test_weekly19_warm_evidence.py": "a88b9ff3541981e319453dd635f71526a012845abb9053cf0a55bccc21c96a5a",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+    "tests/test_official_live_execution_ledger_cycles.py": "4df39dae32faad853548d6ee38437650333a1069059d9ac4bfc07d8b1c06cd6f",
+    "tests/test_stage174_query_bundle.py": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+    "tests/test_official_live_broker_account_snapshot.py": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "examples/portfolio_backtesting/qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d",
+    "tests/test_weekly19_runtime.py": "c8b45408dffdd6f4cd8f619535d9b37d08bb91a0b3ced6e9ef312103dfce7774",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "419ecbccc3a539236724b362c1143cf6d2347db44cce0bba691ca2336a9e9b42",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd",
+    "tests/test_weekly19_broker_evidence.py": "caa820c2a00a293623bfd6fdc196252a15cb21b0b1082509669c785a3a088cb5",
+    "tests/test_weekly19_warm_evidence.py": "a88b9ff3541981e319453dd635f71526a012845abb9053cf0a55bccc21c96a5a",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+    "tests/test_official_live_execution_ledger_cycles.py": "4df39dae32faad853548d6ee38437650333a1069059d9ac4bfc07d8b1c06cd6f",
+    "tests/test_stage174_query_bundle.py": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+    "tests/test_official_live_broker_account_snapshot.py": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec"
+  },
+  "source_drift": {},
+  "suites": [
+    {
+      "name": "test_weekly19_runtime.py",
+      "returncode": 0,
+      "tail": [
+        "......................................",
+        "----------------------------------------------------------------------",
+        "Ran 38 tests in 10.195s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "987377969e6972d86c024e6451549dfc1424888c2d4fc544d415f8608c1180c6"
+    },
+    {
+      "name": "test_weekly19_data.py",
+      "returncode": 0,
+      "tail": [
+        "...........",
+        "----------------------------------------------------------------------",
+        "Ran 11 tests in 0.239s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "591badc0fab88fccaf741850b9731904e51c3ff301cf2e1ca55e6f4ecee9b6ad"
+    },
+    {
+      "name": "test_weekly19_data_update.py",
+      "returncode": 0,
+      "tail": [
+        "...................................",
+        "----------------------------------------------------------------------",
+        "Ran 35 tests in 1.283s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "dc7ba9a446fe9daea2448374b88a7e41cd957c57c8ffbab15a9328109b9c6a35"
+    },
+    {
+      "name": "test_weekly19_strategy_equivalence.py",
+      "returncode": 0,
+      "tail": [
+        "......",
+        "----------------------------------------------------------------------",
+        "Ran 6 tests in 0.577s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "a789193d08c0ee03b746c3448b9271dd13e630b48b5793d959f845aae9606249"
+    },
+    {
+      "name": "test_weekly19_broker_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "..........................................................",
+        "----------------------------------------------------------------------",
+        "Ran 58 tests in 1.393s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "5616a51113ea9376756f7e176159d309c7e5dafa03d86d7c55ae93f836baa78b"
+    },
+    {
+      "name": "test_weekly19_warm_evidence.py",
+      "returncode": 0,
+      "tail": [
+        "..............",
+        "----------------------------------------------------------------------",
+        "Ran 14 tests in 0.131s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "4a85d2a43c6034f9b14ea3922c162f436f208e934b47a7549ec7bacbfa479cbf"
+    },
+    {
+      "name": "test_weekly19_external_funding.py",
+      "returncode": 0,
+      "tail": [
+        ".............................................................",
+        "----------------------------------------------------------------------",
+        "Ran 61 tests in 0.249s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "783ebabb5901cd0335d0d1f6302d75725bc05f64dd0db80209e146626c7d7d8b"
+    },
+    {
+      "name": "test_official_live_execution_ledger_cycles.py",
+      "returncode": 0,
+      "tail": [
+        "...............................................................",
+        "----------------------------------------------------------------------",
+        "Ran 63 tests in 0.108s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "00bbc0c99a60d1bf8b8e3ffc4e224de9bc9dd2c5d6bf8819c268edaaccbceb1c"
+    },
+    {
+      "name": "test_stage174_query_bundle.py",
+      "returncode": 0,
+      "tail": [
+        "......................",
+        "----------------------------------------------------------------------",
+        "Ran 22 tests in 5.023s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "83fb4925a6057457c74d4e7db04b71894991c87d4d6817f53f69d60ed3463463"
+    },
+    {
+      "name": "test_official_live_broker_account_snapshot.py",
+      "returncode": 0,
+      "tail": [
+        ".........................",
+        "----------------------------------------------------------------------",
+        "Ran 25 tests in 1.098s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "7d75f8e2ef1abb69791452b83223eb0cb0ca2eadeca160cd2762a8d959074ba7"
+    }
+  ],
+  "financial_replays": 0,
+  "real_ctp": false,
+  "production_qualified": false,
+  "source_qualification": false,
+  "old_v6_931_byte_equivalence_proven": false
+}

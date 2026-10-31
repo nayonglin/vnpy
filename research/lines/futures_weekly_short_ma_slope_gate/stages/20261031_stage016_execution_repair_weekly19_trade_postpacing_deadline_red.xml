@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.186" timestamp="2026-10-31T20:22:51.363169+08:00" hostname="macdeMacBook-Pro.local"><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_trade_cannot_issue_when_first_poll_has_crossed_the_real_deadline" time="0.001"><failure message="AssertionError: Lists differ: [('trade', 1.200001)] != []&#10;&#10;First list contains 1 additional elements.&#10;First extra element 0:&#10;('trade', 1.200001)&#10;&#10;- [('trade', 1.200001)]&#10;+ []">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_trade_cannot_issue_when_first_poll_has_crossed_the_real_deadline&gt;
+
+    def test_trade_cannot_issue_when_first_poll_has_crossed_the_real_deadline(self):
+        result,api,_=self._query('trade',.5,[.2,1.200001])
+&gt;       self.assertFalse(result['confirmed']);self.assertEqual(api.calls,[])
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Lists differ: [('trade', 1.200001)] != []
+E       
+E       First list contains 1 additional elements.
+E       First extra element 0:
+E       ('trade', 1.200001)
+E       
+E       - [('trade', 1.200001)]
+E       + []
+
+tests/test_stage931_ctp_readiness.py:2291: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,18 @@
+{
+  "finding": "CONTEXT_PARENT_READ_WRITE_IDENTITY_SPLIT",
+  "severity": "P1",
+  "observed_before_root_fix": true,
+  "old_source_sha256": null,
+  "hash_limit": "Initial probe was executed before byte pinning; author fixed before preservation. No reconstructed old-source SHA is claimed.",
+  "probe": "audit_stage016_context_parent_initial_probe.py",
+  "observed": {
+    "returned_market": "new_generation",
+    "visible_market": "old",
+    "moved_market": "new_generation",
+    "returned_cash": "new_parent",
+    "visible_cash": "new_parent",
+    "moved_cash": "new_parent"
+  },
+  "financial_replay": false,
+  "temporary_fixture_only": true
+}

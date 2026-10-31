@@ -1,0 +1,25 @@
+test_post_replace_directory_fsync_failure_reloads_actual_bundle_and_never_returns_applied (tests.test_weekly19_session_bridge.SessionBridgeTests.test_post_replace_directory_fsync_failure_reloads_actual_bundle_and_never_returns_applied) ... FAIL
+test_commit_failure_with_unreadable_actual_store_poison_owner_until_new_recovery (tests.test_weekly19_session_bridge.SessionBridgeTests.test_commit_failure_with_unreadable_actual_store_poison_owner_until_new_recovery) ... FAIL
+
+======================================================================
+FAIL: test_post_replace_directory_fsync_failure_reloads_actual_bundle_and_never_returns_applied (tests.test_weekly19_session_bridge.SessionBridgeTests.test_post_replace_directory_fsync_failure_reloads_actual_bundle_and_never_returns_applied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_session_bridge.py", line 135, in test_post_replace_directory_fsync_failure_reloads_actual_bundle_and_never_returns_applied
+    self.assertEqual(self.actor.export_state(),actual['runtime']);self.assertEqual(bridge.last_bundle,actual)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'schema': 'weekly19.runtime-state.v1', 're[50243 chars]5cb'} != {'accepted_scope': {'contracts': ['AP612.CZ[50268 chars]=='}}
+Diff is 165884 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_commit_failure_with_unreadable_actual_store_poison_owner_until_new_recovery (tests.test_weekly19_session_bridge.SessionBridgeTests.test_commit_failure_with_unreadable_actual_store_poison_owner_until_new_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_session_bridge.py", line 144, in test_commit_failure_with_unreadable_actual_store_poison_owner_until_new_recovery
+    with self.assertRaisesRegex(ValueError,'owner_poisoned_after_commit_failure'):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.745s
+
+FAILED (failures=2)

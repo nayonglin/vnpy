@@ -1,0 +1,30 @@
+F.............E.
+======================================================================
+ERROR: test_true_order_ahead_of_trade_is_durable_deferred_across_restart_then_exactly_resolved (tests.test_weekly19_session_bridge.SessionBridgeTests.test_true_order_ahead_of_trade_is_durable_deferred_across_restart_then_exactly_resolved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_session_bridge.py", line 205, in test_true_order_ahead_of_trade_is_durable_deferred_across_restart_then_exactly_resolved
+    again=restarted.event_consumer('trade',dict(weekly19_native_proof=proof),dict(planned_intent_id=plan['intent_id']),runtime_actor=self.actor)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py", line 223, in event_consumer
+    _require(isinstance(proof,dict) and isinstance(proof.get('capture_reference'),dict),'weekly19_bridge_native_capture_reference_required')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py", line 36, in _require
+    if not value:raise SessionBridgeError(reason)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+qmt_roll_weekly19_session_bridge.SessionBridgeError: weekly19_bridge_native_capture_reference_required
+
+======================================================================
+FAIL: test_post_replace_fsync_failure_preserves_actor_store_consistency (__main__.BridgeAtomicityIndependent.test_post_replace_fsync_failure_preserves_actor_store_consistency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_bridge_atomicity_independent.py", line 39, in test_post_replace_fsync_failure_preserves_actor_store_consistency
+    self.assertEqual(current['state_sha256'],actual['runtime']['state_sha256'],
+AssertionError: 'a70b623d0ff85ac22a8aad4c589dae337b5aa4c0158911c2020990d78db305cb' != '827aead33ff14c6b209c6829417602c15dd33f43feb026ead0216c6b0ae7eed0'
+- a70b623d0ff85ac22a8aad4c589dae337b5aa4c0158911c2020990d78db305cb
++ 827aead33ff14c6b209c6829417602c15dd33f43feb026ead0216c6b0ae7eed0
+ : Post-replace failure left durable new runtime but rolled actor back to old runtime
+
+----------------------------------------------------------------------
+Ran 16 tests in 9.378s
+
+FAILED (failures=1, errors=1)

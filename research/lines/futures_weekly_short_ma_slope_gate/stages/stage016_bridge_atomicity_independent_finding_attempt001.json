@@ -1,0 +1,48 @@
+{
+  "schema": "stage016.independent-bridge-atomicity-finding.v1",
+  "status": "OPEN_P1_IMPLEMENTATION_FIX_PENDING",
+  "accepted": false,
+  "production_qualified": false,
+  "observed_at": "2026-10-31T12:02:58.084104+00:00",
+  "scope": "Offline fixture only; no CTP/SMTP/network/orders/financial replay/Git mutation",
+  "finding": {
+    "id": "STAGE016_BRIDGE_POST_REPLACE_P1",
+    "severity": "P1",
+    "file": "examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py",
+    "function": "Weekly19SessionBridge._commit",
+    "reason": "After successful os.replace, directory fsync failure leaves committed new bundle but unconditional actor._restore(before) restores old memory. Subsequent bridge transactions see actor_store_diverged.",
+    "injection": "Patch pipeline_state.os.fsync only for directory fd, after actual temp-file fsync/replace",
+    "expected": "Reconcile actor and last_bundle with actual validated stored bundle, preserve original durability exception; if actual bundle cannot be read/restored, poison current owner and prohibit further execution until fresh recovery.",
+    "observed_runtime_sha256": "a70b623d0ff85ac22a8aad4c589dae337b5aa4c0158911c2020990d78db305cb",
+    "observed_disk_runtime_sha256": "827aead33ff14c6b209c6829417602c15dd33f43feb026ead0216c6b0ae7eed0"
+  },
+  "source_sha256_observed_after_attempt001": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py": "199a38ca35dfb58042b6d210d163a8e0d27a47859e251538de998b7efa920c67",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+  },
+  "source_snapshot_limit": "Whole-file SHA was observed after first test, not a pre-run immutable source lock. Final locked-source review remains separate.",
+  "attempts": [
+    {
+      "name": "attempt001",
+      "tests": 16,
+      "failures": 1,
+      "errors": 1,
+      "note": "unittest also discovered imported fixture class; unrelated author fixture proof-variable error is not classified as implementation bug."
+    },
+    {
+      "name": "attempt002",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "note": "Isolated exact independent counterexample confirms P1."
+    }
+  ],
+  "evidence_sha256": {
+    "audit_stage016_bridge_atomicity_independent.py": "e6a158e89092d70b34de51a8c36cd2537a4bf690a1c7e837c0bb0c0a6e47139d",
+    "audit_stage016_bridge_atomicity_independent_v2.py": "92d06f7baa791d9139403f7bfa75a52dcb6998ae2a0ea3f27dd8ab89432f7eba",
+    "stage016_bridge_atomicity_independent_attempt001.log": "be8f08b1d4856e1ce32f4c8bc734712bd78cdc8ec742882dcaaf58fa313a0f9a",
+    "stage016_bridge_atomicity_independent_attempt002.log": "d37e0866f3f7d3992c38cf13277cd3b604f6bbc291e39c92222a6858975bde92"
+  },
+  "no_alpha_tuning": true,
+  "continuing_value": "Crash consistency is a technical prerequisite; fixture success would not establish production source qualification."
+}

@@ -35,7 +35,7 @@ def _now(now):
  if now.astimezone(SHANGHAI).weekday()!=4:raise ReportError('friday_report_only')
  return now
 
-def build_friday_report(*, funding_state,broker_account,recommendation,decision,data_receipt,now,preview=True,blocking_reasons=()):
+def build_friday_report(*, funding_state,broker_account,recommendation,decision,data_receipt,now,preview=True,blocking_reasons=(),friday_advice=None):
  """Build the week mail; an unpaid historical suggestion is never a debt.
 
  Data/cash origins are admitted by the production pipeline, not by this pure
@@ -50,8 +50,8 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  decision=decision or {};data_receipt=data_receipt or {}
  for obj in (decision,data_receipt):
   if obj.get('material_release_id',release)!=release:raise ReportError('report_release_mismatch')
- if decision.get('target_date'):
-  target=date.fromisoformat(decision['target_date']).isoformat()
+ if decision.get('target_date',decision.get('trading_date')):
+  target=date.fromisoformat(decision.get('target_date',decision.get('trading_date'))).isoformat()
   if target>week:raise ReportError('future_completed_target')
  if data_receipt.get('target_date',target)!=target:raise ReportError('report_target_mismatch')
  data_hash=decision.get('data_receipt_sha256')
@@ -73,7 +73,26 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  if acct is not None and data_hash:
   try:assessed=funding.recommend_topup(funding_state,broker_account,week,ids,data_hash,now)['recommendation']
   except (ValueError,TypeError,KeyError):blockers.append('funding_evidence_not_current')
- if provided_amount!=amount:blockers.append('recommendation_not_current')
+ gap=amount
+ if friday_advice is not None:
+  advice=friday_advice
+  if (advice.get('schema')!='weekly19.friday-advice.v1'or advice.get('funding')!=funding_state
+   or advice.get('recommendation')!=recommendation):raise ReportError('friday_advice_binding_invalid')
+  if advice.get('status')=='ready':
+   bindings=advice.get('source_bindings')or {}
+   if (bindings.get('account_key')!=account_key or bindings.get('material_release_id')!=release
+    or bindings.get('original_target_date')!=target or bindings.get('canonical_friday')!=week
+    or bindings.get('data_receipt_sha256')!=data_hash or bindings.get('original_admitted_ids')!=ids
+    or bindings.get('decision_snapshot_sha256')!=hashlib.sha256(_canonical(decision)).hexdigest()
+    or advice.get('broker_account_raw_sha256')!=broker_account.get('raw_sha256')):raise ReportError('friday_advice_source_mismatch')
+  else:
+   if provided_amount!=0 or recommendation.get('actionable')is not False:raise ReportError('friday_blocked_advice_invalid')
+   blockers.extend(advice.get('blockers')or ['friday_advice_not_ready'])
+  # A consumed original portfolio batch may have a current shortfall, yet has
+  # no new funding offer. Keep the gap and the instruction separate.
+  amount=provided_amount
+  if amount!=gap and not(amount==0 and recommendation.get('actionable')is False):blockers.append('recommendation_not_current')
+ elif provided_amount!=amount:blockers.append('recommendation_not_current')
  active=[]
  for rid,r in funding_state['requests'].items():
   if r['status'] in {'pending','partially_confirmed'}:
@@ -97,13 +116,14 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  else:
   lines += [f'交易账户权益 E：{_money(acct["equity_fen"])} 元（已含未平仓价格变动）',f'可用资金：{_money(acct["available_fen"])} 元；已用保证金：{_money(acct["margin_fen"])} 元',f'账户快照：{acct["observed_at"]}；归属交易日：{acct["trading_day"]}']
   lines.append('未平仓盈亏：'+(_money(acct['unrealized_pnl_fen'])+' 元' if acct['unrealized_pnl_fen']is not None else '未取得独立浮盈亏字段；不在E上再次加减'))
- lines += [f'仍在场外的备用金：{_money(funding_state["reserve_remaining_fen"])} 元',f'累计已确认补入：{_money(funding_state["confirmed_topup_fen"])} 元',f'本次按当前缺口计算的建议额：{_money(amount)} 元（仅建议，未计入E或可用资金）']
+ lines += [f'仍在场外的备用金：{_money(funding_state["reserve_remaining_fen"])} 元',f'累计已确认补入：{_money(funding_state["confirmed_topup_fen"])} 元',f'当前距15万元的资金缺口（受剩余备用金上限约束）：{_money(gap)} 元',f'本次建议补入：{_money(amount)} 元（仅建议，未计入E或可用资金）']
  if active:
   lines.append(f'历史尚未到账的建议上限合计：{_money(historical)} 元；建议不是欠款。')
   for r in active:lines.append(f'历史请求 {r["request_id"][:12]}：尚余 {_money(r["remaining_fen"])} 元；有效至 {r["expires_at"]}'+('，已过期，需先对账/更新建议。' if r['expired']else '。'))
  if acct is not None and acct['equity_fen']>=15000000:lines.append('当前真实权益已达到15万元，不必补足旧建议；未用备用金继续留在场外。')
  elif not decision.get('funding_admitted_ids') and not active:lines.append('本周没有有效新开候选，不因账户低于15万元单独请求补资。')
  elif funding_state['reserve_remaining_fen']==0:lines.append('场外备用金已用尽；后续按实际剩余正权益和原规则计算，不虚增额度。')
+ if friday_advice is not None and recommendation.get('status')in{'duplicate_admission','confirmed_batch_no_additional_offer'}:lines.append('本批原始信号已使用或退休补资额度，本次不因批内其他候选或权益波动重复请求补资。')
  if 'recommendation_not_current'in blockers or 'recommendation_request_not_current_or_actionable'in blockers or recommendation.get('actionable')is False or recommendation.get('status')=='request_refresh_required':lines.append('当前缺口与历史请求不一致，须先完成对账并更新请求；不要按旧请求金额照付。')
  lines += ['', '二、本周信号']
  intents=decision.get('intents',[]) if current_week else []
@@ -122,7 +142,7 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  else:lines.append('本次资金闸核对通过；新开仓仍需执行前真实持仓、风险手数、报价和交易时段检查。')
  lines += ['场外转入须以券商真实现金流与账户回报确认；邮件发送本身不证明到账。','已到账后按真实E重新计算开仓手数；不会自动调用银行转账。','净值如按E/150000展示，包含已到账资金，不能把补资当成交易利润。']
  body='\n'.join(lines)+'\n';subject=f'周线19｜{week}｜'+('资金待核对'if blockers or expired else '场外补资与信号')
- result=dict(schema='weekly19.friday-report.v1',execution_profile=WEEKLY19_15W_R150K_PROFILE.profile_key,material_release_id=release,account_key=account_key,week_key=week,target_date=target,generated_at=now.isoformat(),subject=subject,body=body,preview=preview,production_qualified=False,equity_fen=acct['equity_fen']if acct else None,unrealized_pnl_fen=acct['unrealized_pnl_fen']if acct else None,reserve_remaining_fen=funding_state['reserve_remaining_fen'],current_recommendation_fen=amount,historical_pending_fen=historical,expired_request=expired,funding_ready=funding_ready,actionable=actionable,blockers=blockers,funding_blocker=funding_reason,data_receipt_sha256=data_hash,account_raw_sha256=acct['raw_sha256']if acct else None)
+ result=dict(schema='weekly19.friday-report.v1',execution_profile=WEEKLY19_15W_R150K_PROFILE.profile_key,material_release_id=release,account_key=account_key,week_key=week,target_date=target,generated_at=now.isoformat(),subject=subject,body=body,preview=preview,production_qualified=False,equity_fen=acct['equity_fen']if acct else None,unrealized_pnl_fen=acct['unrealized_pnl_fen']if acct else None,reserve_remaining_fen=funding_state['reserve_remaining_fen'],current_recommendation_fen=amount,current_shortfall_fen=gap,historical_pending_fen=historical,expired_request=expired,funding_ready=funding_ready,actionable=actionable,blockers=blockers,funding_blocker=funding_reason,data_receipt_sha256=data_hash,account_raw_sha256=acct['raw_sha256']if acct else None)
  result['report_sha256']=report_digest(result);return result
 
 class FridayMailOutbox:

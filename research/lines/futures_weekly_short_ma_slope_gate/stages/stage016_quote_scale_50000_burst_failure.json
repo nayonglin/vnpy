@@ -1,0 +1,19 @@
+{
+  "schema": "weekly19.quote-scale-burst-failure.v1",
+  "offline_fixture_only": true,
+  "production_qualified": false,
+  "framed_tick_requested": 50000,
+  "queue_capacity": 8192,
+  "source_sha256": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+  "snapshot": {
+    "last_ingress_sequence": 50000,
+    "durable_ingress_sequence": 8448,
+    "dropped_tick_count": 41552,
+    "queue_capacity": 8192,
+    "stream_ready": false,
+    "gap": "TickStreamGap(feed_session_id='literal-offline-scale-feed', start_ingress_sequence=8449, end_ingress_sequence=50000, reason='ingress_queue_full')",
+    "writer_fault": "None"
+  },
+  "financial_replay": false,
+  "order_api_called_count": 0
+}

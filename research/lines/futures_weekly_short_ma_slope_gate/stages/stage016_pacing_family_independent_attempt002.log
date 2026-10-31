@@ -1,0 +1,39 @@
+FFF.
+======================================================================
+FAIL: test_jump_beyond_allowed_and_actual_deadline_never_queries (__main__.PacingFamilyIndependent.test_jump_beyond_allowed_and_actual_deadline_never_queries) (kind='trade')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_pacing_family_independent_v2.py", line 41, in test_jump_beyond_allowed_and_actual_deadline_never_queries
+    result,api,_,_=self.query(kind,.5,script=[.2,1.200001]);self.assertFalse(result['confirmed']);self.assertEqual(api.calls,[])
+                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [1.200001] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+1.200001
+
+- [1.200001]
++ []
+
+======================================================================
+FAIL: test_position_detail_crossing_allowed_boundary_is_not_timeout (__main__.PacingFamilyIndependent.test_position_detail_crossing_allowed_boundary_is_not_timeout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_pacing_family_independent_v2.py", line 33, in test_position_detail_crossing_allowed_boundary_is_not_timeout
+    self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0],boundary)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : {'confirmed': False, 'position_details': [], 'blockers': ['position_detail_query_pacing_timeout'], 'reqid': None}
+
+======================================================================
+FAIL: test_trade_crossing_allowed_boundary_is_not_timeout (__main__.PacingFamilyIndependent.test_trade_crossing_allowed_boundary_is_not_timeout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_pacing_family_independent_v2.py", line 30, in test_trade_crossing_allowed_boundary_is_not_timeout
+    self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0],boundary)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : {'confirmed': False, 'trades': [], 'blockers': ['final_trade_query_pacing_timeout'], 'reqid': None}
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=3)

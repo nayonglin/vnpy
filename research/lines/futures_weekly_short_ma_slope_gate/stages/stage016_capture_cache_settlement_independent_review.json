@@ -1,0 +1,158 @@
+{
+  "schema": "stage016.root-increment-independent.v1",
+  "recorded_at": "2026-10-31T11:53:16.549724+00:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "reviewer": "/root/stage011_independent_reviewer",
+  "accepted": true,
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "failures": [],
+  "open_findings": [],
+  "severity_open": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "fixed_findings": [
+    {
+      "id": "CONTEXT_PARENT_READ_WRITE_IDENTITY_SPLIT",
+      "severity": "P1",
+      "status": "FIXED_INDEPENDENTLY_VERIFIED",
+      "evidence": "stage016_context_parent_initial_observation.json",
+      "fix": "same-dirfd current read, strict private JSON, visible NOFOLLOW parent dev/ino before/after read and replace/fsync",
+      "independent_variants": [
+        "swap at leaf read",
+        "swap inside actual relative replace",
+        "concurrent same-generation one winner with latest cash preserved"
+      ]
+    },
+    {
+      "id": "CACHED_AUTHORITY_REGISTRY_BODY_NOT_BOUND",
+      "severity": "P1",
+      "status": "FIXED_INDEPENDENTLY_VERIFIED",
+      "evidence": "stage016_authority_cache_initial_observation.json",
+      "fix": "actual raw registry SHA plus exact parsed body equality; actual private key SHA/cache equality; warm uses same guard",
+      "independent_tests": 8
+    }
+  ],
+  "production_qualified": false,
+  "source_qualified_by_real_capture": false,
+  "statement_finality_qualified": false,
+  "master_promoted": false,
+  "production_installed": false,
+  "reviewer_actions": {
+    "network_calls": 0,
+    "ctp_api_calls": 0,
+    "bank_calls": 0,
+    "smtp_calls": 0,
+    "order_calls": 0,
+    "financial_replays": 0,
+    "git_mutations": 0
+  },
+  "source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_settlement_capture.py": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "8a891f36df3cd1391ecaf36c3911b4f743c52487f3cc1b00b6294da419d737f5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_context_update.py": "919c0655e2c91720df2d527b78296be1c42b45b78398be710932b0fd15795669",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py": "46e7db31412e7c774b56a72174f37eedda7327709b64262def5dc285673ef1df",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "4dce7f98f092fdf358b609ba4ff4e6d6f38f31a0f865c9c723abd3c43a586ee1",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+    "examples/portfolio_backtesting/qmt_roll_official_live_config.py": "612daefa50aed78d2a6201d8e2c7ab0f6e8351babf65eb4a072f1b33de88032b"
+  },
+  "pipeline_scoped_function_ast_sha256": {
+    "_parts": "bdf7d23ef165b3c624c75d43befdb3d7b672f6579f44ef00bc38c3668b76a13b",
+    "pipeline_store": "8dd97a9ada1da294e113ef5eb8ea8b4e60a2055a7a06958b7c58e2ca89e554cb",
+    "_initial": "2aeedb8e78a74eafb893112d5c6fb7c646cafd239730326c0b8d876a8271f90e",
+    "_load": "acb41dcb18d6e594b0a5f0507d1ec69b2f5af353f095e68de91a053b3ca7196d",
+    "_assert_completed_history_sequence": "5f3604660dd1c0902886b2f2fd2b7323c5fe914edbb23ce98816dde6f2062235",
+    "_runtime": "7b5a26212484c7ff51c9716ecb0fe95edc5b4f4b2e4fed58191c2772eb62d744",
+    "_report": "ee575e4c996f25266ef974084d6a839769fb41b0d73ffae6f2f80ee3481768d1",
+    "_refresh_advice": "7e6a1976fd22e592bb74b0ae89c4717ffaddd72d1730a487bf8e14f97b7fdd0d",
+    "run_weekly19_support_job": "a36c12c7e9454fa104afb6ec03e68d2f5bfc120be5295a8b47a1c198f62a8b53"
+  },
+  "pipeline_whole_file_observed_sha256": "fa25cec3bd6d12524ff0d40039d0da158fd0a69a5bf60d527786f6ee4366fe22",
+  "pipeline_whole_file_accepted": false,
+  "excluded_pipeline_functions": [
+    "run_weekly19_session_cycle"
+  ],
+  "helper_ast_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": {
+      "_authority_for": "56081bcbb9be52ce1b69094319b1149642538d854d7925d621d6481bb32fd24f",
+      "load_cashflow_day_close": "c5b370f328496a5ec1d429db946005188597a97274eab47292f2e69478ec20f4"
+    },
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": {
+      "_capability": "58b8cc2e5076d3346cf6e8fb2435a72a17daa5f5bfacaf9c24485d84214e70ae"
+    },
+    "examples/portfolio_backtesting/qmt_roll_official_live_config.py": {
+      "build_official_live_risk_snapshot": "7a584ebbae1fd00a44b2bc908674ebc78cc14bdbf0d7dc8a89d09bbc22807d7d"
+    }
+  },
+  "test_calls": {
+    "frozen_nine_source_batch": 220,
+    "post_history_guard_addendum": 26,
+    "successful_invocations_total": 246,
+    "independent_new_tests": 33,
+    "globally_unique_claimed": false
+  },
+  "evidence_files_sha256": {
+    "stage016_root_increment_admitted_source_freeze.json": "a72a80db808c34ceed086707795c7080c246b96ef66ffcf8d1e158fcd64a20e3",
+    "audit_stage016_root_increment_verify_independent.py": "b2b65bc91cd731f858c6c3ad926ab968c24500937a1f58b7ce62bb772dd0de01",
+    "stage016_root_increment_independent_verification_attempt001.json": "fc56dd2789e50fb8ca8ed53037a3ac9fb4a891000f0b16befbce923a4c72b938",
+    "stage016_completed_sequence_independent_verification_attempt001.json": "806c49b9776035ba00757b5f3e172f0048ec87d53486d41f875da006c2845137",
+    "stage016_context_quote_advice_independent_attempt001.json": "75227fee7f62039ef7f55666229acaa2374dc8d5d67c2aad96e93c54e3bd67e4",
+    "stage016_authority_cache_independent_attempt001.json": "30894acd4d960824ae369e48c243171e3cb99c5c6d983156ef671a4e0174045e",
+    "stage016_settlement_capture_independent_attempt001.json": "733331ce1eb7fc37a08ad206684f19623202f697861ab1cae49c69a19542bf1c",
+    "stage016_context_parent_initial_observation.json": "a10016fce280c39a74e7b5830f329d95f80371c0b9f0cceb553a2702bb9f09b0",
+    "stage016_authority_cache_initial_observation.json": "1b46b9e810988714c51eeca41c5f8a12b09e2009a5c9c1d4dbb0961a085aeb3d",
+    "audit_stage016_context_parent_initial_probe.py": "503b48e709a6e0594f561cbb2b62816aa85d1cf253f06180b91f052314c90472",
+    "audit_stage016_context_quote_advice_independent.py": "1e24f7aa90abc1ac379d6b427d6f41fc6d746cc3630ca1dc25475ccb717e0102",
+    "audit_stage016_authority_cache_independent.py": "26773c24780ebe4790cba01188a27197fd14d38adca249f08c5759ec8d468bb8",
+    "audit_stage016_settlement_capture_independent.py": "4027149a4dd5bf4b987d3c6d185c01b94ed0cd89f7bada4736efa792dfbfe46a",
+    "audit_stage016_completed_sequence_independent.py": "7a29cff608bdb6402ad471bf83da4e7ecb8602835b14f1118369902028b175ae",
+    "stage016_cashflow_source_independent_gap_review.json": "3fa567e6d30d25c462eeefc37d1599ca5c3c89f85960d5a4f4367fdfe2128b8c",
+    "20261031_stage016_cashflow_source_independent_gap_review.md": "8d56b707d8e74b0bbef099728910936077d3b7a5226f86c4f4a5b80d44d70a13",
+    "stage016_runtime_data_v6_independent_review.json": "69eee5fea29cce118b6bad2b2cb1673c6fe7ae8276a1f74ef133288fe3119e0a",
+    "stage016_v5_components_independent_review.json": "eaf000c97dd716820b48a0bfc37eca42c8c7ada7aabd9369ce93ed95b5422c00"
+  },
+  "logs_sha256": {
+    "stage016_root_increment_independent_test_stage174_query_bundle_attempt001.log": "caa6ef927a862fb6fd88763a5586108d235353d3e4affc95ad4a2b0c5a45b40b",
+    "stage016_root_increment_independent_test_weekly19_capture_capability_attempt001.log": "86794120640779cb671ba5e0c86a20ba9e34a1c58d875f22e893ed52afef9026",
+    "stage016_root_increment_independent_test_weekly19_warm_evidence_attempt001.log": "551f61623db6caeca16bbc7f93d78aaab1b42e7a4268f2181e4eee18f74c0bf7",
+    "stage016_root_increment_independent_test_weekly19_broker_evidence_attempt001.log": "c113b1803de59466360f7e8745b0a4de1fb4e79a3bcb4f5c1b85272e1f85c85e",
+    "stage016_root_increment_independent_test_weekly19_live_pipeline_attempt001.log": "579313faf2706ab937d897921bc772200373726f05813665793b356e6d29ab36",
+    "stage016_root_increment_independent_test_weekly19_friday_advice_attempt001.log": "8ceffd70a7c2802956a83230500c51f632c50a585166b1a9102761cd53624336",
+    "stage016_root_increment_independent_test_official_live_config_import_attempt001.log": "7c8d5b2235222a1af7b5ce65ef7c4b25b5aa26b3d86cc0403d014595ca6e2159",
+    "stage016_root_increment_independent_test_weekly19_friday_report_attempt001.log": "5fe4c07a76de26e73e19495aaa326c49ea969b088d027c2a693a060218282749",
+    "stage016_root_increment_independent_test_weekly19_context_update_attempt001.log": "d2fb41082e408e2f5f8300e0c9aff827e840b3ea83198866cf636f19a4657296",
+    "stage016_root_increment_independent_test_weekly19_official_config_attempt001.log": "b5fb8c841222849b3f81e9f665b36f7c86e97e0272b4221b3b09cd5decc5c085",
+    "stage016_root_increment_independent_test_weekly19_settlement_capture_attempt001.log": "3cd02e884955c8b49b809ce57755ae46aacba4d9ef1382b84e081568bb3f04a5",
+    "stage016_root_increment_independent_audit_stage016_context_quote_advice_independent_attempt001.log": "3b4820fbb2dcb81651fe77d64c422a1564dc00a76427c4bd61dcd6d13dfb4320",
+    "stage016_root_increment_independent_audit_stage016_settlement_capture_independent_attempt001.log": "17996a1b1ed3ab5d9bedcf00879ae8dd98c1d23d334492c1d2b83f63b99ae10f",
+    "stage016_root_increment_independent_audit_stage016_authority_cache_independent_attempt001.log": "45f21ecfb6fe7d3354a76ba9f0cd9bc0f639fd169ccf2b724abcdd7075ba1848",
+    "stage016_root_increment_independent_test_weekly19_quote_spool_attempt001.log": "f5d496b8eb3d02e9e8028316813702c2efa5ba25dae4328983cf0b6f05152be1",
+    "stage016_completed_sequence_independent_test_weekly19_live_pipeline_attempt001.log": "5bb8d5ab074c146614b1158db5e72910cd066138ef81535864fa9bc30b285096",
+    "stage016_completed_sequence_independent_test_weekly19_daily_receipt_attempt001.log": "6e7029d445ea42f0c341f97dd7ba0b12386b207775c40d0ab92de6c1edc66fdc",
+    "stage016_completed_sequence_independent_audit_stage016_completed_sequence_independent_attempt001.log": "1f8e5ed898a6ae8185686445e0d09dab8d50808ecdc566971f181b8236cd74ea"
+  },
+  "limitations": [
+    "仅离线组件接受；审查者没有CTP/银行/SMTP/订单/网络/金融回放/Git index/commit/生产操作。测试里的API、账户、capability及transport均显式fixture。",
+    "cached CaptureAuthority以最初真实FULL资格加载为前提；fixture构造的token不授予真实资格。当前raw registry/key/body及13源复验不替代上层release/activation/当前生产身份与完整资格门。",
+    "新settlement collector仅保存原生查询片段，query-last只证本次响应结束；Seq起点、文档FINAL语义、真实账户币种字段未知、跨银行/冲正/费用与gross现金完整性仍不能由fixture证明。",
+    "load_cashflow_day_close仍明确missing_statement，无真实accepted银行/日结样本、registry/native capture正例；source_qualified_by_real_capture和production_qualified均false。",
+    "live_pipeline按列明function AST接受，session_cycle及仍开发的execution/controller/quote整个服务链不在本签收；不把模块整体SHA观察值当整文件接受。",
+    "父目录被替换时即使relative replace已发生也会报失败；可能有完整快照写在旧目录，必须reload/reconcile，不把所有异常称为回滚成功。并发配置写入方须遵守同一锁/CAS协议，不能保证未遵守协议的外部编辑不丢更新。",
+    "初次两项预冻结P1 probe没有事前pin整个旧文件，记录明确old SHA=null；不伪造旧源hash。当前冻结修复源已精确绑定并复验。",
+    "作者与独立调用有重复，246为成功测试调用次数而非unique。旧V5/V6 receipt、失败尝试和原Stage014 NO_PROMOTION/会计与经济限制不改。"
+  ],
+  "cashflow_gap": {
+    "local_native_query_available": true,
+    "request": "reqQrySettlementInfo",
+    "callback": "onRspQrySettlementInfo",
+    "raw_collector_accepted_only": true,
+    "final_cashflow_parser_accepted": false,
+    "transfer_serial_has_requested_trading_day": false,
+    "endpoints_after_counter_reset_are_not_identifying": true
+  },
+  "component": "capture_authority_cache_and_raw_settlement",
+  "chinese_record_sha256": "0260d0cf98309c0fd0d3219ba459942d183a695759e23642def9dff0a83ff473"
+}

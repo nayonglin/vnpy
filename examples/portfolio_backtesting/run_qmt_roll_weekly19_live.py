@@ -51,18 +51,23 @@ def run_session(context,*,duration_seconds,names,clock=None,sleep=None,on_cycle=
  clock=clock or(lambda:datetime.now(SHANGHAI));sleep=sleep or time.sleep;on_cycle=on_cycle or(lambda _:None)
  if type(duration_seconds)is not int or not 1<=duration_seconds<=24*3600:raise LocalBackendError('weekly19_duration_invalid')
  now=clock();backend=context['backend']
- if not context.get('preview',False):backend.require_production()
+ if not context.get('preview',False):
+  backend.require_production()
+  calendar=backend.prepare_session(context['target_date'],now)
+  session_end(now,names,set(calendar))
+  backend.refresh_readonly(now);now=clock()
  data=backend.load_inputs(context['target_date'],now);deadline=min(now+timedelta(seconds=duration_seconds),session_end(now,names,set(data['calendar'])))
- cycles=0
+ backend.session_deadline=deadline
+ cycles=0;last_cycle=None;shutdown=None
  try:
   while clock()<deadline:
-   cycle=run_weekly19_session_cycle(context=dict(context,now=clock()));on_cycle(cycle);cycles+=1
+   cycle=run_weekly19_session_cycle(context=dict(context,now=clock()));last_cycle=cycle;on_cycle(cycle);cycles+=1
    # Do not monopolize the process on a blocked/no-signal cycle. No wait >1s.
    remaining=(deadline-clock()).total_seconds()
    if remaining>0:sleep(min(1.0,remaining))
  finally:
-  if hasattr(backend,'close_session'):backend.close_session()
- return dict(status='session_lifetime_completed',cycles=cycles,ends_at=deadline.isoformat(),production_qualified=False)
+  if hasattr(backend,'close_session'):shutdown=backend.close_session()
+ return dict(status='session_lifetime_completed',cycles=cycles,ends_at=deadline.isoformat(),last_cycle=last_cycle,shutdown=shutdown,production_qualified=False)
 
 def main(argv=None):
  args=parser().parse_args(argv)
@@ -70,7 +75,8 @@ def main(argv=None):
   cfg=private_json(args.context_file)
   backend=LocalEvidenceBackend(cfg,repo_root=ROOT,release_manifest=args.release_manifest,activation_receipt=args.activation_receipt,
    qualification_evidence=args.production_qualification_evidence,preview=args.preview)
-  target=args.target_date or cfg.get('target_date')
+  backend.context_file=args.context_file.absolute()
+  target=args.target_date or(cfg.get('target_date')if args.job in {'health','monthly-ai-pool'}else backend.resolve_target_date(datetime.now(SHANGHAI)))
   if not target:raise LocalBackendError('weekly19_resolved_target_date_required')
   context=dict(backend=backend,state_path=Path(cfg['state_path']),mail_outbox=Path(cfg['mail_outbox']),
    account_key=cfg['account_key'],material_release_id=cfg['material_release_id'],cold_start_date=cfg['cold_start_date'],target_date=target,preview=args.preview)
@@ -79,5 +85,6 @@ def main(argv=None):
  except (ValueError,KeyError,OSError,RuntimeError)as exc:
   # Never print raw payload, credentials or the private JSON configuration.
   reason=str(exc)if isinstance(exc,(LocalBackendError,))else type(exc).__name__
-  print(json.dumps(dict(status='blocked',blockers=[reason],ctp_connection_attempted_count=0,order_api_called_count=0,send_order_api_called_count=0,cancel_order_api_called_count=0),ensure_ascii=False));return 2
+  zero=0 if 'backend'not in locals()or not getattr(backend,'external_action_started',False)else None
+  print(json.dumps(dict(status='blocked',blockers=[reason],ctp_connection_attempted_count=zero,order_api_called_count=zero,send_order_api_called_count=zero,cancel_order_api_called_count=zero),ensure_ascii=False));return 2
 if __name__=='__main__':raise SystemExit(main())

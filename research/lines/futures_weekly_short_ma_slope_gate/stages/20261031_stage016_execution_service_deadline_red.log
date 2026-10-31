@@ -1,0 +1,13 @@
+======================================================================
+FAIL: test_original_runner_and_authorization_lease_share_cli_lifetime_deadline (tests.test_weekly19_execution_service.Weekly19ExecutionServiceTest.test_original_runner_and_authorization_lease_share_cli_lifetime_deadline)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_execution_service.py", line 140, in test_original_runner_and_authorization_lease_share_cli_lifetime_deadline
+    binder=getattr(instance,'bind_deadline',None);self.assertTrue(callable(binder),'session deadline binding missing')
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : session deadline binding missing
+
+----------------------------------------------------------------------
+Ran 1 test in 0.122s
+
+FAILED (failures=1)

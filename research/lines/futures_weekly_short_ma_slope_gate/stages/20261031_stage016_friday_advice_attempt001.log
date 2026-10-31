@@ -1,0 +1,63 @@
+test_equity_recovery_retires_old_offer_without_debt_or_fake_credit (tests.test_weekly19_friday_advice.FridayAdviceTest.test_equity_recovery_retires_old_offer_without_debt_or_fake_credit) ... ERROR
+test_fully_confirmed_first_id_consumes_entire_original_portfolio_batch (tests.test_weekly19_friday_advice.FridayAdviceTest.test_fully_confirmed_first_id_consumes_entire_original_portfolio_batch) ... ERROR
+test_holiday_thursday_native_batch_gets_canonical_friday_advice_without_rerun (tests.test_weekly19_friday_advice.FridayAdviceTest.test_holiday_thursday_native_batch_gets_canonical_friday_advice_without_rerun) ... ok
+test_normal_friday_does_not_add_request_and_unpaid_changed_gap_is_proven_replaced (tests.test_weekly19_friday_advice.FridayAdviceTest.test_normal_friday_does_not_add_request_and_unpaid_changed_gap_is_proven_replaced) ... FAIL
+test_partial_confirmation_never_creates_or_increases_current_batch_offer (tests.test_weekly19_friday_advice.FridayAdviceTest.test_partial_confirmation_never_creates_or_increases_current_batch_offer) ... ERROR
+test_same_friday_request_is_idempotent_and_never_renews_expiry (tests.test_weekly19_friday_advice.FridayAdviceTest.test_same_friday_request_is_idempotent_and_never_renews_expiry) ... ok
+test_stale_wrong_source_invalid_admission_and_nonfriday_never_change_cash (tests.test_weekly19_friday_advice.FridayAdviceTest.test_stale_wrong_source_invalid_admission_and_nonfriday_never_change_cash) ... ok
+test_unknown_deposit_and_missing_close_day_are_blocked_without_any_cash_change (tests.test_weekly19_friday_advice.FridayAdviceTest.test_unknown_deposit_and_missing_close_day_are_blocked_without_any_cash_change) ... ok
+
+======================================================================
+ERROR: test_equity_recovery_retires_old_offer_without_debt_or_fake_credit (tests.test_weekly19_friday_advice.FridayAdviceTest.test_equity_recovery_retires_old_offer_without_debt_or_fake_credit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 105, in test_equity_recovery_retires_old_offer_without_debt_or_fake_credit
+    self.assertEqual(next(iter(result['funding']['retirements'].values()))['reason'],'equity_recovered')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+======================================================================
+ERROR: test_fully_confirmed_first_id_consumes_entire_original_portfolio_batch (tests.test_weekly19_friday_advice.FridayAdviceTest.test_fully_confirmed_first_id_consumes_entire_original_portfolio_batch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 89, in test_fully_confirmed_first_id_consumes_entire_original_portfolio_batch
+    paid,snapshot,at=confirm(bundle,obj,amount='30000.00',equity='150000.00')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 54, in confirm
+    cash=funds.confirm_topup(bundle['funding'],rid,cashflow,snap['account'],at)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 573, in confirm_topup
+    _fail('receipt_out_of_order_or_future')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 49, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: receipt_out_of_order_or_future
+
+======================================================================
+ERROR: test_partial_confirmation_never_creates_or_increases_current_batch_offer (tests.test_weekly19_friday_advice.FridayAdviceTest.test_partial_confirmation_never_creates_or_increases_current_batch_offer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 96, in test_partial_confirmation_never_creates_or_increases_current_batch_offer
+    bundle,obj=make_bundle(two=True);partial,snap,at=confirm(bundle,obj)
+                                                     ^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 54, in confirm
+    cash=funds.confirm_topup(bundle['funding'],rid,cashflow,snap['account'],at)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 573, in confirm_topup
+    _fail('receipt_out_of_order_or_future')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 49, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: receipt_out_of_order_or_future
+
+======================================================================
+FAIL: test_normal_friday_does_not_add_request_and_unpaid_changed_gap_is_proven_replaced (tests.test_weekly19_friday_advice.FridayAdviceTest.test_normal_friday_does_not_add_request_and_unpaid_changed_gap_is_proven_replaced)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_advice.py", line 75, in test_normal_friday_does_not_add_request_and_unpaid_changed_gap_is_proven_replaced
+    self.assertEqual(bundle,old);self.assertEqual(result['recommendation']['amount_fen'],2000000)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 2000000
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.364s
+
+FAILED (failures=1, errors=3)

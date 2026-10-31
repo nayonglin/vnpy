@@ -1,0 +1,550 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+................F....................................................... [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+.......................................F................................ [ 95%]
+........................................................................ [ 99%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+___________ test_authorized_spool_factory_to_seal_and_next_day_close ___________
+
+tmp_path = PosixPath('/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/pytest-of-mac/pytest-70/test_authorized_spool_factory_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11d2b21d0>
+
+    def test_authorized_spool_factory_to_seal_and_next_day_close(tmp_path, monkeypatch):
+>       test_warm_factory_frozen_flat_funds_gap_native_trade_worker(tmp_path, monkeypatch, "CZCE", "SH611", False, "authorized")
+
+tests/test_stage931_broker_open_date_seal.py:788: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stage931_broker_open_date_seal.py:611: in test_warm_factory_frozen_flat_funds_gap_native_trade_worker
+    _exercise_authorized_intent(session, state, paths, runtime, inputs, monkeypatch, baseline_fault)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = <run_qmt_roll_stage931_official_live_ctp_submit_adapter.CtpExecutionSession object at 0x11dd78c10>
+state = {'_on_open_date_reconciled': <function _build_stage179_warm_ctp_session.<locals>.<lambda> at 0x11d604fe0>, 'authorization_pin': None, 'callback_context': None, 'callback_persistence_blockers': [], ...}
+paths = ExecutorServicePaths(spool_path=PosixPath('/private/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/pytest-of-mac/pyte...ivate/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/pytest-of-mac/pytest-70/test_authorized_spool_factory_0/ledger'))
+runtime = ResolvedRuntimeProfile(profile=<ExecutionRuntimeProfile.SIMNOW: 'simnow'>, order_scope=<OrderScope.TEST: 'test'>, repo...s4xd6z9z27w5t40000gn/T/pytest-of-mac/pytest-70/test_authorized_spool_factory_0/runtime/state/activation_receipt.json'))
+inputs = {'account_fingerprint': '6cfbf37b6fec7b34f1d39fc4a0b49c8ddd82a23fac514c5e9637cd821c7e1581', 'execution_ledger_rows': [...fac514c5e9637cd821c7e1581', 'broker_callback_key': 'native', 'child_order_count': 1, 'child_order_index': 0, ...}, ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11d2b21d0>
+authorization_mode = 'authorized'
+
+    def _exercise_authorized_intent(session, state, paths, runtime, inputs, monkeypatch, authorization_mode):
+        from qmt_roll_official_execution_profile import C9_15W_PROFILE
+        from qmt_roll_official_live_broker_sizing import size_open_intent
+        import qmt_roll_official_live_intent_spool as spool
+        from qmt_roll_official_live_execution_service import SQLiteIntentSpool
+        from qmt_roll_official_live_submit_authorization import publish_submit_authorization, revoke_submit_authorization, submit_authorization_path
+        from test_official_live_intent_spool import OfficialLiveIntentSpoolTest
+        from test_stage931_broker_sizing_gate import sizing_row
+        closing = authorization_mode.startswith("close_")
+        authorization_mode = authorization_mode.removeprefix("close_")
+        target_date = "2026-09-09" if closing else "2026-09-08"
+        if closing:
+            until = time.monotonic() + 10
+            while state["open_date_seal_workers"] and time.monotonic() < until:
+                time.sleep(0.01)
+            assert not state["open_date_seal_workers"]
+            state["td_api"].calls.clear()
+        historical_ledger = read_execution_ledger(paths.ledger_path)
+    
+        class SessionClock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return cls(2026, 9, 8 if closing else 7, 21, 30, tzinfo=tz)
+    
+        monkeypatch.setattr(stage931, "datetime", SessionClock)
+        epoch = time.time_ns()
+        monotonic_ns = time.monotonic_ns()
+        fixture = OfficialLiveIntentSpoolTest()
+        intent = fixture.intent("authorized-open", deadline_epoch_ns=epoch + 25_000_000_000, position_epoch_id="epoch")
+        trace = json.loads(intent["trace_json"])
+        trace["vt_symbol"] = "SH611.CZCE"
+        delta = monotonic_ns - epoch
+    
+        def rebase(value):
+            if isinstance(value, dict):
+                return {name: item + delta if "monotonic" in name and isinstance(item, int) else rebase(item) for name, item in value.items()}
+            if isinstance(value, list):
+                return [rebase(item) for item in value]
+            return value
+    
+        intent["trace_json"] = json.dumps(rebase(trace))
+        root = stage931.generate_root_position_id(target_date="2026-09-08", vt_symbol="SH611.CZCE", direction="long")
+        cycle = stage931.generate_position_cycle_id(root_position_id=root, cycle_no=0)
+        broker_inputs = sizing_row()["broker_sizing_inputs"]
+        broker_inputs["signal"]["risk_ratio"] = 0.004
+        broker_inputs["account"].update(equity=500000, available=500000, margin=0, frozen=0, product_margin={},
+            account_fingerprint=inputs["account_fingerprint"], generated_at=datetime.now().astimezone().isoformat())
+        audit = size_open_intent(**broker_inputs)
+        assert audit["volume"] == 4, audit
+        payload = json.loads(intent["spool_payload_json"])
+        payload.update(target_date="2026-09-08", source="stage901_pending_order", vt_symbol="SH611.CZCE", direction="long", action_id="",
+            root_position_id=root, position_cycle_id=cycle, position_cycle_no=0, intent_role="c9_initial_open", planned_volume=4,
+            limit_price=1948, pricetick=1, protection_ticks=1, strategy_initial_stop_price=1933,
+            ingress_epoch_ns=epoch, ingress_monotonic_ns=monotonic_ns,
+            deadline_monotonic_ns=monotonic_ns + 25_000_000_000, execution_profile="c9-15w",
+            broker_sizing=audit, broker_sizing_inputs=broker_inputs, official_live_version=C9_15W_PROFILE.official_version,
+            capital=C9_15W_PROFILE.capital, capital_label=C9_15W_PROFILE.capital_label)
+        payload["order_request"] = {**{name: payload[name] for name in (
+            "intent_id", "action_id", "source", "target_date", "execution_profile", "official_live_version", "capital", "capital_label",
+            "root_position_id", "position_epoch_id", "position_cycle_id", "position_cycle_no", "state_generation", "intent_role")},
+            "symbol": "SH611", "exchange": "CZCE", "vt_symbol": "SH611.CZCE", "direction": "多",
+            "offset": "开", "type": "FAK", "volume": 4, "price": 1948, "reference": "Stage905PhaseD:authorized-open",
+            "broker_sizing": audit, "broker_sizing_inputs": broker_inputs, "strategy_initial_stop_price": 1933,
+            "gateway_name": "CTP", "physical_tif_policy_version": "stage179_open_fak_v1"}
+        if closing:
+            from qmt_roll_official_live_broker_close_sizing import size_full_close_intent
+    
+            pending = {"vt_symbol": "SH611.CZCE", "direction": "short", "offset": "close", "volume": 4,
+                       "traded": 0, "target_date": target_date, "price": 1937}
+            cohort = stage931._canonical_evidence_sha256(pending)
+            pending["cohort_id"] = cohort
+            close_audit = size_full_close_intent(intent={**pending, "planned_volume": 4},
+                pending_orders=stage931.pd.DataFrame([pending]),
+                current_positions=stage931.pd.DataFrame([{"vt_symbol": "SH611.CZCE", "direction": "long", "date": target_date, "end_pos": 4}]),
+                official_summary={"cohort_id": cohort, "analysis_end": target_date, "pending_orders": [pending]},
+                broker_positions=stage931.pd.DataFrame([{"vt_symbol": "SH611.CZCE", "direction": "long", "volume": 2, "frozen": 0}]),
+                execution_ledger_rows=historical_ledger, require_broker_trade_coverage=False)
+            close_audit["account_fingerprint"] = inputs["account_fingerprint"]
+            assert close_audit["volume"] == close_audit["owned_net_volume"] == 2 and close_audit["shadow_volume"] == 4
+            payload.update(intent_id="authorized-close", target_date="2026-09-09", offset="close", direction="short",
+                           intent_role="c9_full_position_close", planned_volume=2, limit_price=1937, strategy_initial_stop_price="",
+                           broker_close_sizing=close_audit, shadow_planned_volume=4)
+            payload.pop("broker_sizing")
+            payload.pop("broker_sizing_inputs")
+            payload["order_request"].update(intent_id="authorized-close", target_date="2026-09-09", offset="平", direction="空",
+                intent_role="c9_full_position_close", volume=2, price=1937, type="限价", physical_tif_policy_version="stage179_limit_gfd_v1",
+                reference="Stage905PhaseD:authorized-close", strategy_initial_stop_price="", broker_close_sizing=close_audit)
+            payload["order_request"].pop("broker_sizing")
+            payload["order_request"].pop("broker_sizing_inputs")
+            for name in ("root_position_id", "position_cycle_id", "position_cycle_no", "position_epoch_id", "state_generation"):
+                payload[name] = close_audit[name]
+                payload["order_request"][name] = close_audit[name]
+            payload.pop("strategy_initial_stop_price", None)
+            payload["order_request"].pop("strategy_initial_stop_price", None)
+        encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        intent.update(payload)
+        intent.update(spool_payload_json=encoded, payload_sha256=hashlib.sha256(encoded.encode()).hexdigest())
+        connection = spool.open_spool(paths.spool_path)
+        adapter = SQLiteIntentSpool(connection, ledger_path=paths.ledger_path)
+        try:
+            spool.commit_detector_batch(connection, consumer_id="stage941", expected_cursor=None, next_cursor=fixture.cursor(1),
+                intents=[intent], now_epoch_ns=time.time_ns(), now_monotonic_ns=time.monotonic_ns(), clock_domain_id="boot-a")
+            spool.record_trace_observation(connection, intent_id=intent["intent_id"], stage="spool_committed",
+                epoch_ns=time.time_ns(), monotonic_ns=time.monotonic_ns(), clock_domain_id="boot-a")
+            snapshot = spool.snapshot_authorizable_intents(connection, now_epoch_ns=time.time_ns(), now_monotonic_ns=time.monotonic_ns(), clock_domain_id="boot-a")
+            assert snapshot.candidate is not None
+            candidate = asdict(snapshot.candidate)
+            auth_path = submit_authorization_path(runtime.output_root)
+    
+            def publish():
+                now = time.time_ns()
+                expires = min(now + 20_000_000_000, candidate["deadline_epoch_ns"])
+                controller_evidence = {
+                    "target_date": target_date,
+                    "controller_status": (
+                        "persistent_intraday_fast_ready"
+                        if closing
+                        else "phase_d_controller_live_real_ready_no_submit_step"
+                    ),
+                    "expires_epoch_ns": expires,
+                }
+                if not closing:
+                    controller_evidence.update(
+                        stage905_executor_status="executor_dry_run_ready",
+                        stage905_blocked_count=0,
+                        stage905_ready_count=1,
+                    )
+                stage927_evidence = {
+                    (
+                        "reduce_close_submit_permitted"
+                        if closing
+                        else "real_submit_permitted"
+                    ): 1,
+                    "expires_epoch_ns": expires,
+                }
+                return publish_submit_authorization(path=auth_path, target_date=target_date, execution_profile="c9-15w",
+                    runtime_profile="simnow", order_scope="test", service_generation=session.service_generation,
+                    connection_generation=session.connection_generation, cycle_id="stage236-offline" if closing else "stage235-offline",
+                    authorization_lane="persistent_intraday_fast" if closing else "slow_controller",
+                    intent_scope="reduce_close_only" if closing else "all",
+                    authorized_intents=[candidate], issued_epoch_ns=now, expires_epoch_ns=expires,
+                    controller_evidence=controller_evidence,
+                    stage927_evidence=stage927_evidence,
+                    broker_gate_evidence={"status": "ready", "service_generation": session.service_generation,
+                        "connection_generation": session.connection_generation, "expires_epoch_ns": expires},
+                    tick_watermark_evidence={"all_symbols_ready": 1, "expires_epoch_ns": expires}, spool_path=paths.spool_path,
+                    spool_snapshot_digest=snapshot.snapshot_digest, cursor_digest=snapshot.cursor_digest,
+                    stage902_evidence_digest=stage931._canonical_evidence_sha256({"allow_new_open": 1}),
+                    stage927_evidence_digest=stage931._canonical_evidence_sha256(stage927_evidence))
+    
+            api = state["td_api"]
+            send_errors = []
+            original_send = session._send_order
+    
+            def observed_send(lease):
+                try:
+                    return original_send(lease)
+                except Exception as error:
+                    send_errors.append(str(error))
+                    send_errors.append(repr(error.__cause__))
+                    raise
+    
+            session._send_order = observed_send
+            assert "stage179_submit_authorization_missing" in session.pre_lease_blockers()
+            assert api.native_calls == 0
+            publish()
+            with session.lease_execution_guard():
+                authorized = session.pre_lease_authorized_intents()
+                assert authorized == {candidate["intent_id"]: candidate["payload_sha256"]}
+                lease = spool.lease_next(connection, owner_id=session.service_generation, now_epoch_ns=time.time_ns(),
+                    now_monotonic_ns=time.monotonic_ns(), clock_domain_id="boot-a", lease_seconds=30, authorized_intents=authorized)
+                assert lease is not None and session.post_lease_blockers(lease) == []
+                slot_callbacks = []
+    
+                def durable_slot(batch_id):
+                    slot_callbacks.append(batch_id)
+                    transitioned = adapter.mark_sending(lease, now_epoch_ns=time.time_ns(),
+                        now_monotonic_ns=time.monotonic_ns(), clock_domain_id="boot-a", ledger_disposition=batch_id)
+                    return transitioned.state == "sending"
+    
+                if authorization_mode == "authorization_missing":
+                    auth_path.unlink()
+                elif authorization_mode == "authorization_revoked":
+                    revoke_submit_authorization(auth_path, reason="stage235-offline-revocation", revoked_epoch_ns=time.time_ns())
+                result = session.execute_spool_lease(lease=lease,
+                    hard_deadline_monotonic=time.monotonic() + 18, api_slot_durable=durable_slot)
+                if authorization_mode != "authorized":
+                    expected = "stage179_submit_authorization_missing" if authorization_mode == "authorization_missing" else "stage179_submit_authorization_not_authorized"
+                    assert expected in result.blockers, result.blockers
+                    assert result.send_order_call_count == result.cancel_order_call_count == api.native_calls == 0
+                    assert not slot_callbacks and session.api_slot_call_count == 0
+                    assert read_execution_ledger(paths.ledger_path) == historical_ledger
+                    assert connection.execute("SELECT state FROM intents WHERE intent_id=?", (lease.intent.intent_id,)).fetchone()[0] == "leased"
+                    return
+>               assert result.disposition == "sent", "\n".join([*result.blockers, *send_errors])
+E               AssertionError: final_snapshot_q2:final_order_query_pacing_timeout
+E                 final_order_query_missing_or_incomplete
+E               assert 'no_side_effect_retryable' == 'sent'
+E                 
+E                 - sent
+E                 + no_side_effect_retryable
+
+tests/test_stage931_broker_open_date_seal.py:995: AssertionError
+_ Stage947ProductionSupportLauncherTest.test_stage935_reads_stage173_from_data_and_ai_candidates_from_control _
+
+self = <test_stage947_production_support_launcher.Stage947ProductionSupportLauncherTest testMethod=test_stage935_reads_stage173_from_data_and_ai_candidates_from_control>
+
+    def test_stage935_reads_stage173_from_data_and_ai_candidates_from_control(
+        self,
+    ) -> None:
+        import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+    
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            control.mkdir()
+            data = root / "data"
+            data.mkdir()
+            mapping = data / "mapping.csv"
+            mapping.write_text(
+                "date\n"
+                "2026-03-31\n"
+                "2026-04-30\n"
+                "2026-05-29\n"
+                "2026-06-30\n"
+                "2026-07-23\n",
+                encoding="utf-8",
+            )
+            stage173_summary = data / "stage173-summary.json"
+            stage173_summary.write_text(
+                json.dumps(
+                    {
+                        "max_saved_date": "2026-07-23",
+                        "failed_count": 0,
+                        "empty_count": 0,
+                        "mapping_update": {"combined_max_date": "2026-07-23"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stage182_summary = data / "stage182-summary.json"
+            stage182_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            live_pool = data / "stage182-live-pool.csv"
+            live_pool.write_text("product_vt_symbol\nold.SHFE\n", encoding="utf-8")
+            live_eligibility = data / "stage182-live.csv"
+            ranked_products = [
+                "jm.DCE",
+                "rb.SHFE",
+                "i.DCE",
+                "m.DCE",
+                "ag.SHFE",
+                "cu.SHFE",
+                "TA.CZCE",
+                "MA.CZCE",
+                "au.SHFE",
+                "lc.GFEX",
+            ]
+            self.assertEqual(OFFICIAL_AI_RANKED_PRODUCT_COUNT, len(ranked_products))
+            live_rows = list(
+                enumerate([*ranked_products, OFFICIAL_AI_FIXED_PRODUCT], start=1)
+            )
+            strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+            live_pool_text = (
+                "strategy,eval_date,product_vt_symbol,"
+                "predicted_product_suitability_probability,ai_rank,"
+                "selection_role,source_score_type\n"
+                + "".join(
+                    (
+                        f"{strategy},2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{'fixed_fu' if symbol == OFFICIAL_AI_FIXED_PRODUCT else 'model_ranked'},"
+                        "stage182_live\n"
+                    )
+                    for rank, symbol in live_rows
+                )
+            )
+            live_pool.write_text(live_pool_text, encoding="utf-8")
+            eligibility_header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            live_eligibility.write_text(
+                eligibility_header
+                + "".join(
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
+                ),
+                encoding="utf-8",
+            )
+            report = data / "stage182-report.md"
+            report.write_text("old report\n", encoding="utf-8")
+            combined = data / "stage182-combined.csv"
+            combined_text = eligibility_header + "".join(
+                (
+                    f"{strategy},stage182_live,{date},{symbol},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
+                for date in ("2026-03-31", "2026-04-30", "2026-05-29", "2026-06-30")
+                for rank, symbol in live_rows
+            )
+            combined.write_text(combined_text, encoding="utf-8")
+    
+            stage183_daily = control / "stage183-daily.csv"
+            stage183_daily.write_text(
+                "date,balance\n2026-07-23,200000\n",
+                encoding="utf-8",
+            )
+            stage183_position = control / "stage183-position.csv"
+            stage183_position.write_text(
+                "date,vt_symbol,end_pos\n2026-07-23,rb2610.SHFE,0\n",
+                encoding="utf-8",
+            )
+            stage183_candidate = control / "stage183-candidate.csv"
+            stage183_candidate.write_text(
+                "date,product_vt_symbol,candidate_status\n"
+                "2026-07-21,rb.SHFE,rejected\n",
+                encoding="utf-8",
+            )
+            stage183_summary = data / "stage183-summary.json"
+            stage183_sources = {
+                "daily": stage183_daily,
+                "position_changes": stage183_position,
+                "entry_candidate_snapshots": stage183_candidate,
+            }
+            stage183_identities = {
+                name: {
+                    "size": path.stat().st_size,
+                    "mtime_ns": path.stat().st_mtime_ns,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                }
+                for name, path in stage183_sources.items()
+            }
+            stage183_summary.write_text(
+                json.dumps(
+                    {
+                        "analysis_end": "2026-07-23",
+                        "source_prefix": stage935.DEFAULT_SOURCE_PREFIX,
+                        "artifact_root": str(control),
+                        "artifact_dates": {
+                            "daily_max_date": "2026-07-23",
+                            "position_changes_max_date": "2026-07-23",
+                            "entry_candidate_snapshots_max_date": "2026-07-21",
+                        },
+                        "artifact_identities": stage183_identities,
+                        "outputs": {
+                            "daily": str(stage183_daily),
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+    
+            candidate_live_pool = control / live_pool.name
+            candidate_live_pool.write_text(live_pool_text, encoding="utf-8")
+            candidate_live = control / live_eligibility.name
+            candidate_live.write_text(
+                eligibility_header
+                + "".join(
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
+                ),
+                encoding="utf-8",
+            )
+            candidate_combined = control / combined.name
+            candidate_combined.write_text(combined_text, encoding="utf-8")
+            candidate_report = control / report.name
+            candidate_report.write_text("candidate report\n", encoding="utf-8")
+            candidate_summary = control / stage182_summary.name
+            candidate_outputs = {
+                "live_pool": str(candidate_live_pool),
+                "live_eligibility": str(candidate_live),
+                "combined_eligibility": str(candidate_combined),
+                "summary": str(candidate_summary),
+                "report": str(candidate_report),
+            }
+            candidate_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
+                        "source_paths": {
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "source_identities": {
+                            name: stage183_identities[name]
+                            for name in (
+                                "position_changes",
+                                "entry_candidate_snapshots",
+                            )
+                        },
+                        "outputs": candidate_outputs,
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                as_of="2026-07-23T18:20:00",
+                data_ready_time="16:30",
+                mode="run",
+                source_prefix=stage935.DEFAULT_SOURCE_PREFIX,
+                force=True,
+                skip_data_update=False,
+                data_update_timeout_seconds=1,
+                source_refresh_timeout_seconds=1,
+                inference_timeout_seconds=1,
+            )
+            success = {
+                "exit_code": 0,
+                "elapsed_seconds": 0.0,
+                "stdout_tail": "",
+                "stderr_tail": "",
+            }
+    
+            with (
+                patch.multiple(
+                    stage935,
+                    CONTROL_OUTPUT_DIR=control,
+                    DATA_ASSET_DIR=data,
+                    ALL_FUTURES_MAPPING_PATH=mapping,
+                    STAGE173_SUMMARY_PATH=stage173_summary,
+                    STAGE182_SUMMARY_PATH=stage182_summary,
+                    STAGE182_LIVE_POOL_PATH=live_pool,
+                    STAGE182_LIVE_ELIGIBILITY_PATH=live_eligibility,
+                    STAGE182_COMBINED_ELIGIBILITY_PATH=combined,
+                    STAGE182_REPORT_PATH=report,
+                    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
+                    STAGE183_SUMMARY_PATH=stage183_summary,
+                ),
+                patch.object(stage935, "_run_command", return_value=success) as run_command,
+            ):
+>               result = stage935._run(args)
+                         ^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage947_production_support_launcher.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:1453: in _run
+    return _execute_update(summary, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:1415: in _execute_update
+    request_path = _write_material_publication_request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _write_material_publication_request(
+        *,
+        artifacts: dict[str, Path],
+        eval_date: str,
+        source_max_date: str,
+        training_label_cutoff: str,
+        source_commit: str | None = None,
+    ) -> Path:
+        if resolve_configured_execution_profile().decision_mode == "weekly19":
+>           raise RuntimeError(WEEKLY19_DISABLED_STATUS)
+E           RuntimeError: disabled_for_weekly19_fixed_universe
+
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:163: RuntimeError
+--- generated xml file: /private/tmp/weekly19_selected_final_attempt001.xml ----
+=========================== short test summary info ============================
+FAILED tests/test_stage931_broker_open_date_seal.py::test_authorized_spool_factory_to_seal_and_next_day_close
+FAILED tests/test_stage947_production_support_launcher.py::Stage947ProductionSupportLauncherTest::test_stage935_reads_stage173_from_data_and_ai_candidates_from_control
+2 failed, 2252 passed in 385.65s (0:06:25)

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="5" time="0.215" timestamp="2026-10-31T20:19:27.412191+08:00" hostname="macdeMacBook-Pro.local"><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_actual_deadline_still_blocks_both_queries_before_any_request" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_common_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000"><failure message="AssertionError: 'fixture_pacing_timeout' != ''&#10;- fixture_pacing_timeout&#10;+">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_common_pacing_boundary_crossing_is_ready_before_the_deadline&gt;
+
+    def test_common_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        clock=self.Clock([1.099999,1.100001])
+        reason=stage931._wait_for_ctp_query_pacing({'_ctp_last_query_monotonic':0.},started=0.,deadline=8.,
+            blocker_namespace='fixture',monotonic=clock.monotonic,sleeper=clock.sleep,query_interval_seconds=1.1,poll_seconds=.05)
+&gt;       self.assertEqual(reason,'')
+E       AssertionError: 'fixture_pacing_timeout' != ''
+E       - fixture_pacing_timeout
+E       +
+
+tests/test_stage931_ctp_readiness.py:2252: AssertionError</failure></testcase><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_common_pacing_retains_the_actual_timeout" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_order_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000"><failure message="AssertionError: False is not true : {'success': False, 'confirmed': False, 'reqid': None, 'requested_at_monotonic': None, 'request_ret': '', 'blockers': ['final_order_query_pacing_timeout'], 'orders': [], 'active_orders': [], 'callback_count': 0, 'ignored_callback_count': 0, 'elapsed_seconds': 1.100001}">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_order_pacing_boundary_crossing_is_ready_before_the_deadline&gt;
+
+    def test_order_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,clock=self._query('order',8.)
+&gt;       self.assertTrue(result['confirmed'],result)
+E       AssertionError: False is not true : {'success': False, 'confirmed': False, 'reqid': None, 'requested_at_monotonic': None, 'request_ret': '', 'blockers': ['final_order_query_pacing_timeout'], 'orders': [], 'active_orders': [], 'callback_count': 0, 'ignored_callback_count': 0, 'elapsed_seconds': 1.100001}
+
+tests/test_stage931_ctp_readiness.py:2240: AssertionError</failure></testcase><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_position_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000"><failure message="AssertionError: False is not true : {'success': False, 'confirmed': False, 'reqid': None, 'requested_at_monotonic': None, 'request_ret': '', 'blockers': ['final_position_query_pacing_timeout'], 'positions': [], 'callback_count': 0, 'ignored_callback_count': 0, 'elapsed_seconds': 1.100001}">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_position_pacing_boundary_crossing_is_ready_before_the_deadline&gt;
+
+    def test_position_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,clock=self._query('position',8.)
+&gt;       self.assertTrue(result['confirmed'],result)
+E       AssertionError: False is not true : {'success': False, 'confirmed': False, 'reqid': None, 'requested_at_monotonic': None, 'request_ret': '', 'blockers': ['final_position_query_pacing_timeout'], 'positions': [], 'callback_count': 0, 'ignored_callback_count': 0, 'elapsed_seconds': 1.100001}
+
+tests/test_stage931_ctp_readiness.py:2245: AssertionError</failure></testcase></testsuite></testsuites>

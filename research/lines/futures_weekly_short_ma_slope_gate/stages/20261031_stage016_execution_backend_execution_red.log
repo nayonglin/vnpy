@@ -1,0 +1,71 @@
+======================================================================
+ERROR: test_active_pipeline_does_not_reload_history_or_restore_another_actor (tests.test_weekly19_backend_execution.BackendExecutionTests.test_active_pipeline_does_not_reload_history_or_restore_another_actor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 69, in test_active_pipeline_does_not_reload_history_or_restore_another_actor
+    self.start()
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 37, in start
+    result=self.backend.publish_execution(runtime=self.actor,bundle=self.bundle,data=self.data,now=self.fx.clock.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 207, in publish_execution
+    raise LocalBackendError('weekly19_session_controller_binding_not_installed')
+qmt_roll_weekly19_local_backend.LocalBackendError: weekly19_session_controller_binding_not_installed
+
+======================================================================
+ERROR: test_exact_actor_source_state_and_existing_serve_args_are_bound_once (tests.test_weekly19_backend_execution.BackendExecutionTests.test_exact_actor_source_state_and_existing_serve_args_are_bound_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 45, in test_exact_actor_source_state_and_existing_serve_args_are_bound_once
+    result,builder=self.start();self.assertEqual(result['status'],'warming')
+                   ^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 37, in start
+    result=self.backend.publish_execution(runtime=self.actor,bundle=self.bundle,data=self.data,now=self.fx.clock.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 207, in publish_execution
+    raise LocalBackendError('weekly19_session_controller_binding_not_installed')
+qmt_roll_weekly19_local_backend.LocalBackendError: weekly19_session_controller_binding_not_installed
+
+======================================================================
+ERROR: test_only_unadmitted_cash_references_can_change_without_replacing_actor (tests.test_weekly19_backend_execution.BackendExecutionTests.test_only_unadmitted_cash_references_can_change_without_replacing_actor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 54, in test_only_unadmitted_cash_references_can_change_without_replacing_actor
+    self.start();changed=copy.deepcopy(self.cfg);changed['cash_sources']={'deposits':[{'raw_source_path':'/literal/unadmitted'}]};self.write(changed)
+    ^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 37, in start
+    result=self.backend.publish_execution(runtime=self.actor,bundle=self.bundle,data=self.data,now=self.fx.clock.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 207, in publish_execution
+    raise LocalBackendError('weekly19_session_controller_binding_not_installed')
+qmt_roll_weekly19_local_backend.LocalBackendError: weekly19_session_controller_binding_not_installed
+
+======================================================================
+ERROR: test_shutdown_waits_for_existing_warm_owner_before_closing_bridge (tests.test_weekly19_backend_execution.BackendExecutionTests.test_shutdown_waits_for_existing_warm_owner_before_closing_bridge)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 75, in test_shutdown_waits_for_existing_warm_owner_before_closing_bridge
+    self.start();self.service.stop=lambda **kw:dict(status='stop_pending')
+    ^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 37, in start
+    result=self.backend.publish_execution(runtime=self.actor,bundle=self.bundle,data=self.data,now=self.fx.clock.at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py", line 207, in publish_execution
+    raise LocalBackendError('weekly19_session_controller_binding_not_installed')
+qmt_roll_weekly19_local_backend.LocalBackendError: weekly19_session_controller_binding_not_installed
+
+======================================================================
+FAIL: test_actor_replacement_state_drift_and_preview_never_start_a_service (tests.test_weekly19_backend_execution.BackendExecutionTests.test_actor_replacement_state_drift_and_preview_never_start_a_service)
+----------------------------------------------------------------------
+qmt_roll_weekly19_local_backend.LocalBackendError: weekly19_session_controller_binding_not_installed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 65, in test_actor_replacement_state_drift_and_preview_never_start_a_service
+    with self.assertRaisesRegex(ValueError,'production_bundle'):self.backend.publish_execution(runtime=self.actor,bundle=bad,data=self.data,now=self.fx.clock.at)
+AssertionError: "production_bundle" does not match "weekly19_session_controller_binding_not_installed"
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.252s
+
+FAILED (failures=1, errors=4)

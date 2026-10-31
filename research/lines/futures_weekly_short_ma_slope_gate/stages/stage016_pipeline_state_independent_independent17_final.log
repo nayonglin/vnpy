@@ -1,0 +1,22 @@
+test_01_coherent_runtime_cash_origin_positive (__main__.Pipeline.test_01_coherent_runtime_cash_origin_positive) ... ok
+test_02_foreign_decision_identity_rejected_before_write (__main__.Pipeline.test_02_foreign_decision_identity_rejected_before_write) ... ok
+test_03_bad_runtime_digest_cannot_be_persisted (__main__.Pipeline.test_03_bad_runtime_digest_cannot_be_persisted) ... ok
+test_04_rehashed_runtime_with_different_cash_is_rejected (__main__.Pipeline.test_04_rehashed_runtime_with_different_cash_is_rejected) ... ok
+test_05_future_origin_revision_is_not_a_historical_decision (__main__.Pipeline.test_05_future_origin_revision_is_not_a_historical_decision) ... ok
+test_06_historical_origin_survives_current_runtime_revision (__main__.Pipeline.test_06_historical_origin_survives_current_runtime_revision) ... ok
+test_07_decision_receipt_or_afterhash_mismatch_rejected (__main__.Pipeline.test_07_decision_receipt_or_afterhash_mismatch_rejected) ... ok
+test_08_decision_without_origin_or_orphan_origin_rejected (__main__.Pipeline.test_08_decision_without_origin_or_orphan_origin_rejected) ... ok
+test_09_transform_raises_has_no_partial_commit (__main__.Pipeline.test_09_transform_raises_has_no_partial_commit) ... ok
+test_10_stale_caller_revision_cannot_overwrite_current (__main__.Pipeline.test_10_stale_caller_revision_cannot_overwrite_current) ... ok
+test_11_concurrent_diagnostics_transform_never_loses_revision (__main__.Pipeline.test_11_concurrent_diagnostics_transform_never_loses_revision) ... ok
+test_12_first_lock_creation_concurrency (__main__.Pipeline.test_12_first_lock_creation_concurrency) ... ok
+test_13_before_replace_fault_leaves_old_complete_snapshot (__main__.Pipeline.test_13_before_replace_fault_leaves_old_complete_snapshot) ... ok
+test_14_after_replace_directory_fsync_fault_requires_reload_not_false_rollback (__main__.Pipeline.test_14_after_replace_directory_fsync_fault_requires_reload_not_false_rollback) ... ok
+test_15_private_mode_and_owning_snapshot (__main__.Pipeline.test_15_private_mode_and_owning_snapshot) ... ok
+test_16_funding_cold_start_identity_cannot_be_rewritten (__main__.Pipeline.test_16_funding_cold_start_identity_cannot_be_rewritten) ... ok
+test_17_changed_funding_needs_a_strictly_increasing_revision (__main__.Pipeline.test_17_changed_funding_needs_a_strictly_increasing_revision) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.033s
+
+OK

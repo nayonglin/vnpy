@@ -1,0 +1,24 @@
+test_compressed_tagged_json_roundtrips_without_executing_objects (__main__.CompactIndependent.test_compressed_tagged_json_roundtrips_without_executing_objects) ... ok
+test_concatenated_truncated_and_wrong_digest_zlib_are_rejected (__main__.CompactIndependent.test_concatenated_truncated_and_wrong_digest_zlib_are_rejected) ... ok
+test_decompression_output_limit_rejects_bomb_before_full_allocation (__main__.CompactIndependent.test_decompression_output_limit_rejects_bomb_before_full_allocation) ... ok
+test_pipeline_cap_is_checked_before_temp_write_or_replace (__main__.CompactIndependent.test_pipeline_cap_is_checked_before_temp_write_or_replace) ... ok
+test_shared_weeks_reference_requires_exact_bound_context (__main__.CompactIndependent.test_shared_weeks_reference_requires_exact_bound_context) ... ok
+test_unknown_object_class_and_shared_name_are_not_restored (__main__.CompactIndependent.test_unknown_object_class_and_shared_name_are_not_restored) ... ok
+test_close_oi_zero_is_observed_and_not_replaced_by_open_oi (__main__.ReaderIndependent.test_close_oi_zero_is_observed_and_not_replaced_by_open_oi) ... ok
+test_future_physical_and_sql_prices_do_not_enter_completed_day_dtos (__main__.ReaderIndependent.test_future_physical_and_sql_prices_do_not_enter_completed_day_dtos) ... ok
+test_nonfinite_or_zero_volume_never_creates_dto (__main__.ReaderIndependent.test_nonfinite_or_zero_volume_never_creates_dto) ... ok
+test_sql_close_oi_disagreement_is_not_source_qualified_by_boolean (__main__.ReaderIndependent.test_sql_close_oi_disagreement_is_not_source_qualified_by_boolean) ... ok
+test_raw_close_oi_is_used_and_original_overlapping_rows_stay_immutable (__main__.UpdateIndependent.test_raw_close_oi_is_used_and_original_overlapping_rows_stay_immutable) ... ok
+test_zero_held_bar_failure_cannot_advance_existing_latest (__main__.UpdateIndependent.test_zero_held_bar_failure_cannot_advance_existing_latest) ... ok
+test_callback_cannot_create_quota_or_native_preinsert_proof (__main__.V6LedgerIndependent.test_callback_cannot_create_quota_or_native_preinsert_proof) ... ok
+test_checksum_and_private_source_digest_are_independently_recomputable (__main__.V6LedgerIndependent.test_checksum_and_private_source_digest_are_independently_recomputable) ... ok
+test_full_prefix_api_usage_is_part_of_real_quota_identity (__main__.V6LedgerIndependent.test_full_prefix_api_usage_is_part_of_real_quota_identity) ... ok
+test_private_hardlink_and_foreign_parent_mode_do_not_grant_capability (__main__.V6LedgerIndependent.test_private_hardlink_and_foreign_parent_mode_do_not_grant_capability) ... ok
+test_rehashed_caller_named_batch_cannot_replace_real_quota_id (__main__.V6LedgerIndependent.test_rehashed_caller_named_batch_cannot_replace_real_quota_id) ... ok
+test_typed_capability_does_not_survive_json_or_nested_mutation (__main__.V6LedgerIndependent.test_typed_capability_does_not_survive_json_or_nested_mutation) ... ok
+test_unsent_second_child_has_logical_protection_without_invented_broker_id (__main__.V6LedgerIndependent.test_unsent_second_child_has_logical_protection_without_invented_broker_id) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.395s
+
+OK

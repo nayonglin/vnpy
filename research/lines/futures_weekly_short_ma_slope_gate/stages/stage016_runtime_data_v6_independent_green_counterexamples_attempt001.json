@@ -1,0 +1,61 @@
+{
+  "before": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+  },
+  "after": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_data_update.py": "e2afe228f787b7a694cdb78b7fcd075eb3079f90f4acf6ec26edc63cd01fa4d2",
+    "qmt_roll_weekly19_broker_evidence.py": "9ac93d98cbcde43652941239e2284ce69f1b6dcdbabddfcfd9b11524c8f6bed1",
+    "qmt_roll_weekly19_warm_evidence.py": "4e306946c842c74111b6bbb1ee0d0206feb09b6ad43edf57078c3de8b079886f",
+    "qmt_roll_official_live_execution_ledger.py": "4cb3671209c9cc6363cee53fb085a714779f6f9f6c61fb2f4cb0d85353559f66",
+    "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+  },
+  "source_drift": {},
+  "suites": [
+    {
+      "audit": "audit_stage016_bar_binding_independent_v2.py",
+      "returncode": 0,
+      "log_sha256": "9f0ebe32953824f7a4e6dd3650b585541d3565aea60710ea38824a885cd9e9c6",
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 7 tests in 0.019s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "audit": "audit_stage016_epoch_quote_independent_v2.py",
+      "returncode": 0,
+      "log_sha256": "080ab29aa587f0d6ddb8e1afbcbcd3a912c9fcd008f4aef2da529a23b5ab378f",
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 2 tests in 0.190s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "audit": "audit_stage016_compact_data_v6_independent.py",
+      "returncode": 0,
+      "log_sha256": "85c0e495f2da3cf66632ee375ba4d8628dfe4a237dbea8137b39c275dbc4a3b9",
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 19 tests in 0.441s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "financial_replays": 0,
+  "real_ctp": false
+}

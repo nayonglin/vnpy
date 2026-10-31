@@ -1,0 +1,22 @@
+# Stage016 runtime现金缺证减仓修复与显式数据读取
+
+本次为技术迁移修复，不改alpha、不运行金融回测、不连接CTP、不下载行情。是否过拟合：否，保持565个原方法AST，仅修正执行边界；是否值得继续：是，现金证据缺失不能消除已形成的保护平仓。
+
+## 现金连续性边界
+
+原生周信号开仓→真实fill→下周周保护close，同时另一品种原生candidate的反例已先RED：recommend的day_roll_requires_reconciliation导致整个on_bars回滚。现在仅在已验证资金state和真实账户envelope后捕获明确三项现金连续性缺口：day_roll_requires_reconciliation、unreconciled_cashflow_withdrawal、unreconciled_cashflow_deposit。记录nonactionable/blocked_reason，原cash不变，保留admission与close；新开仍经原funding assert禁止。其他错误原样抛出，不吞schema/foreign/stale账户。
+
+专属runtime/equivalence 29个唯一测试全部绿；运行命令还显式重复新反例一次，日志为30tests/8.862s。原565AST等价仍绿。
+
+## 显式日K读取
+
+新增load_weekly19_inputs，五项source SHA前后检查，固定19、完成日、真实下一ISO周calendar、全known positive physical metadata，标准库SQLite只读DTO对每条admitted physical history逐列验证OHLCV+closeOI，绝不从CSV造缺失SQL行或填0。独立10个数据负向/正向测试绿。
+
+真实冻结数据只读核验：392382/392382行一致、0missing/duplicate/mismatch，19main覆盖、2093known metadata contracts/2015positive physical contracts、3117days、target185contractbars；16.168秒，五项文件SHA前后不变。详见同目录20261031_stage016_runtime_real_sqlite_physical_parity.json。该结果仅conditional_read，历史main重建缺口仍保留，外来实际持仓覆盖与生产资格未证明。SQLite driver差异未冒称字节等价；读取不依赖driver，以上证明实际SQL/physical row parity。
+
+## 源码锁
+
+- `examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py`: `df29e004d6d99c0fa8aef0db28d1b55b17335c6e484fa19983f37c4d31829979`
+- `tests/test_weekly19_runtime.py`: `b73e40163aa537177021b526290bbbbe5c27bc15d3a4330040eda8528863bc18`
+- `examples/portfolio_backtesting/qmt_roll_weekly19_data.py`: `3157a159bdf539156c14d4b5a98eb4c700511a25fcd72a8a7cc10f1e341e68bc`
+- `tests/test_weekly19_data.py`: `fb0c564042f61c2a52dd8fb4a379e889a55d3587bffd7420f65db2cf0c303307`

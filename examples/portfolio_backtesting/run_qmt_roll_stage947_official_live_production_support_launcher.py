@@ -13,6 +13,8 @@ import subprocess
 from typing import Any, Mapping
 import uuid
 
+from qmt_roll_official_execution_profile import OfficialExecutionProfile, resolve_configured_execution_profile
+
 from qmt_roll_official_live_daily_data_receipt import (
     build_and_write_production_daily_data_receipt,
 )
@@ -48,6 +50,7 @@ from run_qmt_roll_stage945_official_live_production_session_launcher import (
     PRODUCTION_DATA_ROOT,
     PRODUCTION_OUTPUT_ROOT,
     PRODUCTION_RELEASE_MANIFEST,
+    PRODUCTION_QUALIFICATION_EVIDENCE,
     PRODUCTION_RUNTIME_ROOT,
     PRODUCTION_SIGNAL_INPUT_ROOT,
     PRODUCTION_STATE_ROOT,
@@ -232,7 +235,21 @@ def _resolve_support_target_date(
         ) from exc
 
 
-def build_support_command(spec: SupportJobSpec) -> list[str]:
+def build_support_command(
+    spec: SupportJobSpec, *, execution_profile: OfficialExecutionProfile | None = None,
+    context_file: Path | None = None, target_date: str | None = None,
+) -> list[str]:
+    profile = execution_profile or resolve_configured_execution_profile()
+    if profile.decision_mode == "weekly19":
+        command = [str(PYTHON_PATH), str(PROJECT_DIR / "run_qmt_roll_weekly19_live.py"),
+            "--job", spec.job, "--execution-profile", profile.profile_key,
+            "--context-file", str(context_file or PRODUCTION_RUNTIME_ROOT / "weekly19/context.json"),
+            "--release-manifest", str(PRODUCTION_RELEASE_MANIFEST),
+            "--activation-receipt", str(PRODUCTION_ACTIVATION_RECEIPT),
+            "--production-qualification-evidence", str(PRODUCTION_QUALIFICATION_EVIDENCE)]
+        if target_date:
+            command.extend(["--target-date", target_date])
+        return command
     script = PROJECT_DIR / spec.script_name
     if not script.is_file() or script.is_symlink():
         raise ProductionSupportLaunchError(
@@ -1248,6 +1265,14 @@ def launch_support_job(args: argparse.Namespace) -> None:
             "production_support_release_or_qualification_invalid"
         ) from exc
     environment = _build_support_environment(os.environ, spec=spec)
+    profile = resolve_configured_execution_profile()
+    if profile.decision_mode == "weekly19":
+        # All five support names keep their Stage948 control-plane ownership.
+        # In this profile monthly-ai-pool is handled as a disabled AI job by
+        # the dedicated pipeline and must never execute Stage935.
+        command = build_support_command(spec, execution_profile=profile)
+        os.execve(str(PYTHON_PATH), command, environment)
+        return
     if spec.job == "postclose-precompute":
         _validate_support_credentials(spec)
         _run_postclose_pipeline(

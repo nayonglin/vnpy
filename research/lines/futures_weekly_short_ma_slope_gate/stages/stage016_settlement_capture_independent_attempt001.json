@@ -1,0 +1,8 @@
+{
+  "before": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+  "after": "686dedfbd1f28c640c8464d9bb8d0b4ffde898902553d48cc1429a0beb6d91ab",
+  "returncode": 0,
+  "log_sha256": "d29e38329748ded01ea64a93a3985335ecd39b74ee9c74550d319a6f2b46ac8c",
+  "real_ctp": false,
+  "statement_finality_qualified": false
+}

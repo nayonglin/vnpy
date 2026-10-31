@@ -1,0 +1,55 @@
+{
+  "recorded_at": "2026-10-31T16:50:31.032289+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "provider_version": "v2_direct_source_closure_native_offsets_and_bank_timeline",
+  "v1_checkpoint": "1231a7fa6",
+  "production_qualified": false,
+  "financial_backtest_run": false,
+  "ctp_connected": false,
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "f5e1ef1cb95e8641a098e8f44940b29d50ac3db98891f8213f1a9c83032d94d4",
+    "tests/test_weekly19_broker_evidence.py": "bd8c195152fffa6936a25e3fe6a35be3e7427b896499d9fea210d34dc269ff2e"
+  },
+  "mandatory_capture_sources": {
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "484b2366140a834b84ea6415859ab38d99af168e0c57178250f436529119815d",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "f5e1ef1cb95e8641a098e8f44940b29d50ac3db98891f8213f1a9c83032d94d4",
+    "examples/portfolio_backtesting/qmt_roll_official_live_late_retry_fill.py": "77cd1057977fb6ac8e5d912bd1bb59d4bba1dcf6e10bad76f28988b69a40fd26",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "8b015f3bc6aeda6fc15a1c7649fa30a58f9cb4ec4d31ae1f35d1e0afbe260eea",
+    "examples/portfolio_backtesting/qmt_roll_official_live_broker_account_snapshot.py": "df64c22d38a0dbf5a6478e4e9708137138317312d52ecb6a2f92ac0e84bf351f"
+  },
+  "locked_funding_v2_unchanged": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": true,
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": true,
+    "tests/test_weekly19_external_funding.py": true
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_broker_evidence.py",
+      "exit_code": 0,
+      "tail": [
+        "Ran 31 tests in 0.693s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_weekly19_external_funding.py",
+      "exit_code": 0,
+      "tail": [
+        "Ran 51 tests in 0.035s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "pattern": "test_stage174_query_bundle.py",
+      "exit_code": 0,
+      "tail": [
+        "Ran 22 tests in 4.782s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "67e6141e14d946a54ee9866aa53ff79e17bc82de4c7a07f6ac7ec35502617167"
+}

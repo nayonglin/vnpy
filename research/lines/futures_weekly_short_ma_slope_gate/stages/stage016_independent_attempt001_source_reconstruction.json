@@ -1,0 +1,6 @@
+{
+  "status": "EXACT_RECORDED_SHA_MATCH",
+  "historical_source_sha256": "5555f7fde069953580618c2c5b79655a303613278de4e1d12d30dfcf8a42429f",
+  "preserved_historical_source": "research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_provider_report_independent_attempt001_source.py",
+  "method": "Reverse two documented added test methods; exact SHA match to earlier attempt001 source fingerprint. Existing failed log/JSON not edited."
+}

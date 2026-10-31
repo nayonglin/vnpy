@@ -1,0 +1,10 @@
+{
+  "audit_attempts": [
+    "stdin encoding rejected before creation; recovered explicit .py311 UTF8",
+    "whole-core seal rejected later CLI drift; no receipt written",
+    "whole-core seal rejected later runtime/data/dataupdate drift; no receipt written"
+  ],
+  "financial_replay": false,
+  "implementation_changed": false,
+  "recovery": "final scope excludes later drifting dependencies; tested snapshots preserved"
+}

@@ -1,0 +1,12 @@
+{
+  "exit_code": 0,
+  "tests": 3,
+  "source_before": "0135b9e8d67af734f5e9ad6f8e039c89b4b50a0a16a5eab1536e3590cd65aabd",
+  "source_after": "0135b9e8d67af734f5e9ad6f8e039c89b4b50a0a16a5eab1536e3590cd65aabd",
+  "source_unchanged": true,
+  "log_sha256": "33060fd73862c5e1af97335504d5b45211fce6d229657f556d8deceeadc52ce4",
+  "script_sha256": "f4066f1231a685fccda848992e1ab9f76897cc4d5e5256bd4521f653c3ca9538",
+  "subprocess_probe_executed": false,
+  "ctp_connected": false,
+  "production_qualified": false
+}

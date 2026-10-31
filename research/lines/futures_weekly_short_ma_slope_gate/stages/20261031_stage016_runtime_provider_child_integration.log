@@ -1,0 +1,6 @@
+test_v6_native_query_packets_drive_child_aggregation_restart_and_repeat_idempotence (tests.test_weekly19_runtime.ProviderChildIntegrationTests.test_v6_native_query_packets_drive_child_aggregation_restart_and_repeat_idempotence) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.871s
+
+OK

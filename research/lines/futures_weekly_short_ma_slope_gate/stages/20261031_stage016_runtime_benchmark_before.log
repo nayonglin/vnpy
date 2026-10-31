@@ -1,0 +1,5 @@
+read_inputs {'seconds': 16.259022457990795, 'maxrss': 1127301120}
+build {'seconds': 34.48312970879488, 'maxrss': 3615817728}
+pure_warmup {'seconds': 29.197828333824873, 'maxrss': 3615817728}
+export {'seconds': 31.635737917153165, 'maxrss': 4132651008}
+sizing_clone {'seconds': 154.08500287495553, 'maxrss': 5303205888}

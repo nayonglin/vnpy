@@ -1153,6 +1153,7 @@ def _run_probe(
     wait_seconds: int,
     observe_reconnect: bool = False,
     query_flow_gap_seconds: float = 1.05,
+    settlement_capture: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     query_generation_uuid = str(uuid.uuid4())
@@ -1898,6 +1899,18 @@ def _run_probe(
                 )
                 snapshot_complete = run_full_snapshot_cycle(generation)
                 if snapshot_complete:
+                    if settlement_capture is not None and "weekly19_settlement_capture" not in summary:
+                        from qmt_roll_weekly19_settlement_capture import capture_settlement_on_existing_connection
+                        with state_lock:
+                            actual_account = copy.deepcopy(rows["raw_queried_accounts"])
+                        if len(actual_account) != 1:
+                            raise ValueError("settlement_single_actual_account_required")
+                        summary["weekly19_settlement_capture"] = capture_settlement_on_existing_connection(
+                            td_api, actual_account[0], trading_day=settlement_capture["trading_day"],
+                            connection_generation=lambda: str(connection_lifecycle.get("current_connection_generation") or ""),
+                            clock=lambda: datetime.now().astimezone(), deadline=deadline,
+                            private_capture_dir=settlement_capture["private_capture_dir"],
+                        )
                     if not observe_reconnect:
                         break
                     with state_lock:
@@ -2227,6 +2240,9 @@ def main() -> None:
     parser.add_argument("--weekly19-material-release-id", default="")
     parser.add_argument("--weekly19-execution-profile", default="")
     parser.add_argument("--weekly19-private-capture-dir", default="")
+    parser.add_argument("--weekly19-capture-authority-registry", default="")
+    parser.add_argument("--weekly19-capture-authority-sha256", default="")
+    parser.add_argument("--weekly19-settlement-trading-day", default="", help="YYYYMMDD raw settlement query only; never final cashflow qualification")
     args = parser.parse_args()
     weekly19_capture_requested = any((args.weekly19_material_release_id,
         args.weekly19_execution_profile, args.weekly19_private_capture_dir))
@@ -2234,10 +2250,26 @@ def main() -> None:
         args.weekly19_execution_profile, args.weekly19_private_capture_dir, args.invocation_id)):
         parser.error("weekly19 capture requires release, profile, private directory and invocation id")
 
+    if bool(args.weekly19_capture_authority_registry) != bool(args.weekly19_capture_authority_sha256):
+        parser.error("weekly19 authority requires both registry path and pinned SHA256")
+    if args.weekly19_capture_authority_registry and not weekly19_capture_requested:
+        parser.error("weekly19 authority requires private raw capture")
+
+    if args.weekly19_settlement_trading_day:
+        if not weekly19_capture_requested:
+            parser.error("settlement query requires private weekly19 capture")
+        try:
+            requested = datetime.strptime(args.weekly19_settlement_trading_day, "%Y%m%d")
+            if requested.strftime("%Y%m%d") != args.weekly19_settlement_trading_day or requested.date() > datetime.now().astimezone().date():
+                raise ValueError("invalid completed settlement day")
+        except ValueError:
+            parser.error("settlement query needs a completed YYYYMMDD day")
+
     result = _run_probe(
         connect=bool(args.connect),
         wait_seconds=int(args.wait_seconds),
         observe_reconnect=bool(args.observe_reconnect),
+        settlement_capture=({"trading_day":args.weekly19_settlement_trading_day,"private_capture_dir":args.weekly19_private_capture_dir} if args.weekly19_settlement_trading_day else None),
     )
     result["source_commit"] = _source_commit()
     result["invocation_id"] = str(args.invocation_id).strip()
@@ -2373,7 +2405,11 @@ def main() -> None:
             execution_profile=args.weekly19_execution_profile,
             private_capture_dir=Path(args.weekly19_private_capture_dir),
             invocation_id=str(args.invocation_id).strip(),
+            capture_authority_registry=({"path":args.weekly19_capture_authority_registry,"sha256":args.weekly19_capture_authority_sha256}
+                if args.weekly19_capture_authority_registry else None),
         )
+        if query_bundle["weekly19_capture"].get("authority_receipt"):
+            query_bundle["weekly19_capture_authority"] = dict(query_bundle["weekly19_capture"]["authority_receipt"])
 
     # Summary is published before the manifest.  A crash at any earlier point
     # leaves either the prior manifest or no matching manifest, so consumers
@@ -2401,6 +2437,8 @@ def main() -> None:
     }
     if weekly19_capture_requested:
         manifest["weekly19_capture"] = dict(query_bundle["weekly19_capture"])
+        if query_bundle.get("weekly19_capture_authority"):
+            manifest["weekly19_capture_authority"] = dict(query_bundle["weekly19_capture_authority"])
     _atomic_write_json(QUERY_BUNDLE_MANIFEST_PATH, manifest)
 
     print(json.dumps(result, ensure_ascii=False, indent=2))

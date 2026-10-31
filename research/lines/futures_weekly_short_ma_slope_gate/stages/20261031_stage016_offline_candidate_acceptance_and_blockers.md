@@ -1,0 +1,45 @@
+# Stage016 周线19品种正式迁移候选：离线验收与真实来源阻断
+
+- 记录时间：2026-10-31T20:33+08:00；line_id：futures_weekly_short_ma_slope_gate。
+- 工作区：/Users/mac/.codex/worktrees/weekly19-official-20261031/fian；分支codex/weekly19-official-20261031。
+- 状态：离线工程候选已实现并验收；production_qualified=false，尚未晋升、激活、推master或安装。不是重要收益突破版本。
+
+## 用户已确定的版本
+
+Stage014 C_R150：19品种周线底仓，不加仓；保留空头同一物理合约历史底部20%拦截，关闭多空MA斜率和多头顶部过滤，沿用原OI/放量风险档位。交易起点15万元，备用15万元真正留在场外；按实际交易权益动态计算风险和手数。备用金不计入E、保证金或风险额度，只有真实到账才记T；周五下午原始信号批次邮件提示需要补多少，不自动转账。
+
+新profile=weekly19-15w-r150k；strategy_version=official_live_weekly19_base15w_reserve15w_stage014；ruleset_version=stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1。候选source由随后Git提交/不可变release manifest精确记录。原金融source688754057ba1dc07caa9edc537ceec486f678372及交付e6f19df6dd41c3b2f4ad73b4f3a2c6cdf03dfbd0保持，未重跑或改写金融回测。
+
+## 实现与验证结论
+
+保留原31源码/565类方法AST与固定实际settings，重新连接真实broker驱动Runtime、同actor/native push/warm四查询、实际fill/子单/保护层、真实quote journal/spool/controller/原931 sender、原子资金/runtime bundle、日报与私有数据generation、Stage945/947/948新profile路由。旧C9回归显式历史fixture，新weekly不训练或加载AI、不运行旧C9日内stop/retry。源代码与44品种及原研究冻结树隔离。
+
+完整selected最终attempt002：88套件，2263通过、0失败/0错误/0跳过，401.12秒；281关键文件始末SHA一致。该记录是源码工作区未提交时的离线技术CI；不得将其当trusted生产qualification或声称source_commit已是后来提交。后续提交会逐文件核Git blob与此SHA vector一致。18个warning均旧C9日期推断提示，未据此改无关策略。
+
+完整attempt001真实结果2252通过/2失败/0跳过，原log/XML/JSON全部保留。Stage947旧AI流程遗漏显式C9profile/material fixture已补，未削弱weekly禁用门。查询节拍五处双读时钟跨界误超时已精确RED→GREEN；trade额外补查询前absolute deadline。原CI没有逐查询时序，不能把旧seal失败精确归因写成已证明。9新增作者边界＋独立11例、原seal精确case已复验，旧7quota/native/deferred AST精确不变，当前931ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10。
+
+独审证据分批保持不可变：runtime/data/V6=69eee5fea29cce118b6bad2b2cb1673c6fe7ae8276a1f74ef133288fe3119e0a；root上下文/quote/advice/rawcash增量=84ecb0502da884c6df7cd82e723f0f1eeca5f937ab00d4b43fbb8860bcfd45b6；执行接线=99bf6d1fa19f535229a194fade43034c4dd14fee341fe884aa102b3b1eece4ab；最后pacing增量=24372d7d4e958094bddc5fe57557ba3eb04d9ef401e12fc574f5208dfe579503。各scope未修复P0/P1/P2=0，仍只离线条件接受，不能拼成生产review通过或将交叉测试调用数当全局unique。
+
+真实392382日线纯指标预热/2093合约AM验收，SQLite/physical OHLCV+close_oi一致；不是金融回放。单snapshot约5.09MB、bundle10.19MB，实际restore约27秒、原风险revalidation约3.92秒，未把文件大小冒充RAM。50k无节制fixture Tick突发在原8192队列下正确报ingress_queue_full、stream_ready=false，失败JSON保留；生产限制未改。按500条批量等待真实落盘的50k/34,522,122bytes技术日志，首次解码2.675秒、缓存每次仍整prefix重哈希，中位0.0161秒；不是实盘吞吐/延迟资格。
+
+## 本次实际生产与外部阻断
+
+本机稳定目录/Users/mac/Desktop/person/vnpy_production_live，HEAD仍d55887e1def72629fbfa310e439dc3a879969a14且clean；CURRENT仍旧m0008（SHA975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92）。7个canonical launchd全部未加载（launchctl113），没有将开发目录/邮件目录假称生产资格。本机生产8个未推提交仅在candidate source merge中保留，未改稳定目录。远端本次独立只读readback仍e41a0a01d53b7256001e45e686acad53667ef7bf；未push。
+
+正式配置的TD与MD TCP都Timeout；只是脱敏连通性检查，不是CTP登录/账户身份验证。未CTP协议连接、未SMTP、未真实委托/撤单/资金转移。已有CTP/SMTP/TQ本机私有600配置仅读存在性/字段是否配置，未回显或提交凭证。
+
+用户无现成结算/流水导出目录，故新增同Stage174只读firewall的可选原生SettlementInfo完整chunk私有采集，并由Stage907正式env/framework入口安全转发；raw query complete仍unparsed/unqualified，不把SettlementInfoConfirm、query-last、墙钟、PreBalance或Balance差冒充最终出入金。真实券商vendor parser/finality样本未接收，load_cashflow_day_close继续明确missing_statement阻断；TransferSerial自动producer尚未接入，实际source registry/到账闭环尚未有本轮生产证据。
+
+实际native fill领先旧四查询positions时，后续子单要求真实来源重对账，不虚造positions或broker terminal；未发送child缺actual no-native完成证明时保留pending/reduce-only并要求受控人工恢复。该边界不是同batch自动续发的生产承诺。漏掉已完成交易日也显式block，不补历史委托。
+
+## 发布治理与下一步
+
+本轮用户已明确授权master与真实生产替换，未重复索要该授权。但freeze-official-strategy-materials/SKILL.md明确要求“资格失败时保留候选，不激活、不晋升”。来源/最终现金链和真实qualification不齐，不能推进CURRENT/master/Stage948。先将clean candidate/source与全部证据冻结；随后真实通路可用时采结算样本、完成自动cash来源/最终解析与初始真实15万flat cohort，重新生成release-bound资格。实际master fresh clone后另作production HEAD精确绑定的新qualification/manifest，最终才Stage948安装与7job验证。不得fake current_commit或把祖先material source当actual production HEAD。
+
+静态声明371个物料文件；production entrypoints递归闭包与测试artifact显式声明分开。两个历史测试的dynamic import仅为固定MODULE/FAULT_CASES，源码AST与目标模块均冻结，未豁免生产dynamic import。正式发布器工具tools/stage016_prepare_weekly19_release.py默认只draft，prepare仍要求clean exactHEAD。
+
+调研判断：参考VeighNa原引擎 https://github.com/vnpy/vnpy_portfoliostrategy/blob/main/vnpy_portfoliostrategy/engine.py 和TQ原始API https://doc.shinnytech.com/tqsdk/latest/reference/tqsdk.api.html ，继续复用原sender/转换器；新TQ日线必须close_oi和真实交割年月，不能套用open_oi或十年合约猜测。CTP本机header只读核实完整结算query支持，但没有finality字段，须验证真实券商文本。Git LFS缺依赖已按官方3.8.1 archive SHA安装到用户工具目录，仅source worktreeConfig，不改共享Git配置/历史物料；来源model与原pointer同SHA，2865bytes，后续freshclone仍须实际验证。
+
+运行前后过拟合判断均否：未调alpha、风险比例、备用金金额或筛收益窗口，未新跑金融回测；原Stage014 59起点/54成熟/5观察、5起点备用金耗尽、37起点模型保证金压力及NO_PROMOTION自然经济判断保留，用户operator替换请求不改写它。继续有价值：真实资金、来源与恢复正确性是本次固定规则部署的必要条件；无真实证据时继续生成漂亮曲线没有资格价值。
+
+新增/修改/删除策略参数与金融回测结果均无。期末权益、总收益、最大回撤、Sharpe、滑点、交易次数、胜率等本次金融指标均N/A；历史数字以Stage014冻结报告为准。

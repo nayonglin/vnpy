@@ -23,6 +23,7 @@ class ExecutionStrategyMode(str, Enum):
 
     C9_15W = "c9-15w"
     STAGE372_20W = "stage372-20w"
+    WEEKLY19_15W_R150K = "weekly19-15w-r150k"
 
 
 @dataclass(frozen=True)
@@ -41,6 +42,8 @@ class OfficialExecutionProfile:
     entry_risk_path: Path | None
     allowed_intent_sources: tuple[str, ...]
     intraday_stop_retry_enabled: bool
+    decision_mode: str = "legacy"
+    ruleset_version: str = ""
 
     def __post_init__(self) -> None:
         if not self.profile_key or not self.official_version or not self.alias:
@@ -132,9 +135,38 @@ C9_15W_PROFILE = OfficialExecutionProfile(
     intraday_stop_retry_enabled=True,
 )
 
+WEEKLY19_RULESET_VERSION = "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1"
+(
+    _WEEKLY19_SUMMARY_PATH,
+    _WEEKLY19_SIGNAL_PLAN_PATH,
+    _WEEKLY19_CURRENT_POSITIONS_PATH,
+    _WEEKLY19_PENDING_ORDERS_PATH,
+    _WEEKLY19_PENDING_ORDERS_AUDIT_PATH,
+) = _artifact_paths("qmt_roll_weekly19_live", "weekly19_live_v1")
+
+WEEKLY19_15W_R150K_PROFILE = OfficialExecutionProfile(
+    profile_key=ExecutionStrategyMode.WEEKLY19_15W_R150K.value,
+    official_version="official_live_weekly19_base15w_reserve15w_stage014",
+    alias="Weekly19-15w-R150k-Stage014",
+    source_stage="Stage014/C_R150",
+    capital=150_000.0,
+    capital_label="15w",
+    summary_path=_WEEKLY19_SUMMARY_PATH,
+    signal_plan_path=_WEEKLY19_SIGNAL_PLAN_PATH,
+    current_positions_path=_WEEKLY19_CURRENT_POSITIONS_PATH,
+    pending_orders_path=_WEEKLY19_PENDING_ORDERS_PATH,
+    pending_orders_audit_path=_WEEKLY19_PENDING_ORDERS_AUDIT_PATH,
+    entry_risk_path=None,
+    allowed_intent_sources=("weekly19_pending_order", "weekly19_risk_reduce"),
+    intraday_stop_retry_enabled=False,
+    decision_mode="weekly19",
+    ruleset_version=WEEKLY19_RULESET_VERSION,
+)
+
+
 _PROFILES = {
     profile.profile_key: profile
-    for profile in (C9_15W_PROFILE, STAGE372_20W_PROFILE)
+    for profile in (C9_15W_PROFILE, STAGE372_20W_PROFILE, WEEKLY19_15W_R150K_PROFILE)
 }
 
 # Import compatibility only. New artifacts and command lines must use
@@ -151,6 +183,20 @@ def resolve_execution_profile(
         return _PROFILES[key]
     except KeyError as exc:
         raise ValueError(f"execution_profile_unknown:{key}") from exc
+
+
+def resolve_official_version_execution_profile(official_version: str) -> OfficialExecutionProfile:
+    matches = [profile for profile in _PROFILES.values() if profile.official_version == official_version]
+    if len(matches) != 1:
+        raise ValueError("official_execution_profile_version_unknown")
+    return matches[0]
+
+
+def resolve_configured_execution_profile() -> OfficialExecutionProfile:
+    # The lightweight authority is shared by launchers. It is source-bound by
+    # the release manifest, never overridden by a caller context or environment.
+    from qmt_roll_official_live_lightweight_context import OFFICIAL_LIVE_VERSION
+    return resolve_official_version_execution_profile(OFFICIAL_LIVE_VERSION)
 
 
 def assert_profile_identity(
@@ -210,8 +256,12 @@ __all__ = [
     "ExecutionStrategyMode",
     "OfficialExecutionProfile",
     "STAGE372_20W_PROFILE",
+    "WEEKLY19_15W_R150K_PROFILE",
+    "WEEKLY19_RULESET_VERSION",
     "assert_canonical_execution_profile",
     "assert_intent_source_allowed",
     "assert_profile_identity",
     "resolve_execution_profile",
+    "resolve_official_version_execution_profile",
+    "resolve_configured_execution_profile",
 ]

@@ -14,6 +14,13 @@ All functions leave inputs untouched. ``recommend_topup`` returns a
 ``{state, recommendation}`` envelope; ``confirm_topup`` and
 ``reconcile_trading_day`` return the next state. Persist that state with
 FundingStore.commit before publishing its result or permitting a new open.
+
+V2: a recommendation is an offer, never a debt. Real marked E at/above the
+150k floor can pass this extra funding gate while an old offer remains unpaid.
+Current-gap changes require proven retirement/replacement before an actionable
+new amount. Stable ORIGINAL native admission IDs are consumed across broker
+queries, fills, delivery attempts and repricing; this is not a per-tick equity
+replenishment service. V1 states require an explicit one-CAS migration.
 """
 from __future__ import annotations
 
@@ -164,23 +171,34 @@ def _broker(evidence: dict, state: dict, now: datetime, *, historical=False) -> 
 
 def initial_state(account_key: str, material_release_id: str, cold_start_date: str) -> dict:
     """Create an unobserved external 150k reserve; never grant trading funds."""
-    return dict(schema='weekly19.external-funding.v1', revision=0,
+    return dict(schema='weekly19.external-funding.v2', funding_contract_version=2, revision=0,
                 account_key=_sha(account_key), material_release_id=_text(material_release_id, 'release'),
                 cold_start_date=_day(cold_start_date), initial_trading_fen=INITIAL_FEN,
                 reserve_initial_fen=INITIAL_FEN, reserve_remaining_fen=INITIAL_FEN,
                 confirmed_topup_fen=0, requests={}, receipts={}, admitted_entries={},
-                cashflow_checkpoint=None, day_rolls=[], production_qualified=False)
+                cashflow_checkpoint=None, day_rolls=[], retirements={}, request_attempts={},
+                migration=None, production_qualified=False)
 
 
 def validate_state(state: Any) -> None:
     """Verify conserved cash and request/receipt identities after load or restart."""
     try:
-        if state['schema'] != 'weekly19.external-funding.v1' or state['production_qualified'] is not False:
+        if (state['schema'] not in ('weekly19.external-funding.v1','weekly19.external-funding.v2')
+                or state['production_qualified'] is not False):
             _fail('state_schema_or_qualification_invalid')
         _sha(state['account_key'])
         _text(state['material_release_id'], 'release')
         _day(state['cold_start_date'])
         _integer(state['revision'])
+        is_v2=state['schema']=='weekly19.external-funding.v2'
+        retirements=state.get('retirements',{}) if is_v2 else {}
+        if is_v2:
+            if state.get('funding_contract_version')!=2 or not isinstance(retirements,dict) or not isinstance(state.get('request_attempts'),dict):
+                _fail('v2_state_ledgers_missing')
+            migration=state.get('migration')
+            if migration is not None:
+                if migration.get('from_schema')!='weekly19.external-funding.v1': _fail('migration_schema_invalid')
+                _integer(migration['from_revision']); _sha(migration['legacy_state_sha256'])
         if (_integer(state['initial_trading_fen']) != INITIAL_FEN
                 or _integer(state['reserve_initial_fen']) != INITIAL_FEN):
             _fail('initial_capital_contract_invalid')
@@ -212,18 +230,23 @@ def validate_state(state: Any) -> None:
             if amount > INITIAL_FEN or request['confirmed_fen'] != sums[rid] or not 0 <= sums[rid] <= amount:
                 _fail('request_conservation_invalid')
             want = 'confirmed' if sums[rid] == amount else ('partially_confirmed' if sums[rid] else 'pending')
+            if rid in retirements:
+                if sums[rid]==amount: _fail('fully_confirmed_request_cannot_retire')
+                want='retired_partial' if sums[rid] else 'retired_unpaid'
             if request['status'] != want:
                 _fail('request_status_invalid')
-            pending += want != 'confirmed'
+            pending += want in ('pending','partially_confirmed')
             if _time(request['created_at']) >= _time(request['expires_at']):
                 _fail('request_expiry_invalid')
             _day(request['target_week_end'])
             _sha(request['source_sha256'])
             ids = request['admitted_entry_ids']
-            if (not isinstance(ids, list) or not ids
-                    or ids != sorted({_text(entry, 'entry_id') for entry in ids})
-                    or rid != _hash([state['account_key'], state['material_release_id'],
-                                    request['target_week_end'], ids, request['source_sha256']])):
+            identity=[state['account_key'],state['material_release_id'],request['target_week_end'],ids,request['source_sha256']]
+            if 'attempt' in request:
+                if not is_v2: _fail('v1_request_attempt_invalid')
+                identity.append(_integer(request['attempt']))
+            if (not isinstance(ids,list) or not ids
+                    or ids!=sorted({_text(entry,'entry_id') for entry in ids}) or rid!=_hash(identity)):
                 _fail('request_identity_hash_invalid')
             _checkpoint_valid(request['baseline'])
             _checkpoint_valid(request['active_baseline'])
@@ -258,9 +281,127 @@ def validate_state(state: Any) -> None:
             previous_following = row['following']
         if previous_following and (cp is None or cp['trading_day'] != previous_following['trading_day']):
             _fail('day_roll_checkpoint_invalid')
+        if is_v2:
+            if set(state['request_attempts'])!=set(state['admitted_entries']):
+                _fail('admission_attempt_ledger_keys_invalid')
+            for key,attempts in state['request_attempts'].items():
+                if (not isinstance(attempts,list) or not attempts or len(attempts)!=len(set(attempts))
+                        or attempts[0]!=state['admitted_entries'][key]):
+                    _fail('admission_attempt_ledger_invalid')
+                for request_id in attempts:
+                    request=state['requests'][request_id]
+                    if key not in {_admission_key(state,request['target_week_end'],entry) for entry in request['admitted_entry_ids']}:
+                        _fail('admission_attempt_request_mismatch')
+            covered={rid for attempts in state['request_attempts'].values() for rid in attempts}
+            if covered!=set(state['requests']): _fail('request_attempt_ledger_coverage_invalid')
+            sequence=[row['attempt'] for row in state['requests'].values() if 'attempt' in row]
+            if any(attempt>=len(state['requests']) for attempt in sequence): _fail('request_attempt_sequence_invalid')
+            if len(sequence)!=len(set(sequence)): _fail('request_attempt_sequence_duplicate')
+            for request_id,proof in retirements.items():
+                _validate_retirement(state,state['requests'][request_id],proof)
     except (KeyError, TypeError, AttributeError):
         _fail('state_metadata_invalid')
 
+
+
+def _require_v2(state):
+    if state['schema']!='weekly19.external-funding.v2':
+        _fail('funding_state_upgrade_required')
+
+
+def _active(request):
+    return request['status'] in ('pending','partially_confirmed')
+
+
+def upgrade_funding_state(state):
+    """Explicit deterministic V1 -> V2 migration; persist with ONE CAS commit.
+
+    Old request IDs, receipts, original admission ownership and money are copied
+    without reinterpretation. A V2 input is an idempotent read, not a reset.
+    """
+    validate_state(state)
+    if state['schema']=='weekly19.external-funding.v2': return copy.deepcopy(state)
+    changed=copy.deepcopy(state)
+    changed.update(schema='weekly19.external-funding.v2',funding_contract_version=2,
+        retirements={},request_attempts={key:[rid] for key,rid in state['admitted_entries'].items()},
+        migration=dict(from_schema=state['schema'],from_revision=state['revision'],legacy_state_sha256=_hash(state)))
+    return _finish(state,changed)
+
+
+def _request_chain(state,request,checkpoint):
+    """Find every already-proven closing/opening boundary since this offer."""
+    cursor=request['baseline']; hashes=[]
+    while cursor['trading_day']!=checkpoint['trading_day']:
+        candidates=[row for row in state['day_rolls'] if row['closing']['trading_day']==cursor['trading_day']
+                    and row['following']['trading_day']<=checkpoint['trading_day']]
+        if len(candidates)!=1: _fail('retirement_continuity_chain_incomplete')
+        row=candidates[0]; closing=row['closing']
+        if (_time(closing['observed_at'])<_time(cursor['observed_at'])
+                or closing['withdraw_fen']!=cursor['withdraw_fen'] or closing['deposit_fen']<cursor['deposit_fen']):
+            _fail('retirement_continuity_chain_invalid')
+        hashes.append(_hash(row)); cursor=row['following']
+    active=request['active_baseline']
+    if (active['trading_day']!=checkpoint['trading_day'] or _time(checkpoint['observed_at'])<_time(active['observed_at'])
+            or checkpoint['withdraw_fen']!=active['withdraw_fen']
+            or checkpoint['deposit_fen']-active['deposit_fen']
+            !=request['confirmed_fen']-request['confirmed_before_active_day_fen']):
+        _fail('retirement_unreconciled_cashflow')
+    return hashes
+
+
+def _validate_retirement(state,request,proof):
+    if proof.get('request_id')!=request['request_id']: _fail('retirement_request_mismatch')
+    checkpoint=proof['broker_checkpoint']; _checkpoint_valid(checkpoint)
+    _integer(proof['confirmed_fen']); _integer(proof['unpaid_fen'],1)
+    if (proof['request_baseline_sha256']!=_hash(request['baseline'])
+            or proof['active_baseline_sha256']!=_hash(request['active_baseline'])
+            or proof['day_roll_sha256s']!=_request_chain(state,request,checkpoint)
+            or proof['confirmed_fen']!=request['confirmed_fen']
+            or proof['unpaid_fen']!=request['amount_fen']-request['confirmed_fen']):
+        _fail('retirement_proof_invalid')
+    retired=_time(proof['retired_at'])
+    if retired<_time(checkpoint['observed_at']): _fail('retirement_time_invalid')
+    equity=proof['marked_equity_fen']
+    if type(equity) is not int: _fail('retirement_equity_invalid')
+    reserve=_integer(proof['reserve_remaining_fen'])
+    if reserve>INITIAL_FEN: _fail('retirement_reserve_invalid')
+    desired=min(max(INITIAL_FEN-equity,0),reserve)
+    reason=proof['reason']
+    if reason=='equity_recovered':
+        if equity<INITIAL_FEN: _fail('retirement_equity_not_recovered')
+    elif reason=='expired_superseded':
+        if retired<_time(request['expires_at']): _fail('retirement_request_not_expired')
+    elif reason=='superseded_current_gap':
+        if desired<=0 or desired==proof['unpaid_fen']: _fail('retirement_gap_not_changed')
+    else: _fail('retirement_reason_invalid')
+
+
+def retire_topup_request(state,request_id,broker,now,*,reason):
+    """Withdraw an offer only after full known-cashflow continuity is proven.
+
+    Retirement does not cancel a bank instruction. Any later new cashflow is
+    UNKNOWN and blocked until an explicit reconciliation; it is never silently
+    attributed to another request. Known receipt replays remain idempotent.
+    """
+    validate_state(state); _require_v2(state); now=_time(now)
+    snapshot=_broker(broker,state,now); _cashflow_match(state,snapshot)
+    try: request=state['requests'][request_id]
+    except (KeyError,TypeError): _fail('request_unknown')
+    if request_id in state['retirements']:
+        if state['retirements'][request_id]['reason']!=reason: _fail('retirement_reason_conflict')
+        return copy.deepcopy(state)
+    if not _active(request): _fail('request_already_confirmed')
+    checkpoint=_checkpoint(snapshot)
+    proof=dict(request_id=request_id,reason=reason,retired_at=now.isoformat(),broker_checkpoint=checkpoint,
+        request_baseline_sha256=_hash(request['baseline']),active_baseline_sha256=_hash(request['active_baseline']),
+        day_roll_sha256s=_request_chain(state,request,checkpoint),confirmed_fen=request['confirmed_fen'],
+        unpaid_fen=request['amount_fen']-request['confirmed_fen'],marked_equity_fen=snapshot['balance_fen'],
+        reserve_remaining_fen=state['reserve_remaining_fen'])
+    _validate_retirement(state,request,proof)
+    changed=copy.deepcopy(state); changed['retirements'][request_id]=proof
+    changed['requests'][request_id]['status']='retired_partial' if request['confirmed_fen'] else 'retired_unpaid'
+    changed['cashflow_checkpoint']=checkpoint
+    return _finish(state,changed)
 
 def _checkpoint_valid(cp):
     _day(cp['trading_day'])
@@ -298,63 +439,108 @@ def _finish(original, changed):
     return changed
 
 
+def begin_cash_observation(state: dict, broker: dict, now: datetime) -> dict:
+    """Pin the real initial 150k account cash baseline on any weekday.
+
+    This is a conditional accounting transition, not source qualification.
+    The production caller must first enforce its qualified real-account/flat
+    cold-start gate. Initial daily Deposit may contain the initial capital;
+    it is a baseline and never debits the offsite reserve. Persist one CAS
+    before enabling any signal/open. Later day changes need real continuity.
+    """
+    validate_state(state); _require_v2(state); now=_time(now)
+    snapshot=_broker(broker,state,now)
+    raw=_parse(broker,'weekly19.ctp-account.v1','ctp_account_callback')
+    try:
+        _money(raw['Available'],nonnegative=True)
+        if (raw.get('query_last_seen') is not True or type(raw.get('query_error_rows')) is not int
+                or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+    except (KeyError,TypeError): _fail('initial_account_available_missing')
+    if (any(state[key] for key in ('requests','receipts','admitted_entries','day_rolls','retirements','request_attempts'))
+            or state['confirmed_topup_fen']!=0 or state['reserve_remaining_fen']!=INITIAL_FEN):
+        _fail('initial_cash_observation_after_activity')
+    checkpoint=_checkpoint(snapshot)
+    if (snapshot['balance_fen']!=INITIAL_FEN or snapshot['trading_day']<state['cold_start_date']
+            or now.astimezone(SHANGHAI).date().isoformat()<state['cold_start_date']
+            or _time(snapshot['observed_at']).astimezone(SHANGHAI).date().isoformat()<state['cold_start_date']):
+        _fail('initial_cash_observation_capital_or_start_invalid')
+    if state['cashflow_checkpoint'] is not None:
+        if state['cashflow_checkpoint']!=checkpoint: _fail('initial_cash_observation_already_exists')
+        return copy.deepcopy(state)
+    changed=copy.deepcopy(state);changed['cashflow_checkpoint']=checkpoint
+    return _finish(state,changed)
+
+
 def _admission_key(state, week, entry_id):
     return _hash([state['account_key'], state['material_release_id'], week, entry_id])
 
 
-def _recommendation(status, request=None):
-    result = dict(status=status, amount_fen=0, request_id=None, production_qualified=False)
-    if request:
-        result.update(request_id=request['request_id'], amount_fen=request['amount_fen'] - request['confirmed_fen'],
-                      requested_amount_fen=request['amount_fen'], expires_at=request['expires_at'])
+def _recommendation(status,amount=0,request=None,*,actionable=False):
+    result=dict(status=status,amount_fen=amount,request_id=None,actionable=actionable,production_qualified=False)
+    if request is not None:
+        result.update(historical_request_id=request['request_id'],
+            historical_request_remaining_fen=request['amount_fen']-request['confirmed_fen'],
+            requested_amount_fen=request['amount_fen'],expires_at=request['expires_at'])
+        if actionable: result['request_id']=request['request_id']
     return result
 
 
 def recommend_topup(state: dict, broker: dict, target_week_end: str,
                     admitted_entry_ids: list[str], source_sha256: str, now: datetime) -> dict:
-    """Recommend min(150k - broker marked equity, offsite reserve), never book it."""
-    validate_state(state)
-    now = _time(now)
-    week = _day(target_week_end)
-    _sha(source_sha256)
-    if date.fromisoformat(week).weekday() != 4 or date.fromisoformat(week) > now.astimezone(SHANGHAI).date():
+    """Native-admission batch advice, NOT a per-tick/per-fill replenishment loop.
+
+    IDs must retain the original candidate identity across delivery/requotes and
+    account generations. Confirmed or recovery-retired candidates stay consumed.
+    A changed gap on an active offer is non-actionable until proven retirement
+    and a new attempt; never print a new amount against the old request cap.
+    """
+    validate_state(state); _require_v2(state); now=_time(now)
+    week=_day(target_week_end); _sha(source_sha256)
+    if date.fromisoformat(week).weekday()!=4 or date.fromisoformat(week)>now.astimezone(SHANGHAI).date():
         _fail('completed_calendar_week_end_required')
-    if not isinstance(admitted_entry_ids, list) or len(admitted_entry_ids) > 1000:
-        _fail('admitted_entry_ids_invalid')
-    ids = sorted({_text(value, 'entry_id') for value in admitted_entry_ids})
-    snapshot = _broker(broker, state, now)
-    _cashflow_match(state, snapshot)
-    changed = copy.deepcopy(state)
-    changed['cashflow_checkpoint'] = _checkpoint(snapshot)
-    pending = next((r for r in changed['requests'].values() if r['status'] != 'confirmed'), None)
+    if not isinstance(admitted_entry_ids,list) or len(admitted_entry_ids)>1000: _fail('admitted_entry_ids_invalid')
+    ids=sorted({_text(value,'entry_id') for value in admitted_entry_ids})
+    snapshot=_broker(broker,state,now); _cashflow_match(state,snapshot)
+    changed=copy.deepcopy(state); changed['cashflow_checkpoint']=_checkpoint(snapshot)
+    pending=next((row for row in changed['requests'].values() if _active(row)),None)
+    desired=min(max(INITIAL_FEN-snapshot['balance_fen'],0),changed['reserve_remaining_fen'])
     if not ids:
-        result = _recommendation('no_admitted_entry')
+        result=_recommendation('no_admitted_entry',request=pending)
+    elif snapshot['balance_fen']>=INITIAL_FEN:
+        result=_recommendation('equity_at_or_above_floor',request=pending)
     elif pending:
-        result = _recommendation('request_expired' if now >= _time(pending['expires_at']) else 'funding_pending', pending)
-    elif snapshot['balance_fen'] >= INITIAL_FEN:
-        result = _recommendation('equity_at_or_above_floor')
-    elif changed['reserve_remaining_fen'] == 0:
-        result = _recommendation('reserve_exhausted')
-    else:
-        keys = [_admission_key(state, week, entry) for entry in ids]
-        fresh = [key for key in keys if key not in changed['admitted_entries']]
-        if not fresh:
-            result = _recommendation('duplicate_admission')
+        remaining=pending['amount_fen']-pending['confirmed_fen']
+        if now>=_time(pending['expires_at']):
+            result=_recommendation('request_expired',desired,pending)
+        elif desired!=remaining:
+            result=_recommendation('request_refresh_required',desired,pending)
         else:
-            amount = min(INITIAL_FEN - snapshot['balance_fen'], changed['reserve_remaining_fen'])
-            rid = _hash([state['account_key'], state['material_release_id'], week, ids, source_sha256])
-            request = dict(request_id=rid, account_key=state['account_key'],
-                           material_release_id=state['material_release_id'], target_week_end=week,
-                           admitted_entry_ids=ids, source_sha256=source_sha256,
-                           created_at=now.isoformat(), expires_at=(now + timedelta(days=REQUEST_VALID_DAYS)).isoformat(),
-                           amount_fen=amount, confirmed_fen=0, status='pending',
-                           baseline=_checkpoint(snapshot), active_baseline=_checkpoint(snapshot),
-                           confirmed_before_active_day_fen=0, marked_equity_fen=snapshot['balance_fen'])
-            changed['requests'][rid] = request
-            for key in fresh:
-                changed['admitted_entries'][key] = rid
-            result = _recommendation('topup_recommended', request)
-    return dict(state=_finish(state, changed), recommendation=result)
+            result=_recommendation('funding_pending',desired,pending,actionable=True)
+    elif changed['reserve_remaining_fen']==0:
+        result=_recommendation('reserve_exhausted')
+    else:
+        keys=[_admission_key(state,week,entry) for entry in ids]
+        eligible=[]
+        for key in keys:
+            attempts=changed['request_attempts'].get(key,[])
+            if not attempts or changed['retirements'].get(attempts[-1],{}).get('reason')=='superseded_current_gap':
+                eligible.append(key)
+        if not eligible:
+            result=_recommendation('duplicate_admission')
+        else:
+            attempt=len(changed['requests'])
+            rid=_hash([state['account_key'],state['material_release_id'],week,ids,source_sha256,attempt])
+            request=dict(request_id=rid,account_key=state['account_key'],material_release_id=state['material_release_id'],
+                target_week_end=week,admitted_entry_ids=ids,source_sha256=source_sha256,attempt=attempt,
+                created_at=now.isoformat(),expires_at=(now+timedelta(days=REQUEST_VALID_DAYS)).isoformat(),
+                amount_fen=desired,confirmed_fen=0,status='pending',baseline=_checkpoint(snapshot),
+                active_baseline=_checkpoint(snapshot),confirmed_before_active_day_fen=0,marked_equity_fen=snapshot['balance_fen'])
+            changed['requests'][rid]=request
+            for key in eligible:
+                if key not in changed['admitted_entries']: changed['admitted_entries'][key]=rid
+                changed['request_attempts'].setdefault(key,[]).append(rid)
+            result=_recommendation('topup_recommended',desired,request,actionable=True)
+    return dict(state=_finish(state,changed),recommendation=result)
 
 
 def confirm_topup(state: dict, request_id: str, cashflow_receipt: dict, broker: dict, now: datetime) -> dict:
@@ -365,6 +551,7 @@ def confirm_topup(state: dict, request_id: str, cashflow_receipt: dict, broker: 
     reconciliation; no exception decreases the caller's reserve.
     """
     validate_state(state)
+    _require_v2(state)
     now = _time(now)
     try:
         request = state['requests'][request_id]
@@ -394,6 +581,8 @@ def confirm_topup(state: dict, request_id: str, cashflow_receipt: dict, broker: 
                 _fail('receipt_reused_with_different_content')
             _cashflow_match(state, snapshot)
             return copy.deepcopy(state)
+        if request_id in state['retirements']:
+            _fail('retired_request_late_cashflow_requires_reconciliation')
         if now >= _time(request['expires_at']):
             _fail('request_expired')
         if (_day(raw['trading_day']) != snapshot['trading_day']
@@ -430,17 +619,19 @@ def confirm_topup(state: dict, request_id: str, cashflow_receipt: dict, broker: 
 def assert_open_funding_ready(state: dict, broker: dict, now: datetime) -> None:
     """Additional funding gate; this does not qualify or authorize an order.
 
-    Exhausted reserve does not block a positive trading account. Pending money
-    never counts as equity. Existing close/reduce paths should not call this.
+    Exhausted reserve does not block a positive trading account. An unpaid
+    offer cannot block E>=150k; it is not a debt. Pending money never counts as
+    equity. Existing close/reduce paths should not call this.
     """
     validate_state(state)
+    _require_v2(state)
     snapshot = _broker(broker, state, _time(now))
     if state['cashflow_checkpoint'] is None:
         _fail('cashflow_baseline_missing')
     _cashflow_match(state, snapshot)
     if snapshot['trading_day'] < state['cold_start_date']:
         _fail('before_cold_start')
-    if any(request['status'] != 'confirmed' for request in state['requests'].values()):
+    if snapshot['balance_fen'] < INITIAL_FEN and any(_active(request) for request in state['requests'].values()):
         _fail('funding_pending')
     if snapshot['balance_fen'] <= 0:
         _fail('nonpositive_equity')
@@ -458,6 +649,7 @@ def reconcile_trading_day(state: dict, closing_broker: dict, next_broker: dict, 
     provider's next_trading_day field, not a weekday guess in this module.
     """
     validate_state(state)
+    _require_v2(state)
     now = _time(now)
     closing = _broker(closing_broker, state, now, historical=True)
     following = _broker(next_broker, state, now)
@@ -487,9 +679,7 @@ def reconcile_trading_day(state: dict, closing_broker: dict, next_broker: dict, 
             continuity_sha256=continuity_receipt['raw_sha256'], statement_id=proof['statement_id']))
         changed['cashflow_checkpoint'] = _checkpoint(following)
         for request in changed['requests'].values():
-            if request['status'] != 'confirmed':
-                if now >= _time(request['expires_at']):
-                    _fail('request_expired')
+            if _active(request):
                 request['active_baseline'] = _checkpoint(following)
                 request['confirmed_before_active_day_fen'] = request['confirmed_fen']
         return _finish(state, changed)

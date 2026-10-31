@@ -1,0 +1,62 @@
+{
+  "schema": "stage016_independent_component_findings_initial_v1",
+  "recorded_at": "2026-10-31T16:54:53.861734+08:00",
+  "status": "CHANGES_REQUESTED_WITH_REPRODUCIBLE_EVIDENCE",
+  "P0": 0,
+  "P1": 2,
+  "P2": 3,
+  "findings": [
+    {
+      "id": "REPORT_STALE_ADVICE",
+      "severity": "P1",
+      "observed": {
+        "old_equity": 120000,
+        "original_request": 30000,
+        "new_real_equity": 100000,
+        "report_actionable": true,
+        "report_amount": 30000,
+        "funding_v2_recomputed_amount": 50000,
+        "funding_v2_recomputed_actionable": false,
+        "funding_v2_status": "request_refresh_required"
+      },
+      "report_source_SHA_observed_before_fix": "6a36afb881b5fb811644f07e2d7c423da964039bd9963d757dd5c9349c766dd7",
+      "reproduction": "Current broker changed to100k; old advice30k retained; same data/source/week; previewFalse. No transport invoked."
+    },
+    {
+      "id": "PROVIDER_DIRECT_SOURCE_CLOSURE",
+      "severity": "P1",
+      "original_provider_manifest_SHA": "071734c592ffdb1306259caa527331beff99e1ad50dd6a38c723fba78c07c5b3",
+      "observed": "funding and broker-account _context direct dependency hashes supplied as zeros were ignored; condition parser accepted (productionFalse).",
+      "reproduction": "Synthetic Stage174 bundle, correct3 mandatory pins plus wrong2 semantic dependency pins."
+    },
+    {
+      "id": "PROVIDER_UNKNOWN_FILL_ENUM",
+      "severity": "P2",
+      "observed": "Native Direction9 plus ledger.direction=None emitted a fill with direction:null (productionFalse), instead of rejecting."
+    },
+    {
+      "id": "BANK_QUERY_CALLBACK_FRESHNESS",
+      "severity": "P2",
+      "observed": "Native transfer-query sent/callbacks30daysold plus fresh outer observed_at and rehashed JSON still conditionally parsed; future record relative to callback not rejected."
+    },
+    {
+      "id": "DARWIN_FIRST_OPENAT_LOCK",
+      "severity": "P2",
+      "observed": "Two concurrent first creators of the same relative dirfd lock can receive spurious ENOENT; report one caller failed, no duplicate transport. FundingStore shares create-or-open pattern.",
+      "root_cause_probe": "stage016_openat_independent_probe.json",
+      "upstream_primary_reference": "https://github.com/entireio/cli/commit/9c18f31b23a62749b804718125b17c236420a28a"
+    }
+  ],
+  "subsequent_fixes_require_separate_acceptance": true,
+  "all_provider_receipts_remain_production_qualified": false,
+  "financial_replays": 0,
+  "CTP_connections": 0,
+  "SMTP_calls": 0,
+  "bank_calls": 0,
+  "implementation_writes": 0,
+  "evidence_files_sha256": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_provider_report_independent_attempt001.log": "fc97e26a6c882038ec25b07e926d0bff4bd1f2bc5f8e2013d9f85fb743dbe6f9",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_provider_report_independent_attempt001.json": "314f297c5112f2221df9e1ed0428a23e164688151994ead68e1f82b5c32bd9f1",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_openat_independent_probe.json": "f4871a6cb42f2f63d174470b8f08222e839910757e7a13e278be79cf520d99d2"
+  }
+}

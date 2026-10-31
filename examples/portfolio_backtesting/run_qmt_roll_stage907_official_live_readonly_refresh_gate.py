@@ -224,6 +224,7 @@ def _production_live_command(
     wait_seconds: int,
     invocation_id: str,
     observe_reconnect: bool = False,
+    *, weekly19_capture_options: tuple[str, ...] = (),
 ) -> tuple[list[str], str]:
     env_file = PROJECT_DIR / "ctp_live.local.env"
     framework_dir = REPO_ROOT / ".py311/lib/python3.11/site-packages/vnpy_ctp/api/libs"
@@ -231,6 +232,11 @@ def _production_live_command(
     python_path = REPO_ROOT / ".py311/bin/python"
     probe = PROJECT_DIR / "run_ctp_stage174_readonly_probe.py"
     reconnect_arg = " --observe-reconnect" if observe_reconnect else ""
+    if weekly19_capture_options:
+        allowed={"--weekly19-material-release-id","--weekly19-execution-profile","--weekly19-private-capture-dir","--weekly19-capture-authority-registry","--weekly19-capture-authority-sha256","--weekly19-settlement-trading-day"}
+        if len(weekly19_capture_options)%2 or any(weekly19_capture_options[i] not in allowed for i in range(0,len(weekly19_capture_options),2)):
+            raise ValueError("weekly19_readonly_capture_options_invalid")
+        reconnect_arg += " " + " ".join(shlex.quote(v) for v in weekly19_capture_options)
     shell = "\n".join(
         [
             "set -euo pipefail",
@@ -281,13 +287,16 @@ def _command_for_profile(
     wait_seconds: int,
     invocation_id: str,
     observe_reconnect: bool = False,
+    *, weekly19_capture_options: tuple[str, ...] = (),
 ) -> tuple[list[str], str]:
     if env_profile == "production-live":
         return _production_live_command(
-            wait_seconds, invocation_id, observe_reconnect
+            wait_seconds, invocation_id, observe_reconnect, weekly19_capture_options=weekly19_capture_options
         )
+    if weekly19_capture_options:
+        raise ValueError("weekly19_capture_requires_production_live_env")
     return _wrapper_command(
-        env_profile, wait_seconds, invocation_id, observe_reconnect
+        env_profile, wait_seconds, invocation_id, observe_reconnect, weekly19_capture_options=weekly19_capture_options
     )
 
 
@@ -448,7 +457,22 @@ def main() -> None:
     parser.add_argument("--confirm-readonly-refresh", default="")
     parser.add_argument("--email-policy", choices=["never", "on-failure", "always"], default="never")
     parser.add_argument("--observe-reconnect", action="store_true")
+    parser.add_argument("--weekly19-material-release-id", default="")
+    parser.add_argument("--weekly19-execution-profile", default="")
+    parser.add_argument("--weekly19-private-capture-dir", default="")
+    parser.add_argument("--weekly19-capture-authority-registry", default="")
+    parser.add_argument("--weekly19-capture-authority-sha256", default="")
+    parser.add_argument("--weekly19-settlement-trading-day", default="")
     args = parser.parse_args()
+    weekly19_options = []
+    for key in ("material_release_id", "execution_profile", "private_capture_dir", "capture_authority_registry", "capture_authority_sha256", "settlement_trading_day"):
+        value = getattr(args, "weekly19_" + key)
+        if value:
+            weekly19_options.extend(["--weekly19-" + key.replace("_", "-"), value])
+    if weekly19_options and (not args.weekly19_material_release_id or not args.weekly19_execution_profile or not args.weekly19_private_capture_dir):
+        parser.error("weekly19 requires release, profile and private capture directory")
+    if bool(args.weekly19_capture_authority_registry) != bool(args.weekly19_capture_authority_sha256):
+        parser.error("weekly19 authority requires path and SHA256")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -459,6 +483,7 @@ def main() -> None:
         args.wait_seconds,
         invocation_id,
         bool(args.observe_reconnect),
+        weekly19_capture_options=tuple(weekly19_options),
     )
     checks: list[dict[str, Any]] = []
     _profile_checks(checks, args.env_profile)

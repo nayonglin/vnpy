@@ -1,0 +1,41 @@
+{
+  "bar_count": 392382,
+  "bar_days": 3117,
+  "conditional_read": true,
+  "current_positive_contract_bars": 185,
+  "elapsed_seconds": 16.16828087507747,
+  "financial_replays": 0,
+  "historical_main_reconstruction_complete": false,
+  "market_downloads": 0,
+  "metadata_contract_count": 2093,
+  "order_api_calls": 0,
+  "positive_physical_contract_count": 2015,
+  "product_count": 19,
+  "production_qualified": false,
+  "schema": "stage016.runtime-data-read-audit.v1",
+  "source": "original_frozen_Stage014_approved_snapshot",
+  "source_hashes_after": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "source_hashes_before": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "sqlite_physical_parity": {
+    "checked_rows": 392382,
+    "duplicates": 0,
+    "mismatches": 0,
+    "positive_source_keys": 392382,
+    "production_qualified": false,
+    "reader": "python_sqlite3_readonly_explicit_DTO_v1"
+  },
+  "target_date": "2026-10-30",
+  "target_main_coverage": 19
+}

@@ -1,0 +1,8 @@
+test_initial_missing_completed_day_is_explicitly_blocked_without_mutation (__main__.CompletedSequenceIndependent.test_initial_missing_completed_day_is_explicitly_blocked_without_mutation) ... ok
+test_pre_activation_history_and_future_calendar_do_not_force_theoretical_replay (__main__.CompletedSequenceIndependent.test_pre_activation_history_and_future_calendar_do_not_force_theoretical_replay) ... ok
+test_recovery_requires_monday_before_tuesday_but_not_natural_weekend_days (__main__.CompletedSequenceIndependent.test_recovery_requires_monday_before_tuesday_but_not_natural_weekend_days) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK

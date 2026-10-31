@@ -77,6 +77,13 @@ _TRACE_OBSERVATION_COLUMNS = {
     "spool_committed": "spool_committed_json",
     "executor_dequeued": "executor_dequeued_json",
 }
+
+def _trace_columns_for_source(source):
+    columns = dict(_TRACE_OBSERVATION_COLUMNS)
+    if source in {"weekly19_pending_order", "weekly19_risk_reduce"}:
+        columns["weekly19_quote_admitted"] = columns.pop("stage904_detected")
+    return columns
+
 _REQUIRED_SCHEMA_COLUMNS = {
     "detector_cursors": {
         "consumer_id",
@@ -942,7 +949,14 @@ def _validated_intent_payload(
         raise SpoolValidationError("durable_cursor_journal_schema_invalid")
     if durable_cursor_ingress_sequence < source_ingress_sequence:
         raise SpoolValidationError("durable_cursor_does_not_cover_source_sequence")
-    stage904_stamp = trace.stamps.get("stage904_detected")
+    weekly = source in {"weekly19_pending_order", "weekly19_risk_reduce"}
+    if weekly:
+        from qmt_roll_weekly19_quote_spool import validate_weekly19_quote_proof
+        try:
+            validate_weekly19_quote_proof(spool_payload, trace)
+        except (ValueError, KeyError, OSError, TypeError) as exc:
+            raise SpoolValidationError("weekly19_quote_proof_invalid:" + str(exc)) from exc
+    stage904_stamp = trace.stamps.get("weekly19_quote_admitted" if weekly else "stage904_detected")
     stage905_stamp = trace.stamps.get("stage905_intent_ready")
     if stage904_stamp is None or stage905_stamp is None:
         raise SpoolValidationError("trace_stage904_stage905_stamps_missing")
@@ -1100,6 +1114,7 @@ def commit_detector_batch(
     now_monotonic_ns: int,
     clock_domain_id: str,
     feed_rollover_evidence: DetectorFeedRolloverEvidence | None = None,
+    allow_weekly19_same_cursor_append: bool = False,
 ) -> CommitDetectorBatchResult:
     normalized_consumer = _required_text(
         consumer_id,
@@ -1235,6 +1250,11 @@ def commit_detector_batch(
         )
         for raw_payload in intents
     ]
+    if allow_weekly19_same_cursor_append and (
+        normalized_consumer != "weekly19" or not prepared or
+        any(item.source not in {"weekly19_pending_order", "weekly19_risk_reduce"} for item in prepared)
+    ):
+        raise SpoolValidationError("weekly19_same_cursor_append_scope_invalid")
     for item in prepared:
         if item.source == "stage904_c9_intraday_close":
             if item.intent_kind != "close":
@@ -1402,13 +1422,29 @@ def commit_detector_batch(
                 or normalized_next.journal_byte_offset
                 <= current.journal_byte_offset
             ):
-                raise DetectorCursorConflictError("detector_cursor_regression")
+                if not (allow_weekly19_same_cursor_append and normalized_next == current):
+                    raise DetectorCursorConflictError("detector_cursor_regression")
 
         if not idempotent_replay:
             for item in prepared:
                 if assert_existing_identical(item):
                     idempotent_count += 1
                     continue
+                if item.source in {"weekly19_pending_order", "weekly19_risk_reduce"}:
+                    incoming = json.loads(item.payload_json)
+                    for prior in connection.execute(
+                            "SELECT * FROM intents WHERE source IN ('weekly19_pending_order','weekly19_risk_reduce')").fetchall():
+                        business = json.loads(prior["payload_json"])
+                        if (business.get("planned_intent_id") != incoming.get("planned_intent_id")
+                                or business.get("material_release_id") != incoming.get("material_release_id")
+                                or business.get("account_fingerprint") != incoming.get("account_fingerprint")):
+                            continue
+                        safe_expired = (prior["state"] == "expired" and
+                            (prior["attempt_count"] == 0 or prior["ledger_disposition"] in
+                             {"no_side_effect_retryable", "post_slot_no_native_retryable"}))
+                        safe_close = item.intent_kind == "close" and _blocked_close_has_safe_zero_native_proof(prior)
+                        if not (safe_expired or safe_close):
+                            raise SpoolConflictError("weekly19_native_signal_already_delivered_or_inflight")
                 if item.source == "stage904_c9_intraday_close":
                     business_action_id = _close_business_action_id(
                         item.payload_json
@@ -1614,6 +1650,12 @@ def _row_to_intent(row: sqlite3.Row) -> SpoolIntent:
         trace = LatencyTrace.from_json(row["trace_json"])
     except TraceValidationError as exc:
         raise SpoolValidationError(f"stored_trace_json_invalid:{exc}") from exc
+    if row["source"] in {"weekly19_pending_order", "weekly19_risk_reduce"}:
+        from qmt_roll_weekly19_quote_spool import validate_weekly19_quote_proof
+        try:
+            validate_weekly19_quote_proof(payload, trace)
+        except (ValueError, KeyError, TypeError, OSError) as exc:
+            raise SpoolValidationError("weekly19_stored_quote_proof_invalid:" + str(exc)) from exc
     if trace.trace_id != row["trace_id"] or payload.get("trace_id") != row["trace_id"]:
         raise SpoolValidationError("stored_trace_id_mismatch")
     stored_bindings = {
@@ -1676,7 +1718,7 @@ def _row_to_intent(row: sqlite3.Row) -> SpoolIntent:
         raise SpoolValidationError("stored_payload_binding_mismatch:intent_kind")
     if row["priority"] != expected_priority:
         raise SpoolValidationError("stored_payload_binding_mismatch:priority")
-    for stage, column in _TRACE_OBSERVATION_COLUMNS.items():
+    for stage, column in _trace_columns_for_source(row["source"]).items():
         raw_observation = row[column]
         if not raw_observation:
             continue
@@ -2363,7 +2405,8 @@ def record_trace_observation(
 ) -> bool:
     normalized_id = _required_text(intent_id, field_name="intent_id", max_bytes=512)
     normalized_stage = _required_text(stage, field_name="stage", max_bytes=64)
-    column = _TRACE_OBSERVATION_COLUMNS.get(normalized_stage)
+    column = ("stage904_detected_json" if normalized_stage == "weekly19_quote_admitted"
+              else _TRACE_OBSERVATION_COLUMNS.get(normalized_stage))
     if column is None:
         raise SpoolValidationError(f"trace_observation_stage_invalid:{normalized_stage}")
     normalized_epoch, normalized_monotonic, normalized_domain = _validate_now_stamp(
@@ -2421,7 +2464,7 @@ def _validated_trace_observation_json(
         },
         field_name="trace_observation",
     )
-    if stage in {"stage904_detected", "stage905_intent_ready"}:
+    if stage in {"stage904_detected", "weekly19_quote_admitted", "stage905_intent_ready"}:
         trace = LatencyTrace.from_json(row["trace_json"])
         expected = trace.stamps.get(stage)
         if expected is None:
@@ -2471,13 +2514,13 @@ def read_trace_observations(
     normalized_id = _required_text(intent_id, field_name="intent_id", max_bytes=512)
     columns = ", ".join(_TRACE_OBSERVATION_COLUMNS.values())
     row = connection.execute(
-        f"SELECT {columns} FROM intents WHERE intent_id=?",
+        f"SELECT source, {columns} FROM intents WHERE intent_id=?",
         (normalized_id,),
     ).fetchone()
     if row is None:
         raise SpoolTransitionError("trace_observation_intent_not_found")
     result: dict[str, TraceObservation] = {}
-    for stage, column in _TRACE_OBSERVATION_COLUMNS.items():
+    for stage, column in _trace_columns_for_source(row["source"]).items():
         raw = row[column]
         if not raw:
             continue
@@ -2683,19 +2726,23 @@ def _snapshot_cursor_material_locked(
     connection: sqlite3.Connection,
     *,
     allow_uninitialized: bool = False,
+    execution_profile: str = "c9-15w",
 ) -> list[dict[str, Any]]:
     rows = connection.execute(
         "SELECT * FROM detector_cursors ORDER BY consumer_id"
     ).fetchall()
     material: list[dict[str, Any]] = []
     stage941_count = 0
+    required_consumer = "weekly19" if execution_profile == "weekly19-15w-r150k" else "stage941"
     for row in rows:
         consumer_id = _required_text(
             row["consumer_id"],
             field_name="snapshot_cursor_consumer_id",
             max_bytes=256,
         )
-        if consumer_id == "stage941":
+        if execution_profile == "weekly19-15w-r150k" and consumer_id != required_consumer:
+            raise SpoolValidationError("weekly19_spool_old_profile_cursor_forbidden")
+        if consumer_id == required_consumer:
             stage941_count += 1
         cursor = _validate_cursor(
             DurableTickCursor(
@@ -2769,6 +2816,7 @@ def snapshot_authorizable_intents(
     now_epoch_ns: int,
     now_monotonic_ns: int,
     clock_domain_id: str,
+    execution_profile: str = "c9-15w",
 ) -> AuthorizableIntentSnapshot:
     """Read one complete, mutation-free authorization view of the spool.
 
@@ -2794,11 +2842,14 @@ def snapshot_authorizable_intents(
         cursor_material = _snapshot_cursor_material_locked(
             connection,
             allow_uninitialized=not rows,
+            execution_profile=execution_profile,
         )
         intents: list[tuple[SpoolIntent, sqlite3.Row]] = []
         intent_material: list[dict[str, Any]] = []
         for row in rows:
             intent = _row_to_intent(row)
+            if execution_profile == "weekly19-15w-r150k" and intent.payload.get("execution_profile") != execution_profile:
+                raise SpoolValidationError("weekly19_spool_old_profile_intent_forbidden")
             intents.append((intent, row))
             intent_material.append(dict(row))
 

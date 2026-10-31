@@ -1,0 +1,67 @@
+{
+  "schema": "weekly19.technical-benchmark.v1",
+  "strict_fixture_broker": true,
+  "financial_replays": 0,
+  "on_bars_calls": 0,
+  "market_downloads": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "phases": {
+    "read_inputs": {
+      "seconds": 16.326419624965638,
+      "maxrss": 1130184704
+    },
+    "build": {
+      "seconds": 8.7234755421523,
+      "maxrss": 1851359232
+    },
+    "pure_warmup": {
+      "seconds": 32.159643166931346,
+      "maxrss": 1851359232
+    },
+    "export": {
+      "seconds": 9.131746749859303,
+      "maxrss": 2032418816
+    },
+    "sizing_clone": {
+      "seconds": 0.12600187491625547,
+      "maxrss": 2032418816
+    },
+    "revalidate_open_intent": {
+      "seconds": 3.906260875053704,
+      "maxrss": 2032418816
+    },
+    "export_for_fsync_restore": {
+      "seconds": 3.758902250090614,
+      "maxrss": 2032418816
+    },
+    "json_fsync_read": {
+      "seconds": 0.025203875033184886,
+      "maxrss": 2032418816
+    },
+    "restore": {
+      "seconds": 26.929788833018392,
+      "maxrss": 2820947968
+    },
+    "pipeline_bundle_initialize_fsync": {
+      "seconds": 0.13912516692653298,
+      "maxrss": 2820947968
+    },
+    "pipeline_bundle_read_validate": {
+      "seconds": 0.5314476671628654,
+      "maxrss": 2820947968
+    }
+  },
+  "source_runtime_sha256_before": "1346eb1142de8c4dc85133bb4a55bad8c3b52cbd384239f7cfe5f6a835040873",
+  "source_reader_sha256_before": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+  "durable_json_bytes": 5090958,
+  "revalidate_context": "synthetic_request_real_approved_history_no_signal_qualification",
+  "restore_state_sha_equal": true,
+  "bundle_two_states_under_64MiB": true,
+  "synthetic_decision_binding_ok": true,
+  "actual_pipeline_bundle_bytes": 10186660,
+  "actual_pipeline_bundle_under_64000000": true,
+  "actual_pipeline_bundle_sha_preserved": true,
+  "source_runtime_sha256": "1346eb1142de8c4dc85133bb4a55bad8c3b52cbd384239f7cfe5f6a835040873",
+  "source_files_unchanged_during_benchmark": true
+}

@@ -7,6 +7,20 @@ description: Use when users ask to start, install, restart, verify, or troublesh
 
 Use this skill for the C9/15w production control plane. It is an execution SOP, not an alpha-research guide.
 
+## Weekly19 正式替换兼容分支（2026-10-31）
+
+先解析实际 stable HEAD、CURRENT、生产 release-manifest、qualification、activation 和 loaded jobs。以下是新代码支持的分支，不是生产已激活的证明：仅当上述证据一致解析为 `weekly19-15w-r150k`，才使用 `official_live_weekly19_base15w_reserve15w_stage014` / `stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1`。若实际仍为 C9，则后文 C9 约定继续约束它；不得用开发默认值覆盖旧生产身份。
+
+- 固定19品种，周线底仓、无加仓，空头历史同一物理合约底部20%拒开；原风险档位保留，关闭AI、多空均线斜率拦截及日内C9附加规则。
+- 初始交易权益15万元，另15万元真正留在场外，不参与权益、风险手数或保证金；到账只按原生券商现金流和实际Deposit核实，绝不虚增资金。周五下午原始信号批次邮件只建议补足差额，同一原始批次不能因报价/权益或另一品种重复要求补资。
+- Stage945/947所有调用都带明确profile，路由至 `run_qmt_roll_weekly19_live.py`；Stage948仍独占原7个label作为transport所有权，不另起cron。monthly-ai-pool在此分支为明确disabled，不运行Stage935/训练/AI池。
+- 每日完成行情必须经过独立weekly19 immutable generation/真实close_oi与物理交割月校验，并写weekly19 daily receipt；不得把C9旧AI/CSV回执当新策略证据。节假日信号保留原完成日，同周周五建议是外层记录，不重跑历史on_bars。
+- 原生回报/四查询/保护层与资金状态需同一actor、可恢复原子bundle、完整原始子单绑定。新仓必须重新核真实Available、原风险和每个native API child数量；平仓/减风险仍独立校验。未付建议不是欠款，权益恢复15万后不得强迫补旧差额。
+- 跨TradingDay不能凭Balance差、PreBalance、query-last、SettlementInfoConfirm或墙钟假定出入金清零。`--weekly19-settlement-trading-day YYYYMMDD`仅采集完整原生结算原文，默认仍unparsed/unqualified；只有真实券商格式/最终性与gross Deposit/Withdraw核验通过才允许闭日对账。缺失时新开仓fail-closed，不伪造cashflow receipt。
+- 本机发现的稳定目录是 `/Users/mac/Desktop/person/vnpy_production_live`。这是本次操作目标定位，不是原bytedance主机资格继承；仍需新master fresh clone、新生产qualification/manifest、Stage948激活与7jobs实际回执。
+
+Stage014自然研究结论 `NO_PROMOTION`、5个起点备用金耗尽、37个起点模型保证金压力以及零手续费/非完整PIT等限制继续保留。用户授权推进替换不改写研究经济结论，也不能替代任何生产来源资格。
+
 ## Required First Reads
 
 1. Read `work-type.txt`.

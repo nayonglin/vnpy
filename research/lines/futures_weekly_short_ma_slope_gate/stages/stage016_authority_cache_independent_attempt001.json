@@ -1,0 +1,16 @@
+{
+  "before": {
+    "qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87"
+  },
+  "after": {
+    "qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "qmt_roll_weekly19_warm_evidence.py": "26239ba066578f0d5a84148d5933d5bb0eb1e3021e77a38d269d6bbfbd19ed87"
+  },
+  "source_drift": {},
+  "returncode": 0,
+  "log_sha256": "e85c82bb772c55fd873123ada9c4e3916b14acddafb1baa7fc83c1fe782dc334",
+  "real_registry_created": false,
+  "fixture_simulated_previously_loaded_capability": true,
+  "production_qualified": false
+}

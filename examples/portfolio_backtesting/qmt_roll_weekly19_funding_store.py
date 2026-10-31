@@ -16,7 +16,7 @@ from pathlib import Path
 import stat
 import uuid
 
-from qmt_roll_weekly19_funding import FundingError, _canonical, _time, validate_state
+from qmt_roll_weekly19_funding import FundingError, _canonical, _time, upgrade_funding_state, validate_state
 
 
 class FundingStore:
@@ -41,7 +41,7 @@ class FundingStore:
             info = os.fstat(directory)
             if info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) != 0o700:
                 raise FundingError('store_private_parent_required')
-            lock_fd = os.open(self.lock_name, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600, dir_fd=directory)
+            lock_fd = self._open_lock(directory)
             self._private_file(lock_fd)
             fcntl.flock(lock_fd, fcntl.LOCK_EX)
             yield directory
@@ -52,6 +52,24 @@ class FundingStore:
                 os.close(lock_fd)
             if directory is not None:
                 os.close(directory)
+
+    def _open_lock(self,directory):
+        # macOS can return ENOENT when concurrent openat(O_CREAT) races the
+        # first creation. Exclusive create has an atomic EEXIST result; only
+        # then open the existing inode WITHOUT O_CREAT. A removed inode retries
+        # from exclusive create, never via an absolute-path fallback.
+        for _ in range(8):
+            try:
+                return os.open(self.lock_name,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,
+                               0o600,dir_fd=directory)
+            except FileExistsError:
+                try:
+                    return os.open(self.lock_name,os.O_RDWR|os.O_NOFOLLOW,dir_fd=directory)
+                except FileNotFoundError:
+                    continue
+            except FileNotFoundError:
+                continue
+        raise FundingError('store_lock_create_race_exhausted')
 
     @staticmethod
     def _private_file(fd):
@@ -135,6 +153,18 @@ class FundingStore:
 
     @staticmethod
     def _forward_ledger(current, following):
+        if current==following: return
+        if current['schema']=='weekly19.external-funding.v1':
+            if following!=upgrade_funding_state(current):
+                raise FundingError('store_explicit_v2_migration_required')
+        elif following['schema']!='weekly19.external-funding.v2' or following.get('migration')!=current.get('migration'):
+            raise FundingError('store_schema_downgrade_or_migration_rewrite')
+        if current['schema']=='weekly19.external-funding.v2':
+            if any(following['retirements'].get(rid)!=proof for rid,proof in current['retirements'].items()):
+                raise FundingError('store_retirement_ledger_rollback')
+            for key,attempts in current['request_attempts'].items():
+                if following['request_attempts'].get(key,[])[:len(attempts)]!=attempts:
+                    raise FundingError('store_request_attempt_rollback')
         if (following['reserve_remaining_fen'] > current['reserve_remaining_fen']
                 or following['confirmed_topup_fen'] < current['confirmed_topup_fen']
                 or any(following['receipts'].get(key) != row for key, row in current['receipts'].items())

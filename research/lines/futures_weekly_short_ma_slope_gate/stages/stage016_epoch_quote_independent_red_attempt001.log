@@ -1,0 +1,37 @@
+test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol (__main__.ExplicitEpochQuoteIndependent.test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol) ... FAIL
+test_matching_explicit_quote_preserves_real_known_epoch_and_close_oi (__main__.ExplicitEpochQuoteIndependent.test_matching_explicit_quote_preserves_real_known_epoch_and_close_oi) ... ok
+test_actual_sqlite_price_disagreement_cannot_be_hidden_by_research_ready_flag (test_weekly19_data_update.UpdateTests.test_actual_sqlite_price_disagreement_cannot_be_hidden_by_research_ready_flag) ... ok
+test_duplicate_daily_row_is_not_selected_arbitrarily (test_weekly19_data_update.UpdateTests.test_duplicate_daily_row_is_not_selected_arbitrarily) ... ok
+test_expired_offmain_unheld_contract_does_not_require_fabricated_next_bar (test_weekly19_data_update.UpdateTests.test_expired_offmain_unheld_contract_does_not_require_fabricated_next_bar) ... ok
+test_explicit_sqlite_physical_parity_and_off_main_warmup_are_readonly_and_unqualified (test_weekly19_data_update.UpdateTests.test_explicit_sqlite_physical_parity_and_off_main_warmup_are_readonly_and_unqualified) ... ok
+test_forming_target_is_rejected_before_backend_is_called (test_weekly19_data_update.UpdateTests.test_forming_target_is_rejected_before_backend_is_called) ... ok
+test_forward_calendar_file_is_hash_checked_again_after_sqlite_read (test_weekly19_data_update.UpdateTests.test_forward_calendar_file_is_hash_checked_again_after_sqlite_read) ... ok
+test_forward_calendar_must_reach_next_iso_week (test_weekly19_data_update.UpdateTests.test_forward_calendar_must_reach_next_iso_week) ... ok
+test_hash_mismatch_is_rejected_before_dto (test_weekly19_data_update.UpdateTests.test_hash_mismatch_is_rejected_before_dto) ... ok
+test_immutable_generation_keeps_old_rows_and_close_oi_and_explicit_held_contract (test_weekly19_data_update.UpdateTests.test_immutable_generation_keeps_old_rows_and_close_oi_and_explicit_held_contract) ... ok
+test_legacy_seed_has_observed_bounds_only_and_no_legal_listing_fabrication (test_weekly19_data_update.UpdateTests.test_legacy_seed_has_observed_bounds_only_and_no_legal_listing_fabrication) ... ok
+test_missing_close_oi_never_falls_back_to_open_oi (test_weekly19_data_update.UpdateTests.test_missing_close_oi_never_falls_back_to_open_oi) ... ok
+test_missing_held_target_bar_aborts_without_publishing_latest (test_weekly19_data_update.UpdateTests.test_missing_held_target_bar_aborts_without_publishing_latest) ... ok
+test_missing_sqlite_bar_is_not_filled_from_csv_or_zero (test_weekly19_data_update.UpdateTests.test_missing_sqlite_bar_is_not_filled_from_csv_or_zero) ... ok
+test_new_contract_full_available_id0_history_keeps_legal_listing_unknown (test_weekly19_data_update.UpdateTests.test_new_contract_full_available_id0_history_keeps_legal_listing_unknown) ... ok
+test_new_contract_missing_completed_vendor_id_cannot_publish (test_weekly19_data_update.UpdateTests.test_new_contract_missing_completed_vendor_id_cannot_publish) ... ok
+test_old_research_qualification_flag_never_becomes_production (test_weekly19_data_update.UpdateTests.test_old_research_qualification_flag_never_becomes_production) ... ok
+test_registry_hash_and_explicit_private_destination_are_required (test_weekly19_data_update.UpdateTests.test_registry_hash_and_explicit_private_destination_are_required) ... ok
+test_source_units_cannot_be_inferred_or_silently_changed (test_weekly19_data_update.UpdateTests.test_source_units_cannot_be_inferred_or_silently_changed) ... ok
+test_target_main_missing_physical_admission_is_blocked (test_weekly19_data_update.UpdateTests.test_target_main_missing_physical_admission_is_blocked) ... ok
+test_today_forming_bar_is_rejected_even_if_receipt_says_ready (test_weekly19_data_update.UpdateTests.test_today_forming_bar_is_rejected_even_if_receipt_says_ready) ... ok
+test_unknown_contract_requires_explicit_delivery_month_and_full_available_history (test_weekly19_data_update.UpdateTests.test_unknown_contract_requires_explicit_delivery_month_and_full_available_history) ... ok
+test_unobserved_non_strategy_turnover_uses_declared_transport_sentinel_only (test_weekly19_data_update.UpdateTests.test_unobserved_non_strategy_turnover_uses_declared_transport_sentinel_only) ... ok
+
+======================================================================
+FAIL: test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol (__main__.ExplicitEpochQuoteIndependent.test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_epoch_quote_independent.py", line 19, in test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol
+    with self.assertRaises(updater.DataUpdateError):self.fx.run_update()
+AssertionError: DataUpdateError not raised
+
+----------------------------------------------------------------------
+Ran 24 tests in 1.101s
+
+FAILED (failures=1)

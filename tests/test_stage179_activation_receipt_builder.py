@@ -25,7 +25,11 @@ from run_qmt_roll_stage914_official_live_ctp_runtime_preflight import (  # noqa:
 
 
 class Stage179ActivationReceiptBuilderTest(unittest.TestCase):
+    """Historical C9 installation fixture, selected explicitly from weekly default."""
     def setUp(self) -> None:
+        profile_patch = patch.object(receipt_builder, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        profile_patch.start()
+        self.addCleanup(profile_patch.stop)
         self.tempdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(self.tempdir.cleanup)
         self.repo = Path(self.tempdir.name) / "repo"

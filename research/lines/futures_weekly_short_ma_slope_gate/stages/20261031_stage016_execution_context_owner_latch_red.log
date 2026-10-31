@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_only_unadmitted_cash_references_can_change_without_replacing_actor (tests.test_weekly19_backend_execution.BackendExecutionTests.test_only_unadmitted_cash_references_can_change_without_replacing_actor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_backend_execution.py", line 63, in test_only_unadmitted_cash_references_can_change_without_replacing_actor
+    with self.assertRaisesRegex(ValueError,'immutable_fields_changed|authority_invalidated'):self.backend.execution_session_cycle(target_date='2026-10-30',now=self.fx.clock.at)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.328s
+
+FAILED (failures=1)

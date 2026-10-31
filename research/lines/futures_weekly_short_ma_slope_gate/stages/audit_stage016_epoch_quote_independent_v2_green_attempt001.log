@@ -1,0 +1,7 @@
+test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol (__main__.ExplicitEpochQuoteIndependent.test_explicit_registry_rejects_new_decade_quote_for_existing_native_symbol) ... ok
+test_matching_explicit_quote_preserves_real_known_epoch_and_close_oi (__main__.ExplicitEpochQuoteIndependent.test_matching_explicit_quote_preserves_real_known_epoch_and_close_oi) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.190s
+
+OK

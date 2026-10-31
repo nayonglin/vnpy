@@ -1,0 +1,15 @@
+test_absent_load_never_initializes_and_initialization_is_once (test_weekly19_pipeline_state.StateTest.test_absent_load_never_initializes_and_initialization_is_once) ... ok
+test_cold_initialize_race_exactly_one_owner (test_weekly19_pipeline_state.StateTest.test_cold_initialize_race_exactly_one_owner) ... ok
+test_concurrent_transactions_are_serial_and_never_lose_revision (test_weekly19_pipeline_state.StateTest.test_concurrent_transactions_are_serial_and_never_lose_revision) ... ok
+test_corrupted_checksum_or_duplicate_keys_are_rejected (test_weekly19_pipeline_state.StateTest.test_corrupted_checksum_or_duplicate_keys_are_rejected) ... ok
+test_cross_release_or_account_cannot_resume (test_weekly19_pipeline_state.StateTest.test_cross_release_or_account_cannot_resume) ... ok
+test_funding_rollback_is_rejected_before_replacing_file (test_weekly19_pipeline_state.StateTest.test_funding_rollback_is_rejected_before_replacing_file) ... ok
+test_one_bundle_commit_publishes_cash_runtime_and_decision_together (test_weekly19_pipeline_state.StateTest.test_one_bundle_commit_publishes_cash_runtime_and_decision_together) ... ok
+test_runtime_state_cannot_bind_other_cash_identity (test_weekly19_pipeline_state.StateTest.test_runtime_state_cannot_bind_other_cash_identity) ... ok
+test_symlink_and_hardlink_state_are_rejected (test_weekly19_pipeline_state.StateTest.test_symlink_and_hardlink_state_are_rejected) ... ok
+test_transaction_exception_preserves_all_cash_runtime_and_decision (test_weekly19_pipeline_state.StateTest.test_transaction_exception_preserves_all_cash_runtime_and_decision) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.227s
+
+OK

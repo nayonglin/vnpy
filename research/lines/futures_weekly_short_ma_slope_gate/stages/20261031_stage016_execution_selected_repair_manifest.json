@@ -1,0 +1,193 @@
+{
+  "schema": "weekly19.selected-final-repair.v1",
+  "generated_at": "2026-10-31T20:24:55.358629+08:00",
+  "production_qualified": false,
+  "final_source_sha256": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10",
+  "original_full_selected": {
+    "suites": 88,
+    "collected": 2254,
+    "passed": 2252,
+    "failed": 2,
+    "seconds": 385.65,
+    "source_drift": false,
+    "log": "/private/tmp/weekly19_selected_final_attempt001.log"
+  },
+  "isolated_original_source_repro": {
+    "failed": 1,
+    "passed": 1,
+    "seconds": 20.29,
+    "seal_case_passed": true
+  },
+  "original_adjacent_seal_repro": {
+    "passed": 6,
+    "seconds": 76.73,
+    "read_only_timing_probe": true
+  },
+  "scripted_boundary_red": {
+    "order_position_common": {
+      "failed": 3,
+      "passed": 2
+    },
+    "trade_detail_extension": {
+      "failed": 2,
+      "passed": 6
+    },
+    "trade_postpacing_deadline": {
+      "failed": 1
+    }
+  },
+  "final_targeted": {
+    "passed": 137,
+    "failed": 0,
+    "seconds": 22.26,
+    "production_qualification": false
+  },
+  "original_ci_exact_cause_proven": false,
+  "deterministic_production_pacing_bug_reproduced": true,
+  "query_spacing_and_existing_deadlines_relaxed": false,
+  "real_ctp_connected": false,
+  "real_smtp_sent": false,
+  "real_orders_submitted": false,
+  "compile_and_whitespace": "PASS",
+  "current_931_function_ast_sha256": {
+    "weekly19_physical_batch_manifest": "1b50fe98c5ef3bcb576c1f7c9989d6568dc7b52b7650b652764b8abe160cf2a6",
+    "_weekly19_batch_ledger_metadata": "8bfb2f0043532d6c7519dc24296f83123812cf92d41175234df5b21ff39db82a",
+    "_stage179_warm_callback_base": "4b313878c2d8a67d2ba296670d16259ac401270fa697b4b4fa03a7f813a9f6f1",
+    "_final_order_query_epoch": "0abbd0d54f1b0de55fa50e6714b992b89a7ca7e42be8c96bf66e6779ea88751a",
+    "_final_trade_query_epoch": "b1ab23dd241866b9661a675d6c6646f14055c3992abaf7984057b530a29ee09e",
+    "_final_position_detail_query_epoch": "cce8b796ef159603ad0c0bae7e93a651a1c5db5052923830c2eaf844cdec1a41",
+    "_final_position_query_epoch": "3cced085fd36dc3f7b635bd0adf69bbcc7949b056bf2902433122dbbeaf67be2",
+    "_wait_for_ctp_query_pacing": "46bb12b469c0336670a869ff96a2e9d91839185431cc5c379a41360b1861ec8a",
+    "weekly19_reconcile_deferred_events": "632ef415423cb2580fed6f3b1bfbdc91c8ab0bb0a20840c1e37e6f698f8fb193",
+    "weekly19_broker_event_blockers": "194ddff78d1aab281047e679ece0eafca84d84fae70ea7dc06fc70d03f3839d8",
+    "reserve_api_slot": "fbb730996555717881ae1b986c98b693cac7571b4687d8a015f8d3afdd84c903",
+    "persist_before_native_order_insert": "585013e85929c9094ad6dab8c6161ae17bab19195d68e34676ce827034898a5d"
+  },
+  "seven_prior_quota_native_deferred_ast_unchanged": {
+    "weekly19_physical_batch_manifest": true,
+    "_weekly19_batch_ledger_metadata": true,
+    "_stage179_warm_callback_base": true,
+    "weekly19_reconcile_deferred_events": true,
+    "weekly19_broker_event_blockers": true,
+    "reserve_api_slot": true,
+    "persist_before_native_order_insert": true
+  },
+  "final_whole_selected_rerun": "root_owned_pending",
+  "files": [
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+      "bytes": 691528,
+      "sha256": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10"
+    },
+    {
+      "path": "tests/test_stage931_ctp_readiness.py",
+      "bytes": 87407,
+      "sha256": "7c96ddb904ad71b32efe37c9b7dae2fc98c2a634ef91d74626530332b24152b0"
+    },
+    {
+      "path": "tests/test_stage947_production_support_launcher.py",
+      "bytes": 95686,
+      "sha256": "27892396068d3a201e8c8af28a11011d76f74392e9bec0d62cdf6f04990c1404"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_selected_failures_repro001.log",
+      "bytes": 13177,
+      "sha256": "e8decc7aeed3b05478a511a46897d2ab2aa3fd5c61f140c81eddcfa0b6da5b49"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_selected_failures_repro001.xml",
+      "bytes": 13253,
+      "sha256": "d53d00eaa964e26a5dfcb1bc40279fbfbf857501cd73d44618ee127556d4d242"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_final_c9_fixture_green.log",
+      "bytes": 13621,
+      "sha256": "f2c06a795792544050c422ac38e66789f57cd9f5e40a861322d08d4f5e5c54c0"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_final_c9_fixture_green.xml",
+      "bytes": 20032,
+      "sha256": "731e2f8a3f3ea1a6929fadffb42d321acd66d1ae3782e9578c02ae28ccc31f80"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_final_c9_fixture_green002.log",
+      "bytes": 180,
+      "sha256": "fa82e96559fd3158a91148975c11bf2260511ceae393400aef957c75f494528f"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_final_c9_fixture_green002.xml",
+      "bytes": 6925,
+      "sha256": "28f73a44b9252193d490f2f4dfd3830d97595f4057d6f9bb3818a7eee4230f91"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_timing_probe.py",
+      "bytes": 1838,
+      "sha256": "d1d6e0a600560608cf90134069c34129aaec87643c066264ffc7410d0d69999a"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_timing_probe.jsonl",
+      "bytes": 17154,
+      "sha256": "924d620fd69f4131b7a3e6504a08f0f69d4bb91efb8ef051250c725c309e8daa"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_timing_repro002.log",
+      "bytes": 180,
+      "sha256": "443f3a1d660867f5811517f83d2eb858eed4374d1542132f1ebb554a1ce42d77"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_timing_repro002.xml",
+      "bytes": 403,
+      "sha256": "053d47dbebb3763341e8f8ed69e2073c3ad2fa9aae36d533c4f9710f71ef7e75"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_order_repro003.log",
+      "bytes": 190,
+      "sha256": "7d4debd064ee63739671f0d641b908abd2dd6b7b9951d28bbc1d18b391cf05be"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_seal_order_repro003.xml",
+      "bytes": 1270,
+      "sha256": "b5efc1fd4ac24e522b71617199a85f935dcdbd809ef071cdd183f8a5e739f9d1"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_pacing_boundary_red.log",
+      "bytes": 3165,
+      "sha256": "126917865183547d23e0dd722de5f7a681e707e17a4db985dfc213f2b07c01c2"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_pacing_boundary_red.xml",
+      "bytes": 4008,
+      "sha256": "cd5ae91d418c482c79c784ca707bf086f5c06690ce017f1136b6e1d446335f1a"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_pacing_family_red.log",
+      "bytes": 2166,
+      "sha256": "b334664784ed882bd1ffc835e63701ab3b64b216ba0564b3516d16a9cd77db74"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_pacing_family_red.xml",
+      "bytes": 3330,
+      "sha256": "cc34ff6cfab1de5b7658f2ca56bc961f06b8059ac608e6d6e7701e14eb35fa7d"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_trade_postpacing_deadline_red.log",
+      "bytes": 1334,
+      "sha256": "edbda0f8ffe446dc35109a3e2e74e2ae49f64fd39325ffb3075d3bfffaa7d403"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_trade_postpacing_deadline_red.xml",
+      "bytes": 1428,
+      "sha256": "4f0b9570519ded372b96112eb8ccc40e2916b596742234b075437dc1ff11a24b"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_selected_failures_family_final.log",
+      "bytes": 262,
+      "sha256": "b099040eace4a1a5a819585186eef681fb8684f1f13360e2e0b1b5b9e1c4041f"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_repair_weekly19_selected_failures_family_final.xml",
+      "bytes": 23937,
+      "sha256": "473319bdd540b1555d8748c90beae13829dcc187e3faed3c12a4b7931cd107a3"
+    }
+  ]
+}

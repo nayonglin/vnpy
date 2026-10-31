@@ -1,0 +1,162 @@
+{
+  "schema": "stage016.offline-independent-component-review.v5",
+  "recorded_at": "2026-10-31T10:09:44.506545+00:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "reviewer": "/root/stage011_independent_reviewer",
+  "accepted": true,
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "failures": [],
+  "open_findings": [],
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "production_qualified": false,
+  "source_qualified_by_real_capture": false,
+  "real_ctp_connected": false,
+  "real_registry_created": false,
+  "real_bank_cashflow_verified": false,
+  "real_smtp_sent": false,
+  "financial_backtest_run": false,
+  "master_promoted": false,
+  "production_installed": false,
+  "source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "cbd462ca1eacb41f976b393501aa3816211af68451470106266ffbf772b60c9f",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "a99b1ad768990254c014b8f2ce28bd83957c78906df7b9fc226cb833a2ae8310",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "81bd0c46a911628a6f2359cf5e3398857789a5630d05ae883a4b62bd68ae3fec",
+    "tests/test_weekly19_broker_evidence.py": "a8c8c518ad906f4428465faa1664de09f31601103add75ccfc9141b614cd7f23",
+    "tests/test_weekly19_warm_evidence.py": "889022ccf52f978f43e8df870c70ad22840d67fc12540ab192f550203cfc5ad2",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "52ed70e9d3181fef9af4c84b471318bf1c789d099b49a8d752fbb239c31d0778",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "68474ef9cb9fa9fe8daa2ed11048c32bbd5a8a02067e8c34ff672dd4ba935850",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "0ef9fbd177be9db565c799d2d4db8aeee98b06dc99e50246d670b8d0e32ab3af",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_daily_receipt.py": "6f6815829f0b0f0455a2aaf3cd1306a9272f358ead6f201ad17ff2d326798dd5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "be6c9d74d900591b32a2218e7d7c4ddc09d0fc8ea1b3fac25dd582680cd6a162"
+  },
+  "tested_dependency_snapshots": {
+    "baseline": {
+      "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "3846920540b8e898844a8f31dbb8610ebaa17d45dc7f6f406341f53221d8a2a6",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "91d03851155870a5428a54bfdc1c635d96d4a25e5710a8822d4cb78cf476da0f",
+      "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "97d726aa7c7273b17b1bcb15e36ccb76a49fc4779d234d80faddcef664c78d61",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_controller.py": "b5e1e65ec5bf977de0fe70eb15d7abffebfacc9c9e77e8644a04d406c398acbe",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "0ef9fbd177be9db565c799d2d4db8aeee98b06dc99e50246d670b8d0e32ab3af",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "01fd123cbe344b8bfe2711689021f6a5c0361e613afb280f53642f74f05f1511",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "52ed70e9d3181fef9af4c84b471318bf1c789d099b49a8d752fbb239c31d0778",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "cbd462ca1eacb41f976b393501aa3816211af68451470106266ffbf772b60c9f",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py": "a29fd0f841b0b3d88b7403b096e63bc57bb9de35a1b39803fd9bd31b12c0f466",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "be6c9d74d900591b32a2218e7d7c4ddc09d0fc8ea1b3fac25dd582680cd6a162",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "a99b1ad768990254c014b8f2ce28bd83957c78906df7b9fc226cb833a2ae8310",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_execution.py": "880a70624615429feec2008d121d5151540bae56f7cc2621e4ee500f087bf024",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "68474ef9cb9fa9fe8daa2ed11048c32bbd5a8a02067e8c34ff672dd4ba935850",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3157a159bdf539156c14d4b5a98eb4c700511a25fcd72a8a7cc10f1e341e68bc",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_daily_receipt.py": "6f6815829f0b0f0455a2aaf3cd1306a9272f358ead6f201ad17ff2d326798dd5",
+      "tests/test_weekly19_broker_evidence.py": "a8c8c518ad906f4428465faa1664de09f31601103add75ccfc9141b614cd7f23",
+      "tests/test_weekly19_warm_evidence.py": "889022ccf52f978f43e8df870c70ad22840d67fc12540ab192f550203cfc5ad2",
+      "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4",
+      "tests/test_weekly19_friday_report.py": "f6e373b9b48e86997a7e29549e21aff13107c55f1873d8ad7d79ad1eedbab580",
+      "tests/test_weekly19_live_pipeline.py": "c603bbe650c459b70e9d5a76ddbdc27a5188be45878753dbd7d942aa2f6ebf1d",
+      "tests/test_weekly19_daily_receipt.py": "f0f11212a48405c9e4d5e0d49f9652494343df109bbf9fa003464175c2f55658",
+      "tests/test_weekly19_pipeline_state.py": "7095a6d259fce8135b17aaf16884411b1908e02c933670a7e5997e68cec09ae9",
+      "tests/test_stage174_query_bundle.py": "8426452e0225b9048a3be3bc984d4f553faf51977dd913e9aba3b51d1c58f49d",
+      "tests/test_official_live_broker_account_snapshot.py": "9e8d6a66d57b083c8dae8096f81d0645d200ca05b5b524353b44e1d1e3ee6cec"
+    },
+    "new17_rebind": {
+      "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py": "3846920540b8e898844a8f31dbb8610ebaa17d45dc7f6f406341f53221d8a2a6",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "7578ba2d38184b6e80f59a38ee0574d1e7a1db6da3b085e9deadf3e0ec793016",
+      "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "97d726aa7c7273b17b1bcb15e36ccb76a49fc4779d234d80faddcef664c78d61",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_controller.py": "b5e1e65ec5bf977de0fe70eb15d7abffebfacc9c9e77e8644a04d406c398acbe",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "0ef9fbd177be9db565c799d2d4db8aeee98b06dc99e50246d670b8d0e32ab3af",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "2ce683557496d0a2c1af9358c2fb95edc86f48e086ba90a8ca111b07890193ae",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "52ed70e9d3181fef9af4c84b471318bf1c789d099b49a8d752fbb239c31d0778",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "cbd462ca1eacb41f976b393501aa3816211af68451470106266ffbf772b60c9f",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_official_config.py": "a29fd0f841b0b3d88b7403b096e63bc57bb9de35a1b39803fd9bd31b12c0f466",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "be6c9d74d900591b32a2218e7d7c4ddc09d0fc8ea1b3fac25dd582680cd6a162",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_execution_service.py": "b6c45a706eedd7deee25fec25c5d0741930d714f80c9abc2ab42f8a2f32beb1d",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_warm_evidence.py": "a99b1ad768990254c014b8f2ce28bd83957c78906df7b9fc226cb833a2ae8310",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_execution.py": "880a70624615429feec2008d121d5151540bae56f7cc2621e4ee500f087bf024",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "68474ef9cb9fa9fe8daa2ed11048c32bbd5a8a02067e8c34ff672dd4ba935850",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "827cc7a0c8c56e5cab36e64cbb09cc5241e2cb60de450f5f334a8866cd84c4f2",
+      "examples/portfolio_backtesting/qmt_roll_weekly19_daily_receipt.py": "6f6815829f0b0f0455a2aaf3cd1306a9272f358ead6f201ad17ff2d326798dd5"
+    }
+  },
+  "observed_later_unaccepted_source_drift": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": {
+      "tested": "91d03851155870a5428a54bfdc1c635d96d4a25e5710a8822d4cb78cf476da0f",
+      "observed_now": "85bc9158aee5a7f8676c852717b0ae15b2818c403365deef8255779a488db8e1"
+    },
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": {
+      "tested": "97d726aa7c7273b17b1bcb15e36ccb76a49fc4779d234d80faddcef664c78d61",
+      "observed_now": "691555b70586c8c92d28a5321ab99faa1409787643cc0b500c2cb5c664377ede"
+    },
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": {
+      "tested": "01fd123cbe344b8bfe2711689021f6a5c0361e613afb280f53642f74f05f1511",
+      "observed_now": "1346eb1142de8c4dc85133bb4a55bad8c3b52cbd384239f7cfe5f6a835040873"
+    },
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": {
+      "tested": "3157a159bdf539156c14d4b5a98eb4c700511a25fcd72a8a7cc10f1e341e68bc",
+      "observed_now": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5"
+    }
+  },
+  "evidence_files_sha256": {
+    "stage016_v5_independent_verification_attempt001.json": "10b512fb7d9eb07875eda7694cf0fe64aa09e2d40cdde2be21db1e37b9a9742c",
+    "stage016_v5_independent_routes_verification_attempt001.json": "03b88ae9d961b4d922f59f9b628388ea8399acec061bcbd64cb5d20398c8383f",
+    "stage016_v5_independent_rebind_attempt002.json": "714e09cf33fb677f4be01816b6e3f3868f5e78bea2a878efca605705874613ec",
+    "stage016_v5_independent_new_counterexamples_attempt001.log": "cfb2316ec3b4a794a5389b392cbe998449fe598201a1391f4acf332a1f556276",
+    "stage016_v5_independent_new_counterexamples_attempt002.log": "5d4d2d27ba12c6b867612322c8f7150925d3fde4fc70d0760c746010b54eefe3",
+    "audit_stage016_v5_components_independent.py": "4ec9b7db4e41d2a107f466c3707d75b36bff8aedcf068aad70173ff01f2e8981",
+    "stage016_components_independent_findings_attempt001.json": "2478ea7da6b9e5e5508b033738266e670a934d1ea6b4361e6025b919466da77d",
+    "stage016_funding_v2_independent_review.json": "6527f6fc34308a25643f4463ff92d8b364c7b237256aa7b400d0180e7075fd1d",
+    "stage016_pipeline_state_independent_review.json": "692ef52a7fc7669e203528c92b90517dceb6f588592e28a5daf7c6d937260856",
+    "20261031_1755_stage016_cash_provider_v5_recovery_production_identity.md": "a2a14cff8c5db82e8a846a166c14b183a1084c250af95aa45a8551fe22fd9f8c",
+    "20261031_1755_stage016_cash_provider_v5_recovery_production_identity_manifest.json": "dd16b8b58a2823d57be4eab442f3f9cf2bd50c3bd3a803b709e03b5342fa52b1",
+    "20261031_1745_stage016_funding_v3_initial_observation_manifest.json": "789d8abdbe7a572d01764ceadb3811ef4d6909d8982830ac7038bb496310993a"
+  },
+  "logs_sha256": {
+    "stage016_v5_independent_test_weekly19_pipeline_state_attempt001.log": "cdfd8ca5a891d7b6ad850afc0f94e777c3ed6a19769e4879c103f0fba0552386",
+    "stage016_v5_independent_test_stage174_query_bundle_attempt001.log": "b54edb1080550f48d76dfbfc0014f8b8d9f2c07bf3c93b62b49313f061d93290",
+    "stage016_v5_independent_test_stage946_production_health_check_attempt001.log": "d8788fb668ab485288228ba408880db88f6bc1e91fecb5466716ec0bebc051a5",
+    "stage016_v5_independent_new_counterexamples_attempt001.log": "cfb2316ec3b4a794a5389b392cbe998449fe598201a1391f4acf332a1f556276",
+    "stage016_v5_independent_audit_stage016_funding_v2_independent_attempt001.log": "354eb5d54b3a537c5f8f4de9aa2b6f111ea221d035fb68e850d8b2b6f1981372",
+    "stage016_v5_independent_test_weekly19_daily_receipt_attempt001.log": "f129836c8daee625d0948f01b8e3a4f30235816112344af3097513a7e4e73177",
+    "stage016_v5_independent_stage907_selected_attempt001.log": "3d368ba43f0aad60365b9ab3dacfcdcd223774618d864a5e1377e1dd6be19bc8",
+    "stage016_v5_independent_audit_stage016_provider_report_independent_attempt001.log": "8082cff967520f28858f2b15d971b48582ff9547e514a4568b1f2fa2c208bac1",
+    "stage016_v5_independent_test_weekly19_official_config_attempt001.log": "0303cd90ccde4c464a762ea5b86b38e23a886cfcc9242307d0407b40a3f1c5c1",
+    "stage016_v5_independent_test_weekly19_friday_report_attempt001.log": "96bd44db0229346ab3dbeb1b62f05f1b47caf780104e0dfaa626036594c430b9",
+    "stage016_v5_independent_test_weekly19_live_entry_attempt001.log": "5684d13977a1f6829bcd5f644c72b35ab6f8d42951d571a5f230c4cc35a359f3",
+    "stage016_v5_independent_test_weekly19_readonly_refresh_attempt001.log": "e6ec182765cd965f2837d8eeaef5a64af48a104f245cd1a0b7281559194c57c1",
+    "stage016_v5_independent_test_weekly19_broker_evidence_attempt001.log": "7c3ff97fe8d9ee97855d8b938d9e1be75e54ceab682f1c0a32033fa56b674d46",
+    "stage016_v5_independent_test_weekly19_live_pipeline_attempt001.log": "38aa426da10f38d652e5181e94da11324794b414416f7bb09cc054b64124507f",
+    "stage016_v5_independent_test_official_live_broker_account_snapshot_attempt001.log": "d59e43a4f474f4917a2b3f5e28bacc4fd0fb40ee7f519c59f3939252347c2168",
+    "stage016_v5_independent_test_weekly19_warm_evidence_attempt001.log": "7ef4bef0f22816b66d976386b76357e9bd7fea5de01febeac314731ab04c08f0",
+    "stage016_v5_independent_test_weekly19_external_funding_attempt001.log": "d4f1e3f02d2622efbdc7c376da69d62510c78ae7879717aefb503ff2d19068c7"
+  },
+  "test_counts": {
+    "unique_tests": 331,
+    "executions": 348,
+    "baseline": 285,
+    "new_independent": 17,
+    "additional_entry_routes_config_health": 29,
+    "rebind_rerun": 17
+  },
+  "mandatory_capture_source_count": 5,
+  "mandatory_authority_source_count": 12,
+  "limitations": [
+    "仅合成fixture；未连接CTP/银行/SMTP、未下单、未跑金融、未改Git index/commit或生产。",
+    "真实accepted registry/captures/TransferSerial样本与最终cashflow日结statement parser缺失。SHA/HMAC完整性不等于真实来源，不能防同OS用户伪造。",
+    "providerV5不覆盖V6 childproof及完整执行链；publish_execution当前明确not_installed。",
+    "runtime/CLI/datareader/dataupdate仍在开发，测试后漂移精确列出；只接受已测试快照及稳定组件，不接受当前新性能/service/SHFE batch/CLI/data整体。新17例仅对rebind快照成立。",
+    "parent在基线后切候选default为weekly19；CURRENT仍m0008、material_ready=false。route/config/health测试为切前默认快照，不接受新default正式材料/整链生产。",
+    "事务提交后receipt/mail异常可能已经有完整新状态，必须reload/reconcile，不能假定回滚或盲重发。",
+    "Stage014经济NO_PROMOTION及零成本/PIT/容量限制保留；本次仅审工程证据，不新增alpha或收益结论。"
+  ],
+  "component": "root_outer_pipeline_snapshot",
+  "unique_component_tests": 64,
+  "accepted_scope": "资格先于数据/状态，preview模式不可升级，事务先于receipt先于mail；route只读快照，不接受漂移依赖或新default整链。"
+}

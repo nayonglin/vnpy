@@ -1,0 +1,59 @@
+[
+  {
+    "name": "test_weekly19_live_entry.py",
+    "returncode": 0,
+    "tail": [
+      ".........",
+      "----------------------------------------------------------------------",
+      "Ran 9 tests in 0.007s",
+      "",
+      "OK"
+    ],
+    "log_sha256": "5684d13977a1f6829bcd5f644c72b35ab6f8d42951d571a5f230c4cc35a359f3"
+  },
+  {
+    "name": "test_weekly19_readonly_refresh.py",
+    "returncode": 0,
+    "tail": [
+      "....",
+      "----------------------------------------------------------------------",
+      "Ran 4 tests in 0.000s",
+      "",
+      "OK"
+    ],
+    "log_sha256": "e6ec182765cd965f2837d8eeaef5a64af48a104f245cd1a0b7281559194c57c1"
+  },
+  {
+    "name": "test_weekly19_official_config.py",
+    "returncode": 0,
+    "tail": [
+      "...",
+      "----------------------------------------------------------------------",
+      "Ran 3 tests in 0.376s",
+      "",
+      "OK"
+    ],
+    "log_sha256": "0303cd90ccde4c464a762ea5b86b38e23a886cfcc9242307d0407b40a3f1c5c1"
+  },
+  {
+    "name": "test_stage946_production_health_check.py",
+    "returncode": 0,
+    "tail": [
+      "......",
+      "----------------------------------------------------------------------",
+      "Ran 6 tests in 0.010s",
+      "",
+      "OK"
+    ],
+    "log_sha256": "d8788fb668ab485288228ba408880db88f6bc1e91fecb5466716ec0bebc051a5"
+  },
+  {
+    "name": "test_stage907_readonly_refresh_gate.py",
+    "returncode": 0,
+    "tail": [
+      ".......                                                                  [100%]",
+      "7 passed in 0.52s"
+    ],
+    "log_sha256": "3d368ba43f0aad60365b9ab3dacfcdcd223774618d864a5e1377e1dd6be19bc8"
+  }
+]

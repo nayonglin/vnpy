@@ -2209,3 +2209,84 @@ class Stage931CtpReadinessTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class FinalQueryPacingBoundaryTest(unittest.TestCase):
+    """The clock can cross the permitted-query instant between two reads."""
+    class Clock:
+        def __init__(self, values):
+            self.values=iter(values);self.now=0.;self.sleeps=[]
+        def monotonic(self):
+            self.now=next(self.values,self.now);return self.now
+        def sleep(self,seconds):
+            self.sleeps.append(seconds);self.now+=seconds
+
+    def _query(self,kind,budget,values=None):
+        is_raw=kind in {'trade','detail'}
+        clock=self.Clock(values if values is not None else([.2,1.199999,1.200001]if is_raw else[0.,1.099999,1.100001]))
+        class Api(_InstrumentableCallbackApi):
+            brokerid='fake-broker';userid='fake-user';reqid=10
+            def __init__(self):self.calls=[]
+            def reqQryOrder(self,request,reqid):
+                self.calls.append(('order',clock.monotonic()));self.onRspQryOrder({}, {},reqid,True);return 0
+            def reqQryInvestorPosition(self,request,reqid):
+                self.calls.append(('position',clock.monotonic()));self.onRspQryInvestorPosition({}, {},reqid,True);return 0
+            def reqQryTrade(self,request,reqid):
+                self.calls.append(('trade',clock.monotonic()));self.onRspQryTrade({}, {},reqid,True);return 0
+            def onRspQryInvestorPositionDetail(self,*args):pass
+            def reqQryInvestorPositionDetail(self,request,reqid):
+                self.calls.append(('detail',clock.monotonic()));self.onRspQryInvestorPositionDetail({}, {},reqid,True);return 0
+            def getTradingDay(self):return '20261102'
+        api=Api();rows=_base_rows();rows['_ctp_last_query_monotonic']=.1 if is_raw else 0.
+        function={'order':stage931._final_order_query_epoch,'position':stage931._final_position_query_epoch,
+            'trade':stage931._final_trade_query_epoch,'detail':stage931._final_position_detail_query_epoch}[kind]
+        kwargs={}if is_raw else{'query_interval_seconds':1.1}
+        with stage931._instrument_ctp_readiness_callbacks(Api,rows):
+            result=function(api,rows,max_wait_seconds=budget,monotonic=clock.monotonic,sleeper=clock.sleep,**kwargs)
+        return result,api,clock
+
+    def test_order_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,clock=self._query('order',8.)
+        self.assertTrue(result['confirmed'],result)
+        self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.1)
+
+    def test_position_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,clock=self._query('position',8.)
+        self.assertTrue(result['confirmed'],result)
+        self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.1)
+
+    def test_common_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        clock=self.Clock([1.099999,1.100001])
+        reason=stage931._wait_for_ctp_query_pacing({'_ctp_last_query_monotonic':0.},started=0.,deadline=8.,
+            blocker_namespace='fixture',monotonic=clock.monotonic,sleeper=clock.sleep,query_interval_seconds=1.1,poll_seconds=.05)
+        self.assertEqual(reason,'')
+
+    def test_actual_deadline_still_blocks_both_queries_before_any_request(self):
+        for kind in ('order','position'):
+            with self.subTest(kind=kind):
+                result,api,_=self._query(kind,1.)
+                self.assertFalse(result['confirmed']);self.assertIn('pacing_timeout',result['blockers'][0]);self.assertEqual(api.calls,[])
+
+    def test_common_pacing_retains_the_actual_timeout(self):
+        clock=self.Clock([1.099999,1.100001])
+        reason=stage931._wait_for_ctp_query_pacing({'_ctp_last_query_monotonic':0.},started=0.,deadline=1.,
+            blocker_namespace='fixture',monotonic=clock.monotonic,sleeper=clock.sleep,query_interval_seconds=1.1,poll_seconds=.05)
+        self.assertEqual(reason,'fixture_pacing_timeout')
+
+    def test_trade_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('trade',8.)
+        self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+
+    def test_position_detail_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('detail',8.)
+        self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+
+    def test_raw_query_actual_deadline_still_blocks_before_any_request(self):
+        for kind in ('trade','detail'):
+            with self.subTest(kind=kind):
+                result,api,_=self._query(kind,.7)
+                self.assertFalse(result['confirmed']);self.assertIn('pacing_timeout',result['blockers'][0]);self.assertEqual(api.calls,[])
+
+    def test_trade_cannot_issue_when_first_poll_has_crossed_the_real_deadline(self):
+        result,api,_=self._query('trade',.5,[.2,1.200001])
+        self.assertFalse(result['confirmed']);self.assertEqual(api.calls,[])
+        self.assertIn('deadline_exceeded',result['blockers'][0])

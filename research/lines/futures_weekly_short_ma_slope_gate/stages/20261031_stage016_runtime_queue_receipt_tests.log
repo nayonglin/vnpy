@@ -1,0 +1,6 @@
+test_queued_day_origin_and_cross_day_close_retry_bind_new_receipt_through_store_and_gate (tests.test_weekly19_runtime.QueuedReceiptGateTests.test_queued_day_origin_and_cross_day_close_retry_bind_new_receipt_through_store_and_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.584s
+
+OK

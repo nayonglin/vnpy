@@ -1,0 +1,13 @@
+test_in_memory_allowed_kinds_cannot_exceed_actual_private_registry (__main__.AuthorityCacheIndependent.test_in_memory_allowed_kinds_cannot_exceed_actual_private_registry) ... ok
+test_in_memory_qualification_metadata_cannot_be_added_under_same_raw_sha (__main__.AuthorityCacheIndependent.test_in_memory_qualification_metadata_cannot_be_added_under_same_raw_sha) ... ok
+test_mutated_cached_key_does_not_sign_with_different_material (__main__.AuthorityCacheIndependent.test_mutated_cached_key_does_not_sign_with_different_material) ... ok
+test_plain_json_and_wrong_identity_never_grant_typed_authority (__main__.AuthorityCacheIndependent.test_plain_json_and_wrong_identity_never_grant_typed_authority) ... ok
+test_raw_registry_reformat_is_not_accepted_by_semantic_json_equality (__main__.AuthorityCacheIndependent.test_raw_registry_reformat_is_not_accepted_by_semantic_json_equality) ... ok
+test_rotated_actual_key_is_detected_even_with_same_size_and_mtime (__main__.AuthorityCacheIndependent.test_rotated_actual_key_is_detected_even_with_same_size_and_mtime) ... ok
+test_unmodified_snapshot_uses_cache_without_new_full_qualification (__main__.AuthorityCacheIndependent.test_unmodified_snapshot_uses_cache_without_new_full_qualification) ... ok
+test_warm_cache_cannot_bypass_the_same_registry_body_guard (__main__.AuthorityCacheIndependent.test_warm_cache_cannot_bypass_the_same_registry_body_guard) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.026s
+
+OK

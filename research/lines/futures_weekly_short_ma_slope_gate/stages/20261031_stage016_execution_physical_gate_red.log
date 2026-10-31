@@ -1,0 +1,20 @@
+======================================================================
+FAIL: test_old_batch_wrong_lease_childset_or_plain_binding_cannot_release_own_batch (tests.test_weekly19_physical_gate.PhysicalGateTest.test_old_batch_wrong_lease_childset_or_plain_binding_cannot_release_own_batch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_physical_gate.py", line 27, in test_old_batch_wrong_lease_childset_or_plain_binding_cannot_release_own_batch
+    self.assertTrue(gate.evaluate_intent(self.intent,self.context,now=NOW)['allowed'])
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_real_typed_bindings_are_not_misread_as_terminal_execution_events (tests.test_weekly19_physical_gate.PhysicalGateTest.test_real_typed_bindings_are_not_misread_as_terminal_execution_events)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_physical_gate.py", line 25, in test_real_typed_bindings_are_not_misread_as_terminal_execution_events
+    self.assertTrue(result['allowed'],result)
+AssertionError: False is not true : {'schema': 'weekly19.execution-gate.v1', 'intent_id': 'W19EXEC-delivery', 'allowed': False, 'blockers': ['weekly19_ledger_account_mismatch'], 'volume': 0, 'execution_profile': 'weekly19-15w-r150k', 'production_qualified': False, 'order_api_called_count': 0, 'send_order_api_called_count': 0, 'cancel_order_api_called_count': 0}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.008s
+
+FAILED (failures=2)

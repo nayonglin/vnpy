@@ -11,7 +11,7 @@
 
 - 原冻结树/44品种/历史release不写；用户明确的现有生产替换仅通过受控合格安装。
 - 不改alpha，不自动银行转账或真实委托；所有mock/fixture不等于真实资金资格。
-- shared .py311无pytest；用unittest，不设runtime guard紧急绕过。
+- 初期source .py311未配置；现复用本机目标已有.py311（pytest8.4.2/Python3.11.5），无运行依赖升级，不设runtime guard紧急绕过。
 - 代码/单位/时间/交易日/资金/释放顺序按Spec；source-bound SHA/actual fill id为唯一身份。
 
 ## Review Focus
@@ -25,34 +25,34 @@
 ### Task 1: 来源准备及实际语义审查
 - [x] 原Stage014 397+71 pins完好、当前正式m0008/远端e41只读核对、生产候选d558 ahead8及无有效runtime资格/7jobs。
 - [x] 新managed worktree/branch、.py311 link、原6 profile tests绿色；native runtime设计与完整MRO/周保护/夜盘/恢复审查。
-- [ ] 将本机生产8commits仅合入source并验证15:10/资产治理关键测试；提交来源合并，生产保持不动。
+- [x] 将本机生产8commits仅合入source并验证15:10/资产治理关键测试；提交来源合并，生产保持不动。
 
 ### Task 2: 真实场外资金状态机（独立agent）
 **Files:** qmt_roll_weekly19_funding.py、funding_store.py、tests/test_weekly19_external_funding.py。
 **Interfaces:** Spec资金API及原始证据envelope；无网络/资金副作用。
-- [ ] RED: E/Deposit不同、native-admission时点、partial/duplicate/foreign/stale/unknown flow、Friday/Monday完整与缺失链、R耗尽/E<=0、CAS/WAL崩溃等测试。
-- [ ] GREEN: 最小实现，不原地变输入；存储0600原子事务。
-- [ ] 独立审查后固定schema、测试证据/源码SHA，真实capture adapter另做资格。
+- [x] RED: E/Deposit不同、native-admission时点、partial/duplicate/foreign/stale/unknown flow、Friday/Monday完整与缺失链、R耗尽/E<=0、CAS/WAL崩溃等测试。
+- [x] GREEN: 最小实现，不原地变输入；存储0600原子事务。
+- [x] 独立审查后固定schema、测试证据/源码SHA，真实capture adapter另做资格。
 
 ### Task 3: 原策略runtime薄适配（独立agent）
 **Files:** qmt_roll_weekly19_runtime.py、weekly19_frozen/、tests/test_weekly19_runtime.py、test_weekly19_strategy_equivalence.py；原settings/19池资产进入显式inventory。
 **Interfaces:** Spec四runtime方法；producer无真实send，只actual fill应用持仓。
-- [ ] 原样提取factory源码并生成原→副本AST/hash映射；full actual settings去绝对私有路径改显式资产依赖。
-- [ ] RED/GREEN: 周时点/stop/换月/daily risk/native signals equivalence、warmup、原生signal+real fill identity、restart/AM/层恢复、no fake E或无层重建；覆盖真实资料回放但不虚报金融结果。
-- [ ] 冻结可移植closure与实际风险flag，独立审查可用于新资格，任何unsupported state阻断。
+- [x] 原样提取factory源码并生成原→副本AST/hash映射；full actual settings去绝对私有路径改显式资产依赖。
+- [x] RED/GREEN: 周时点/stop/换月/daily risk/native signals equivalence、warmup、原生signal+real fill identity、restart/AM/层恢复、no fake E或无层重建；覆盖真实资料回放但不虚报金融结果。
+- [x] 冻结可移植closure与实际风险flag，独立审查可用于新资格，任何unsupported state阻断。
 
 ### Task 4: 新profile与全部执行消费者
 **Files:** execution_profile.py、weekly19 live pipeline/dispatcher、Stage905/927/931/930/945/947/948、manifest/qualification/receipt/health及对应tests。
-- [ ] 以新weekly19 key/strict source允许表注册；旧C9仅显式历史兼容。
+- [x] 以新weekly19 key/strict source允许表注册；旧C9仅显式历史兼容。
 - [ ] 所有新open强制资金ready与fresh broker/cash/quote/真实Available cap；rollover旧仓真实close才reopen。
-- [ ] 新weekly branch不运行C9 monitor/detector/retry/AI；未知profile/旧intent/source drift拒绝。
+- [x] 新weekly branch不运行C9 monitor/detector/retry/AI；未知profile/旧intent/source drift拒绝。
 - [ ] RED/GREEN隔离/费用/保证金/重启/新cold-start/7labels/单个consumer漏接回归，完整策略与资金闭环审查。
 
 ### Task 5: 周五邮件和实际read-only现金/成交provider
 **Files:** weekly19 account/cashflow capture adapter、weekly19 report/mail/outbox及postclose路由，现有email transport。
 - [ ] 真实原始account需Deposit/Withdraw/TradingDay/generation/source SHA及闭日/零起点/银行流水可验证证据，不使用现有仅Balance/Available snapshot伪造现金流。
-- [ ] 周五15:10沿data-ready链，输出信号、E/浮盈/场外R、建议T及条件手数，未到账阻开；holiday、未知E发blocked说明。
-- [ ] mail/outbox按week/release/receipt幂等，失败/不确定发送不静默重复；dry-run真实预览不发测试邮件。
+- [x] 周五15:10沿data-ready链，输出信号、E/浮盈/场外R、建议T及条件手数，未到账阻开；holiday、未知E发blocked说明。
+- [x] mail/outbox按week/release/receipt幂等，失败/不确定发送不静默重复；dry-run真实预览不发测试邮件。
 - [ ] 跨session真实订单/成交查询与保护层持久化对账，缺真实资格数据则停在明确gate，不能用fixture充数。
 
 ### Task 6: 新不可变release与正式晋升
@@ -61,3 +61,5 @@
 - [ ] activate→controlled promote-master→独立readback/freshclone身份。
 - [ ] Stage948原子替换本机目标（保留原ahead8历史），7jobs精确绑定、零冲突、无CTP/订单副作用；六身份最终审计。
 - [ ] 中文stage/manifest/根里程碑与LINE/registry仅在实际完成后更新；部分完成及外部阻断如实区分。
+
+2026-10-31 19:41 更新说明：所有勾选只表示离线实现/组件审查完成，非真实source资格。最终final API缩量/双锁死锁P1由执行owner修复，全selected与跨整链最终review尚待。TD/MD脱敏TCP preflight均Timeout，尚未CTP协议登录。只读原生结算全文采集已增加（87 tests含旧174/provider），但无真实券商格式及finality样本，load_cashflow_day_close仍明确missing_statement；不将query-last等同闭日。Stage948/master/activation/release资格尚未执行，生产未改。

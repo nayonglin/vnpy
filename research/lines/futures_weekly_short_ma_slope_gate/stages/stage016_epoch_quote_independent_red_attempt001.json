@@ -1,0 +1,11 @@
+{
+  "finding": "EXPLICIT_EPOCH_QUOTE_DECADE_MISMATCH_ACCEPTED",
+  "severity": "P1",
+  "source_before": "f4ed5475649a873bd3698391dd99973385096f0fbdc1ccd108d2b828dd88e691",
+  "source_after": "f4ed5475649a873bd3698391dd99973385096f0fbdc1ccd108d2b828dd88e691",
+  "audit_sha256": "c9f5b7ddf4c46beeb37d46768d317fba0fefa905f3508bce5c2e6609314f443f",
+  "returncode": 1,
+  "log_sha256": "0714f42221c5fbd954154e920f5a381cb0b604c7b81919de263cd37ebf4076c4",
+  "financial_replay": false,
+  "market_download": false
+}

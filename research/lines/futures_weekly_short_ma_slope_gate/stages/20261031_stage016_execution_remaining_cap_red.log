@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_physical_split_cannot_hide_parent_risk_cut_and_real_fills_release_only_remaining_cap (tests.test_weekly19_execution.Weekly19SubmitBoundaryTest.test_physical_split_cannot_hide_parent_risk_cut_and_real_fills_release_only_remaining_cap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_execution.py", line 261, in test_physical_split_cannot_hide_parent_risk_cut_and_real_fills_release_only_remaining_cap
+    self.assertIn('weekly19_signed_delivery_volume_changed',consumer.weekly19_pre_submit_blockers(intent,lambda row,**kw:context,now=NOW,transport_context=transport))
+AssertionError: 'weekly19_signed_delivery_volume_changed' not found in []
+
+----------------------------------------------------------------------
+Ran 1 test in 0.108s
+
+FAILED (failures=1)

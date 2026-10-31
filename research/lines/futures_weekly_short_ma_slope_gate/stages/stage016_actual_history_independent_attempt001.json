@@ -1,0 +1,68 @@
+{
+  "schema": "stage016.actual-history-independent.v1",
+  "source_before": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+  },
+  "phases": {
+    "strict_reader": {
+      "seconds": 16.091106000123546,
+      "maxrss": 1128579072
+    },
+    "build": {
+      "seconds": 8.845694500021636,
+      "maxrss": 1943601152
+    },
+    "pure_warmup": {
+      "seconds": 37.88281650003046,
+      "maxrss": 1943601152
+    },
+    "export": {
+      "seconds": 9.502066583838314,
+      "maxrss": 2154987520
+    },
+    "restore": {
+      "seconds": 27.27738045807928,
+      "maxrss": 3035103232
+    },
+    "restored_export": {
+      "seconds": 3.5554427499882877,
+      "maxrss": 3035103232
+    }
+  },
+  "production_qualified": false,
+  "real_broker_source": false,
+  "actual_ctp": false,
+  "bank_or_smtp": false,
+  "financial_replays": 0,
+  "on_bars_calls": 0,
+  "order_api_calls": 0,
+  "broker_account": "synthetic_fixture_only",
+  "clock": "fixed_aware_fixture_for_deterministic_state_comparison",
+  "data_identity": {
+    "daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "metadata.csv": "b795883c68fb77b7a8159636dbe00fdebfab9fbd6adeeb51209afb42eaaf2e22",
+    "physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24",
+    "receipt.json": "5eef032a27409555d77957c253c2bdbbaf70adc6079867c9050d59a7c07e3cd1"
+  },
+  "data_root": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved",
+  "actual_admitted_daily_rows": 392382,
+  "independent_raw_sql_sample_value_checks": 234,
+  "warmup_cursor": "2026-10-30",
+  "am_count": 2093,
+  "durable_bytes": 5086416,
+  "exact_durable_restore_equal": true,
+  "reserve_remaining_fen": 15000000,
+  "confirmed_topup_fen": 0,
+  "source_after": {
+    "qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "qmt_roll_weekly19_pipeline_state.py": "c4195c70751b492368060869461ce2a2109f4e09693344c0c00daf2b7b97da6d"
+  },
+  "accepted": true,
+  "status": "PASS_PURE_TECHNICAL_WITH_LIMITATIONS"
+}

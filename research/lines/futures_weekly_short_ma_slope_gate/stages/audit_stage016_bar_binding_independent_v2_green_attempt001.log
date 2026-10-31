@@ -1,0 +1,12 @@
+test_close_oi_must_be_finite_and_equal_to_approved_source (__main__.BarBindingIndependent.test_close_oi_must_be_finite_and_equal_to_approved_source) ... ok
+test_current_forming_day_cannot_be_completed_before_1500 (__main__.BarBindingIndependent.test_current_forming_day_cannot_be_completed_before_1500) ... ok
+test_exact_real_source_and_zero_close_oi_remain_legal (__main__.BarBindingIndependent.test_exact_real_source_and_zero_close_oi_remain_legal) ... ok
+test_future_day_bar_is_rejected_even_with_explicit_source_and_calendar (__main__.BarBindingIndependent.test_future_day_bar_is_rejected_even_with_explicit_source_and_calendar) ... ok
+test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid (__main__.BarBindingIndependent.test_high_and_low_cannot_differ_from_source_even_when_bar_is_valid) ... ok
+test_nonfinite_volume_never_reaches_an_array_manager (__main__.BarBindingIndependent.test_nonfinite_volume_never_reaches_an_array_manager) ... ok
+test_open_and_volume_cannot_differ_from_source_even_when_positive (__main__.BarBindingIndependent.test_open_and_volume_cannot_differ_from_source_even_when_positive) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.019s
+
+OK

@@ -1,0 +1,98 @@
+{
+  "schema": "stage016_funding_v2_independent_component_review_v2",
+  "created_at": "2026-10-31T17:04:10.844996+08:00",
+  "component": "funding_v2_and_private_store",
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "scope": "offline_synthetic_funding_state_machine_and_private_store",
+  "review_completed": true,
+  "accepted_for_offline_component": true,
+  "accepted_for_real_provider": false,
+  "accepted_for_real_cash_E2E": false,
+  "accepted_for_production_qualification": false,
+  "production_qualified": false,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "tests": 95,
+  "author_tests": 55,
+  "independent_tests": 40,
+  "suites": [
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_weekly19_external_funding.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 55,
+      "seconds": 0.191,
+      "log": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_funding_v2_independent_author55_final.log",
+      "log_sha256": "2779d74c2571ea5f4074a364bc58b93cfbff7eb2b9140119da78bf0feb3b5f74"
+    },
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_funding_v2_independent.py"
+      ],
+      "exit_code": 0,
+      "tests": 40,
+      "seconds": 0.226,
+      "log": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_funding_v2_independent_independent40_final.log",
+      "log_sha256": "f4c0eae5155bf1ac29deedec3d19b9639f198896ad8a16f18862e8c2723534bc"
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "8b015f3bc6aeda6fc15a1c7649fa30a58f9cb4ec4d31ae1f35d1e0afbe260eea",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_external_funding.py": "4f36c15a0cb47c1fef492f2d20dd710c83beff7c2b66b451a9fa28880c29c363",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_funding_independent.py": "24b3755b7d1dcfbf5ef36e5297dc1426bfbe8472b0c5ce1c9a47646971bef7f3",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_funding_v2_independent.py": "29d5b35375071314e97a51318531dff0e4cdce2f0cbb18035f910613d2c9082a"
+  },
+  "source_hashes_before_after_equal": true,
+  "preserved_v1_checkpoint": "09e7e07e8",
+  "preserved_v1_review_sha256": "8db39cd203975ff86207f5887e18a6dc3796b1baeabe6348dba57e934c14f46d",
+  "v1_review_matches_checkpoint_exactly": true,
+  "actual_v1_source_used_for_migration_fixture": true,
+  "original_v2_manifest_sha256": "c898f23ce5ea277ca3e67c422f6a6acd3d86396257834c12006279f99b1acfaf",
+  "original_manifest_store_sha256": "e519e709b3fb50b9f0b361ca5fea22280178228d9441fd5b0e523d413306bff6",
+  "current_store_sha256": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+  "post_manifest_change_reason": "Independently observed Darwin first-openat lock race; safe exclusive-create/open-existing repair, no financial semantics or alpha change",
+  "closed_findings": [
+    "DARWIN_FIRST_OPENAT_LOCK"
+  ],
+  "evidence_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1636_stage016_funding_v2_advice_not_debt_manifest.json": "c898f23ce5ea277ca3e67c422f6a6acd3d86396257834c12006279f99b1acfaf",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1636_stage016_funding_v2_advice_not_debt.md": "1028b8750643a4dfc226895e8f7efeaa30bdc746b9869ba4bd7dbcc649ba7612",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_funding_independent_review.json": "8db39cd203975ff86207f5887e18a6dc3796b1baeabe6348dba57e934c14f46d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_components_independent_findings_attempt001.json": "2478ea7da6b9e5e5508b033738266e670a934d1ea6b4361e6025b919466da77d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_openat_independent_probe.json": "f4871a6cb42f2f63d174470b8f08222e839910757e7a13e278be79cf520d99d2",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_funding_v2_independent_review.md": "384349f8dac332ee6ced3d890618a53af150668514dcb7db98ffc4ab0c6adaa1"
+  },
+  "qualification_missing": [
+    "accepted real account/bank/day-close source authority",
+    "complete raw cashflow continuity and serial to original request correlation",
+    "actual broker Available/margin/execution and production qualification"
+  ],
+  "chinese_review": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_funding_v2_independent_review.md",
+  "chinese_review_sha256": "384349f8dac332ee6ced3d890618a53af150668514dcb7db98ffc4ab0c6adaa1",
+  "actions": {
+    "financial_runs": 0,
+    "real_CTP_connections": 0,
+    "real_bank_calls": 0,
+    "real_SMTP_calls": 0,
+    "production_writes": 0,
+    "implementation_writes_by_reviewer": 0,
+    "old_Stage014_writes": 0,
+    "Git_index_changes_by_reviewer": 0,
+    "commits_by_reviewer": 0
+  }
+}

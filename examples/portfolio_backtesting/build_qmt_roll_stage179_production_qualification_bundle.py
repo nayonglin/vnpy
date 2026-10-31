@@ -33,7 +33,7 @@ from build_qmt_roll_stage179_release_manifest import (
     serialize_production_qualification_evidence,
     trusted_runner_environment_receipt,
 )
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, resolve_configured_execution_profile
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
     READONLY_SUMMARY_PATH,
@@ -1143,10 +1143,10 @@ def _assemble_production_qualification_bundle(
             "evidence_kind": PRODUCTION_QUALIFICATION_EVIDENCE_KIND,
             "generated_at_utc": generated,
             "source_commit": source_commit,
-            "execution_profile": C9_15W_PROFILE.profile_key,
-            "official_version": C9_15W_PROFILE.official_version,
-            "capital": C9_15W_PROFILE.capital,
-            "capital_label": C9_15W_PROFILE.capital_label,
+            "execution_profile": resolve_configured_execution_profile().profile_key,
+            "official_version": resolve_configured_execution_profile().official_version,
+            "capital": resolve_configured_execution_profile().capital,
+            "capital_label": resolve_configured_execution_profile().capital_label,
             "critical_files": critical_rows,
             "tree_fingerprint": tree_fingerprint,
             "review": review_pointer,
@@ -1167,10 +1167,10 @@ def _assemble_production_qualification_bundle(
             evidence_path,
             repo_root=repo,
             source_commit=source_commit,
-            execution_profile=C9_15W_PROFILE.profile_key,
-            official_version=C9_15W_PROFILE.official_version,
-            capital=C9_15W_PROFILE.capital,
-            capital_label=C9_15W_PROFILE.capital_label,
+            execution_profile=resolve_configured_execution_profile().profile_key,
+            official_version=resolve_configured_execution_profile().official_version,
+            capital=resolve_configured_execution_profile().capital,
+            capital_label=resolve_configured_execution_profile().capital_label,
             critical_files=critical,
             manifest_created_at_utc=generated,
         )

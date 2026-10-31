@@ -13,7 +13,9 @@ import stat
 import subprocess
 from typing import Any, Mapping
 
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import (
+    C9_15W_PROFILE, OfficialExecutionProfile, resolve_configured_execution_profile,
+)
 from qmt_roll_official_live_config import (
     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH,
     OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE,
@@ -814,14 +816,28 @@ def build_stage930_command(
     activation_receipt: Path = PRODUCTION_ACTIVATION_RECEIPT,
     production_qualification_evidence: Path = PRODUCTION_QUALIFICATION_EVIDENCE,
     runtime_root: Path = PRODUCTION_RUNTIME_ROOT,
+    execution_profile: OfficialExecutionProfile | None = None,
 ) -> list[str]:
     if not _DATE_RE.fullmatch(target_date):
         raise ProductionSessionLaunchError("production_launcher_target_date_invalid")
+    profile = execution_profile or resolve_configured_execution_profile()
+    if profile.decision_mode == "weekly19":
+        weekly_command = [str(PYTHON_PATH), str(PROJECT_DIR / "run_qmt_roll_weekly19_live.py"),
+                "--job", "session", "--execution-profile", profile.profile_key,
+                "--context-file", str(runtime_root / "weekly19/context.json"),
+                "--release-manifest", str(release_manifest),
+                "--activation-receipt", str(activation_receipt),
+                "--production-qualification-evidence", str(production_qualification_evidence),
+                "--target-date", target_date, "--session", spec.session,
+                "--duration-seconds", str(spec.duration_seconds)]
+        for session_name in spec.required_session_names:
+            weekly_command.extend(["--require-current-session-name", session_name])
+        return weekly_command
     command = [
         str(PYTHON_PATH),
         str(STAGE930_SCRIPT),
         "--execution-profile",
-        C9_15W_PROFILE.profile_key,
+        resolve_configured_execution_profile().profile_key,
         "--mode",
         "live-real",
         "--submit-mode",
@@ -915,10 +931,10 @@ def _validate_release_and_receipt(
         manifest = load_and_validate_release_manifest(
             release_manifest,
             repo_root=REPO_ROOT,
-            expected_official_version=C9_15W_PROFILE.official_version,
-            expected_capital=C9_15W_PROFILE.capital,
-            expected_capital_label=C9_15W_PROFILE.capital_label,
-            expected_execution_profile=C9_15W_PROFILE.profile_key,
+            expected_official_version=resolve_configured_execution_profile().official_version,
+            expected_capital=resolve_configured_execution_profile().capital,
+            expected_capital_label=resolve_configured_execution_profile().capital_label,
+            expected_execution_profile=resolve_configured_execution_profile().profile_key,
             required_runtime_profile=ExecutionRuntimeProfile.PRODUCTION_LIVE,
             current_commit=_git_head(),
         )
@@ -929,9 +945,9 @@ def _validate_release_and_receipt(
     receipt_blockers = validate_stage179_activation_receipt(
         activation_receipt,
         manifest_sha256=str(manifest["manifest_sha256"]),
-        official_version=C9_15W_PROFILE.official_version,
-        capital=C9_15W_PROFILE.capital,
-        capital_label=C9_15W_PROFILE.capital_label,
+        official_version=resolve_configured_execution_profile().official_version,
+        capital=resolve_configured_execution_profile().capital,
+        capital_label=resolve_configured_execution_profile().capital_label,
     )
     if receipt_blockers:
         raise ProductionSessionLaunchError(
@@ -952,10 +968,10 @@ def _validate_code_qualification(
             qualification_evidence,
             repo_root=REPO_ROOT,
             source_commit=str(manifest.get("source_commit", "")),
-            execution_profile=C9_15W_PROFILE.profile_key,
-            official_version=C9_15W_PROFILE.official_version,
-            capital=C9_15W_PROFILE.capital,
-            capital_label=C9_15W_PROFILE.capital_label,
+            execution_profile=resolve_configured_execution_profile().profile_key,
+            official_version=resolve_configured_execution_profile().official_version,
+            capital=resolve_configured_execution_profile().capital,
+            capital_label=resolve_configured_execution_profile().capital_label,
             critical_files=[
                 str(item.get("path", ""))
                 for item in manifest.get("critical_files", [])
@@ -985,6 +1001,17 @@ def _validate_daily_data_readiness(
     target_date: str,
     resolver_payload: Mapping[str, Any],
 ) -> dict[str, Any]:
+    if resolve_configured_execution_profile().decision_mode == "weekly19":
+        from qmt_roll_weekly19_daily_receipt import load_and_validate_weekly19_daily_receipt
+        receipt = load_and_validate_weekly19_daily_receipt(
+            PRODUCTION_DAILY_DATA_RECEIPT,
+            context_file=PRODUCTION_RUNTIME_ROOT / "weekly19/context.json",
+            source_commit=str(manifest.get("source_commit", "")),
+            manifest_sha256=str(manifest.get("manifest_sha256", "")),
+            target_date=target_date,
+        )
+        return {**receipt, "production_calendar_status": _validate_target_date_calendar_window(
+            receipt=receipt, resolver_payload=resolver_payload)}
     _strict_regular_file(PRODUCTION_DAILY_DATA_RECEIPT, max_public_mode=0o077)
     try:
         receipt = load_and_validate_production_daily_data_receipt(

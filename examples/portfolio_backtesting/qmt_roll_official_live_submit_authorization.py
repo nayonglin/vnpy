@@ -56,6 +56,72 @@ _INITIAL_OPEN_SOURCE = "stage901_pending_order"
 _INITIAL_OPEN_ROLE = "c9_initial_open"
 
 
+_WEEKLY19_PROFILE = "weekly19-15w-r150k"
+_WEEKLY19_BINDING_FIELDS = (
+    "execution_profile", "official_version", "ruleset_version", "material_release_id", "account_fingerprint",
+    "source_commit", "production_source_commit", "material_source_commit", "manifest_sha256", "qualification_sha256", "activation_receipt_sha256", "daily_receipt_sha256",
+    "source_data_receipt_sha256", "decision_origin_state_sha256", "planned_intent_id", "signal_identity_sha256",
+    "physical_epoch_id", "durable_state_sha256", "funding_state_sha256", "broker_snapshot_sha256", "quote_proof_sha256",
+    "service_generation", "connection_generation", "target_cutoff_date", "trading_date", "spool_snapshot_digest", "cursor_digest",
+)
+
+
+def _weekly19_evidence_blockers(payload, expected_bindings=None):
+    if payload.get("execution_profile") != _WEEKLY19_PROFILE:
+        return []
+    blockers = []
+    rows = payload.get("authorized_intents")
+    if payload.get("authorization_lane") != "slow_controller" or not isinstance(rows, list) or len(rows) != 1:
+        return ["weekly19_authorization_exact_slow_lane_required"]
+    row = rows[0]
+    bindings = row.get("weekly19_bindings")
+    if not isinstance(bindings, dict) or any(not isinstance(bindings.get(key), str) or not bindings[key] for key in _WEEKLY19_BINDING_FIELDS):
+        return ["weekly19_authorization_source_bindings_missing"]
+    binding_digest = _canonical_digest(bindings)
+    if row.get("weekly19_bindings_sha256") != binding_digest:
+        blockers.append("weekly19_authorization_binding_digest_invalid")
+    if bindings.get("execution_profile") != _WEEKLY19_PROFILE or bindings.get("official_version") != "official_live_weekly19_base15w_reserve15w_stage014" or bindings.get("ruleset_version") != "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1":
+        blockers.append("weekly19_authorization_official_identity_mismatch")
+    if bindings.get("source_commit") != bindings.get("production_source_commit"):
+        blockers.append("weekly19_authorization_production_manifest_source_mismatch")
+    for key in ("service_generation", "connection_generation", "spool_snapshot_digest", "cursor_digest"):
+        if bindings.get(key) != payload.get(key):
+            blockers.append("weekly19_authorization_binding_mismatch:" + key)
+    if bindings.get("target_cutoff_date") != payload.get("target_date"):
+        blockers.append("weekly19_authorization_completed_target_mismatch")
+    if expected_bindings is not None:
+        if not isinstance(expected_bindings, Mapping) or any(bindings.get(key) != value for key,value in expected_bindings.items()):
+            blockers.append("weekly19_authorization_expected_source_binding_mismatch")
+    kinds = {"weekly19_pending_order": ("open", {"weekly19_native_entry", "weekly19_rollover_reopen"}),
+             "weekly19_risk_reduce": ("close", {"weekly19_risk_close", "weekly19_rollover_close"})}
+    expected = kinds.get(row.get("source"))
+    if expected is None or row.get("intent_kind") != expected[0] or row.get("intent_role") not in expected[1]:
+        blockers.append("weekly19_authorization_source_role_forbidden")
+    schemas = {"controller_evidence": ("weekly19.controller-evidence.v1", "weekly19_controller_ready"),
+               "stage927_evidence": ("weekly19.arming-evidence.v1", "weekly19_arming_ready"),
+               "broker_gate_evidence": ("weekly19.broker-gate.v1", "ready"),
+               "tick_watermark_evidence": ("weekly19.quote-gate.v1", None)}
+    for name,(schema,status) in schemas.items():
+        evidence = payload.get(name)
+        if not isinstance(evidence, dict) or evidence.get("schema") != schema or (status is not None and evidence.get("status") != status):
+            blockers.append("weekly19_authorization_evidence_contract_invalid:" + name)
+            continue
+        if evidence.get("bindings") != bindings or evidence.get("bindings_sha256") != binding_digest:
+            blockers.append("weekly19_authorization_evidence_bindings_mismatch:" + name)
+        if "controller_status" in evidence or "real_submit_permitted" in evidence:
+            blockers.append("weekly19_authorization_legacy_status_forbidden:" + name)
+        expiry = _artifact_int(evidence.get("expires_epoch_ns"), minimum=1)
+        if expiry is None or expiry < payload.get("expires_epoch_ns", 0):
+            blockers.append("weekly19_authorization_evidence_expiry_invalid:" + name)
+    for name,digest_name in (("broker_gate_evidence", "stage902_evidence_digest"),("stage927_evidence", "stage927_evidence_digest")):
+        if payload.get(digest_name) != _canonical_digest(payload.get(name, {})):
+            blockers.append("weekly19_authorization_gate_digest_mismatch:" + digest_name)
+    tick=payload.get("tick_watermark_evidence", {})
+    if tick.get("candidate_symbol") != row.get("vt_symbol") or tick.get("candidate_symbol_ready") != 1 or tick.get("quote_proof_sha256") != bindings["quote_proof_sha256"]:
+        blockers.append("weekly19_authorization_candidate_quote_not_ready")
+    return blockers
+
+
 def submit_authorization_path(output_root: str | Path) -> Path:
     return (
         Path(output_root).expanduser().resolve(strict=False)
@@ -149,6 +215,7 @@ def _normalized_authorized_intents(
     *,
     authorization_lane: str | None = None,
     intent_scope: str | None = None,
+    execution_profile: str | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(rows, (list, tuple)) or not rows:
         raise ValueError(
@@ -205,7 +272,18 @@ def _normalized_authorized_intents(
                 field_name=f"authorized_intent_{field_name}",
                 minimum=minimum,
             )
+        if execution_profile == _WEEKLY19_PROFILE:
+            bindings = row.get("weekly19_bindings")
+            if not isinstance(bindings, dict):
+                raise ValueError("weekly19_authorization_source_bindings_missing")
+            normalized_row["weekly19_bindings"] = dict(bindings)
+            normalized_row["weekly19_bindings_sha256"] = str(row.get("weekly19_bindings_sha256", ""))
         normalized.append(normalized_row)
+    if execution_profile == _WEEKLY19_PROFILE:
+        if authorization_lane != "slow_controller" or len(normalized) != 1:
+            raise ValueError("weekly19_authorization_exact_slow_lane_required")
+        if any(key not in normalized[0] for key in (*_EXACT_TEXT_FIELDS,*_EXACT_INT_FIELDS)):
+            raise ValueError("weekly19_authorization_exact_identity_missing")
     if authorization_lane in {
         "persistent_intraday_fast",
         "session_initial_open",
@@ -357,6 +435,7 @@ def publish_submit_authorization(
         authorized_intents,
         authorization_lane=authorization_lane,
         intent_scope=intent_scope,
+        execution_profile=execution_profile,
     )
     if intent_scope == "reduce_close_only" and any(
         row["intent_kind"] != "close" for row in normalized_intents
@@ -445,6 +524,9 @@ def publish_submit_authorization(
             **evidence,
         }
     )
+    weekly_errors = _weekly19_evidence_blockers(payload)
+    if weekly_errors:
+        raise ValueError(";".join(weekly_errors))
     _atomic_write_json(Path(path), payload)
     return payload
 
@@ -508,7 +590,7 @@ def _authorized_rows_from_payload(
     scope = str(payload.get("intent_scope", ""))
     if lane not in _AUTHORIZATION_LANES or scope not in _INTENT_SCOPES:
         raise ValueError("authorization_identity_invalid")
-    if lane in {"persistent_intraday_fast", "session_initial_open"}:
+    if lane in {"persistent_intraday_fast", "session_initial_open"} or payload.get("execution_profile") == _WEEKLY19_PROFILE:
         expected_scopes = (
             {"reduce_close_only", "retry_open_only"}
             if lane == "persistent_intraday_fast"
@@ -531,6 +613,7 @@ def _authorized_rows_from_payload(
         payload.get("authorized_intents"),
         authorization_lane=lane,
         intent_scope=scope,
+        execution_profile=payload.get("execution_profile"),
     )
     if scope == "reduce_close_only" and any(
         row["intent_kind"] != "close" for row in rows
@@ -625,6 +708,7 @@ def validate_submit_authorization(
     stage902_evidence_digest: str | None = None,
     stage927_evidence_digest: str | None = None,
     allow_expired_if_record_digest: str | None = None,
+    weekly19_bindings: Mapping[str, Any] | None = None,
 ) -> list[str]:
     """Return every fail-closed blocker for one authorization boundary.
 
@@ -747,6 +831,7 @@ def validate_submit_authorization(
             payload.get("authorized_intents"),
             authorization_lane=lane,
             intent_scope=scope,
+            execution_profile=execution_profile,
         )
     except ValueError as exc:
         blockers.append(str(exc))
@@ -785,7 +870,7 @@ def validate_submit_authorization(
     exact_lane = lane in {
         "persistent_intraday_fast",
         "session_initial_open",
-    }
+    } or execution_profile == _WEEKLY19_PROFILE
     if exact_lane and not stored_spool_path:
         blockers.append(
             "stage179_submit_authorization_exact_lane_spool_path_missing"
@@ -935,6 +1020,8 @@ def validate_submit_authorization(
                         "stage179_submit_authorization_authorized_intent_"
                         f"{field_name}_mismatch"
                     )
+    blockers.extend(_weekly19_evidence_blockers(payload, weekly19_bindings))
+    is_weekly19 = execution_profile == _WEEKLY19_PROFILE
     controller = payload.get("controller_evidence", {})
     stage927 = payload.get("stage927_evidence", {})
     broker = payload.get("broker_gate_evidence", {})
@@ -984,7 +1071,9 @@ def validate_submit_authorization(
             blockers.append(
                 "stage179_submit_authorization_controller_target_date_mismatch"
             )
-        if lane == "persistent_intraday_fast":
+        if is_weekly19:
+            pass
+        elif lane == "persistent_intraday_fast":
             if (
                 controller.get("controller_status")
                 != "persistent_intraday_fast_ready"
@@ -1032,7 +1121,9 @@ def validate_submit_authorization(
                     "stage179_submit_authorization_no_ready_intent"
                 )
     if isinstance(stage927, dict):
-        if lane == "persistent_intraday_fast":
+        if is_weekly19:
+            pass
+        elif lane == "persistent_intraday_fast":
             permit_field = (
                 "reduce_close_submit_permitted"
                 if scope == "reduce_close_only"

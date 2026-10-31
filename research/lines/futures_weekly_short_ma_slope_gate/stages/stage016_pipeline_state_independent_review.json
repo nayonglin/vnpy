@@ -1,0 +1,102 @@
+{
+  "schema": "stage016_pipeline_state_independent_component_review_v1",
+  "created_at": "2026-10-31T17:17:47.724737+08:00",
+  "component": "atomic_pipeline_state_store",
+  "scope": "offline_structural_binding_and_single_file_transactions_only",
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "review_completed": true,
+  "accepted_for_offline_component": true,
+  "accepted_for_whole_runtime": false,
+  "accepted_for_real_provider": false,
+  "accepted_for_production_qualification": false,
+  "production_qualified": false,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "failures": [],
+  "tests": 27,
+  "author_tests": 10,
+  "independent_tests": 17,
+  "suites": [
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_weekly19_pipeline_state.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 10,
+      "seconds": 0.227,
+      "log": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_pipeline_state_independent_author10_final.log",
+      "log_sha256": "e820e6fa468512e127c4b470604c7058185263734e4a79111c1a725319257b0a"
+    },
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_pipeline_state_independent.py"
+      ],
+      "exit_code": 0,
+      "tests": 17,
+      "seconds": 0.033,
+      "log": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_pipeline_state_independent_independent17_final.log",
+      "log_sha256": "01d614df84b2265cf6a8eb804bbeeffebf4d9c0cca758021c5faea9c06d706b2"
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "939b5023305299157f663bee464cd9bdc306fd776d80848111e1b9dd4afd5008",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "8b015f3bc6aeda6fc15a1c7649fa30a58f9cb4ec4d31ae1f35d1e0afbe260eea",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "784dfef6cb75ed0a3352c03ee44cb6554334781f06decf72fe2e389b8a0bf62a",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_pipeline_state.py": "585d4764d35ff2d8e8b07793d9dbe70541bcca3918bc8c4d5131ed2a1de5268a",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_runtime.py": "709b9ee071fd1484c9b442d2ab1927e4f96c28ef2312b67c9d367baf83d208cf",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_pipeline_state_independent.py": "f3c37dcb5e4af09283eb54156fc3ce2094abe4ee144feab4d1c95eb0f1c91136"
+  },
+  "source_hashes_before_after_equal": true,
+  "runtime_helper_AST_sha256": {
+    "_state_digest": "af51b9a62db81f8968b3e6f0fba0c00962f8742b96b95e0fe7afa8a319703f36",
+    "_decode": "6e30c9f0abb880e95bdcac7088e7f3e1e2833a4f9905271c9385ecf33a30b9db",
+    "_hash": "c0e2091dbba7265405c7279094b190c6cc190351b33af2f50efb8c3612261d41",
+    "_json": "a4cc9b417c2bcdc1807fab1c7bcbe3dcc50bfa476b88948caa6eb4f9e463cbfe",
+    "_fail": "6f0d9754100e6a4ccb9d8cb36c464ec162055634c251377172b631b32352fe2f"
+  },
+  "runtime_future_changes_not_automatically_accepted": true,
+  "closed_findings": [
+    {
+      "id": "PIPELINE_SNAPSHOT_BINDING",
+      "original_severity": "P1",
+      "status": "CLOSED_BY_STRICT_SNAPSHOT_ORIGIN_AND_CASH_BINDING"
+    },
+    {
+      "id": "PIPELINE_COLD_START_IDENTITY",
+      "original_severity": "P1",
+      "status": "CLOSED_BY_IMMUTABLE_FUND_IDENTITY_CHECKS"
+    }
+  ],
+  "initial_findings_sha256": "4c0ea38e333404eda8f1f4b858de652a94d97a6f89a6dfec19ae1388724230e8",
+  "chinese_review": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_pipeline_state_independent_review.md",
+  "chinese_review_sha256": "80866520ddf3316942cf46ba7c5c47b4898dc969b8b6e81edb7bd95714861e28",
+  "fault_semantics": {
+    "transform_or_before_replace_error": "old file unchanged",
+    "after_replace_directory_fsync_error": "commit outcome ambiguous, complete new file may already be visible; reload/reconcile required before any external side effect"
+  },
+  "provider_and_production_qualification_unchanged_false": true,
+  "actions": {
+    "historical_financial_replays": 0,
+    "real_CTP_connections": 0,
+    "bank_calls": 0,
+    "real_SMTP_calls": 0,
+    "real_order_calls": 0,
+    "production_writes": 0,
+    "implementation_writes_by_reviewer": 0,
+    "Git_index_changes_by_reviewer": 0,
+    "commits_by_reviewer": 0
+  }
+}

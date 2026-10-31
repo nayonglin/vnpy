@@ -1,0 +1,21 @@
+{
+  "status": "FAILED_INDEPENDENT_COUNTEREXAMPLE",
+  "exit_code": 1,
+  "sources_before": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "f5e1ef1cb95e8641a098e8f44940b29d50ac3db98891f8213f1a9c83032d94d4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "60482b72dac16edf0be5d0e5b88806b5c4630c08233c340289bef1f326e14f2f",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_provider_report_independent.py": "5555f7fde069953580618c2c5b79655a303613278de4e1d12d30dfcf8a42429f"
+  },
+  "sources_after": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "f5e1ef1cb95e8641a098e8f44940b29d50ac3db98891f8213f1a9c83032d94d4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "60482b72dac16edf0be5d0e5b88806b5c4630c08233c340289bef1f326e14f2f",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_provider_report_independent.py": "5555f7fde069953580618c2c5b79655a303613278de4e1d12d30dfcf8a42429f"
+  },
+  "sources_unchanged": true,
+  "log": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_provider_report_independent_attempt001.log",
+  "log_sha256": "fc97e26a6c882038ec25b07e926d0bff4bd1f2bc5f8e2013d9f85fb743dbe6f9",
+  "all_synthetic": true,
+  "CTP_connections": 0,
+  "SMTP_calls": 0,
+  "bank_calls": 0
+}

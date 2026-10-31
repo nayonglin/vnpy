@@ -1,0 +1,67 @@
+{
+  "schema": "weekly19.technical-benchmark.v1",
+  "strict_fixture_broker": true,
+  "financial_replays": 0,
+  "on_bars_calls": 0,
+  "market_downloads": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "phases": {
+    "read_inputs": {
+      "seconds": 16.07338866707869,
+      "maxrss": 1128267776
+    },
+    "build": {
+      "seconds": 8.704240208026022,
+      "maxrss": 1993211904
+    },
+    "pure_warmup": {
+      "seconds": 36.98279812512919,
+      "maxrss": 1993211904
+    },
+    "export": {
+      "seconds": 9.142254791921005,
+      "maxrss": 2081914880
+    },
+    "sizing_clone": {
+      "seconds": 0.12638145801611245,
+      "maxrss": 2081914880
+    },
+    "revalidate_open_intent": {
+      "seconds": 3.923578584101051,
+      "maxrss": 2081914880
+    },
+    "export_for_fsync_restore": {
+      "seconds": 3.8586823327932507,
+      "maxrss": 2081914880
+    },
+    "json_fsync_read": {
+      "seconds": 0.025770791107788682,
+      "maxrss": 2081914880
+    },
+    "restore": {
+      "seconds": 27.068036457989365,
+      "maxrss": 2813247488
+    },
+    "pipeline_bundle_initialize_fsync": {
+      "seconds": 0.14064150000922382,
+      "maxrss": 2813247488
+    },
+    "pipeline_bundle_read_validate": {
+      "seconds": 0.12796033406630158,
+      "maxrss": 2813247488
+    }
+  },
+  "source_runtime_sha256_before": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+  "source_reader_sha256_before": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+  "durable_json_bytes": 5090984,
+  "revalidate_context": "synthetic_request_real_approved_history_no_signal_qualification",
+  "restore_state_sha_equal": true,
+  "bundle_two_states_under_64MiB": true,
+  "synthetic_decision_binding_ok": true,
+  "actual_pipeline_bundle_bytes": 10186712,
+  "actual_pipeline_bundle_under_64000000": true,
+  "actual_pipeline_bundle_sha_preserved": true,
+  "source_runtime_sha256": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+  "source_files_unchanged_during_benchmark": true
+}

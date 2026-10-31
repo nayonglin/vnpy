@@ -1,0 +1,29 @@
+test_01_direct_funding_dependency_hash_wrong_rejected (__main__.Provider.test_01_direct_funding_dependency_hash_wrong_rejected) ... ok
+test_02_direct_account_context_dependency_missing_rejected (__main__.Provider.test_02_direct_account_context_dependency_missing_rejected) ... ok
+test_03_minimum_five_semantic_source_closure (__main__.Provider.test_03_minimum_five_semantic_source_closure) ... ok
+test_04_unknown_native_fill_enums_never_emit_null_fields (__main__.Provider.test_04_unknown_native_fill_enums_never_emit_null_fields) ... ok
+test_05_actual_fill_quantity_not_caller_ledger_or_fake_order_mapping (__main__.Provider.test_05_actual_fill_quantity_not_caller_ledger_or_fake_order_mapping) ... ok
+test_06_default_production_authority_and_final_statement_stay_blocked (__main__.Provider.test_06_default_production_authority_and_final_statement_stay_blocked) ... ok
+test_07_native_bank_query_freshness_not_only_outer_publish_time (__main__.Provider.test_07_native_bank_query_freshness_not_only_outer_publish_time) ... ok
+test_08_bank_record_cannot_occur_after_query_callback (__main__.Provider.test_08_bank_record_cannot_occur_after_query_callback) ... ok
+test_09_transfer_callback_context_restores_on_exception_without_connect (__main__.Provider.test_09_transfer_callback_context_restores_on_exception_without_connect) ... ok
+test_10_raw_capture_mode_and_hardlink_reject_even_hash_unchanged (__main__.Provider.test_10_raw_capture_mode_and_hardlink_reject_even_hash_unchanged) ... ok
+test_11_SHFE_close_flags_keep_native_proof_and_business_close (__main__.Provider.test_11_SHFE_close_flags_keep_native_proof_and_business_close) ... ok
+test_11_stale_30k_request_at_current50k_gap_is_not_actionable (__main__.Report.test_11_stale_30k_request_at_current50k_gap_is_not_actionable) ... ok
+test_12_missing_actionable_cannot_default_true (__main__.Report.test_12_missing_actionable_cannot_default_true) ... ok
+test_13_wrong_request_id_or_source_cannot_be_actionable (__main__.Report.test_13_wrong_request_id_or_source_cannot_be_actionable) ... ok
+test_14_positive_advice_without_current_native_admission_is_not_actionable (__main__.Report.test_14_positive_advice_without_current_native_admission_is_not_actionable) ... ok
+test_15_old_pending_is_shown_when_this_batch_has_no_advice (__main__.Report.test_15_old_pending_is_shown_when_this_batch_has_no_advice) ... ok
+test_16_E_recovered_means_no_old_debt_and_no_virtual_new_cash (__main__.Report.test_16_E_recovered_means_no_old_debt_and_no_virtual_new_cash) ... ok
+test_17_last_week_source_and_bad_raw_cash_are_blocked (__main__.Report.test_17_last_week_source_and_bad_raw_cash_are_blocked) ... ok
+test_18_foreign_currency_never_calculates_actionable_CNY_amount (__main__.Report.test_18_foreign_currency_never_calculates_actionable_CNY_amount) ... ok
+test_23_valid_current_bound_advice_is_not_permanently_blocked (__main__.Report.test_23_valid_current_bound_advice_is_not_permanently_blocked) ... ok
+test_19_preview_never_calls_even_injected_transport (__main__.Outbox.test_19_preview_never_calls_even_injected_transport) ... ok
+test_20_threaded_same_release_week_has_one_transport_attempt (__main__.Outbox.test_20_threaded_same_release_week_has_one_transport_attempt) ... ok
+test_21_crash_after_transport_before_final_state_is_unknown_no_retry (__main__.Outbox.test_21_crash_after_transport_before_final_state_is_unknown_no_retry) ... ok
+test_22_tamper_body_and_private_outbox_mode_reject_before_transport (__main__.Outbox.test_22_tamper_body_and_private_outbox_mode_reject_before_transport) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.202s
+
+OK

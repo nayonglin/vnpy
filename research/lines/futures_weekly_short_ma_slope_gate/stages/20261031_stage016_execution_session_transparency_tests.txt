@@ -1,0 +1,7 @@
+.....................................................................................................................................................................usage: provisioner [-h] [--mode {check,create}]
+provisioner: error: unrecognized arguments: --allowed-root /var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/tmphlurwfuw/stage179_stage372
+.......
+----------------------------------------------------------------------
+Ran 172 tests in 8.849s
+
+OK

@@ -1,0 +1,29 @@
+....F..F                                                                 [100%]
+=================================== FAILURES ===================================
+_ FinalQueryPacingBoundaryTest.test_position_detail_boundary_crossing_is_ready_before_the_deadline _
+
+self = <test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_position_detail_boundary_crossing_is_ready_before_the_deadline>
+
+    def test_position_detail_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('detail',8.)
+>       self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: False is not true : {'confirmed': False, 'position_details': [], 'blockers': ['position_detail_query_pacing_timeout'], 'reqid': None}
+
+tests/test_stage931_ctp_readiness.py:2281: AssertionError
+_ FinalQueryPacingBoundaryTest.test_trade_pacing_boundary_crossing_is_ready_before_the_deadline _
+
+self = <test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_trade_pacing_boundary_crossing_is_ready_before_the_deadline>
+
+    def test_trade_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('trade',8.)
+>       self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: False is not true : {'confirmed': False, 'trades': [], 'blockers': ['final_trade_query_pacing_timeout'], 'reqid': None}
+
+tests/test_stage931_ctp_readiness.py:2277: AssertionError
+------- generated xml file: /private/tmp/weekly19_pacing_family_red.xml --------
+=========================== short test summary info ============================
+FAILED tests/test_stage931_ctp_readiness.py::FinalQueryPacingBoundaryTest::test_position_detail_boundary_crossing_is_ready_before_the_deadline
+FAILED tests/test_stage931_ctp_readiness.py::FinalQueryPacingBoundaryTest::test_trade_pacing_boundary_crossing_is_ready_before_the_deadline
+2 failed, 6 passed in 0.20s

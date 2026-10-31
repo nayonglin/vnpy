@@ -20,9 +20,23 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage945_official_live_production_session_launcher as launcher  # noqa: E402
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
 class Stage945ProductionLauncherTest(unittest.TestCase):
+    def setUp(self) -> None:
+        no_external_exec = patch.object(launcher.os, "execve", side_effect=AssertionError("test must explicitly mock the external exec boundary"))
+        no_external_exec.start()
+        self.addCleanup(no_external_exec.stop)
+        historical = patch.object(launcher, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        historical.start()
+        self.addCleanup(historical.stop)
+        import run_qmt_roll_stage922_official_live_target_date_resolver as historical_resolver
+        for module in (launcher, historical_resolver):
+            cold_start = patch.object(module, "OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE", "2026-07-23")
+            cold_start.start()
+            self.addCleanup(cold_start.stop)
+
     def _write_barrier_fixture(
         self,
         root: Path,
@@ -151,11 +165,11 @@ print("CONTRACT=" + json.dumps({
         )
         self.assertEqual([], payload["loaded_after_lightweight_import"])
         self.assertEqual(
-            "official_live_stage847_c9_15w_stage819_05r_stop_retry_once",
+            "official_live_weekly19_base15w_reserve15w_stage014",
             payload["version"],
         )
-        self.assertEqual("Stage847-C9-15w", payload["alias"])
-        self.assertEqual("2026-07-23", payload["shadow_start"])
+        self.assertEqual("Stage014-Weekly19-15w-R150k", payload["alias"])
+        self.assertEqual("2026-10-31", payload["shadow_start"])
         self.assertEqual(control.resolve(), Path(payload["control"]).resolve())
         self.assertEqual(signal.resolve(), Path(payload["signal"]).resolve())
         self.assertEqual(

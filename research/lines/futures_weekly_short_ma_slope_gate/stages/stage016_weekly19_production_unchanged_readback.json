@@ -1,0 +1,36 @@
+{
+  "schema": "weekly19.production-unchanged-readback.v1",
+  "head": "d55887e1def72629fbfa310e439dc3a879969a14",
+  "dirty_entries": 0,
+  "current_material_sha256": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+  "jobs": {
+    "day-session": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "night-session": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "day-close-readonly": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "postclose-precompute": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "postclose-report": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "monthly-ai-pool": {
+      "loaded": false,
+      "exit_code": 113
+    },
+    "health": {
+      "loaded": false,
+      "exit_code": 113
+    }
+  }
+}

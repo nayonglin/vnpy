@@ -1,0 +1,8 @@
+{
+  "schema": "weekly19.remote-readback.v1",
+  "generated_at_utc": "2026-10-31T12:20:39.568231+00:00",
+  "verified": true,
+  "remote_master_sha": "e41a0a01d53b7256001e45e686acad53667ef7bf",
+  "exit_code": 0,
+  "remote_written": false
+}

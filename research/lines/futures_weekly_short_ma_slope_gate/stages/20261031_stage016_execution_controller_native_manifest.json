@@ -1,0 +1,128 @@
+{
+  "schema": "weekly19.execution-controller-native-candidate.v1",
+  "generated_at": "2026-10-31T10:27:49.098185+00:00",
+  "worktree": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian",
+  "execution_profile": "weekly19-15w-r150k",
+  "formal_default": "official_live_weekly19_base15w_reserve15w_stage014",
+  "material_ready": false,
+  "production_qualified": false,
+  "financial_backtest_run": false,
+  "real_ctp_connected": false,
+  "order_api_called_count": 0,
+  "tests": [
+    {
+      "log": "20261031_stage016_execution_weekly_suite.txt",
+      "tests": 338,
+      "seconds": 15.892,
+      "result": "OK"
+    },
+    {
+      "log": "20261031_stage016_execution_native_controller_regression.txt",
+      "tests": 245,
+      "seconds": 3.038,
+      "result": "OK"
+    }
+  ],
+  "files": [
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_execution_profile.py",
+      "sha256": "24a50c45bd30c4911a8cb6e303162b20300548bcdc28ff428d860dce41725d96",
+      "bytes": 9268
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_execution.py",
+      "sha256": "880a70624615429feec2008d121d5151540bae56f7cc2621e4ee500f087bf024",
+      "bytes": 17239
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_controller.py",
+      "sha256": "b5e1e65ec5bf977de0fe70eb15d7abffebfacc9c9e77e8644a04d406c398acbe",
+      "bytes": 13750
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_execution_service.py",
+      "sha256": "1a35cac60ab147eeb5c14aba62664810d40e16205dcbd5ad7908fb1f1d6aab58",
+      "bytes": 13101
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_quote_spool.py",
+      "sha256": "f87897a50200ece76d24b241c8b6a56cfda2fe82524d609a873b8cdb10d6f148",
+      "bytes": 10739
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_intent_spool.py",
+      "sha256": "097119678a41bc32ccc3984c6acb622990f097c33cd1802e10313f1dc796c334",
+      "bytes": 121406
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_submit_authorization.py",
+      "sha256": "3a5b2e6e7694fc4c8e00949be98a0f12156fb623434f8430f2f448a32d499c33",
+      "bytes": 49516
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_trace.py",
+      "sha256": "558354c8d90f0d84d65f34f2ed2fb52b4c88770b2199f51176c1f57d07ddfdd7",
+      "bytes": 33748
+    },
+    {
+      "path": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+      "sha256": "9992ec7c53b06198171688102cea1b7dee2169285cd9a3a9bb733948cc504380",
+      "bytes": 681939
+    },
+    {
+      "path": "examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py",
+      "sha256": "e85fae9b6b0a0f056b03a261d2595056fde7cb014d5c692819deb17cb8a4d093",
+      "bytes": 115947
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py",
+      "sha256": "0a9f9a531aa0358988530ced179d5f8eb408dc97ab9ff8601aea1efbd335a479",
+      "bytes": 4506
+    },
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+      "sha256": "eddda0e522df8b94da75fe121ff8c11beb3858f0451f82159ec0eae70f7449b1",
+      "bytes": 17954
+    },
+    {
+      "path": "official_strategy_materials/CURRENT.json",
+      "sha256": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+      "bytes": 1377
+    },
+    {
+      "path": "tests/test_weekly19_controller.py",
+      "sha256": "8db9d5e99a44dde1049f4d63334d194e6ea8416337dcb86e9e1a3d0539ca3a50",
+      "bytes": 7259
+    },
+    {
+      "path": "tests/test_weekly19_execution_service.py",
+      "sha256": "f07bb8df4cfd36a7df27093dbadf24bff423da1595a282d9ef3dfab781c0ac5c",
+      "bytes": 6293
+    },
+    {
+      "path": "tests/test_weekly19_native_execution.py",
+      "sha256": "0ce5ef46f3d0d64bae43c3b7eae02f2f3fbe5e1b43ad78ac95a677c60c26e692",
+      "bytes": 14481
+    },
+    {
+      "path": "tests/test_weekly19_quote_spool.py",
+      "sha256": "f86f6bc1167d2ae249cf339a5a2f78c40b00fac73713261779379e6ac3c46fb1",
+      "bytes": 11580
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_weekly_suite.txt",
+      "sha256": "f1da5c76ffd27d980050f636952c6a7db6697b7960e60d7984235fb2ccf7b6fa",
+      "bytes": 537
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_execution_native_controller_regression.txt",
+      "sha256": "26746b80ec3858de20dd976dc852d13585a84df4f5c15070fb987fc310176df3",
+      "bytes": 2002
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1825_stage016_execution_controller_native_candidate.md",
+      "sha256": "8d4c809fde984db2fbc87492058d732e9ef79d71070f8244a185aa074c354185",
+      "bytes": 9614
+    }
+  ]
+}

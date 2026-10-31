@@ -1,0 +1,41 @@
+{
+  "schema": "weekly19.friday-advice-candidate.v1",
+  "generated_at": "2026-10-31T11:22:51.672579+00:00",
+  "production_qualified": false,
+  "tests": {
+    "total": 83,
+    "seconds": 2.505,
+    "result": "OK",
+    "new_helper": 10
+  },
+  "files": [
+    {
+      "path": "examples/portfolio_backtesting/qmt_roll_weekly19_friday_advice.py",
+      "sha256": "46e7db31412e7c774b56a72174f37eedda7327709b64262def5dc285673ef1df"
+    },
+    {
+      "path": "tests/test_weekly19_friday_advice.py",
+      "sha256": "c3b73358c056ada84d443ce3f5e29bcc9f96d43f0655d730e7d6369a3d9cada9"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_friday_advice_red.log",
+      "sha256": "20a4502348f91df9cc356f71c9dfccf43d705435e12c38c1a07774289120c787"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_friday_advice_attempt001.log",
+      "sha256": "f9a453a694b9d594972e532b8df625b2f0706080f0d219f456f70cc4d1237bc2"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_friday_advice_attempt003.log",
+      "sha256": "18490262bca48c8179c7e477c79623050e96ebaa331ef82f2b98188566769540"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_friday_advice_final.log",
+      "sha256": "c15a91262f71c3e02871a7fec1ee71ab20155bcb034322c2591abcef025b5f67"
+    },
+    {
+      "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1922_stage016_execution_friday_advice.md",
+      "sha256": "8f5a0512f22bdf981d87d9ad395ea3470907f879295509ce92c18fc494143774"
+    }
+  ]
+}

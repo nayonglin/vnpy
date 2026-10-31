@@ -1,0 +1,9 @@
+test_deferred_flag_cannot_use_untransferred_reserve_below_floor_but_real_equity_can_clear_it (tests.test_weekly19_runtime.EquityRecoveredReplanTests.test_deferred_flag_cannot_use_untransferred_reserve_below_floor_but_real_equity_can_clear_it) ... ok
+test_equity_recovers_above_floor_without_transfer_reuses_original_admission_once (tests.test_weekly19_runtime.EquityRecoveredReplanTests.test_equity_recovers_above_floor_without_transfer_reuses_original_admission_once) ... ok
+test_real_cash_confirmation_creates_new_plan_without_repeating_funding_admission (tests.test_weekly19_runtime.FundingReplanTests.test_real_cash_confirmation_creates_new_plan_without_repeating_funding_admission) ... ok
+test_queued_day_origin_and_cross_day_close_retry_bind_new_receipt_through_store_and_gate (tests.test_weekly19_runtime.QueuedReceiptGateTests.test_queued_day_origin_and_cross_day_close_retry_bind_new_receipt_through_store_and_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.341s
+
+OK

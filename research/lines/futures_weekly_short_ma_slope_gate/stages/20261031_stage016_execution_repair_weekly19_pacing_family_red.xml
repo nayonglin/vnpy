@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="0.202" timestamp="2026-10-31T20:22:06.042603+08:00" hostname="macdeMacBook-Pro.local"><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_actual_deadline_still_blocks_both_queries_before_any_request" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_common_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_common_pacing_retains_the_actual_timeout" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_order_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_position_detail_boundary_crossing_is_ready_before_the_deadline" time="0.000"><failure message="AssertionError: False is not true : {'confirmed': False, 'position_details': [], 'blockers': ['position_detail_query_pacing_timeout'], 'reqid': None}">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_position_detail_boundary_crossing_is_ready_before_the_deadline&gt;
+
+    def test_position_detail_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('detail',8.)
+&gt;       self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: False is not true : {'confirmed': False, 'position_details': [], 'blockers': ['position_detail_query_pacing_timeout'], 'reqid': None}
+
+tests/test_stage931_ctp_readiness.py:2281: AssertionError</failure></testcase><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_position_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_raw_query_actual_deadline_still_blocks_before_any_request" time="0.000" /><testcase classname="tests.test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest" name="test_trade_pacing_boundary_crossing_is_ready_before_the_deadline" time="0.000"><failure message="AssertionError: False is not true : {'confirmed': False, 'trades': [], 'blockers': ['final_trade_query_pacing_timeout'], 'reqid': None}">self = &lt;test_stage931_ctp_readiness.FinalQueryPacingBoundaryTest testMethod=test_trade_pacing_boundary_crossing_is_ready_before_the_deadline&gt;
+
+    def test_trade_pacing_boundary_crossing_is_ready_before_the_deadline(self):
+        result,api,_=self._query('trade',8.)
+&gt;       self.assertTrue(result['confirmed'],result);self.assertEqual(len(api.calls),1);self.assertGreaterEqual(api.calls[0][1],1.2)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: False is not true : {'confirmed': False, 'trades': [], 'blockers': ['final_trade_query_pacing_timeout'], 'reqid': None}
+
+tests/test_stage931_ctp_readiness.py:2277: AssertionError</failure></testcase></testsuite></testsuites>

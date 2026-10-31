@@ -1,0 +1,9 @@
+{
+  "status": "SOURCE_DRIFT_BEFORE_TESTS",
+  "file": "examples/portfolio_backtesting/run_qmt_roll_stage931_official_live_ctp_submit_adapter.py",
+  "manifest_sha256": "7c8881f3dbc2ba1c31ab6e720c6e14ccfda46f4fc5dceeec33b167d7392f206d",
+  "observed_sha256": "59129bea7f42831e33f981651805284b17cffc15cb01d7b93f8ba027c2468449",
+  "test_invocations": 0,
+  "financial_replays": 0,
+  "implementation_changed": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "weekly19.quote-scale-benchmark.v1",
+  "offline_fixture_only": true,
+  "production_qualified": false,
+  "financial_replay": false,
+  "source_sha256": "e91f36f109dd74617786141e8b332163262ef896039710e252294574781fc6b4",
+  "producer_mode": "paced batches of500 within unchanged8192 ingress bound",
+  "framed_tick_count": 50000,
+  "journal_bytes": 34522122,
+  "cold_decode_seconds": 2.674711124971509,
+  "cached_prefix_rehash_seconds": [
+    0.01632837508805096,
+    0.0161275421269238,
+    0.01610895898193121,
+    0.016030291095376015,
+    0.0160415000282228
+  ],
+  "cached_median_seconds": 0.01610895898193121,
+  "integrity": "actual full committed prefix rehashed on every cached call",
+  "ctp_protocol_login_attempted": false,
+  "order_api_called_count": 0,
+  "send_order_api_called_count": 0,
+  "cancel_order_api_called_count": 0
+}

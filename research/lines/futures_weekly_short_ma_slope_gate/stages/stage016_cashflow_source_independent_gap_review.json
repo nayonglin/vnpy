@@ -1,0 +1,122 @@
+{
+  "schema": "stage016.cashflow-source-independent-gap.v1",
+  "status": "SOURCE_INTERFACE_AVAILABLE_FINALITY_UNPROVEN",
+  "production_qualified": false,
+  "network_calls": 0,
+  "ctp_calls": 0,
+  "order_calls": 0,
+  "bank_calls": 0,
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcUserApiStruct.h": "4e7c5eef6334295680f94e15a13882123b6397ede3d1c2faaa167d9493997854",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcTraderApi.h": "cad08a69549fcab5cdc830661a63106165b0cbc5868b00d3ecda24b34c261847",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_process.cpp": "9bce85e3758cce4d717dd24dec133f794837751c9fcda430d39939389c3c93e1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_function.cpp": "050dd2951d3fb4632a83f8f8c849a3e32b24117e5b4904fbdc1f1ed94e365215",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_module.cpp": "041851e06116e01dadf3381f5ba88d02c9a1c8e9823e6a997da6aa8b4d0a740a",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/gateway/ctp_gateway.py": "0f33287a996342828dc03a483768956cdf1639bdd9621c216455c62059701302",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "fc9936385c086f0c62b90a4c7dd2d5562844eaa644108f9d3144719003c981a8",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d"
+  },
+  "resolved_paths": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcUserApiStruct.h": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcUserApiStruct.h",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcTraderApi.h": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/api/include/ctp/ThostFtdcTraderApi.h",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_process.cpp": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_process.cpp",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_function.cpp": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_function.cpp",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_module.cpp": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/api/generator/ctp_td_source_module.cpp",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/gateway/ctp_gateway.py": "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy_ctp/gateway/ctp_gateway.py",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py"
+  },
+  "native_struct_fields": {
+    "CThostFtdcQrySettlementInfoField": [
+      "BrokerID",
+      "InvestorID",
+      "TradingDay",
+      "AccountID",
+      "CurrencyID"
+    ],
+    "CThostFtdcSettlementInfoField": [
+      "TradingDay",
+      "SettlementID",
+      "BrokerID",
+      "InvestorID",
+      "SequenceNo",
+      "Content",
+      "AccountID",
+      "CurrencyID"
+    ],
+    "CThostFtdcSettlementInfoConfirmField": [
+      "BrokerID",
+      "InvestorID",
+      "ConfirmDate",
+      "ConfirmTime",
+      "SettlementID",
+      "AccountID",
+      "CurrencyID"
+    ],
+    "CThostFtdcQryTransferSerialField": [
+      "BrokerID",
+      "AccountID",
+      "BankID",
+      "CurrencyID"
+    ]
+  },
+  "available_request": "reqQrySettlementInfo",
+  "available_callback": "onRspQrySettlementInfo",
+  "python_public_binding_present": true,
+  "query_last_proves_only_response_completion": true,
+  "settlement_confirm_is_not_statement": true,
+  "transfer_serial_query_has_explicit_trading_day": false,
+  "minimum_collector_fields": [
+    "exact request BrokerID/InvestorID/TradingDay/AccountID/CurrencyID",
+    "query reqid/return_code/connection_generation/service_generation/sent_at",
+    "every raw data/error/reqid/last/received_at in received order",
+    "TradingDay/SettlementID/BrokerID/InvestorID/SequenceNo/Content/AccountID/CurrencyID",
+    "complete chunk list and order; duplicate sequence content conflict rejected; no normalized/guessed text",
+    "frozen Python/native-extension/CTP runtime source hashes and account/release/profile binding",
+    "private immutable raw JSON+content artifact paths/raw hashes and native dictionary decode provenance"
+  ],
+  "additional_final_parser_requirements": [
+    "actual broker/vendor/template/version and real accepted full sample",
+    "same authenticated account/CNY/target TradingDay and settlement identity",
+    "vendor-backed FINAL cashflow semantics, all banks/reversals/fees and gross Deposit/Withdraw or a complete equivalent ledger",
+    "matching final closing account callback SHA and equal gross totals",
+    "qualified authoritative next TradingDay and cash-neutral starting query",
+    "explicit finality/coverage rejection for query-empty/query-last/clock-only/net-cash-only data"
+  ],
+  "indistinguishable_endpoint_examples": [
+    {
+      "name": "A",
+      "initial_E": 150000,
+      "unobserved_deposit": 0,
+      "unobserved_withdrawal": 0,
+      "pnl": 10000,
+      "final_E": 160000,
+      "next_day_Deposit": 0,
+      "next_day_Withdraw": 0
+    },
+    {
+      "name": "B",
+      "initial_E": 150000,
+      "unobserved_deposit": 20000,
+      "unobserved_withdrawal": 0,
+      "pnl": -10000,
+      "final_E": 160000,
+      "next_day_Deposit": 0,
+      "next_day_Withdraw": 0
+    },
+    {
+      "name": "C_net_zero_cash_still_ambiguous",
+      "initial_E": 150000,
+      "unobserved_deposit": 20000,
+      "unobserved_withdrawal": 20000,
+      "pnl": 10000,
+      "final_E": 160000,
+      "next_day_Deposit": 0,
+      "next_day_Withdraw": 0
+    }
+  ],
+  "current_day_close_parser": "load_cashflow_day_close remains fail-closed stub; no actual final statement accepted",
+  "new_optional_collector_note": "Root is adding a separately tested raw settlement collector after this interface investigation; raw_complete/unparsed is not finality or cashflow qualification. New source must be pinned independently."
+}

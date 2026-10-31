@@ -1,0 +1,12 @@
+{
+  "exit_code": 0,
+  "tests": 7,
+  "source_before": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10",
+  "source_after": "ac3176c8752fd49c8527953deed6a2bef8ff1e9305327dfe86b33136f4e06c10",
+  "source_unchanged": true,
+  "script_sha256": "7f404865e4a041f69930f2e4bb48b2c858e5302b8b852518d39edd3cd5d7e9b2",
+  "log_sha256": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346",
+  "fake_callback_epoch_only": true,
+  "source_qualified": false,
+  "real_external_actions": false
+}

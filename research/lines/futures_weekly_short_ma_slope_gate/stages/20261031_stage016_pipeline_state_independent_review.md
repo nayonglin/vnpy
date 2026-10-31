@@ -1,0 +1,15 @@
+# Stage016 原子pipeline状态独立审查
+
+时间：2026-10-31T17:17:47.724737+08:00；本线只新增独审stage/人工反例，不改实现、生产、Stage014、Git index/commit。结论PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS，未解决组件P0/P1/P2均0；仅条件接受当前源码下的结构绑定/单文件持久化，不接受整个runtime/recovery/capture或真实生产资格，production_qualified=false。
+
+10作者测试（0.227s）+17独立（0.033s）=27GREEN/exit0；账户与runtime/decision均明确人工fixture，独立部分只用_encode/_state_digest构造最小结构快照，不构建交易引擎、不金融、不连接CTP/银行/SMTP。来源SHA前后完全一致，命令/关闭后日志SHA见JSON。
+
+初始发现两项P1已修并保留stage016_pipeline_state_independent_findings_attempt001.json：一是能持久化无效runtime digest/内部cash及foreign decision，二是绕开FundingStore._same_identity、只调用forward而能把cold-start10/30改10/29。现严格核schema/account/release/full runtime digest/decoded内部cash与bundle资金/revision/position identities；decision_state保存其生成时的完整origin，绑定decision.afterhash、origin.days[day].decision、current_receipt_hash和当时现金，origin revision不晚于current，origin→current资金身份/单调forward一致。当前runtime可因fill或后续现金变化前进，历史decision.after不强绑当前hash，独立正例证明旧origin仍可合法保留。
+
+transact在同一私有flock内读最新状态，transform用deepcopy，异常/校验失败不替换；pipeline revision由store推进，陈旧caller不能覆盖；资金内容变化必须fundrevision严格增加，但允许同次compound退休/确认/新建议形成多个资金revision，不盲限制+1。0700/0600/全路径O_NOFOLLOW/owner/nlink/安全EXCL建锁/CAS串行/fsync/原子replace保留；并发诊断计数12次不丢、首次建锁双handle、非法身份/内cash/afterhash/receipt/future origin、orphans、冷启动篡改、同fundrevision改内容与权限等反例通过。
+
+故障边界必须如实区分：transform异常和replace之前故障保持旧完整文件；replace已成功但directory fsync报错时，调用可能抛OSError而新完整bundle已可读。独立test14实际验证该“提交结果不确定”，不冒称任何I/O异常都回滚。调用方遇此类异常必须先reload/reconcile，不发邮件/spool或盲目重做有副作用操作；纯transform不可自行触发外部副作用。该组件保证单个旧/新完整bundle可见，不是硬件掉电/所有文件系统持久性的全证明。
+
+本接受精确绑定观察到的runtime模块SHA 784dfef6cb75ed0a3352c03ee44cb6554334781f06decf72fe2e389b8a0bf62a及_hash/_json/_state_digest/_decode/_fail AST。它只是使用这些验证/序列化依赖的当前快照，不是接受runtime其余策略/恢复实现；若模块或这些依赖改变，最终release必须重新绑定兼容证明/测试/独立复审。尚在开发的restart recovery_events等不由本记录预先判通过。真实provider authority、完整最终现金流、真实资金与实际fills接线、所有生产qualification/发布安装仍未接受。
+
+过拟合：本组件审查否，不用历史收益/不扫参；原候选的历史选择风险仍保留。继续价值是，原子快照与严格资金/决策身份能避免跨文件撕裂，下一步仍需完整真实pipeline和新source-bound资格。无新回测结果，真实CTP/银行/SMTP/订单调用均0。

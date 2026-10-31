@@ -1,0 +1,66 @@
+{
+  "pipeline_ast_before": {
+    "_parts": "bdf7d23ef165b3c624c75d43befdb3d7b672f6579f44ef00bc38c3668b76a13b",
+    "pipeline_store": "8dd97a9ada1da294e113ef5eb8ea8b4e60a2055a7a06958b7c58e2ca89e554cb",
+    "_initial": "2aeedb8e78a74eafb893112d5c6fb7c646cafd239730326c0b8d876a8271f90e",
+    "_load": "acb41dcb18d6e594b0a5f0507d1ec69b2f5af353f095e68de91a053b3ca7196d",
+    "_assert_completed_history_sequence": "5f3604660dd1c0902886b2f2fd2b7323c5fe914edbb23ce98816dde6f2062235",
+    "_runtime": "7b5a26212484c7ff51c9716ecb0fe95edc5b4f4b2e4fed58191c2772eb62d744",
+    "_report": "ee575e4c996f25266ef974084d6a839769fb41b0d73ffae6f2f80ee3481768d1",
+    "_refresh_advice": "7e6a1976fd22e592bb74b0ae89c4717ffaddd72d1730a487bf8e14f97b7fdd0d",
+    "run_weekly19_support_job": "a36c12c7e9454fa104afb6ec03e68d2f5bfc120be5295a8b47a1c198f62a8b53"
+  },
+  "pipeline_ast_after": {
+    "_parts": "bdf7d23ef165b3c624c75d43befdb3d7b672f6579f44ef00bc38c3668b76a13b",
+    "pipeline_store": "8dd97a9ada1da294e113ef5eb8ea8b4e60a2055a7a06958b7c58e2ca89e554cb",
+    "_initial": "2aeedb8e78a74eafb893112d5c6fb7c646cafd239730326c0b8d876a8271f90e",
+    "_load": "acb41dcb18d6e594b0a5f0507d1ec69b2f5af353f095e68de91a053b3ca7196d",
+    "_assert_completed_history_sequence": "5f3604660dd1c0902886b2f2fd2b7323c5fe914edbb23ce98816dde6f2062235",
+    "_runtime": "7b5a26212484c7ff51c9716ecb0fe95edc5b4f4b2e4fed58191c2772eb62d744",
+    "_report": "ee575e4c996f25266ef974084d6a839769fb41b0d73ffae6f2f80ee3481768d1",
+    "_refresh_advice": "7e6a1976fd22e592bb74b0ae89c4717ffaddd72d1730a487bf8e14f97b7fdd0d",
+    "run_weekly19_support_job": "a36c12c7e9454fa104afb6ec03e68d2f5bfc120be5295a8b47a1c198f62a8b53"
+  },
+  "ast_changed": false,
+  "suites": [
+    {
+      "name": "test_weekly19_live_pipeline.py",
+      "returncode": 0,
+      "tail": [
+        ".................",
+        "----------------------------------------------------------------------",
+        "Ran 17 tests in 3.268s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "5bb8d5ab074c146614b1158db5e72910cd066138ef81535864fa9bc30b285096"
+    },
+    {
+      "name": "test_weekly19_daily_receipt.py",
+      "returncode": 0,
+      "tail": [
+        "......",
+        "----------------------------------------------------------------------",
+        "Ran 6 tests in 1.661s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "6e7029d445ea42f0c341f97dd7ba0b12386b207775c40d0ab92de6c1edc66fdc"
+    },
+    {
+      "name": "audit_stage016_completed_sequence_independent.py",
+      "returncode": 0,
+      "tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 3 tests in 0.000s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "1f8e5ed898a6ae8185686445e0d09dab8d50808ecdc566971f181b8236cd74ea"
+    }
+  ],
+  "source_file_observed_sha256": "fa25cec3bd6d12524ff0d40039d0da158fd0a69a5bf60d527786f6ee4366fe22",
+  "session_cycle_excluded": true,
+  "financial_replays": 0
+}

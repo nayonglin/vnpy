@@ -18,8 +18,10 @@ class EntryTest(unittest.TestCase):
    release_manifest=self.root/'missing-release',activation_receipt=self.root/'missing-activation',qualification_evidence=self.root/'missing-qualification',preview=preview)
  def test_no_receipt_never_loads_broker_or_secret(self):
   b=self.backend()
-  with patch('qmt_roll_weekly19_broker_evidence.load_broker_snapshot',side_effect=AssertionError('must not read')):
+  with patch('qmt_roll_weekly19_local_backend.PRODUCTION_DEPLOY_ROOT',ROOT),patch('qmt_roll_weekly19_broker_evidence.load_broker_snapshot',side_effect=AssertionError('must not read')):
    with self.assertRaisesRegex(LocalBackendError,'missing_release_manifest'):b.require_production()
+ def test_source_checkout_cannot_run_as_stable_production(self):
+  with self.assertRaisesRegex(LocalBackendError,'stable_production_root_required'):self.backend().require_production()
  def test_json_cannot_supply_qualification_or_callable_capability(self):
   for key in ['qualified','production_qualified','backend','context_provider','sender']:
    with self.assertRaisesRegex(LocalBackendError,'capability_injection'):self.backend(dict(schema='weekly19.live-context.v1',execution_profile=PROFILE.profile_key,**{key:True}))
@@ -58,4 +60,29 @@ class EntryTest(unittest.TestCase):
   with patch.object(entry,'run_weekly19_session_cycle',return_value={'status':'blocked'}):
    r=entry.run_session(dict(backend=b,target_date='2026-10-30',preview=True),duration_seconds=3,names=['day_am','day_pm'],clock=clock.tick,sleep=clock.sleep,on_cycle=calls.append)
   self.assertEqual(r['cycles'],3);self.assertEqual(len(calls),3);self.assertTrue(b.closed)
+ def test_cli_resolves_current_completed_target_and_sets_private_context_reference(self):
+  cfg=dict(schema='weekly19.live-context.v1',execution_profile=PROFILE.profile_key,target_date='2026-10-29',state_path='/literal/state',mail_outbox='/literal/outbox',account_key='fixture',material_release_id='fixture',cold_start_date='2026-10-31')
+  backend=self.backend(cfg,preview=True);backend.resolve_target_date=lambda now:'2026-10-30'
+  argv=['--job','postclose-precompute','--execution-profile',PROFILE.profile_key,'--context-file',str(self.root/'ctx'),
+   '--release-manifest',str(self.root/'manifest'),'--activation-receipt',str(self.root/'activation'),'--production-qualification-evidence',str(self.root/'qualification'),'--preview']
+  with patch.object(entry,'private_json',return_value=cfg),patch.object(entry,'LocalEvidenceBackend',return_value=backend),patch.object(entry,'run_weekly19_support_job',return_value={'status':'fixture'})as run:
+   self.assertEqual(entry.main(argv),0)
+  self.assertEqual(run.call_args.kwargs['context']['target_date'],'2026-10-30')
+  self.assertEqual(backend.context_file,(self.root/'ctx').absolute())
+ def test_disabled_ai_cli_uses_cached_target_without_resolving_or_network(self):
+  cfg=dict(schema='weekly19.live-context.v1',execution_profile=PROFILE.profile_key,target_date='2026-10-29',state_path='/literal/state',mail_outbox='/literal/outbox',account_key='fixture',material_release_id='fixture',cold_start_date='2026-10-31')
+  backend=self.backend(cfg,preview=True);backend.resolve_target_date=lambda now:(_ for _ in()).throw(AssertionError('disabled AI cannot resolve/download'))
+  argv=['--job','monthly-ai-pool','--execution-profile',PROFILE.profile_key,'--context-file',str(self.root/'ctx'),
+   '--release-manifest',str(self.root/'manifest'),'--activation-receipt',str(self.root/'activation'),'--production-qualification-evidence',str(self.root/'qualification'),'--preview']
+  with patch.object(entry,'private_json',return_value=cfg),patch.object(entry,'LocalEvidenceBackend',return_value=backend):self.assertEqual(entry.main(argv),0)
+
+ def test_outside_session_is_rejected_before_any_readonly_connection(self):
+  class Backend:
+   def require_production(self):return None
+   def prepare_session(self,target,now):return ['2026-11-02','2026-11-03']
+   def refresh_readonly(self,now):raise AssertionError('outside-session must not connect')
+  at=datetime(2026,11,2,18,tzinfo=TZ)
+  with self.assertRaisesRegex(LocalBackendError,'already_closed'):
+   entry.run_session(dict(backend=Backend(),target_date='2026-10-30',preview=False),duration_seconds=3,names=['day_am','day_pm'],clock=lambda:at)
+
 if __name__=='__main__':unittest.main()

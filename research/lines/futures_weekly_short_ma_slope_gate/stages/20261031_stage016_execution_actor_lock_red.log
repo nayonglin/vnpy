@@ -1,0 +1,35 @@
+======================================================================
+FAIL: test_refresh_and_readiness_never_hold_actor_lock_needed_by_broker_callbacks (tests.test_weekly19_execution_service.Weekly19ExecutionServiceTest.test_refresh_and_readiness_never_hold_actor_lock_needed_by_broker_callbacks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_execution_service.py", line 135, in test_refresh_and_readiness_never_hold_actor_lock_needed_by_broker_callbacks
+    self.assertEqual(result['status'],'published',result)
+AssertionError: 'blocked' != 'published'
+- blocked
++ published
+ : {'status': 'blocked', 'blockers': ['False is not true : publication holds actor lock while waiting for transport'], 'production_qualified': False}
+
+======================================================================
+FAIL: test_warming_connection_returns_without_waiting_for_startup_or_actor_replay (tests.test_weekly19_execution_service.Weekly19ExecutionServiceTest.test_warming_connection_returns_without_waiting_for_startup_or_actor_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_execution_service.py", line 117, in test_warming_connection_returns_without_waiting_for_startup_or_actor_replay
+    self.assertEqual(result['status'],'warming',result)
+AssertionError: 'blocked' != 'warming'
+- blocked
++ warming
+ : {'status': 'blocked', 'blockers': ['warming service must not probe or query'], 'production_qualified': False}
+
+======================================================================
+FAIL: test_startup_readiness_probe_does_not_wait_for_lifecycle_lock (tests.test_weekly19_native_execution.Weekly19NonblockingConnectionReadinessTest.test_startup_readiness_probe_does_not_wait_for_lifecycle_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_native_execution.py", line 290, in test_startup_readiness_probe_does_not_wait_for_lifecycle_lock
+    probe=getattr(session,'connection_ready',None);self.assertTrue(callable(probe),'nonblocking lifecycle readiness missing')
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : nonblocking lifecycle readiness missing
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.715s
+
+FAILED (failures=3)

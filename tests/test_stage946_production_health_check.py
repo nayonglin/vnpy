@@ -18,9 +18,15 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage946_official_live_production_health_check as health  # noqa: E402
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
 class Stage946ProductionHealthCheckTest(unittest.TestCase):
+    def setUp(self) -> None:
+        historical = patch.object(health, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        historical.start()
+        self.addCleanup(historical.stop)
+
     def _job_row(self, name: str) -> dict[str, object]:
         label = health.PRODUCTION_JOB_LABELS[name]
         root = health.REPO_ROOT

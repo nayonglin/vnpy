@@ -50526,3 +50526,6 @@ test 分桶：
 
 
 2026-10-17 15:51 CST：`futures_trend_rollover_shape_same_volume` Stage259 重要合入：会计权益及盘中成交时序正确性修复核心提交 `40570be4b` 已合入并推送master；68项针对性unittest通过，未新增回测，正式0.5R/AI默认不变。Stage251—258实验和轻量验收证据已独立归档推送 `codex/stage251-disable-half-r-stop`（首个归档提交 `c62934126`），原始行情和凭证均排除。根目录私有配置已恢复至本机0600忽略文件；新源码仍待新物料/本机正式资格及受控路径迁移，未安装激活生产、未连接CTP或调用订单API。后续直接从master切AI训练研究分支；不把源码合入冒充生产晋升。
+
+
+2026-10-31T20:33+08:00 Stage016正式候选工程迁移：独立19品种Stage014 C_R150（15万交易/15万真正场外），非alpha调优；完整88套件2263通过、分批独审条件接受。TD/MD超时、最终结算vendor parser与实际现金source/资格缺失，未改生产d558/旧CURRENTm0008、未push master e41、未安装7jobs。详见research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_offline_candidate_acceptance_and_blockers.md。原金融NO_PROMOTION及限制保留。

@@ -1,0 +1,89 @@
+{
+  "all_weekly19_test_invocations": 343,
+  "all_weekly19_test_seconds": 17.91,
+  "files": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data.py": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_data_update.py": "f4ed5475649a873bd3698391dd99973385096f0fbdc1ccd108d2b828dd88e691",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+    "examples/portfolio_backtesting/weekly19_assets/source_manifest.json": "b473e88f21d2d139615e638c9df0e0fac5358596d919624f55411438926a303c",
+    "tests/test_weekly19_data.py": "3bfa39d22ddb3f4b1d9cb7f46d0ab2a629de8523652eacb05b4ae2984a41de68",
+    "tests/test_weekly19_data_update.py": "6c561063c6d392f8668103a3baad5af2fcd259395caf604f66c730cc73fd2d50",
+    "tests/test_weekly19_runtime.py": "08f0ea79f4898987bbc5644ee834be5cff2a917bf400881613909b6f6000f095",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd"
+  },
+  "financial_replays": 0,
+  "frozen_method_AST_count": 565,
+  "market_downloads": 0,
+  "order_api_calls": 0,
+  "production_qualified": false,
+  "recorded_at": "2026-10-31T18:36:36.841803+08:00",
+  "schema": "weekly19.runtime-data-source-lock.v2",
+  "supersedes_for_current_source": "20261031_stage016_runtime_data_source_lock.json",
+  "technical_benchmark": {
+    "actual_pipeline_bundle_bytes": 10186712,
+    "actual_pipeline_bundle_sha_preserved": true,
+    "actual_pipeline_bundle_under_64000000": true,
+    "bundle_two_states_under_64MiB": true,
+    "durable_json_bytes": 5090984,
+    "financial_replays": 0,
+    "market_downloads": 0,
+    "on_bars_calls": 0,
+    "order_api_calls": 0,
+    "phases": {
+      "build": {
+        "maxrss": 1719304192,
+        "seconds": 9.007654750021175
+      },
+      "export": {
+        "maxrss": 1972518912,
+        "seconds": 8.910234707873315
+      },
+      "export_for_fsync_restore": {
+        "maxrss": 1972518912,
+        "seconds": 3.668507083086297
+      },
+      "json_fsync_read": {
+        "maxrss": 1972518912,
+        "seconds": 0.024943665834143758
+      },
+      "pipeline_bundle_initialize_fsync": {
+        "maxrss": 2983968768,
+        "seconds": 0.13972379197366536
+      },
+      "pipeline_bundle_read_validate": {
+        "maxrss": 2983968768,
+        "seconds": 0.5312905418686569
+      },
+      "pure_warmup": {
+        "maxrss": 1719304192,
+        "seconds": 32.00270837498829
+      },
+      "read_inputs": {
+        "maxrss": 1128808448,
+        "seconds": 16.561486333142966
+      },
+      "restore": {
+        "maxrss": 2983968768,
+        "seconds": 26.64655637484975
+      },
+      "revalidate_open_intent": {
+        "maxrss": 1972518912,
+        "seconds": 3.809319833992049
+      },
+      "sizing_clone": {
+        "maxrss": 1972518912,
+        "seconds": 0.12274458282627165
+      }
+    },
+    "production_qualified": false,
+    "restore_state_sha_equal": true,
+    "revalidate_context": "synthetic_request_real_approved_history_no_signal_qualification",
+    "schema": "weekly19.technical-benchmark.v1",
+    "source_files_unchanged_during_benchmark": true,
+    "source_reader_sha256_before": "3cf9ab9d1822390dfd32e1d8cb5bdfe7f8dc3bf621d1e05da1b375e6ad730eb5",
+    "source_runtime_sha256": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+    "source_runtime_sha256_before": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+    "strict_fixture_broker": true,
+    "synthetic_decision_binding_ok": true
+  }
+}

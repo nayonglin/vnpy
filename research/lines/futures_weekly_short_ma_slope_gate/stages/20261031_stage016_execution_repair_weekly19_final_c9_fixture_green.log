@@ -1,0 +1,298 @@
+F...................................                                     [100%]
+=================================== FAILURES ===================================
+_ Stage947ProductionSupportLauncherTest.test_stage935_reads_stage173_from_data_and_ai_candidates_from_control _
+
+self = <test_stage947_production_support_launcher.Stage947ProductionSupportLauncherTest testMethod=test_stage935_reads_stage173_from_data_and_ai_candidates_from_control>
+
+    def test_stage935_reads_stage173_from_data_and_ai_candidates_from_control(
+        self,
+    ) -> None:
+        import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+    
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            control = root / "control"
+            control.mkdir()
+            data = root / "data"
+            data.mkdir()
+            mapping = data / "mapping.csv"
+            mapping.write_text(
+                "date\n"
+                "2026-03-31\n"
+                "2026-04-30\n"
+                "2026-05-29\n"
+                "2026-06-30\n"
+                "2026-07-23\n",
+                encoding="utf-8",
+            )
+            stage173_summary = data / "stage173-summary.json"
+            stage173_summary.write_text(
+                json.dumps(
+                    {
+                        "max_saved_date": "2026-07-23",
+                        "failed_count": 0,
+                        "empty_count": 0,
+                        "mapping_update": {"combined_max_date": "2026-07-23"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stage182_summary = data / "stage182-summary.json"
+            stage182_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            live_pool = data / "stage182-live-pool.csv"
+            live_pool.write_text("product_vt_symbol\nold.SHFE\n", encoding="utf-8")
+            live_eligibility = data / "stage182-live.csv"
+            ranked_products = [
+                "jm.DCE",
+                "rb.SHFE",
+                "i.DCE",
+                "m.DCE",
+                "ag.SHFE",
+                "cu.SHFE",
+                "TA.CZCE",
+                "MA.CZCE",
+                "au.SHFE",
+                "lc.GFEX",
+            ]
+            self.assertEqual(OFFICIAL_AI_RANKED_PRODUCT_COUNT, len(ranked_products))
+            live_rows = list(
+                enumerate([*ranked_products, OFFICIAL_AI_FIXED_PRODUCT], start=1)
+            )
+            strategy = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+            live_pool_text = (
+                "strategy,eval_date,product_vt_symbol,"
+                "predicted_product_suitability_probability,ai_rank,"
+                "selection_role,source_score_type\n"
+                + "".join(
+                    (
+                        f"{strategy},2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{'fixed_fu' if symbol == OFFICIAL_AI_FIXED_PRODUCT else 'model_ranked'},"
+                        "stage182_live\n"
+                    )
+                    for rank, symbol in live_rows
+                )
+            )
+            live_pool.write_text(live_pool_text, encoding="utf-8")
+            eligibility_header = (
+                "strategy,score_type,eval_date,product_vt_symbol,score,score_rank,top_n\n"
+            )
+            live_eligibility.write_text(
+                eligibility_header
+                + "".join(
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
+                ),
+                encoding="utf-8",
+            )
+            report = data / "stage182-report.md"
+            report.write_text("old report\n", encoding="utf-8")
+            combined = data / "stage182-combined.csv"
+            combined_text = eligibility_header + "".join(
+                (
+                    f"{strategy},stage182_live,{date},{symbol},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                    f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                )
+                for date in ("2026-03-31", "2026-04-30", "2026-05-29", "2026-06-30")
+                for rank, symbol in live_rows
+            )
+            combined.write_text(combined_text, encoding="utf-8")
+    
+            stage183_daily = control / "stage183-daily.csv"
+            stage183_daily.write_text(
+                "date,balance\n2026-07-23,200000\n",
+                encoding="utf-8",
+            )
+            stage183_position = control / "stage183-position.csv"
+            stage183_position.write_text(
+                "date,vt_symbol,end_pos\n2026-07-23,rb2610.SHFE,0\n",
+                encoding="utf-8",
+            )
+            stage183_candidate = control / "stage183-candidate.csv"
+            stage183_candidate.write_text(
+                "date,product_vt_symbol,candidate_status\n"
+                "2026-07-21,rb.SHFE,rejected\n",
+                encoding="utf-8",
+            )
+            stage183_summary = data / "stage183-summary.json"
+            stage183_sources = {
+                "daily": stage183_daily,
+                "position_changes": stage183_position,
+                "entry_candidate_snapshots": stage183_candidate,
+            }
+            stage183_identities = {
+                name: {
+                    "size": path.stat().st_size,
+                    "mtime_ns": path.stat().st_mtime_ns,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                }
+                for name, path in stage183_sources.items()
+            }
+            stage183_summary.write_text(
+                json.dumps(
+                    {
+                        "analysis_end": "2026-07-23",
+                        "source_prefix": stage935.DEFAULT_SOURCE_PREFIX,
+                        "artifact_root": str(control),
+                        "artifact_dates": {
+                            "daily_max_date": "2026-07-23",
+                            "position_changes_max_date": "2026-07-23",
+                            "entry_candidate_snapshots_max_date": "2026-07-21",
+                        },
+                        "artifact_identities": stage183_identities,
+                        "outputs": {
+                            "daily": str(stage183_daily),
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+    
+            candidate_live_pool = control / live_pool.name
+            candidate_live_pool.write_text(live_pool_text, encoding="utf-8")
+            candidate_live = control / live_eligibility.name
+            candidate_live.write_text(
+                eligibility_header
+                + "".join(
+                    (
+                        f"{strategy},stage182_live,2026-06-30,{symbol},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT + 1 - rank},{rank},"
+                        f"{OFFICIAL_AI_TOTAL_PRODUCT_COUNT}\n"
+                    )
+                    for rank, symbol in live_rows
+                ),
+                encoding="utf-8",
+            )
+            candidate_combined = control / combined.name
+            candidate_combined.write_text(combined_text, encoding="utf-8")
+            candidate_report = control / report.name
+            candidate_report.write_text("candidate report\n", encoding="utf-8")
+            candidate_summary = control / stage182_summary.name
+            candidate_outputs = {
+                "live_pool": str(candidate_live_pool),
+                "live_eligibility": str(candidate_live),
+                "combined_eligibility": str(candidate_combined),
+                "summary": str(candidate_summary),
+                "report": str(candidate_report),
+            }
+            candidate_summary.write_text(
+                json.dumps(
+                    {
+                        "eval_date": "2026-06-30",
+                        "source_max_date": "2026-07-23",
+                        "training_label_cutoff": "2026-04-30",
+                        "source_paths": {
+                            "position_changes": str(stage183_position),
+                            "entry_candidate_snapshots": str(stage183_candidate),
+                        },
+                        "source_identities": {
+                            name: stage183_identities[name]
+                            for name in (
+                                "position_changes",
+                                "entry_candidate_snapshots",
+                            )
+                        },
+                        "outputs": candidate_outputs,
+                        "safety": {
+                            "overwrites_official_stage78_eligibility": False,
+                            "uses_future_label_for_eval_date": False,
+                            "real_order_enabled": False,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                as_of="2026-07-23T18:20:00",
+                data_ready_time="16:30",
+                mode="run",
+                source_prefix=stage935.DEFAULT_SOURCE_PREFIX,
+                force=True,
+                skip_data_update=False,
+                data_update_timeout_seconds=1,
+                source_refresh_timeout_seconds=1,
+                inference_timeout_seconds=1,
+            )
+            success = {
+                "exit_code": 0,
+                "elapsed_seconds": 0.0,
+                "stdout_tail": "",
+                "stderr_tail": "",
+            }
+    
+            with (
+                patch.multiple(
+                    stage935,
+                    CONTROL_OUTPUT_DIR=control,
+                    DATA_ASSET_DIR=data,
+                    ALL_FUTURES_MAPPING_PATH=mapping,
+                    STAGE173_SUMMARY_PATH=stage173_summary,
+                    STAGE182_SUMMARY_PATH=stage182_summary,
+                    STAGE182_LIVE_POOL_PATH=live_pool,
+                    STAGE182_LIVE_ELIGIBILITY_PATH=live_eligibility,
+                    STAGE182_COMBINED_ELIGIBILITY_PATH=combined,
+                    STAGE182_REPORT_PATH=report,
+                    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
+                    STAGE183_SUMMARY_PATH=stage183_summary,
+                ),
+                # This is the frozen historical C9 monthly-AI publication
+                # fixture, not an authorization for the weekly fixed pool.
+                patch.object(stage935, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE),
+                patch.object(stage935, "_run_command", return_value=success) as run_command,
+            ):
+>               result = stage935._run(args)
+                         ^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage947_production_support_launcher.py:516: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:1453: in _run
+    return _execute_update(summary, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:1415: in _execute_update
+    request_path = _write_material_publication_request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _write_material_publication_request(
+        *,
+        artifacts: dict[str, Path],
+        eval_date: str,
+        source_max_date: str,
+        training_label_cutoff: str,
+        source_commit: str | None = None,
+    ) -> Path:
+        if resolve_configured_execution_profile().decision_mode == "weekly19":
+            raise RuntimeError(WEEKLY19_DISABLED_STATUS)
+        if OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION != OFFICIAL_AI_PRODUCT_POOL_STRATEGY:
+>           raise RuntimeError("stage935_historical_ai_material_identity_required")
+E           RuntimeError: stage935_historical_ai_material_identity_required
+
+examples/portfolio_backtesting/run_qmt_roll_stage935_official_live_monthly_ai_pool_update.py:165: RuntimeError
+----- generated xml file: /private/tmp/weekly19_final_c9_fixture_green.xml -----
+=========================== short test summary info ============================
+FAILED tests/test_stage947_production_support_launcher.py::Stage947ProductionSupportLauncherTest::test_stage935_reads_stage173_from_data_and_ai_candidates_from_control
+1 failed, 35 passed in 1.29s

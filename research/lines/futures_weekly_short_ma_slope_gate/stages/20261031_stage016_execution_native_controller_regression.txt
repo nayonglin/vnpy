@@ -1,0 +1,29 @@
+{"formal_default": "official_live_weekly19_base15w_reserve15w_stage014", "material_ready": false}
+....................................................usage: -c [-h] [--command {once,serve}] [--target-date TARGET_DATE]
+          [--execution-profile {c9-15w,stage372-20w,weekly19-15w-r150k}]
+          [--mode {dry-run,live-real}] [--confirm-live-real CONFIRM_LIVE_REAL]
+          [--stage179-warm-executor]
+          [--runtime-profile {offline,production-readonly,simnow,broker-test,production-live}]
+          [--order-scope {none,readonly,test,live}]
+          [--stage179-release-manifest STAGE179_RELEASE_MANIFEST]
+          [--stage179-activation-receipt STAGE179_ACTIVATION_RECEIPT]
+          [--stage179-runtime-root STAGE179_RUNTIME_ROOT]
+          [--confirm-stage179-activation CONFIRM_STAGE179_ACTIVATION]
+          [--max-orders MAX_ORDERS] [--reduce-close-only]
+          [--connect-wait-seconds CONNECT_WAIT_SECONDS]
+          [--fill-wait-seconds FILL_WAIT_SECONDS]
+          [--trade-detail-wait-seconds TRADE_DETAIL_WAIT_SECONDS]
+          [--post-cancel-wait-seconds POST_CANCEL_WAIT_SECONDS]
+          [--max-stage927-age-seconds MAX_STAGE927_AGE_SECONDS]
+          [--max-stage905-age-seconds MAX_STAGE905_AGE_SECONDS]
+          [--max-stage904-age-seconds MAX_STAGE904_AGE_SECONDS]
+          [--max-target-date-age-days MAX_TARGET_DATE_AGE_DAYS]
+          [--close-retry-after-cancel-seconds CLOSE_RETRY_AFTER_CANCEL_SECONDS]
+          [--final-reprice-tick-wait-seconds FINAL_REPRICE_TICK_WAIT_SECONDS]
+          [--final-order-query-wait-seconds FINAL_ORDER_QUERY_WAIT_SECONDS]
+-c: error: --command=once does not permit --mode=live-real; production submission requires --command=serve
+.................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 245 tests in 3.038s
+
+OK

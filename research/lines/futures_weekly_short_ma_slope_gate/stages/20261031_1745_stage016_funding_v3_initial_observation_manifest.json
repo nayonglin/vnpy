@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-10-31T17:45:58.119466+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "source_qualified_by_real_capture": false,
+  "real_ctp_connected": false,
+  "real_registry_created": false,
+  "real_key_created": false,
+  "real_qualification_executed": false,
+  "real_bank_cashflow_verified": false,
+  "financial_backtest_run": false,
+  "source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "dc94c5704255368f7185b90763b0687f2bc4ebe30687b915ab392d5849dd4e72",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "d5d40cabe04dc0857faf73f7993d8fafed14a99e0d351f13a42b34cf3b027ddc",
+    "tests/test_weekly19_external_funding.py": "1e0e754fbcea13a2ccf1a99cf7b266b8aadb867b2cb7a872f9d9501d2140fdb4"
+  },
+  "suites": [
+    {
+      "pattern": "test_weekly19_external_funding.py",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 61 tests in 0.191s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "log_sha256": "84103b52f0c3ae32717e39a7a14a42b703c1ba40d50f3b379114c4f36158d9ae",
+  "mandatory_capture_source_count": 5,
+  "mandatory_authority_source_count": 9,
+  "funding_schema_changed": false,
+  "funding_api_revision": "begin_cash_observation_v3",
+  "full_log_file": "20261031_1745_stage016_cash_provider_v4_warm_ledger_fold_unittest.txt"
+}

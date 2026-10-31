@@ -1,0 +1,12 @@
+{
+  "finding": "RUNTIME_DTO_OHLCVOI_NOT_BOUND",
+  "severity": "P1",
+  "source_before": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+  "source_after": "8df75a5464c5a6fd92d346cc168629153e40cddd18c897fe2cd4b09c186a89f5",
+  "audit_sha256": "4017a07ebbdbb883531a46e5ed9ffe44aadd8b49ae7557067a681a0ac0c9913b",
+  "returncode": 1,
+  "log_sha256": "dd07105f90732f218cf1fc6729eb6a82139cacb624d11253958411ae3e67f189",
+  "engine_constructed": false,
+  "financial_replay": false,
+  "ctp_connected": false
+}

@@ -1,0 +1,13 @@
+======================================================================
+ERROR: test_final_gate_samples_real_clock_after_slow_fresh_source_provider (tests.test_weekly19_execution.Weekly19SubmitBoundaryTest.test_final_gate_samples_real_clock_after_slow_fresh_source_provider)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_execution.py", line 279, in test_final_gate_samples_real_clock_after_slow_fresh_source_provider
+    self.assertEqual(consumer.weekly19_pre_submit_blockers(intent,lambda row:context,now=NOW,now_provider=lambda:later),[])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: weekly19_pre_submit_blockers() got an unexpected keyword argument 'now_provider'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.115s
+
+FAILED (errors=1)
