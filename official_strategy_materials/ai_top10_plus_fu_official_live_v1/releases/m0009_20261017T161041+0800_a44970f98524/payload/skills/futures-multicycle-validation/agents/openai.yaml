@@ -1,0 +1,7 @@
+interface:
+  display_name: "期货多周期验证"
+  short_description: "活动正式基线下的1/2/3年半年起点五图验证"
+  default_prompt: "先从 CURRENT.json 校验活动正式 A 组身份，再按全周期、1/2/3 年且每年 1 月和 6 月独立起点运行多周期，输出固定五张图和晋级结论。"
+
+policy:
+  allow_implicit_invocation: true

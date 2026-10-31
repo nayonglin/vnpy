@@ -419,8 +419,8 @@ def _send_email_if_needed(
             f"持仓快照状态：{summary.get('position_snapshot_state_after', '')}",
             f"阻断数：{summary.get('blocking_failure_count', 0)}",
             f"订单API：{summary.get('order_api_called_count', 0)}",
-            "说明：这封邮件只确认 15:05 账户/持仓只读快照，不生成交易信号，不提交订单。",
-            "下一步：16:35 仍由 post-close 报告邮件给出收盘后信号、对账和今晚计划。",
+            "说明：这封邮件只确认账户/持仓只读快照；生产日终采集安排在15:12，不生成交易信号，不提交订单。",
+            "下一步：15:10启动的 post-close 流程将在数据与影子计算完成后发出信号、对账和今晚计划；未就绪账户快照会明确提示。",
         ]
     )
     return send_official_live_email_notification(

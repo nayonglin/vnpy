@@ -11,8 +11,10 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 from typing import Iterable, Iterator, Mapping
 
@@ -48,8 +50,11 @@ from qmt_roll_official_strategy_material_resolver import (
 LFS_SIZE_THRESHOLD_BYTES = 10 * 1024 * 1024
 MODEL_LFS_SUFFIXES = {".parquet", ".pkl", ".pickle", ".joblib", ".pt", ".pth", ".onnx"}
 MATERIAL_ROOT_NAME = "official_strategy_materials"
+AUTHORIZED_LFS_ENDPOINT = "git@github.com:nayonglin/vnpy-official-materials.git"
+AUTHORIZED_LFS_PUSH_ENDPOINT = "ssh://git@github.com/nayonglin/vnpy-official-materials.git"
 AUTO_PROMOTED_GOVERNANCE_PATHS = frozenset(
     {
+        ".lfsconfig",
         "research/lines/futures_trend_stage819_intraday_rules/"
         "SOP_c9_15w_monthly_ai_pool.md",
     }
@@ -89,6 +94,7 @@ class PreparedRelease:
     release_dir: Path
     manifest_path: Path
     staged_paths: tuple[str, ...]
+    lfs_remote_proof_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -124,6 +130,7 @@ def _git(repo_root: Path, *args: str, check: bool = True) -> str:
         check=False,
         capture_output=True,
         text=True,
+        env=_publication_git_environment(),
     )
     if check and process.returncode != 0:
         message = process.stderr.strip() or process.stdout.strip() or "unknown"
@@ -132,7 +139,7 @@ def _git(repo_root: Path, *args: str, check: bool = True) -> str:
 
 
 def _validate_remote_target(remote: str, branch: str) -> None:
-    if not re.fullmatch(r"[A-Za-z0-9._-]+", remote):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", remote):
         raise MaterialReleaseError("publish_remote_invalid")
     if branch != "master":
         raise MaterialReleaseError("publish_branch_must_be_master")
@@ -171,6 +178,7 @@ def _push_head_to_master(repo_root: Path, remote: str, branch: str) -> None:
         check=False,
         capture_output=True,
         text=True,
+        env=_publication_git_environment(),
     )
     if process.returncode != 0:
         message = process.stderr.strip() or process.stdout.strip() or "unknown"
@@ -197,6 +205,7 @@ def _push_commit_to_master(
         check=False,
         capture_output=True,
         text=True,
+        env=_publication_git_environment(),
     )
     if process.returncode != 0:
         message = process.stderr.strip() or process.stdout.strip() or "unknown"
@@ -283,10 +292,286 @@ def classify_storage(path: Path, *, lfs_status: GitLfsStatus) -> StorageKind:
 
 
 def lfs_attribute_lines(paths: Iterable[str]) -> tuple[str, ...]:
+    paths = tuple(paths)
+    for path in paths:
+        if not re.fullmatch(r"[A-Za-z0-9_./+@=-]+", path):
+            raise MaterialReleaseError("lfs_attribute_path_not_literal")
+        _validate_logical_path(path)
     return tuple(
         f"/{path} filter=lfs diff=lfs merge=lfs -text"
         for path in sorted(set(paths))
     )
+
+
+def _validate_lfs_pointer(raw: bytes, *, sha256: str, size_bytes: int) -> None:
+    expected = ("version https://git-lfs.github.com/spec/v1\n"
+                f"oid sha256:{sha256}\nsize {size_bytes}\n").encode("ascii")
+    if raw != expected:
+        raise MaterialReleaseError("lfs_pointer_identity_invalid")
+
+
+def _lfs_environment() -> dict[str, str]:
+    environment = dict(os.environ)
+    for key in tuple(environment):
+        if (key.startswith("GIT_CONFIG_") or key in {
+            "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+            "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+            "GIT_LFS_SKIP_SMUDGE", "GIT_LFS_SKIP_PUSH",
+        }):
+            environment.pop(key, None)
+    environment["GIT_TERMINAL_PROMPT"] = "0"
+    # Use SSH authentication followed by encrypted HTTPS transfer. The pure
+    # SSH transfer negotiation is unsupported by this authorized GitHub path.
+    environment["GIT_CONFIG_COUNT"] = "1"
+    environment["GIT_CONFIG_KEY_0"] = "lfs.sshtransfer"
+    environment["GIT_CONFIG_VALUE_0"] = "never"
+    # git-lfs starts its standalone transfer adapter by name. Pin that child
+    # lookup to the same selected executable as the parent CLI invocation.
+    environment["PATH"] = str(_lfs_binary().parent) + os.pathsep + environment.get("PATH", "")
+    return environment
+
+
+def _lfs_binary() -> Path:
+    # The deployment venv ships its own verified tool. Minimal launchd and
+    # trusted-qualification PATHs must use the same actual CLI dependency.
+    sibling = Path(sys.executable).resolve().parent / "git-lfs"
+    found = str(sibling) if sibling.exists() else shutil.which("git-lfs")
+    if not found:
+        raise MaterialReleaseError("git_lfs_binary_missing")
+    binary = Path(found).resolve(strict=True)
+    if not binary.is_file() or not os.access(binary, os.X_OK):
+        raise MaterialReleaseError("git_lfs_binary_invalid")
+    return binary
+
+
+def _publication_git_environment() -> dict[str, str] | None:
+    """Let Git's required LFS hooks use the same explicit runtime tool."""
+    try:
+        _lfs_binary()
+    except MaterialReleaseError as exc:
+        if str(exc) == "git_lfs_binary_missing":
+            return None
+        raise
+    return _lfs_environment()
+
+
+def _lfs_call(repo: Path, *args: str, input_bytes: bytes | None = None) -> bytes:
+    try:
+        result = subprocess.run([str(_lfs_binary()), *args], cwd=repo,
+            input=input_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=_lfs_environment(), timeout=300, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise MaterialReleaseError("lfs_command_unavailable:" + args[0]) from exc
+    if result.returncode != 0:
+        # Credentials and authenticated endpoints may appear in tool stderr.
+        raise MaterialReleaseError("lfs_command_failed:" + args[0])
+    return result.stdout
+
+
+def _lfs_git(repo: Path, *args: str, preserve_output: bool = False) -> str:
+    try:
+        result = subprocess.run(["git", "-C", str(repo), *args],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            env=_lfs_environment(), timeout=300, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise MaterialReleaseError("lfs_git_command_unavailable:" + args[0]) from exc
+    if result.returncode != 0:
+        raise MaterialReleaseError("lfs_git_command_failed:" + args[0])
+    return result.stdout if preserve_output else result.stdout.strip()
+
+
+def _configure_lfs_filters(repo: Path) -> None:
+    tool = shlex.quote(str(_lfs_binary()))
+    for key, command in {"clean":"clean -- %f", "smudge":"smudge -- %f", "process":"filter-process"}.items():
+        _lfs_git(repo, "config", f"filter.lfs.{key}", f"{tool} {command}")
+    _lfs_git(repo, "config", "filter.lfs.required", "true")
+
+
+def _assert_lfs_filters(repo: Path) -> None:
+    binary = _lfs_binary()
+    for key, suffix in {"clean":["clean","--","%f"], "smudge":["smudge","--","%f"]}.items():
+        parts = shlex.split(_lfs_git(repo,"config","--get",f"filter.lfs.{key}"))
+        executable = Path(shutil.which(parts[0]) or parts[0]).resolve() if parts else None
+        if not parts or executable != binary or parts[1:] != suffix:
+            raise MaterialReleaseError("lfs_filter_identity_invalid")
+    if _lfs_git(repo,"config","--get","filter.lfs.required") != "true":
+        raise MaterialReleaseError("lfs_filter_not_required")
+    process = _git(repo,"config","--get","filter.lfs.process",check=False).strip()
+    if process:
+        parts = shlex.split(process)
+        executable = Path(shutil.which(parts[0]) or parts[0]).resolve() if parts else None
+        if not parts or executable != binary or parts[1:] != ["filter-process"]:
+            raise MaterialReleaseError("lfs_filter_identity_invalid")
+
+
+def _lfs_remote_url(repo: Path, remote: str) -> str:
+    _validate_remote_target(remote, "master")
+    # Do not prove an unrelated endpoint supplied by a repository override.
+    for key in ("lfs.url", "lfs.pushurl", f"remote.{remote}.lfsurl", f"remote.{remote}.lfspushurl"):
+        if _git(repo,"config","--get",key,check=False).strip():
+            raise MaterialReleaseError("lfs_endpoint_override_not_supported")
+    if _git(repo,"config","--name-only","--get-regexp",r"^lfs\.customtransfer\.",check=False).strip() or \
+       _git(repo,"config","--name-only","--get-regexp",r"^lfs\.standalonetransferagent$",check=False).strip():
+        raise MaterialReleaseError("lfs_transfer_route_override_not_supported")
+    for key in ("lfs.remote.autodetect", "lfs.remote.searchall"):
+        present = _git(repo,"config","--name-only","--get-regexp","^"+re.escape(key)+"$",check=False).strip()
+        if present and _git(repo,"config","--bool","--get",key,check=False).strip() != "false":
+            raise MaterialReleaseError("lfs_transfer_route_override_not_supported")
+    _validated_lfsconfig(repo)
+    url = _lfs_git(repo,"remote","get-url",remote)
+    if _lfs_git(repo,"remote","get-url","--push",remote) != url:
+        raise MaterialReleaseError("lfs_remote_push_url_mismatch")
+    return url
+
+
+def _validated_lfsconfig(repo: Path) -> bytes | None:
+    config = repo / ".lfsconfig"
+    if not config.exists():
+        return None
+    if config.is_symlink() or not config.is_file():
+        raise MaterialReleaseError("lfsconfig_not_regular")
+    names = _lfs_git(repo,"config","--file",str(config),"--name-only","--list").splitlines()
+    if len(names) != len(set(names)) or set(names) not in ({"lfs.url"}, {"lfs.url", "lfs.pushurl"}):
+        raise MaterialReleaseError("lfsconfig_keys_not_authorized")
+    if _lfs_git(repo,"config","--file",str(config),"--get","lfs.url") != AUTHORIZED_LFS_ENDPOINT:
+        raise MaterialReleaseError("lfsconfig_endpoint_not_authorized")
+    if "lfs.pushurl" in names and _lfs_git(repo,"config","--file",str(config),"--get","lfs.pushurl") != AUTHORIZED_LFS_PUSH_ENDPOINT:
+        raise MaterialReleaseError("lfsconfig_push_endpoint_not_authorized")
+    # The committed/indexed file, rather than a private local URL, travels with
+    # both the release inventory and every independently downloaded checkout.
+    if _lfs_git(repo,"show",":.lfsconfig",preserve_output=True).encode() != config.read_bytes():
+        raise MaterialReleaseError("lfsconfig_not_tracked_exactly")
+    return config.read_bytes()
+
+
+def _lfs_proof_path(repo: Path, key: str) -> Path:
+    if not re.fullmatch(r"[A-Za-z0-9_.+@=-]+", key):
+        raise MaterialReleaseError("lfs_proof_key_invalid")
+    path = Path(_git(repo,"rev-parse","--git-path",f"strategy-material-lfs-{key}.json").strip())
+    return path if path.is_absolute() else repo / path
+
+
+def _write_lfs_proof(repo: Path, key: str, proof: Mapping[str, object]) -> Path:
+    path = _lfs_proof_path(repo,key)
+    _write_bytes_atomically(path, canonical_json_bytes(dict(proof)) + b"\n")
+    path.chmod(0o600)
+    return path
+
+
+def prove_lfs_remote_roundtrip(*, repo_root: Path, sources: Iterable[Path],
+    source_commit: str, confirmation: str, remote: str = "origin") -> dict[str, object]:
+    """Explicitly authorized object upload plus actual empty-cache download.
+
+    No Git ref is changed. A tool/env status string is never remote evidence.
+    """
+    if confirmation != "I_APPROVE_LFS_REMOTE_ROUNDTRIP:" + source_commit:
+        raise MaterialReleaseError("lfs_remote_proof_confirmation_missing")
+    assert_clean_source_tree(repo_root, source_commit)
+    _assert_lfs_filters(repo_root)
+    url = _lfs_remote_url(repo_root, remote)
+    endpoint_config = _validated_lfsconfig(repo_root)
+    tool = _lfs_binary()
+    tool_hash = sha256_file(tool)
+    objects = []
+    with tempfile.TemporaryDirectory(prefix="official-lfs-roundtrip-") as temp:
+        probe = Path(temp) / "probe"
+        probe.mkdir(mode=0o700)
+        _lfs_git(probe,"init")
+        _lfs_git(probe,"remote","add","origin",url)
+        if endpoint_config is not None:
+            (probe/".lfsconfig").write_bytes(endpoint_config)
+        cache = Path(temp) / "empty-lfs-cache"
+        _lfs_git(probe,"config","lfs.storage",str(cache))
+        for raw_source in sorted(set(Path(p) for p in sources)):
+            if raw_source.is_symlink() or not raw_source.is_file():
+                raise MaterialReleaseError("lfs_proof_source_invalid")
+            source = raw_source.resolve(strict=True)
+            digest, size = sha256_file(source), source.stat().st_size
+            pointer = _lfs_call(repo_root,"clean","--",source.name,input_bytes=source.read_bytes())
+            _validate_lfs_pointer(pointer,sha256=digest,size_bytes=size)
+            _lfs_call(repo_root,"push","--object-id",remote,digest)
+            # Probe has no commits, source object directory or shared LFS cache.
+            content = _lfs_call(probe,"smudge","--",source.name,input_bytes=pointer)
+            if len(content) != size or hashlib.sha256(content).hexdigest() != digest:
+                raise MaterialReleaseError("lfs_remote_download_content_mismatch")
+            if sha256_file(source) != digest or source.stat().st_size != size:
+                raise MaterialReleaseError("lfs_proof_source_changed")
+            objects.append({"sha256":digest,"size_bytes":size})
+    if not objects or sha256_file(tool) != tool_hash:
+        raise MaterialReleaseError("lfs_proof_objects_missing")
+    proof = {"status":"remote_roundtrip_verified", "source_commit":source_commit,
+        "remote":remote,"remote_url_sha256":hashlib.sha256(url.encode()).hexdigest(),
+        "tool_path":str(tool),"tool_sha256":tool_hash,"objects":objects,
+        "lfsconfig_sha256":hashlib.sha256(endpoint_config).hexdigest() if endpoint_config is not None else None,
+        "empty_cache_download_verified":True,
+        "verified_at_utc":datetime.now(timezone.utc).isoformat()}
+    _write_lfs_proof(repo_root,source_commit,proof)
+    return proof
+
+
+def _material_lfs_rows(repo: Path) -> dict[str, dict[str, object]]:
+    rows = {}
+    for manifest_path in sorted((repo/MATERIAL_ROOT_NAME).glob("*/releases/*/manifest.json")):
+        manifest = verify_release_tree(manifest_path.parent)
+        for row in manifest["files"]:
+            if row["storage"] == StorageKind.GIT_LFS.value:
+                relative = (manifest_path.parent / str(row["payload_path"])).relative_to(repo).as_posix()
+                lfs_attribute_lines((relative,))
+                rows[relative] = dict(row)
+    return rows
+
+
+def _verify_lfs_git_tree(repo: Path, ref: str, rows: Mapping[str, Mapping[str, object]]) -> None:
+    if not rows:
+        return
+    _assert_lfs_filters(repo)
+    attributes = _lfs_git(repo,"check-attr","--cached","-z","filter","diff","merge","text","--",*sorted(rows))
+    fields = attributes.split("\0")
+    if fields[-1] == "":
+        fields.pop()
+    observed = {}
+    if len(fields) % 3:
+        raise MaterialReleaseError("lfs_effective_attributes_invalid")
+    for index in range(0,len(fields),3):
+        path, key, value = fields[index:index+3]
+        observed.setdefault(path,{})[key] = value
+    if any(observed.get(path) != {"filter":"lfs","diff":"lfs","merge":"lfs","text":"unset"} for path in rows):
+        raise MaterialReleaseError("lfs_effective_attributes_invalid")
+    for path, row in rows.items():
+        blob = _lfs_git(repo,"show",f"{ref}:{path}",preserve_output=True).encode()
+        _validate_lfs_pointer(blob,sha256=str(row["sha256"]),size_bytes=int(row["size_bytes"]))
+        content = repo/path
+        if content.is_symlink() or content.stat().st_size != row["size_bytes"] or sha256_file(content) != row["sha256"]:
+            raise MaterialReleaseError("lfs_worktree_content_mismatch")
+
+
+def _verify_fresh_remote_lfs_clone(repo: Path, remote: str, commit: str,
+    rows: Mapping[str, Mapping[str, object]]) -> dict[str, object]:
+    url = _lfs_remote_url(repo,remote)
+    endpoint_config = _validated_lfsconfig(repo)
+    tool = _lfs_binary()
+    tool_hash = sha256_file(tool)
+    with tempfile.TemporaryDirectory(prefix="official-lfs-fresh-clone-") as temp:
+        clone, cache = Path(temp)/"clone", Path(temp)/"empty-lfs-cache"
+        _lfs_git(Path(temp),"clone","--no-local","--no-checkout",url,str(clone))
+        _configure_lfs_filters(clone)
+        _lfs_git(clone,"config","lfs.storage",str(cache))
+        if cache.exists() or (clone/".git/objects/info/alternates").exists():
+            raise MaterialReleaseError("lfs_fresh_clone_cache_not_empty")
+        _lfs_git(clone,"checkout","--detach",commit)
+        if _lfs_git(clone,"rev-parse","HEAD") != commit:
+            raise MaterialReleaseError("lfs_fresh_clone_commit_mismatch")
+        _verify_all_material_releases(clone/MATERIAL_ROOT_NAME)
+        _verify_lfs_git_tree(clone,commit,rows)
+        assert_official_checkout_matches_active_material(clone)
+        if _validated_lfsconfig(clone) != endpoint_config or sha256_file(tool) != tool_hash:
+            raise MaterialReleaseError("lfs_fresh_clone_identity_changed")
+    return {"status":"fresh_remote_clone_verified","promoted_commit":commit,
+        "remote":remote,"remote_url_sha256":hashlib.sha256(url.encode()).hexdigest(),
+        "lfsconfig_sha256":hashlib.sha256(endpoint_config).hexdigest() if endpoint_config is not None else None,
+        "tool_path":str(tool),"tool_sha256":tool_hash,
+        "empty_cache_download_verified":True,"verified_object_count":len(rows),
+        "verified_at_utc":datetime.now(timezone.utc).isoformat()}
 
 
 def assert_clean_source_tree(repo_root: Path, source_commit: str) -> None:
@@ -602,10 +887,16 @@ def _stage_release_paths_only(repo_root: Path, paths: Iterable[Path]) -> tuple[s
     return staged
 
 
-def prepare_release(request: ReleaseRequest) -> PreparedRelease:
+def prepare_release(request: ReleaseRequest, *, lfs_remote_proof_confirmation: str = "") -> PreparedRelease:
     repo_root = request.repo_root.resolve(strict=True)
     assert_clean_source_tree(repo_root, request.source_commit)
     assert_discovery_publishable(request.discovery)
+    if (repo_root/".lfsconfig").exists():
+        _validated_lfsconfig(repo_root)
+        if not any(row.logical_path == ".lfsconfig" and
+                   (row.source_path if row.source_path.is_absolute() else repo_root/row.source_path).resolve() == repo_root/".lfsconfig"
+                   for row in request.discovery.declarations):
+            raise MaterialReleaseError("lfsconfig_missing_from_inventory")
     with publication_lock(repo_root):
         material_version = allocate_next_material_version(repo_root, request.official_version)
         release_id = _release_id(material_version, request.created_at_cst, request.source_commit)
@@ -620,12 +911,32 @@ def prepare_release(request: ReleaseRequest) -> PreparedRelease:
         attributes_changed = False
         try:
             parent = _parent_manifest(repo_root, request.official_version)
+            status = detect_git_lfs_status(repo_root)
+            lfs_sources = []
+            for declaration in request.discovery.declarations:
+                source = declaration.source_path if declaration.source_path.is_absolute() else repo_root/declaration.source_path
+                if source.is_file() and (source.stat().st_size > LFS_SIZE_THRESHOLD_BYTES or source.suffix.lower() in MODEL_LFS_SUFFIXES):
+                    lfs_sources.append(source)
+            proof = None
+            proof_path = None
+            if lfs_sources:
+                # Even a plausible `lfs env` does not demonstrate write access
+                # or downloadability. Only this authorized real roundtrip does.
+                proof = prove_lfs_remote_roundtrip(repo_root=repo_root,sources=lfs_sources,
+                    source_commit=request.source_commit,confirmation=lfs_remote_proof_confirmation)
+                proof_path = _lfs_proof_path(repo_root,request.source_commit)
+                status = GitLfsStatus(filters_ready=True,remote_ready=True)
+                assert_clean_source_tree(repo_root,request.source_commit)
             files, lfs_paths = _copy_and_snapshot_all(
                 repo_root=repo_root,
                 declarations=request.discovery.declarations,
                 temporary=temporary,
-                lfs_status=detect_git_lfs_status(repo_root),
+                lfs_status=status,
             )
+            if proof is not None:
+                proven = {(row["sha256"],row["size_bytes"]) for row in proof["objects"]}
+                if any((row.sha256,row.size_bytes) not in proven for row in files if row.storage == StorageKind.GIT_LFS):
+                    raise MaterialReleaseError("lfs_prepared_object_not_proven")
             _write_release_metadata(
                 temporary=temporary,
                 request=request,
@@ -655,7 +966,7 @@ def prepare_release(request: ReleaseRequest) -> PreparedRelease:
             if attributes_changed:
                 stage_paths.append(repo_root / ".gitattributes")
             staged_paths = _stage_release_paths_only(repo_root, stage_paths)
-            prepared = PreparedRelease(release_id, material_version, final, final / "manifest.json", staged_paths)
+            prepared = PreparedRelease(release_id, material_version, final, final / "manifest.json", staged_paths,proof_path)
             _write_prepared_receipt(repo_root, prepared)
             return prepared
         except Exception:
@@ -676,6 +987,7 @@ def _write_prepared_receipt(repo_root: Path, prepared: PreparedRelease) -> None:
         "release_dir": _repo_relative(repo_root, prepared.release_dir),
         "manifest_path": _repo_relative(repo_root, prepared.manifest_path),
         "staged_paths": list(prepared.staged_paths),
+        "lfs_remote_proof_path": str(prepared.lfs_remote_proof_path) if prepared.lfs_remote_proof_path else None,
     }
     _write_bytes_atomically(_prepared_receipt_path(repo_root, prepared.release_id), canonical_json_bytes(payload) + b"\n")
 
@@ -692,6 +1004,7 @@ def _load_prepared_receipt(repo_root: Path, release_id: str) -> PreparedRelease:
         release_dir=repo_root / str(payload["release_dir"]),
         manifest_path=repo_root / str(payload["manifest_path"]),
         staged_paths=tuple(str(item) for item in payload["staged_paths"]),
+        lfs_remote_proof_path=Path(payload["lfs_remote_proof_path"]) if payload.get("lfs_remote_proof_path") else None,
     )
 
 
@@ -1108,8 +1421,11 @@ def promote_official_version_to_master(
 
         source_root = source / MATERIAL_ROOT_NAME
         _verify_all_material_releases(source_root)
-        if _material_root_uses_lfs(source_root):
-            raise MaterialReleaseError("complete_official_promotion_lfs_remote_not_proven")
+        source_lfs_rows = _material_lfs_rows(source)
+        if source_lfs_rows:
+            _lfs_remote_url(source,remote)
+            _verify_lfs_git_tree(source,activation_commit,source_lfs_rows)
+            _lfs_call(source,"push","--all",remote,activation_commit)
         manifest = verify_release(repo_root=source, release_id=release_id)
         top_level_rows = []
         allowed_prefixes = ("examples/portfolio_backtesting/", "tests/", "skills/")
@@ -1162,6 +1478,13 @@ def promote_official_version_to_master(
                 )
                 allowed_top_level.add(logical_path)
 
+            target_lfs_rows = _material_lfs_rows(target)
+            for row in top_level_rows:
+                if row["storage"] == StorageKind.GIT_LFS.value:
+                    target_lfs_rows[str(row["logical_path"])] = dict(row)
+            if target_lfs_rows and _update_lfs_attributes(target,target_lfs_rows):
+                allowed_top_level.add(".gitattributes")
+
             try:
                 target_identity = assert_official_checkout_matches_active_material(target)
             except OfficialBaselineIdentityError as exc:
@@ -1204,9 +1527,30 @@ def promote_official_version_to_master(
                 != previous_remote_commit
             ):
                 raise MaterialReleaseError("complete_official_promotion_not_fast_forward")
+            if target_lfs_rows:
+                _lfs_remote_url(target,remote)
+                _verify_lfs_git_tree(target,promoted_commit,target_lfs_rows)
+                _lfs_call(target,"push","--all",remote,promoted_commit)
+                if _remote_branch_head(target,remote,branch) != previous_remote_commit:
+                    raise MaterialReleaseError("remote_master_changed_before_promotion_push")
             _push_commit_to_master(target, promoted_commit, remote, branch)
-            if _remote_branch_head(target, remote, branch) != promoted_commit:
-                raise MaterialReleaseError("complete_official_promotion_readback_mismatch")
+            try:
+                if _remote_branch_head(target, remote, branch) != promoted_commit:
+                    raise MaterialReleaseError("complete_official_promotion_readback_mismatch")
+                if target_lfs_rows:
+                    proof = _verify_fresh_remote_lfs_clone(target,remote,promoted_commit,target_lfs_rows)
+                    if _remote_branch_head(target,remote,branch) != promoted_commit:
+                        raise MaterialReleaseError("remote_master_changed_after_lfs_verification")
+                    _write_lfs_proof(repo_root,"promotion-"+release_id,proof)
+            except Exception as exc:
+                if target_lfs_rows:
+                    _write_lfs_proof(repo_root,"promotion-"+release_id,{
+                        "status":"published_lfs_verification_failed", "promoted_commit":promoted_commit,
+                        "previous_remote_commit":previous_remote_commit,
+                        "deployment_allowed":False,"failure_type":type(exc).__name__,
+                    })
+                    raise MaterialReleaseError("complete_official_promotion_published_but_lfs_unverified:"+promoted_commit) from exc
+                raise
             return OfficialPromotionPublication(
                 release_id=release_id,
                 previous_remote_commit=previous_remote_commit,
@@ -1318,6 +1662,8 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
 
     repo = Path(args.repo_root).resolve(strict=True)
     critical_paths = tuple(Path(path) for path in DEFAULT_CRITICAL_FILES)
+    if (repo/".lfsconfig").exists() and Path(".lfsconfig") not in critical_paths:
+        critical_paths += (Path(".lfsconfig"),)
     production_python_entrypoints = tuple(
         path
         for path in critical_paths
@@ -1373,6 +1719,9 @@ def _cli_prepare(args: argparse.Namespace) -> PreparedRelease:
         provenance=provenance,
         qualification={"status": "candidate", "evidence_ids": []},
     )
+    confirmation = getattr(args, "lfs_remote_proof_confirmation", "") or ""
+    if confirmation:
+        return prepare_release(request, lfs_remote_proof_confirmation=confirmation)
     return prepare_release(request)
 
 
@@ -1398,6 +1747,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--qualification-json")
     parser.add_argument("--governance-path", action="append", default=[])
     parser.add_argument("--confirmation")
+    parser.add_argument("--lfs-remote-proof-confirmation", default="",
+        help="Explicit object upload/download approval: I_APPROVE_LFS_REMOTE_ROUNDTRIP:<source_commit>")
     parser.add_argument("--remote", default="origin")
     parser.add_argument("--target-branch", default="master")
     parser.add_argument("--capital", type=float, default=150000.0)
@@ -1420,6 +1771,7 @@ def main(argv: list[str] | None = None) -> int:
             "release_dir": str(prepared.release_dir),
             "manifest_path": str(prepared.manifest_path),
             "staged_paths": list(prepared.staged_paths),
+            "lfs_remote_proof_path": str(prepared.lfs_remote_proof_path) if prepared.lfs_remote_proof_path else None,
             "commit_confirmation": f"I_UNDERSTAND_THIS_COMMITS_OFFICIAL_STRATEGY_MATERIALS:{prepared.release_id}",
         }).decode("utf-8"))
         return 0
