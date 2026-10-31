@@ -19,3 +19,7 @@
 Stage014 C_R150固定规则迁移到独立weekly19-15w-r150k来源工作区；完整88套件2263通过，分批独审与最终时钟增量通过，仅离线条件接受。真实CTP/最终日结/到账来源资格未通过，生产仍d558/旧m0008、canonical7jobs未加载，master仍e41，未激活或安装。详见stages/20261031_stage016_offline_candidate_acceptance_and_blockers.md；原Stage014金融与NO_PROMOTION判断不重写。
 
 - Stage016本地不可变候选已冻结：m0001_20261031T203743+0800_e3d08592e85e，source e3d08592e85e00a2a6b8fde880f69e771755f10b，release d5243461b9cf0368723899bcce67a3dc6fb0ec1a；fresh clone371文件/LFS实体/executable位通过。真实qualification仍缺，CURRENT/master/production均未变，详见stages/20261031_stage016_local_release_and_qualification_blockers.md。
+
+## 2026-10-31T21:39+08:00 Stage017 用户改为人工资金核验
+
+用户取消最终日结解析/自动到账核验的自动化要求，由其人工核验；真实CTP回执等2026-11-02周一。Stage016旧阻断清单相关自动化要求被本决定取代，m0001不改写；激活前接入明确人工确认来源并生成新物料，不把决定记录当已部署。详见stages/20261031_2139_stage017_manual_cash_verification_decision.md。未改alpha、master或生产。
