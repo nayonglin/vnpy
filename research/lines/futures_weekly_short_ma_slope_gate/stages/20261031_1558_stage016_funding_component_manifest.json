@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-10-31T15:58:29.233379+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "production_qualified": false,
+  "financial_backtest_run": false,
+  "bank_api_calls": 0,
+  "ctp_api_calls": 0,
+  "smtp_api_calls": 0,
+  "test_exit_code": 0,
+  "test_command": ".py311/bin/python -m unittest discover -s tests -p test_weekly19_external_funding.py -v",
+  "sources": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "fff9ef5f25afe85d9038a818ae192b1a77056c68990d59df92c0c90687ef1265",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "e1a7af1491d43489c269068e05c527e9c38ed939a5bf152e430aa55cfd8083b7",
+    "tests/test_weekly19_external_funding.py": "69c1c3c6290ff3b88506367a6548403c999a148e4f3b7aa77f1ca17e6f96ba70"
+  },
+  "test_log_sha256": "e0577ff46b01ae1f68f2fdab983592661082681af156abaf7a1829320f548b8b"
+}

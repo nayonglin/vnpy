@@ -1,0 +1,145 @@
+{
+  "schema": "stage016_funding_independent_component_review_v1",
+  "created_at": "2026-10-31T16:07:15.304513+08:00",
+  "scope": "offline_deterministic_funding_component_and_private_store",
+  "status": "PASS_OFFLINE_COMPONENT_WITH_LIMITATIONS",
+  "review_completed": true,
+  "accepted_for_offline_component": true,
+  "accepted_for_real_provider": false,
+  "accepted_for_real_cash_E2E": false,
+  "accepted_for_production_qualification": false,
+  "production_qualified": false,
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "unresolved_component_findings": [],
+  "observations": [
+    {
+      "id": "CONDITIONAL_PROVIDER_ORIGIN",
+      "severity": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "tested": "independent test01",
+      "result": "Entirely synthetic hash-consistent raw accepted by component, gate can returnNone, state production_qualified remains false",
+      "meaning": "Integrity/schema/claimed source_kind are not real provider provenance. Separate qualified capture and production authorization mandatory."
+    },
+    {
+      "id": "MAIL_PENDING_WITHOUT_NEW_ADMISSION",
+      "severity": "INTEGRATION_CONSUMER_REQUIREMENT",
+      "tested": "independent test13",
+      "result": "no_admitted_entry/0 current recommendation while old pending remains and open is blocked",
+      "required": "Mail must overlay existing requests outstanding/expiry/blocked; must not render all funding settled or no funding due solely from current recommendation amount."
+    }
+  ],
+  "conditional_acceptance_requires": [
+    "Qualified real raw account and cashflow/day-close provider with source provenance, release/account binding and authoritative trading calendar",
+    "Real native admission producer before unchanged parent sizing",
+    "Persist state via successful CAS/WAL before publication or new-open permission",
+    "Global source-bound production qualification plus broker Available/margin/quote/open authorization gate outside funding component",
+    "Mail renders pending/partial/expired requests from ledger, separate idempotent outbox",
+    "Unknown flows/expired arrival/cross-day missing continuity remain blocked until qualified reconciliation",
+    "Close/reduce/reconcile not accidentally blocked by open-only funding gate"
+  ],
+  "implementation_source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "fff9ef5f25afe85d9038a818ae192b1a77056c68990d59df92c0c90687ef1265",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "e1a7af1491d43489c269068e05c527e9c38ed939a5bf152e430aa55cfd8083b7",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_external_funding.py": "69c1c3c6290ff3b88506367a6548403c999a148e4f3b7aa77f1ca17e6f96ba70"
+  },
+  "auditor_source": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_funding_independent.py",
+  "auditor_source_sha256": "24b3755b7d1dcfbf5ef36e5297dc1426bfbe8472b0c5ce1c9a47646971bef7f3",
+  "source_manifest": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1558_stage016_funding_component_manifest.json",
+  "source_manifest_sha256": "5aeebbf4f0028c172b4dadc80b6dd99816d0beeb7eda6aed858e311fb26fcffd",
+  "source_hashes_before_after_tests_equal": true,
+  "test_results": [
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_weekly19_external_funding.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 36,
+      "seconds": 0.021,
+      "output": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_funding_independent_original_tests.log",
+      "output_sha256": "c28414e8363e2b9efc40313dd3c19aadf0255fece894689c31ac6bee349a3294"
+    },
+    {
+      "argv": [
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+        "-B",
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/audit_stage016_funding_independent.py"
+      ],
+      "exit_code": 0,
+      "tests": 25,
+      "seconds": 0.119,
+      "output": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage016_funding_independent_counterexamples.log",
+      "output_sha256": "ec5383ca13404c101ba8da657fc8155e0c902ce0c43c31424e0ab9e739ff7ffa"
+    }
+  ],
+  "test_count": 61,
+  "original_test_count": 36,
+  "independent_test_count": 25,
+  "all_test_exit_codes_zero": true,
+  "test_data_kind": "independently fabricated synthetic account/bank/day-close JSON; NO REAL PROVIDER/CTP/BANK EVIDENCE",
+  "coverage": [
+    "no fake equity or input mutation",
+    "strict money and one-cent partial remainder",
+    "raw hash/duplicate-key/account/release/future/stale rejection",
+    "partial/duplicate/excess/unknown deposit and withdrawals",
+    "receipt after broker, exact7day expiry and 300second freshness",
+    "Friday-night Monday nominal-day complete closure/zero start and missing chain",
+    "R exhaustion and E0/negative no base fallback",
+    "private modes, links, checksum, ledger monotonicity, checkpoint rollback",
+    "WAL before/after state replacement and cleanup faults, replay recovery",
+    "two-handle thread CAS and independent two-process CAS, one winner",
+    "same receipt after persistent restart does not double-debit"
+  ],
+  "not_tested_or_qualified": [
+    "actual broker or bank capture/source authentication",
+    "complete real cashflow continuity and accessible zero day-opening snapshot",
+    "actual cash transfer latency/availability/funding confirmation E2E",
+    "all live strategy/sizing/mail/outbox/open-consumer integration",
+    "source-bound CTP readonly or production release/activation/install",
+    "hardware power-loss, arbitrary storage/filesystem, malicious same UID threats"
+  ],
+  "environment": {
+    "python": "Python 3.11.5",
+    "python_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python",
+    "worktree": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian",
+    "observed_source_HEAD": "99e06ac29f2dcaf2a404a7a2f5a7a547123a0546",
+    "uncommitted_source_merge_may_exist": true,
+    "HEAD_is_not_new_release_qualification": true
+  },
+  "interface_documentation_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_1558_stage016_funding_component.md": "3c21229b2f9c10de7851ca78e1527df401ca83aed4bdbda17297a602597af146",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_weekly19_migration_contract.md": "d7d7bb032ba25f0af033c78b9ae9438204872b456fbaf2c4f9a88f8e0aac318f"
+  },
+  "chinese_review": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261031_stage016_funding_independent_review.md",
+  "chinese_review_sha256": "8291a40ad53c4d22c9dbe63134d283129c8e4955e1329534ed15eda1fba171aa",
+  "external_primary_references": [
+    "https://docs.python.org/3.11/library/fcntl.html",
+    "https://docs.python.org/3.11/library/os.html#os.replace",
+    "https://github.com/vnpy/vnpy_ctp/blob/main/vnpy_ctp/gateway/ctp_gateway.py"
+  ],
+  "actions": {
+    "financial_backtests": 0,
+    "CTP_connections": 0,
+    "bank_api_calls": 0,
+    "smtp_api_calls": 0,
+    "order_api_called_count": 0,
+    "send_order_api_called_count": 0,
+    "cancel_order_api_called_count": 0,
+    "production_writes": 0,
+    "implementation_writes": 0,
+    "old_Stage014_writes": 0,
+    "commits": 0,
+    "index_mutations": 0
+  },
+  "overfitting_judgment": "No alpha tuning by component review; original candidate historical selection risk retained",
+  "continued_value": "Yes: independently qualify real provider and end-to-end consumers without changing alpha."
+}
