@@ -1,0 +1,71 @@
+{
+  "schema": "Stage022.weekly19-installation-handoff.v1",
+  "status": "offline_candidate_ready_waiting_real_CTP_qualification",
+  "installation_target": "/Users/mac/Desktop/person/vnpy_production_live",
+  "execution_profile": "weekly19-15w-r150k",
+  "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+  "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+  "source_commit": "39913bc2821c47a485913f6d7b2d2631c19e19ab",
+  "release_id": "m0003_20261102T001414+0800_39913bc2821c",
+  "release_commit": "65594f6320f4c625892be534f750275c9667e315",
+  "manifest_file_sha256": "e1e6fb3a560f9bbaa2981b1ea347d424bddd9de6463ac0936ebb2906fa84b8a6",
+  "manifest_canonical_sha256": "d93332a5adbfc39b0b4fd808bfba33c0cde97c8e463c4e0db4a93fe73002defe",
+  "material_receipt_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_release_receipt.json",
+  "material_receipt_sha256": "853143be1d9bc2ce67d4200af8d2faeec7feb91a4502ef38284bfa0a6fe75170",
+  "CI_receipt_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt002.json",
+  "CI_receipt_sha256": "5879ee6f20bbc021e86ecc9c56aa96e8f70ae3ef0b3f06c57f3d2bcc49231f78",
+  "independent_review_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_acceptance.json",
+  "independent_review_sha256": "77acbddd8f90ce4013fee1980026c361daea496220ba1bf88e6f517dc7c97ac8",
+  "clone_receipt_expected_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_clone_receipt.json",
+  "clone_accepted": true,
+  "actual_production_readback_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_production_state_readback.json",
+  "actual_production_readback_sha256": "b85a029956f459c4528efdefcfe520c7f32c1c5a4c8c804c87c4ead6c16a2cd0",
+  "operator_authorization": {
+    "replace_current_formal_strategy": true,
+    "promote_master_and_install": true,
+    "CTP_not_before": "2026-11-02T09:00:00+08:00",
+    "cash_verification_mode": "operator_manual_v1",
+    "automatic_final_statement_parser_required": false,
+    "automatic_bank_flow_producer_required": false
+  },
+  "daily_mail": {
+    "job": "postclose-report",
+    "new_scheduler_labels": 0,
+    "topics": [
+      "daily_risk",
+      "friday_signal_funding"
+    ],
+    "decision_statuses": [
+      "present",
+      "none",
+      "unconfirmed"
+    ],
+    "SMTP_verified": false
+  },
+  "preserve": [
+    "m0001",
+    "m0002",
+    "all failed CI/RED evidence",
+    "44-product independent research"
+  ],
+  "activation_required_steps": [
+    "read actual stable/CURRENT and five production authority receipts; do not infer active state from this checkout",
+    "at or after operator CTP time, verify ctp_live env and formal framework then collect two real formal readonly account/position evidences; no orders/cancels/transfers/manual mail",
+    "run trusted m0003-release-bound qualification; do not reuse m0002 or offline CI as production qualification",
+    "after real qualification: activate, authorized controlled promote-master, independently read remote and verify fresh master clone",
+    "build production qualification for exact promoted HEAD, then Stage948 atomic install and verify seven jobs/activation/data receipts; do not chase historical theoretical positions"
+  ],
+  "production_qualified": false,
+  "activated": false,
+  "promoted_master": false,
+  "production_installed": false,
+  "financial_replays": 0,
+  "CTP_connections": 0,
+  "SMTP_sends": 0,
+  "clone_receipt_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_clone_receipt.json",
+  "clone_receipt_sha256": "bfbc820d7ad14174eedc80799553f6a46031417d099675afd86c7eca9add03b3",
+  "existing_installation_automation_id": "9-19",
+  "automation_time_unchanged": true,
+  "immutable_snapshot": true,
+  "future_record_policy": "保留本次验收/交接快照；后续资格、激活和安装进度写新stage或版本化回执，不改写旧结论。"
+}

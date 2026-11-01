@@ -1,0 +1,15 @@
+{
+  "schema": "Stage022.existing-installation-task-update.v1",
+  "automation_id": "9-19",
+  "name": "周一9点核验周线19品种实盘安装",
+  "status": "ACTIVE",
+  "target_thread_id": "01a1877c-6120-7550-aef1-630a3b75ba9b",
+  "kind": "heartbeat",
+  "scheduled_local_time": "2026-11-02 09:00 Asia/Shanghai",
+  "schedule_unchanged": true,
+  "new_task_created": false,
+  "prompt_sha256": "e24214d566e9b61300df4f2c98942af3a61f3aecc65b7cb5946f448b018cce11",
+  "references_new_daily_mail_handoff": true,
+  "CTP_connections": 0,
+  "SMTP_sends": 0
+}

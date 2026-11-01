@@ -1,0 +1,5 @@
+PHASE lfs_checkout_actual_contents_with_command_local_filters
+Checking out LFS objects: 100% (1250/1250), 2.9 KB | 0 B/s, done.
+PHASE lfs_ls_files_actual_status
+ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66 * official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0012_20261019T191034+0800_7e13664e0912/payload/ai/stage182/pairwise/model.joblib
+RECEIPT {"status": "passed_candidate_material_clone_only", "clone_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone", "payloads_and_top_level_files_checked": 381, "all_release_manifests_verified": 31, "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955", "production_qualified": false, "failed_error_type": null, "failed_reason": null}

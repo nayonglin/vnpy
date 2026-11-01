@@ -47,3 +47,5 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 ## 2026-11-02 Stage022 每日风险通知候选
 
 每日postclose-report已接日报，明确风险组新信号有/无/未确认，中文原因/原码/原持仓与买卖平/计划与累计成交/历史待执行；同日去重、投递不明不重发，周五独立补资邮件保留并显示退出原因。真实回报semantic/rawSHA绑定成交日期，旧缺日期和bars_queued未评估明确未知；不重跑策略或改alpha/资金规则。92套件2348通过/0跳过、291关键源无漂移，独审P0/P1/P2=0，旧CI沙箱33失败和queued RED均保留。8封合成离线样例见artifacts/stage022_daily_mail_previews_attempt002/；独审stages/Stage022_review_acceptance.json。代码本地提交52b825c4e，新不可变候选物料冻结/安装接续由Stage022新handoff记录；旧m2和CURRENT保持，不代表已发送或已安装。
+
+- Stage022最终新m3已冻结并独立clone实物验收：m0003_20261102T001414+0800_39913bc2821c，source39913bc2821c47a485913f6d7b2d2631c19e19ab，release65594f6320f4c625892be534f750275c9667e315，381payload/291CI/实际LFS与执行位通过，旧m1/m2/CURRENT均保留。最新安装只读接续入口stages/Stage022_installation_handoff.json（替代安装目标，Stage018证据仅历史）；既有9-19任务已同步新候选，时点仍11/2 09:00。尚未激活/master/生产安装或真实发邮件，外层Stage022_delivery_receipt绑定全证据。

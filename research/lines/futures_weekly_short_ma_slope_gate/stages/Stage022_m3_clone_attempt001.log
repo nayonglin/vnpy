@@ -1,0 +1,19 @@
+PHASE clone_no_local_no_checkout
+Cloning into '/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone'...
+PHASE checkout_exact_release_skip_lfs_smudge
+HEAD is now at 65594f632 release(materials): m0003_20261102T001414+0800_39913bc2821c
+PHASE lfs_fetch_to_empty_clone_local_cache
+Fetching reference 65594f6320f4c625892be534f750275c9667e315
+PHASE lfs_checkout_actual_contents
+Cannot checkout LFS objects, Git LFS is not installed.
+PHASE lfs_ls_files_actual_status
+ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66 - official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0012_20261019T191034+0800_7e13664e0912/payload/ai/stage182/pairwise/model.joblib
+RECEIPT {"status": "blocked", "clone_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone", "payloads_and_top_level_files_checked": null, "all_release_manifests_verified": null, "current_release_id": null, "production_qualified": false, "failed_error_type": "AssertionError", "failed_reason": ""}
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_clone_audit.py", line 110, in <module>
+    try:main()
+        ^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_clone_audit.py", line 98, in main
+    oid,marker,name=line.split(' ',2);p=clone/name;pointer=git(clone,'show',RELEASE+':'+name);m=re.fullmatch(rb'version https://git-lfs.github.com/spec/v1\noid sha256:([0-9a-f]{64})\nsize ([0-9]+)\n',pointer);assert m and marker=='*' and m.group(1).decode()==oid and p.stat().st_size==int(m.group(2)) and fsha(p)==oid and not p.read_bytes().startswith(b'version https://git-lfs')
+                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^
+AssertionError

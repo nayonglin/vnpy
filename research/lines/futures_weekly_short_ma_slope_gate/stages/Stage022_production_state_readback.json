@@ -1,0 +1,18 @@
+{
+  "schema": "Stage022.actual-production-readonly-state.v1",
+  "observed_at": "2026-11-02T00:19:08.156558+08:00",
+  "stable_root": "/Users/mac/Desktop/person/vnpy_production_live",
+  "stable_head": "d55887e1def72629fbfa310e439dc3a879969a14",
+  "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+  "current_file_sha256": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+  "authority_files_exist": {
+    "release-manifest.json": false,
+    "qualification-bundle/qualification.json": false,
+    "activation/latest.json": false,
+    "runtime/state/activation_receipt.json": false,
+    "data-readiness/latest.json": false
+  },
+  "CTP_connections": 0,
+  "SMTP_sends": 0,
+  "production_mutations": 0
+}

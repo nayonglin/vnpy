@@ -1,0 +1,205 @@
+{
+  "activation_performed": false,
+  "all_declared_executable_entries_present": true,
+  "all_release_manifests_verified": 31,
+  "clone_creation": {
+    "command": [
+      "git",
+      "clone",
+      "--no-local",
+      "--no-checkout",
+      "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian",
+      "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone"
+    ],
+    "exact_checkout": "65594f6320f4c625892be534f750275c9667e315",
+    "lfs_binary_path": "/Users/mac/.codex/tools/git-lfs-3.8.1-arm64/git-lfs",
+    "lfs_binary_sha256": "74af139fc6f9b039e50e5b860597881e19a2901c126a2ba301173cf784459269",
+    "lfs_cache_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone/.git/lfs",
+    "lfs_object_files_before_fetch": 0
+  },
+  "clone_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone",
+  "code_commit": "52b825c4efe88b20b8a9a33116c755003f1c9ab9",
+  "ctp_connections": 0,
+  "current_is_m3": false,
+  "current_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+  "current_unchanged": true,
+  "financial_replays": 0,
+  "finished_at": "2026-11-02T00:22:39.628970+08:00",
+  "git_alternates_absent": true,
+  "git_and_filesystem_executable_modes_match": true,
+  "git_objects_not_hardlinked": true,
+  "implementation_lock_sha256": "ed862e77e0780ba7ac0714c9edbb22e867d3a8481b9d61f6557e11ecf6638ada",
+  "independent_lfs_cache_actual": [
+    {
+      "bytes": 2865,
+      "clone_local_object_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone/.git/lfs/objects/ba/98/ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66",
+      "path": "official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0012_20261019T191034+0800_7e13664e0912/payload/ai/stage182/pairwise/model.joblib",
+      "pointer_oid_size_actual_contents_match": true,
+      "sha256": "ba982708a476be74e30ed966883d1eae8ef52010bf8df3763a83d6fc5c719d66"
+    }
+  ],
+  "lfs_filter_scope": "per Git command -c only; no git lfs install and no persisted config modification",
+  "material_release_id": "m0003_20261102T001414+0800_39913bc2821c",
+  "old_m1_m2_tree_oids": {
+    "official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0001_20261031T203743+0800_e3d08592e85e": "1c4347e235dc1fda9a0608022cc6c14c9ed4e234",
+    "official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0002_20261101T050816+0800_e89fdcbb6826": "22358597d40ca1eef910bc708c3879352107a1be"
+  },
+  "old_m1_m2_unchanged": true,
+  "order_api_calls": 0,
+  "payloads_and_top_level_files_checked": 381,
+  "phases": [
+    {
+      "name": "clone_no_local_no_checkout",
+      "returncode": 0,
+      "seconds": 48.363349084043875
+    },
+    {
+      "name": "checkout_exact_release_skip_lfs_smudge",
+      "returncode": 0,
+      "seconds": 7.915405832929537
+    },
+    {
+      "name": "lfs_fetch_to_empty_clone_local_cache",
+      "returncode": 0,
+      "seconds": 13.376978958956897
+    },
+    {
+      "name": "lfs_checkout_actual_contents",
+      "returncode": 0,
+      "seconds": 0.096539415884763
+    },
+    {
+      "name": "lfs_ls_files_actual_status",
+      "returncode": 0,
+      "seconds": 0.2751544169150293
+    },
+    {
+      "name": "lfs_checkout_actual_contents_with_command_local_filters",
+      "returncode": 0,
+      "seconds": 0.317540124990046
+    },
+    {
+      "name": "lfs_ls_files_actual_status",
+      "returncode": 0,
+      "seconds": 0.2065962499473244
+    }
+  ],
+  "prior_attempt": {
+    "activation_performed": false,
+    "clone_creation": {
+      "command": [
+        "git",
+        "clone",
+        "--no-local",
+        "--no-checkout",
+        "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian",
+        "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone"
+      ],
+      "exact_checkout": "65594f6320f4c625892be534f750275c9667e315",
+      "lfs_binary_path": "/Users/mac/.codex/tools/git-lfs-3.8.1-arm64/git-lfs",
+      "lfs_binary_sha256": "74af139fc6f9b039e50e5b860597881e19a2901c126a2ba301173cf784459269",
+      "lfs_cache_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone/.git/lfs",
+      "lfs_object_files_before_fetch": 0
+    },
+    "clone_path": "/private/tmp/weekly19-stage022-m3-fresh-si06wnb0/clone",
+    "code_commit": "52b825c4efe88b20b8a9a33116c755003f1c9ab9",
+    "ctp_connections": 0,
+    "failed_error_type": "AssertionError",
+    "failed_reason": "",
+    "financial_replays": 0,
+    "finished_at": "2026-11-02T00:20:16.415501+08:00",
+    "implementation_lock_sha256": "ed862e77e0780ba7ac0714c9edbb22e867d3a8481b9d61f6557e11ecf6638ada",
+    "material_release_id": "m0003_20261102T001414+0800_39913bc2821c",
+    "order_api_calls": 0,
+    "phases": [
+      {
+        "name": "clone_no_local_no_checkout",
+        "returncode": 0,
+        "seconds": 48.363349084043875
+      },
+      {
+        "name": "checkout_exact_release_skip_lfs_smudge",
+        "returncode": 0,
+        "seconds": 7.915405832929537
+      },
+      {
+        "name": "lfs_fetch_to_empty_clone_local_cache",
+        "returncode": 0,
+        "seconds": 13.376978958956897
+      },
+      {
+        "name": "lfs_checkout_actual_contents",
+        "returncode": 0,
+        "seconds": 0.096539415884763
+      },
+      {
+        "name": "lfs_ls_files_actual_status",
+        "returncode": 0,
+        "seconds": 0.2751544169150293
+      }
+    ],
+    "production_accesses": 0,
+    "production_qualified": false,
+    "release_commit": "65594f6320f4c625892be534f750275c9667e315",
+    "remote_master_clone": false,
+    "runtime_tests_run": false,
+    "schema": "Stage022.m3-fresh-clone-acceptance.v1",
+    "smtp_sends": 0,
+    "source_binding": {
+      "ci_errors": 0,
+      "ci_failed": 0,
+      "ci_junit_sha256": "f69dd6a9da372d64eb2fd68eaaa94d0c0c6a18baf279168a272eaf6ce094f578",
+      "ci_original_source_commit": "30b236c973367a859ceae053ee8f1f37a36ac558",
+      "ci_skipped": 0,
+      "ci_summary_sha256": "5879ee6f20bbc021e86ecc9c56aa96e8f70ae3ef0b3f06c57f3d2bcc49231f78",
+      "critical_subset": 291,
+      "implementation_lock_current_git_code_source_and_payload_all_equal": true,
+      "independent_review_scope": "Unactivated offline notification candidate only; no production/source certification",
+      "independent_review_sha256": "77acbddd8f90ce4013fee1980026c361daea496220ba1bf88e6f517dc7c97ac8",
+      "manifest_canonical_digest": "d93332a5adbfc39b0b4fd808bfba33c0cde97c8e463c4e0db4a93fe73002defe",
+      "manifest_file_sha256": "e1e6fb3a560f9bbaa2981b1ea347d424bddd9de6463ac0936ebb2906fa84b8a6",
+      "payloads": 381,
+      "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+      "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+      "tree_fingerprint": "53cf50f356c4f53347e0cbb76e314105076f92c619ad279507ff2efe65107e6b",
+      "xml_modules": 92,
+      "xml_testcases": 2348
+    },
+    "source_commit": "39913bc2821c47a485913f6d7b2d2631c19e19ab",
+    "started_at": "2026-11-02T00:19:05.812046+08:00",
+    "status": "blocked"
+  },
+  "prior_attempt_resolution": "Real fetch succeeded; absent clone Git LFS filter config prevented materialization despite exit0. Retry uses command-local -c filters only; no package/global/local config install.",
+  "production_accesses": 0,
+  "production_qualified": false,
+  "release_commit": "65594f6320f4c625892be534f750275c9667e315",
+  "remote_master_clone": false,
+  "runtime_tests_run": false,
+  "schema": "Stage022.m3-fresh-clone-acceptance.v1",
+  "smtp_sends": 0,
+  "source_291_unchanged_after_clone": true,
+  "source_binding": {
+    "ci_errors": 0,
+    "ci_failed": 0,
+    "ci_junit_sha256": "f69dd6a9da372d64eb2fd68eaaa94d0c0c6a18baf279168a272eaf6ce094f578",
+    "ci_original_source_commit": "30b236c973367a859ceae053ee8f1f37a36ac558",
+    "ci_skipped": 0,
+    "ci_summary_sha256": "5879ee6f20bbc021e86ecc9c56aa96e8f70ae3ef0b3f06c57f3d2bcc49231f78",
+    "critical_subset": 291,
+    "implementation_lock_current_git_code_source_and_payload_all_equal": true,
+    "independent_review_scope": "Unactivated offline notification candidate only; no production/source certification",
+    "independent_review_sha256": "77acbddd8f90ce4013fee1980026c361daea496220ba1bf88e6f517dc7c97ac8",
+    "manifest_canonical_digest": "d93332a5adbfc39b0b4fd808bfba33c0cde97c8e463c4e0db4a93fe73002defe",
+    "manifest_file_sha256": "e1e6fb3a560f9bbaa2981b1ea347d424bddd9de6463ac0936ebb2906fa84b8a6",
+    "payloads": 381,
+    "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+    "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+    "tree_fingerprint": "53cf50f356c4f53347e0cbb76e314105076f92c619ad279507ff2efe65107e6b",
+    "xml_modules": 92,
+    "xml_testcases": 2348
+  },
+  "source_commit": "39913bc2821c47a485913f6d7b2d2631c19e19ab",
+  "source_script_sha256": "abb372a1ef7cd7c3c7ce93907064b8754fe186a1c6c58e9fb43b554fbb8a5aab",
+  "started_at": "2026-11-02T00:22:36.749411+08:00",
+  "status": "passed_candidate_material_clone_only"
+}
