@@ -1,0 +1,159 @@
+{
+  "schema": "Stage019.independent-annual-window-acceptance.v1",
+  "generated_at": "2026-11-01T13:31+08:00",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "failures": [],
+  "severity_findings": {
+    "P0": [],
+    "P1": [],
+    "P2": []
+  },
+  "method": "verified_existing_fresh_engine_window",
+  "original_method": "fresh_engine",
+  "new_financial_replays": 0,
+  "full_period_curve_sliced": false,
+  "source_run": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/stage014_C_20260101_attempt001",
+  "scope": {
+    "requested_start": "2026-01-01",
+    "actual_start": "2026-01-05",
+    "end": "2026-10-30",
+    "trading_days": 198,
+    "fills": 36,
+    "complete_rounds": 18,
+    "fixed_products": 19
+  },
+  "metrics": {
+    "initial_trading": 150000.0,
+    "requested_start": "2026-01-01",
+    "actual_start": "2026-01-05",
+    "actual_end": "2026-10-30",
+    "trading_days": 198,
+    "end_equity": 173100.0,
+    "external_topup": 720.0,
+    "net_trading_pnl": 22380.0,
+    "reserve_remaining": 149280.0,
+    "total_wealth": 322380.0,
+    "account_growth_including_T_pct": 15.399999999999991,
+    "net_pnl_over_initial_trading_pct": 14.92,
+    "max_drawdown_pct": -36.16147793362984,
+    "sharpe": 0.6195342610491572,
+    "slippage": 2930.0,
+    "commission": 0.0,
+    "fills": 36,
+    "closed_rounds": 18,
+    "wins": 8,
+    "losses": 10,
+    "flat": 0,
+    "win_rate_pct": 44.44444444444444,
+    "mean_win": 13370.0,
+    "mean_loss_abs": 8458.0,
+    "payoff_ratio": 1.5807519508157957,
+    "profit_factor": 1.2646015606526366,
+    "terminal_open_net_mtm": 0.0,
+    "peak_date": "2026-03-23",
+    "peak_equity": 233840.0,
+    "trough_date": "2026-09-10",
+    "trough_equity": 149280.0,
+    "min_equity": 147550.0,
+    "static_margin165_peak_pct": 93.81822992792702
+  },
+  "independent_checks": {
+    "new_raw_source_numeric": 2701,
+    "new_derived_report": 187
+  },
+  "inherited_unchanged_evidence": {
+    "receipt_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/stage014_independent_receipts/2026-01-01_C.json",
+    "receipt_sha256": "f11497e261eb93e834e58da46584c8842ee09ce89674e9a7d180d115304c0a21",
+    "raw_core_checks": 63164,
+    "funding_checks": 6149,
+    "stage014_checks": 1070,
+    "reexecuted_this_turn": false,
+    "all_74_raw_output_bytes_rehashed": true,
+    "checkpoint_sha256": "07452b5f1c22cf5bf92d797bde91e4e57923e3f8a8ffa01e416233b122bcc93d"
+  },
+  "audit_adapter_correction": {
+    "failed_attempt": "Stage019_review_raw_attempt001.log",
+    "reason": "Naive FIFO realized-cash partition differs from strategy daily MTM-settled wallet. Source resets settled_balance=estimated_equity after on_bars; compare both captured wallets to independently reconstructed daily E. FIFO realized plus open MTM remains independently checked against E. No raw, strategy, or financial parameter changes.",
+    "strategy_source_lines": [
+      1811,
+      3411,
+      3443
+    ],
+    "historical_audit": "stage009_independent_window.py:108"
+  },
+  "fixed_alpha_identity": {
+    "m2_manifest_sha256": "1a23fda7a25051c4890d190c146ce33068ba1c478ce90fc3e0385e733ec5989c",
+    "m2_source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+    "files": 31,
+    "definition_ASTs": 565,
+    "settings_count": 170,
+    "only_settings_deltas": {
+      "ai_product_pool_eligibility_path": {
+        "research": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/official_strategy_materials/ai_top10_plus_fu_official_live_v1/releases/m0008_20261008T204054+0800_2a7420a9f955/payload/ai/stage182/combined_eligibility.csv",
+        "m2": "@DISABLED/ai_eligibility.csv"
+      },
+      "mapping_csv_path": {
+        "research": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/mapping.csv",
+        "m2": "@INPUT/mapping"
+      },
+      "product_universe_csv_path": {
+        "research": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/backtest_outputs/qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_static18_plus_fu_universe.csv",
+        "m2": "@ASSET/static19.csv"
+      },
+      "supply_demand_signal_path": {
+        "research": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/empty_signals/qmt_roll_stage316_supply_demand_quality_probe_external_signals_stage316_supply_demand_quality_probe_v1.csv",
+        "m2": "@EMPTY/supply_demand.csv"
+      },
+      "trade_start_date": {
+        "research": "2026-01-01",
+        "m2": "2015-01-01"
+      }
+    },
+    "current_strategy_settings_sha256": "513ef478b031ad819dd0a81baf11b76f1fee1bad8671de6526966ad68e6b71ab"
+  },
+  "source_manifest_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/source_manifest.json",
+  "source_manifest_sha256": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+  "reviewed_delivery_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/2026_ytd_nav.png": "c44193ba0923b62b63bc759edbba386977fc56100a64979bf542423101f03c53",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/daily.csv": "ea7b14c7a0ae6b476df404480f609edaa69ce45aff13d813a7293fd39be6b87c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/deposits.csv": "e481b4a28a9a7266ffa024a8d4fa30aa697f8f994a9cb05ca2b357950f06278e",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/monthly.csv": "32e6c3e0cbae20b631f23986f4843d83bba1c7ddbf72962eb565f4775d756e77",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/report.md": "841a24b7965681d217c03b3915fd2736ef0d6c1bf63659666b54694c4256dd78",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/source_manifest.json": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/summary.json": "098661c7463e069e2e0dd452f5be2232318c355e97dde223523b6ebfbb050789",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/trades.csv": "6509f8bf0c34c39c4944e04668e03e493695915dc47f6471e8a30d90f8f45adb"
+  },
+  "audit_evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw.py": "dfda55531bf1a1cc2d5e71209a5318f66ae94629f0954c00e050cde7428d9a5a",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw_v2.py": "71795157de59e3feb44f283109a50587fc9f34a8f3e13ff563943cc6bb41b76c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw_attempt001.log": "3ea6d2ef8825b9ecbf7bb5ed6a4799f5c3d10751fc887a2aacd6ade0df84520d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw_attempt002.log": "84fa12f2d770388a1950d9cd2cabb6a94694025a7152510a5d785684cdbbb65c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw_result.json": "5c58c44162adb6bcc585b14c00b492129902e30fc021f7a36c9a5ce0418f8495",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_closed_rounds.csv": "d6634aff4146040c46d06955b9b518d0d6ba246bc2252450e743c251318c2d5d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_derived.py": "f87284f800fb837596a20f64fc438c6c1acc324b04177387df9cb4541a14df31",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_derived_attempt001.log": "f3a06a2577afb1e03c171b5b0863239b0d10564fbc53943e16236eb8cde57e3c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_derived_result.json": "de51f86a5f39ffb1921e1f0bfbed60137c419e7e3ca6649e06803033bf1490e4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_annual_results.md": "75e1ef787a3a8dbdeb026b9c72e7d2f0e0d1b1389ffbbfc3b874877b340597fc"
+  },
+  "confidence": {
+    "saved_model_ledger_numeric": "high",
+    "fixed_alpha_identity": "high",
+    "live_execution_transfer_latency_capacity": "not established by this research window"
+  },
+  "promotion_verdict": "NO_PROMOTION_FROM_THIS_SINGLE_WINDOW",
+  "production_qualified": false,
+  "source_qualified": false,
+  "limitations": [
+    "Zero commissions",
+    "Fixed slippage",
+    "Static margin estimate multiplier1.65",
+    "Incomplete historical PIT/lifecycle/capacity evidence",
+    "Declared next daily open, no tick executable capacity proof",
+    "Research immediate topup vs manual real transfer timing not equivalent"
+  ],
+  "outer_delivery_may_bind_this_receipt": true,
+  "investigation": "Local immutable source and accounting verification; no new external strategy research",
+  "overfitting": "No parameter changes; repeated in-sample viewing is not new OOS",
+  "continuation_value": "Answer exact YTD request without new financial replay or rescue scan"
+}

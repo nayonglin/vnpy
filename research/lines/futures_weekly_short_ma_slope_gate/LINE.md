@@ -29,3 +29,9 @@ Stage014 C_R150固定规则迁移到独立weekly19-15w-r150k来源工作区；�
 Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件），已独审原始数据；人工资金核验与独立日历启动接线已实现、独审及完整90套件2309通过/0失败/0跳过，288关键源无漂移。新代码待官方发布器冻结m0002，不覆盖m0001。独立market generation及真实未来日历已备好；实际stable/CURRENT/master/7jobs尚未切换，CTP未连。11/2周一09:00一次性本对话任务9-19先只读核验，再继续已授权的真实资格/正式激活和安装。自动final/parser与银行producer已取消，不再列为前置。详见stages/20261101_0506_stage018_manual_candidate_ready.md；原Stage014金融和NO_PROMOTION保留，与44品种线隔离。
 
 - Stage018本地m0002已冻结：m0002_20261101T050816+0800_e89fdcbb6826，source e89fdcbb68260a647372f03626800110470f61dd，release 48839375c26081bf6aeb5610aab70c72c688c59c，378物料fresh clone/LFS/执行位复核通过，m1完全保留。当前仍未activate/promote-master/生产安装；周一任务从stages/20261101_stage018_local_m0002_and_monday_handoff.md继续。
+
+## 2026-11-01T13:31+08:00 Stage019 今年独立起点复核
+
+复核原Stage014 2026-01-01 fresh_engine窗，实际1/5—10/30共198日，无新金融回跑/无切长曲线。E173100、展示增长15.4%含T720、净交易PnL22380（14.92%）、DD−36.1615%、Sharpe0.619534、36成交/18轮/44.44%胜率/盈亏比1.58075/PF1.26460；R149280、末仓0。单独年度PNG/CSV/report见artifacts/stage019_2026_ytd；独审/最终交付receipt与stages/20261101_1331_stage019_2026_ytd_rechecked.md。策略/m2/实盘任务均未改；手续费0/非新OOS等限制保留。
+
+- Stage019最终独审accepted/PASS_WITH_LIMITATIONS，新增原账2701+派生187检查、未解决P0/P1/P2=0；外层交付artifacts/stage019_2026_ytd/delivery_receipt.json绑定原source_manifest和所有交付。原始审核失败保留；未改原财务或m2。

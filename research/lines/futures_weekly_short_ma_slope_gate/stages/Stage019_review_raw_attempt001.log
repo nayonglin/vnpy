@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw.py", line 60, in <module>
+    i=internal.loc[internal.date.isin(dates)].set_index('date').loc[dates];near(i.estimated_equity,E,'internal_E');near(i.settled_balance,settled_fifo,'internal_settled_cash')
+                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw.py", line 19, in near
+    def near(a,b,label):ok(np.allclose(a,b,rtol=0,atol=1e-6,equal_nan=False),label)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_raw.py", line 18, in ok
+    if not v:raise AssertionError(label)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: internal_settled_cash

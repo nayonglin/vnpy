@@ -1,0 +1,38 @@
+{
+  "schema": "Stage019.annual-window-delivery.v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "published_at": "2026-11-01T13:32:11.935948+08:00",
+  "independent_review_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage019_review_acceptance.json",
+  "independent_review_sha256": "e991bd187c6c3b1b3bbe82e8c76ffc505d7965a1b17dda939a6d96678a5d8459",
+  "generation_manifest_sha256": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+  "generation_status_note": "Generation manifest records original review-pending state; this outer receipt records subsequent independent acceptance without altering reviewed bytes.",
+  "delivery_files_sha256": {
+    "summary.json": "098661c7463e069e2e0dd452f5be2232318c355e97dde223523b6ebfbb050789",
+    "deposits.csv": "e481b4a28a9a7266ffa024a8d4fa30aa697f8f994a9cb05ca2b357950f06278e",
+    "source_manifest.json": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+    "2026_ytd_nav.png": "c44193ba0923b62b63bc759edbba386977fc56100a64979bf542423101f03c53",
+    "report.md": "841a24b7965681d217c03b3915fd2736ef0d6c1bf63659666b54694c4256dd78",
+    "daily.csv": "ea7b14c7a0ae6b476df404480f609edaa69ce45aff13d813a7293fd39be6b87c",
+    "trades.csv": "6509f8bf0c34c39c4944e04668e03e493695915dc47f6471e8a30d90f8f45adb",
+    "monthly.csv": "32e6c3e0cbae20b631f23986f4843d83bba1c7ddbf72962eb565f4775d756e77"
+  },
+  "original_financial_source_commit": "688754057ba1dc07caa9edc537ceec486f678372",
+  "m2_fixed_alpha_source_commit": "e89fdcbb68260a647372f03626800110470f61dd",
+  "method": "verified_existing_fresh_engine_window",
+  "financial_replays_this_turn": 0,
+  "curve_slice_of_long_run": false,
+  "source_window_requested_start": "2026-01-01",
+  "actual_dates": [
+    "2026-01-05",
+    "2026-10-30"
+  ],
+  "trading_days": 198,
+  "new_independent_raw_checks": 2701,
+  "new_independent_derived_checks": 187,
+  "production_qualified": false,
+  "production_changed": false,
+  "ctp_connected": false,
+  "smtp_sent": false,
+  "http_service_started": false
+}

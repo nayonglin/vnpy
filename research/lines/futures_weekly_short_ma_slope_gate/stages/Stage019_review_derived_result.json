@@ -1,0 +1,62 @@
+{
+  "schema": "Stage019.independent-derived-report-audit.v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "failures": [],
+  "checks": 187,
+  "source_manifest_sha256": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+  "raw_review_sha256": "5c58c44162adb6bcc585b14c00b492129902e30fc021f7a36c9a5ce0418f8495",
+  "derived_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/2026_ytd_nav.png": "c44193ba0923b62b63bc759edbba386977fc56100a64979bf542423101f03c53",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/daily.csv": "ea7b14c7a0ae6b476df404480f609edaa69ce45aff13d813a7293fd39be6b87c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/deposits.csv": "e481b4a28a9a7266ffa024a8d4fa30aa697f8f994a9cb05ca2b357950f06278e",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/monthly.csv": "32e6c3e0cbae20b631f23986f4843d83bba1c7ddbf72962eb565f4775d756e77",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/report.md": "841a24b7965681d217c03b3915fd2736ef0d6c1bf63659666b54694c4256dd78",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/source_manifest.json": "48f6fcc2492e971c11599c200ce0952ca8d63cfa03ae2638d89f28335926f251",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/summary.json": "098661c7463e069e2e0dd452f5be2232318c355e97dde223523b6ebfbb050789",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage019_2026_ytd/trades.csv": "6509f8bf0c34c39c4944e04668e03e493695915dc47f6471e8a30d90f8f45adb"
+  },
+  "audited_generator_sha256": "a07d12a71f2b9e330525c164eda40371dba8d6f8c2a9b14d9c0a66951cea2afd",
+  "plot": {
+    "actual_daily_rows": 198,
+    "nav_plot_points": 199,
+    "initial_point": "2026-01-01 money only, no bar",
+    "source_curve": "trading E / 150000, T included, unused reserve excluded",
+    "dimensions": [
+      2052,
+      1188
+    ],
+    "viewed": true,
+    "visual_findings": [],
+    "annotations_independently_verified": {
+      "peak": [
+        "2026-03-23",
+        233840.0
+      ],
+      "DD_valley": [
+        "2026-09-10",
+        149280.0
+      ],
+      "topup": [
+        "2026-09-11",
+        720
+      ],
+      "end": [
+        "2026-10-30",
+        173100.0
+      ]
+    }
+  },
+  "findings": [],
+  "limitations": [
+    "Zero commissions",
+    "Fixed slippage",
+    "Static margin estimate multiplier1.65",
+    "Incomplete historical PIT/lifecycle/capacity evidence",
+    "Declared next daily open, no tick executable capacity proof",
+    "Research immediate topup vs manual real transfer timing not equivalent"
+  ],
+  "new_financial_replays": 0,
+  "production_qualified": false,
+  "note": "Generator source_manifest remains its immutable pending snapshot; a later outer delivery receipt may bind this review and the added report without a hash cycle."
+}
