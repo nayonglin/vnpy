@@ -1,0 +1,1 @@
+{"accepted": true, "checks": 431, "receipt_sha256": "e40e89ea12feb1930f183bfad68eef786ed4f8d8a5d03791eec4be7683a722a1", "pre300_truncated": 18, "post50_truncated": 12, "minute_candidates": 52, "sqlite_intervals": ["d", "1m"]}

@@ -1,0 +1,44 @@
+{
+  "schema": "Stage020.offline-recap-file-delivery.v1",
+  "published_at": "2026-11-01T15:59:58.739943+08:00",
+  "accepted_for_file_delivery": true,
+  "status": "PASS_DATA_AND_JS_WITH_BROWSER_VERIFICATION_LIMITATION",
+  "source_profile": "stage019_C_R150_20260101",
+  "source_interval": [
+    "2026-01-01",
+    "2026-10-30"
+  ],
+  "closed_rounds": 18,
+  "source_fills": 36,
+  "net_pnl": 22380.0,
+  "minute_episodes": 8,
+  "html_sha256": "b20739348912852c6915a6e81c660a3c19fda6d5d2277b944621dfbfcabb747e",
+  "independent_review_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage020_review_acceptance.json",
+  "independent_review_sha256": "d0db1b146fcdbe409be4b79b93030880379cb5774848798b0ba38faa8bfcde2e",
+  "delivered_files_sha256": {
+    "summary.json": "cbccf9a0e4d157bfa06dad7333ecdf40a7200b4f80c5dd6e35be0da19bd1d416",
+    "embedded_script_2.js": "c38aac49e07dc4710af3f88a0587d7a842a01ef6ff0dd5f94004ad1318cdd9a0",
+    "index.html": "b20739348912852c6915a6e81c660a3c19fda6d5d2277b944621dfbfcabb747e",
+    "generation_manifest.json": "86e1bdb5de1ac1a773a48ec7fd1b02e05b168cded8c809f67f1b7f55e2994489",
+    "records.json": "195b032706e4d96181bb82e24098e2f8390d99fe74085ad1494849a4e5c7289a",
+    "closed_rounds.csv": "5f43f996e3cf8ec0143bc5884343e95a4bdccb549f4f9c790ad9514da5b54344",
+    "embedded_script_0.js": "3b6e15d45dbb7fca5bd2094291e961ddc5472cd887009e6009a56dab668d721f",
+    "chart_manifest.csv": "a2535dd70ba3ff6c2678a1d639963bbd79c13717a672c6394b495385d1b175f4",
+    "embedded_script_1.js": "248c2b1b94c23c07a5039ac5be294fce028b120812963c3fdb25a14d1b91df40"
+  },
+  "browser_validation": {
+    "status": "blocked_by_file_protocol_policy",
+    "actual_browser_rendering": false,
+    "actual_pointer_zoom": false,
+    "alternative_browser_or_rawCDP_attempted": false,
+    "HTTP_workaround_started": false,
+    "passed_scope": "All3 JS syntax + independent lightweight DOM/Plotly.react parameters simulation; not real rendering or pointer zoom"
+  },
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "http_services_started": 0,
+  "single_file_offline_html": true,
+  "external_plotly_script_required": false,
+  "accompanying_data_files_required_to_open": false
+}

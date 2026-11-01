@@ -35,3 +35,7 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 复核原Stage014 2026-01-01 fresh_engine窗，实际1/5—10/30共198日，无新金融回跑/无切长曲线。E173100、展示增长15.4%含T720、净交易PnL22380（14.92%）、DD−36.1615%、Sharpe0.619534、36成交/18轮/44.44%胜率/盈亏比1.58075/PF1.26460；R149280、末仓0。单独年度PNG/CSV/report见artifacts/stage019_2026_ytd；独审/最终交付receipt与stages/20261101_1331_stage019_2026_ytd_rechecked.md。策略/m2/实盘任务均未改；手续费0/非新OOS等限制保留。
 
 - Stage019最终独审accepted/PASS_WITH_LIMITATIONS，新增原账2701+派生187检查、未解决P0/P1/P2=0；外层交付artifacts/stage019_2026_ytd/delivery_receipt.json绑定原source_manifest和所有交付。原始审核失败保留；未改原财务或m2。
+
+## 2026-11-01 Stage020 年度18轮逐笔离线复盘
+
+基于Stage019唯一2026独立窗，统一Stage038纯函数渲染器的本线窄适配器，18轮/36成交/8盈10亏/净22380。日/周/月/10/30日全部精确epoch，8轮可用部分或完整本地15m；52缓存候选逐日/桶准入及3日隐藏预热，缺日后MA断段，未下载/代理/补造。最终入口artifacts/stage020_2026_ytd_recap_attempt002/index.html，单文件6.24MB内嵌Plotly/数据/年度净值图，9adapter测试、root252JS及独立1553数值+180JS等通过。真实浏览器因file协议安全策略阻止而未验收，未绕行或起HTTP，outer delivery明确此限制。未重跑金融或改策略/m2/生产；初始版本和失败证据保留。

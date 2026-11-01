@@ -1,0 +1,193 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+_____ AnnualRecapAdapterTests.test_gross_or_mismatched_round_pnl_rejected ______
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_gross_or_mismatched_round_pnl_rejected>
+
+    def test_gross_or_mismatched_round_pnl_rejected(self):
+>    m=subject();fills,rounds=self.fixture();rounds.loc[0,'net_pnl']=300.
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e640e10>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+___ AnnualRecapAdapterTests.test_incomplete_or_tampered_delivery_is_rejected ___
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_incomplete_or_tampered_delivery_is_rejected>
+
+    def test_incomplete_or_tampered_delivery_is_rejected(self):
+>    m=subject()
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e623d50>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_ AnnualRecapAdapterTests.test_net_profit_uses_frozen_round_and_both_fill_costs _
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_net_profit_uses_frozen_round_and_both_fill_costs>
+
+    def test_net_profit_uses_frozen_round_and_both_fill_costs(self):
+>    m=subject();fills,rounds=self.fixture();r=m.normalize_rounds(rounds,fills,{'a2605.DCE':10},{'a2605.DCE':2},{'a2605.DCE':0})
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e641450>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+________________ AnnualRecapAdapterTests.test_output_isolation _________________
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_output_isolation>
+
+    def test_output_isolation(self):
+>    m=subject()
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10d582090>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_ AnnualRecapAdapterTests.test_residual_or_unpaired_fill_is_never_silently_dropped _
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_residual_or_unpaired_fill_is_never_silently_dropped>
+
+    def test_residual_or_unpaired_fill_is_never_silently_dropped(self):
+>    m=subject();fills,rounds=self.fixture();fills.loc[2]=dict(fills.iloc[0],trade_id='BACKTESTING.3',order_id='BACKTESTING.3')
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e680590>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+______ AnnualRecapAdapterTests.test_short_underlying_move_stays_negative _______
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_short_underlying_move_stays_negative>
+
+    def test_short_underlying_move_stays_negative(self):
+>    m=subject();fills,rounds=self.fixture(short=True);r=m.normalize_rounds(rounds,fills,{'a2605.DCE':10},{'a2605.DCE':2},{'a2605.DCE':0})
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e68ad90>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_ AnnualRecapAdapterTests.test_trading_date_preserved_for_friday_night_execution _
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_trading_date_preserved_for_friday_night_execution>
+
+    def test_trading_date_preserved_for_friday_night_execution(self):
+>    m=subject();fills,rounds=self.fixture();r=m.normalize_rounds(rounds,fills,{'a2605.DCE':10},{'a2605.DCE':2},{'a2605.DCE':0})
+       ^^^^^^^^^
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:8: in subject
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x10e643a50>
+path = '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage020_ytd_recap.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+=========================== short test summary info ============================
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_gross_or_mismatched_round_pnl_rejected
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_incomplete_or_tampered_delivery_is_rejected
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_net_profit_uses_frozen_round_and_both_fill_costs
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_output_isolation
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_residual_or_unpaired_fill_is_never_silently_dropped
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_short_underlying_move_stays_negative
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_trading_date_preserved_for_friday_night_execution
+7 failed in 0.40s

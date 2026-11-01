@@ -1,0 +1,403 @@
+{
+  "schema": "Stage020.known-local-minute-candidates.v1",
+  "unique_candidate_content": 26,
+  "files": [
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP605_completed_minute_backtest.csv",
+      "sha256": "260926c1234c339c2365e7a6d8df3a0df14490e113b8629d38937e04d60e487d",
+      "symbol": "AP605.CZCE",
+      "rows": 19350,
+      "first": "2025-11-28 14:59:00",
+      "last": "2026-04-10 14:58:00",
+      "natural_dates": 87,
+      "typical_day_rows": {
+        "225": 85,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 9122079.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/AP605_completed_minute_backtest.csv",
+      "sha256": "ff078eb9642489ee3d9c7dc23fdd9f9ee10479ce219d0d5559ebe2cbc26200d7",
+      "symbol": "AP605.CZCE",
+      "rows": 1575,
+      "first": "2025-11-28 14:59:00",
+      "last": "2025-12-09 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "225": 6,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 711282.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/CF609_completed_minute_backtest.csv",
+      "sha256": "10172b89cd051e13453a539c75f66d30d027e046c655b37aae7e09a689ad98e0",
+      "symbol": "CF609.CZCE",
+      "rows": 6090,
+      "first": "2026-04-03 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 19,
+      "typical_day_rows": {
+        "345": 17,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 9009141.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/CF609_completed_minute_backtest.csv",
+      "sha256": "6defcdfa91278a7e19e695fd332cc2ff8f0dc75921fe9845658ab2e1cc71d6da",
+      "symbol": "CF609.CZCE",
+      "rows": 2295,
+      "first": "2026-04-03 14:59:00",
+      "last": "2026-04-15 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 2966326.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "a4d9a2429918ad42c2f68e5ee2531161fc72abd1b6fde655acb5e7c43bf44852",
+      "symbol": "MA609.CZCE",
+      "rows": 1035,
+      "first": "2026-04-27 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 4,
+      "typical_day_rows": {
+        "345": 2,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 1917637.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "cc5a32d08b3b6fc8caa50f60755a716f40882815befbfd78006bed3613fdc9c9",
+      "symbol": "MA609.CZCE",
+      "rows": 3795,
+      "first": "2026-04-14 14:59:00",
+      "last": "2026-04-29 14:58:00",
+      "natural_dates": 12,
+      "typical_day_rows": {
+        "345": 10,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 9105710.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "71e7b11af46812a7cacc7e0cbcd05cd5205b074451e1e5c6615db2c5053c54c0",
+      "symbol": "MA609.CZCE",
+      "rows": 2415,
+      "first": "2026-04-14 14:59:00",
+      "last": "2026-04-23 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 6488623.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI605_completed_minute_backtest.csv",
+      "sha256": "1cdb518b24f42d936aa00ca6e0eacd3ddd2a411acf4e1b52620afe66bd7db450",
+      "symbol": "OI605.CZCE",
+      "rows": 27585,
+      "first": "2025-12-09 14:59:00",
+      "last": "2026-04-14 14:58:00",
+      "natural_dates": 82,
+      "typical_day_rows": {
+        "345": 77,
+        "225": 3,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 17380177.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI605_completed_minute_backtest.csv",
+      "sha256": "6c4bad8d9a53e6e26469bf54d8a10a69b5a2b68b1996f14b316f04ca7925290e",
+      "symbol": "OI605.CZCE",
+      "rows": 2415,
+      "first": "2025-12-09 14:59:00",
+      "last": "2025-12-18 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 1546468.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI609_completed_minute_backtest.csv",
+      "sha256": "0214a6b37dd7c1df1b19c9a5edfde317bad6b0f514e27ce2466e442b22d85b32",
+      "symbol": "OI609.CZCE",
+      "rows": 4710,
+      "first": "2026-04-10 22:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 15,
+      "typical_day_rows": {
+        "345": 13,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 2296343.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI609_completed_minute_backtest.csv",
+      "sha256": "2244bab32426222210689ee94ae93f49c72aed2823e4409b8610868a88e5dec4",
+      "symbol": "OI609.CZCE",
+      "rows": 2295,
+      "first": "2026-04-10 22:59:00",
+      "last": "2026-04-21 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 983110.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/SM605_completed_minute_backtest.csv",
+      "sha256": "643c4c3bb41643304990956cd755b933c69c53a34b4f5ecf2e06d572bdcbbf08",
+      "symbol": "SM605.CZCE",
+      "rows": 12600,
+      "first": "2026-01-16 14:59:00",
+      "last": "2026-04-15 14:58:00",
+      "natural_dates": 57,
+      "typical_day_rows": {
+        "225": 55,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 15877726.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/SM605_completed_minute_backtest.csv",
+      "sha256": "514bd1a27b92f016cf7af1344183db83c24e002a580627c747b3b9cb1867cba1",
+      "symbol": "SM605.CZCE",
+      "rows": 1575,
+      "first": "2026-01-16 14:59:00",
+      "last": "2026-01-27 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "225": 6,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 947095.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2605_completed_minute_backtest.csv",
+      "sha256": "ecfb330c5b8b28cb11c39a3ed7b7175dbce16daf06d1786117deede30e7b3950",
+      "symbol": "fu2605.SHFE",
+      "rows": 18735,
+      "first": "2026-02-03 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 56,
+      "typical_day_rows": {
+        "345": 52,
+        "225": 2,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 49869879.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/fu2605_completed_minute_backtest.csv",
+      "sha256": "ce5d3f911b2cb19156afbc07dd8bca6aed533083cbd0153c1c43d0793e908bef",
+      "symbol": "fu2605.SHFE",
+      "rows": 2415,
+      "first": "2026-02-03 14:59:00",
+      "last": "2026-02-12 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 5264663.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/hc2610_completed_minute_backtest.csv",
+      "sha256": "8cb58b24f9e022bfc3df0d9fb232cf38a0550337f393dca0be81b6d97e3287a0",
+      "symbol": "hc2610.SHFE",
+      "rows": 7125,
+      "first": "2026-03-31 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 22,
+      "typical_day_rows": {
+        "345": 19,
+        "121": 1,
+        "225": 1,
+        "224": 1
+      },
+      "volume": 7976703.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/hc2610_completed_minute_backtest.csv",
+      "sha256": "d6adfa89268175a8b0d545c9ac3eb261d7606de7354c892778a0dbe8a0c22062",
+      "symbol": "hc2610.SHFE",
+      "rows": 2295,
+      "first": "2026-03-31 14:59:00",
+      "last": "2026-04-10 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 5,
+        "121": 1,
+        "225": 1,
+        "224": 1
+      },
+      "volume": 1707872.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2605_completed_minute_backtest.csv",
+      "sha256": "25b5e5d06be1a9201f40eaeab2316a7bd957d1a7e88176468774a5d4c9250e82",
+      "symbol": "jm2605.DCE",
+      "rows": 30000,
+      "first": "2025-12-02 14:59:00",
+      "last": "2026-04-16 14:58:00",
+      "natural_dates": 89,
+      "typical_day_rows": {
+        "345": 84,
+        "225": 3,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 83825753.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2605_completed_minute_backtest.csv",
+      "sha256": "747766e438fee48866078b14c4da8579ccc4a538a4f58e3b8ce73d1d3c5b1b59",
+      "symbol": "jm2605.DCE",
+      "rows": 2415,
+      "first": "2025-12-02 14:59:00",
+      "last": "2025-12-11 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 5947269.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2609_completed_minute_backtest.csv",
+      "sha256": "0a3813855ef95a7419040f415f322c635c8f480d8e0ce3751b471fdca22de4a4",
+      "symbol": "jm2609.DCE",
+      "rows": 4140,
+      "first": "2026-04-14 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 13,
+      "typical_day_rows": {
+        "345": 11,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 6729296.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2609_completed_minute_backtest.csv",
+      "sha256": "a0875bd7725631a23bf978352e78cd6a260cca0480e414ea79eefa40423e33d1",
+      "symbol": "jm2609.DCE",
+      "rows": 2415,
+      "first": "2026-04-14 14:59:00",
+      "last": "2026-04-23 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 3745575.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/rb2610_completed_minute_backtest.csv",
+      "sha256": "4af391b5956aa54cad2a1bc489c57916d7dcfb69e63abd51329d530ad65beef1",
+      "symbol": "rb2610.SHFE",
+      "rows": 6090,
+      "first": "2026-04-03 14:59:00",
+      "last": "2026-04-30 14:58:00",
+      "natural_dates": 19,
+      "typical_day_rows": {
+        "345": 17,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 10351620.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/rb2610_completed_minute_backtest.csv",
+      "sha256": "c726463453dc09faad65119ae34a3c57294b5ba8c20ebe6b93549ffc85def1c3",
+      "symbol": "rb2610.SHFE",
+      "rows": 1950,
+      "first": "2026-04-03 14:59:00",
+      "last": "2026-04-14 14:58:00",
+      "natural_dates": 7,
+      "typical_day_rows": {
+        "345": 5,
+        "1": 1,
+        "224": 1
+      },
+      "volume": 2511563.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "e636f00678fdc7d5fe200bf9ddbc262a50a3ce2ebf04307268b4b6a23184a3fe",
+      "symbol": "ru2605.SHFE",
+      "rows": 14595,
+      "first": "2025-12-22 14:59:00",
+      "last": "2026-03-03 14:58:00",
+      "natural_dates": 44,
+      "typical_day_rows": {
+        "345": 40,
+        "225": 2,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 13043194.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "78560a1de5033969db2fe1ab11959a26fafe7dd2f3f533503fdc868e7abffd3b",
+      "symbol": "ru2605.SHFE",
+      "rows": 5865,
+      "first": "2025-12-01 14:59:00",
+      "last": "2025-12-24 14:58:00",
+      "natural_dates": 18,
+      "typical_day_rows": {
+        "345": 16,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 3857138.0
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "3bf4cf1190ba3ae5c17ba970b88e998780efca5af2d9156c8c1e3f065e887b91",
+      "symbol": "ru2605.SHFE",
+      "rows": 2415,
+      "first": "2025-12-01 14:59:00",
+      "last": "2025-12-10 14:58:00",
+      "natural_dates": 8,
+      "typical_day_rows": {
+        "345": 6,
+        "121": 1,
+        "224": 1
+      },
+      "volume": 1306237.0
+    }
+  ],
+  "approval": "inventory only; not admission. Full-session completeness and daily parity required before representing a 15m period."
+}

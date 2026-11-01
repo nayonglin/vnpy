@@ -1,0 +1,20 @@
+{
+  "schema": "Stage020.independent-javascript-logic.v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "checks": 180,
+  "inline_scripts_parsed": 3,
+  "all18_record_marker_and_panels_checked": true,
+  "filters": {
+    "profit": 8,
+    "loss": 10,
+    "flat": 0
+  },
+  "shared_axes_matches_checked": true,
+  "annual_png_embedded_sha256": "c44193ba0923b62b63bc759edbba386977fc56100a64979bf542423101f03c53",
+  "html_sha256": "b20739348912852c6915a6e81c660a3c19fda6d5d2277b944621dfbfcabb747e",
+  "browser_validation": "blocked_by_file_protocol_policy",
+  "qualification": "VM syntax and lightweight DOM/Plotly-call simulation only. No browser, canvas rendering, real Plotly zoom event or actual pixel acceptance performed.",
+  "network_calls": 0,
+  "audit_script_sha256": "74e2187acc35530828514e976b6946f89cff44e59a165a6361b991a1110fe77b"
+}

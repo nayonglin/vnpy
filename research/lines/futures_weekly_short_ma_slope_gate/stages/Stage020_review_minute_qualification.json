@@ -1,0 +1,4780 @@
+{
+  "schema": "Stage020.independent-known-minute-qualification.v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "failures": [],
+  "admission_rule": "Existing source only. Exact entry physical epoch, authoritative product day mapping (>=18:00 advance to next completed trading day), conflict-free native minute keys, finite valid OHLCVOI, entire-day aggregate equal approved daily OHLCVOI, every nonempty wallclock15-minute bucket contains all15native minutes. No padding/repair or daily replacement by partial data.",
+  "requested_context": "Each round entry-5 to final-exit+5 actual product trading dates, bounded by exact physical epoch and completed cutoff",
+  "input_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP605_completed_minute_backtest.csv": "260926c1234c339c2365e7a6d8df3a0df14490e113b8629d38937e04d60e487d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/AP605_completed_minute_backtest.csv": "ff078eb9642489ee3d9c7dc23fdd9f9ee10479ce219d0d5559ebe2cbc26200d7",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/CF609_completed_minute_backtest.csv": "10172b89cd051e13453a539c75f66d30d027e046c655b37aae7e09a689ad98e0",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/CF609_completed_minute_backtest.csv": "6defcdfa91278a7e19e695fd332cc2ff8f0dc75921fe9845658ab2e1cc71d6da",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/MA609_completed_minute_backtest.csv": "a4d9a2429918ad42c2f68e5ee2531161fc72abd1b6fde655acb5e7c43bf44852",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/MA609_completed_minute_backtest.csv": "cc5a32d08b3b6fc8caa50f60755a716f40882815befbfd78006bed3613fdc9c9",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/MA609_completed_minute_backtest.csv": "71e7b11af46812a7cacc7e0cbcd05cd5205b074451e1e5c6615db2c5053c54c0",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI605_completed_minute_backtest.csv": "1cdb518b24f42d936aa00ca6e0eacd3ddd2a411acf4e1b52620afe66bd7db450",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI605_completed_minute_backtest.csv": "6c4bad8d9a53e6e26469bf54d8a10a69b5a2b68b1996f14b316f04ca7925290e",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI609_completed_minute_backtest.csv": "0214a6b37dd7c1df1b19c9a5edfde317bad6b0f514e27ce2466e442b22d85b32",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI609_completed_minute_backtest.csv": "2244bab32426222210689ee94ae93f49c72aed2823e4409b8610868a88e5dec4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/SM605_completed_minute_backtest.csv": "643c4c3bb41643304990956cd755b933c69c53a34b4f5ecf2e06d572bdcbbf08",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/SM605_completed_minute_backtest.csv": "514bd1a27b92f016cf7af1344183db83c24e002a580627c747b3b9cb1867cba1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2605_completed_minute_backtest.csv": "ecfb330c5b8b28cb11c39a3ed7b7175dbce16daf06d1786117deede30e7b3950",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/fu2605_completed_minute_backtest.csv": "ce5d3f911b2cb19156afbc07dd8bca6aed533083cbd0153c1c43d0793e908bef",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/hc2610_completed_minute_backtest.csv": "8cb58b24f9e022bfc3df0d9fb232cf38a0550337f393dca0be81b6d97e3287a0",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/hc2610_completed_minute_backtest.csv": "d6adfa89268175a8b0d545c9ac3eb261d7606de7354c892778a0dbe8a0c22062",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2605_completed_minute_backtest.csv": "25b5e5d06be1a9201f40eaeab2316a7bd957d1a7e88176468774a5d4c9250e82",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2605_completed_minute_backtest.csv": "747766e438fee48866078b14c4da8579ccc4a538a4f58e3b8ce73d1d3c5b1b59",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2609_completed_minute_backtest.csv": "0a3813855ef95a7419040f415f322c635c8f480d8e0ce3751b471fdca22de4a4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2609_completed_minute_backtest.csv": "a0875bd7725631a23bf978352e78cd6a260cca0480e414ea79eefa40423e33d1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/rb2610_completed_minute_backtest.csv": "4af391b5956aa54cad2a1bc489c57916d7dcfb69e63abd51329d530ad65beef1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/rb2610_completed_minute_backtest.csv": "c726463453dc09faad65119ae34a3c57294b5ba8c20ebe6b93549ffc85def1c3",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/ru2605_completed_minute_backtest.csv": "e636f00678fdc7d5fe200bf9ddbc262a50a3ce2ebf04307268b4b6a23184a3fe",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2605_completed_minute_backtest.csv": "78560a1de5033969db2fe1ab11959a26fafe7dd2f3f533503fdc868e7abffd3b",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/ru2605_completed_minute_backtest.csv": "3bf4cf1190ba3ae5c17ba970b88e998780efca5af2d9156c8c1e3f065e887b91",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP605_completed_minute_backtest.csv": "260926c1234c339c2365e7a6d8df3a0df14490e113b8629d38937e04d60e487d",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/AP605_completed_minute_backtest.csv": "ff078eb9642489ee3d9c7dc23fdd9f9ee10479ce219d0d5559ebe2cbc26200d7",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/CF609_completed_minute_backtest.csv": "10172b89cd051e13453a539c75f66d30d027e046c655b37aae7e09a689ad98e0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/CF609_completed_minute_backtest.csv": "6defcdfa91278a7e19e695fd332cc2ff8f0dc75921fe9845658ab2e1cc71d6da",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/MA609_completed_minute_backtest.csv": "a4d9a2429918ad42c2f68e5ee2531161fc72abd1b6fde655acb5e7c43bf44852",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/MA609_completed_minute_backtest.csv": "cc5a32d08b3b6fc8caa50f60755a716f40882815befbfd78006bed3613fdc9c9",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/MA609_completed_minute_backtest.csv": "71e7b11af46812a7cacc7e0cbcd05cd5205b074451e1e5c6615db2c5053c54c0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI605_completed_minute_backtest.csv": "1cdb518b24f42d936aa00ca6e0eacd3ddd2a411acf4e1b52620afe66bd7db450",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI605_completed_minute_backtest.csv": "6c4bad8d9a53e6e26469bf54d8a10a69b5a2b68b1996f14b316f04ca7925290e",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI609_completed_minute_backtest.csv": "0214a6b37dd7c1df1b19c9a5edfde317bad6b0f514e27ce2466e442b22d85b32",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI609_completed_minute_backtest.csv": "2244bab32426222210689ee94ae93f49c72aed2823e4409b8610868a88e5dec4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/SM605_completed_minute_backtest.csv": "643c4c3bb41643304990956cd755b933c69c53a34b4f5ecf2e06d572bdcbbf08",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/SM605_completed_minute_backtest.csv": "514bd1a27b92f016cf7af1344183db83c24e002a580627c747b3b9cb1867cba1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2605_completed_minute_backtest.csv": "ecfb330c5b8b28cb11c39a3ed7b7175dbce16daf06d1786117deede30e7b3950",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/fu2605_completed_minute_backtest.csv": "ce5d3f911b2cb19156afbc07dd8bca6aed533083cbd0153c1c43d0793e908bef",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/hc2610_completed_minute_backtest.csv": "8cb58b24f9e022bfc3df0d9fb232cf38a0550337f393dca0be81b6d97e3287a0",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/hc2610_completed_minute_backtest.csv": "d6adfa89268175a8b0d545c9ac3eb261d7606de7354c892778a0dbe8a0c22062",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2605_completed_minute_backtest.csv": "25b5e5d06be1a9201f40eaeab2316a7bd957d1a7e88176468774a5d4c9250e82",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2605_completed_minute_backtest.csv": "747766e438fee48866078b14c4da8579ccc4a538a4f58e3b8ce73d1d3c5b1b59",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2609_completed_minute_backtest.csv": "0a3813855ef95a7419040f415f322c635c8f480d8e0ce3751b471fdca22de4a4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2609_completed_minute_backtest.csv": "a0875bd7725631a23bf978352e78cd6a260cca0480e414ea79eefa40423e33d1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/rb2610_completed_minute_backtest.csv": "4af391b5956aa54cad2a1bc489c57916d7dcfb69e63abd51329d530ad65beef1",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/rb2610_completed_minute_backtest.csv": "c726463453dc09faad65119ae34a3c57294b5ba8c20ebe6b93549ffc85def1c3",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/ru2605_completed_minute_backtest.csv": "e636f00678fdc7d5fe200bf9ddbc262a50a3ce2ebf04307268b4b6a23184a3fe",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2605_completed_minute_backtest.csv": "78560a1de5033969db2fe1ab11959a26fafe7dd2f3f533503fdc868e7abffd3b",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/ru2605_completed_minute_backtest.csv": "3bf4cf1190ba3ae5c17ba970b88e998780efca5af2d9156c8c1e3f065e887b91",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/daily.sqlite": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/mapping.csv": "2dd16b914b6e89ba41798b3c8ca8ed0f91b16097b3ac3504c55d3846b97fc204",
+    "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/physical_epoch_daily.csv": "130a3439736c191676d732a3013e2a18c25ebcce297a67e9240e4aba25d7ff24"
+  },
+  "source_inventory": [
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/AP605_completed_minute_backtest.csv",
+      "sha256": "260926c1234c339c2365e7a6d8df3a0df14490e113b8629d38937e04d60e487d",
+      "raw_rows": 19350
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/AP605_completed_minute_backtest.csv",
+      "sha256": "ff078eb9642489ee3d9c7dc23fdd9f9ee10479ce219d0d5559ebe2cbc26200d7",
+      "raw_rows": 1575
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/CF609_completed_minute_backtest.csv",
+      "sha256": "10172b89cd051e13453a539c75f66d30d027e046c655b37aae7e09a689ad98e0",
+      "raw_rows": 6090
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/CF609_completed_minute_backtest.csv",
+      "sha256": "6defcdfa91278a7e19e695fd332cc2ff8f0dc75921fe9845658ab2e1cc71d6da",
+      "raw_rows": 2295
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "a4d9a2429918ad42c2f68e5ee2531161fc72abd1b6fde655acb5e7c43bf44852",
+      "raw_rows": 1035
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "cc5a32d08b3b6fc8caa50f60755a716f40882815befbfd78006bed3613fdc9c9",
+      "raw_rows": 3795
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/MA609_completed_minute_backtest.csv",
+      "sha256": "71e7b11af46812a7cacc7e0cbcd05cd5205b074451e1e5c6615db2c5053c54c0",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI605_completed_minute_backtest.csv",
+      "sha256": "1cdb518b24f42d936aa00ca6e0eacd3ddd2a411acf4e1b52620afe66bd7db450",
+      "raw_rows": 27585
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI605_completed_minute_backtest.csv",
+      "sha256": "6c4bad8d9a53e6e26469bf54d8a10a69b5a2b68b1996f14b316f04ca7925290e",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/OI609_completed_minute_backtest.csv",
+      "sha256": "0214a6b37dd7c1df1b19c9a5edfde317bad6b0f514e27ce2466e442b22d85b32",
+      "raw_rows": 4710
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/OI609_completed_minute_backtest.csv",
+      "sha256": "2244bab32426222210689ee94ae93f49c72aed2823e4409b8610868a88e5dec4",
+      "raw_rows": 2295
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/CZCE/SM605_completed_minute_backtest.csv",
+      "sha256": "643c4c3bb41643304990956cd755b933c69c53a34b4f5ecf2e06d572bdcbbf08",
+      "raw_rows": 12600
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/CZCE/SM605_completed_minute_backtest.csv",
+      "sha256": "514bd1a27b92f016cf7af1344183db83c24e002a580627c747b3b9cb1867cba1",
+      "raw_rows": 1575
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/fu2605_completed_minute_backtest.csv",
+      "sha256": "ecfb330c5b8b28cb11c39a3ed7b7175dbce16daf06d1786117deede30e7b3950",
+      "raw_rows": 18735
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/fu2605_completed_minute_backtest.csv",
+      "sha256": "ce5d3f911b2cb19156afbc07dd8bca6aed533083cbd0153c1c43d0793e908bef",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/hc2610_completed_minute_backtest.csv",
+      "sha256": "8cb58b24f9e022bfc3df0d9fb232cf38a0550337f393dca0be81b6d97e3287a0",
+      "raw_rows": 7125
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/hc2610_completed_minute_backtest.csv",
+      "sha256": "d6adfa89268175a8b0d545c9ac3eb261d7606de7354c892778a0dbe8a0c22062",
+      "raw_rows": 2295
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2605_completed_minute_backtest.csv",
+      "sha256": "25b5e5d06be1a9201f40eaeab2316a7bd957d1a7e88176468774a5d4c9250e82",
+      "raw_rows": 30000
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2605_completed_minute_backtest.csv",
+      "sha256": "747766e438fee48866078b14c4da8579ccc4a538a4f58e3b8ce73d1d3c5b1b59",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/DCE/jm2609_completed_minute_backtest.csv",
+      "sha256": "0a3813855ef95a7419040f415f322c635c8f480d8e0ce3751b471fdca22de4a4",
+      "raw_rows": 4140
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/DCE/jm2609_completed_minute_backtest.csv",
+      "sha256": "a0875bd7725631a23bf978352e78cd6a260cca0480e414ea79eefa40423e33d1",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/rb2610_completed_minute_backtest.csv",
+      "sha256": "4af391b5956aa54cad2a1bc489c57916d7dcfb69e63abd51329d530ad65beef1",
+      "raw_rows": 6090
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/rb2610_completed_minute_backtest.csv",
+      "sha256": "c726463453dc09faad65119ae34a3c57294b5ba8c20ebe6b93549ffc85def1c3",
+      "raw_rows": 1950
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage491_covered_key_full_session_backfill/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "e636f00678fdc7d5fe200bf9ddbc262a50a3ce2ebf04307268b4b6a23184a3fe",
+      "raw_rows": 14595
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage462_completed_preclose_full_dates_shard/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "78560a1de5033969db2fe1ab11959a26fafe7dd2f3f533503fdc868e7abffd3b",
+      "raw_rows": 5865
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/downloaded_futures/tqsdk_stage459_completed_preclose_full_bar_shard/SHFE/ru2605_completed_minute_backtest.csv",
+      "sha256": "3bf4cf1190ba3ae5c17ba970b88e998780efca5af2d9156c8c1e3f065e887b91",
+      "raw_rows": 2415
+    },
+    {
+      "path": "/Users/mac/.codex/worktrees/weekly-short-ma-slope-20261029/fian/research/lines/futures_weekly_short_ma_slope_gate/outputs/data_stage014_20261030/data_approved/daily.sqlite",
+      "sha256": "fbeff64d137f8cd244844850501dd0384cfb072740bbd0bd515821e20ecf2ce4",
+      "queried_interval": "1m",
+      "query_start": "2025-01-01",
+      "query_end_exclusive": "2026-10-31",
+      "queried_rows": 8160,
+      "selected_target_rows": 0
+    }
+  ],
+  "scope_parse_issues": [],
+  "qualified_csv": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage020_review_qualified_15m.csv",
+  "qualified_csv_sha256": "35e294409b278d0eb83aa8d7766d7aaa9c4637f318dd64e13d7dd6cf0af3f454",
+  "qualified_bars": 3354,
+  "qualified_days": 174,
+  "rejected_days": 237,
+  "rejection_reason_counts": {
+    "no_cached_minutes": 229,
+    "daily_OHLCVOI_mismatch": 8,
+    "incomplete_15minute_bucket": 4
+  },
+  "per_symbol": [
+    {
+      "vt_symbol": "AP605.CZCE",
+      "physical_epoch_id": "CZCE.AP.202605",
+      "raw_rows": 20925,
+      "unique_wanted_rows": 10125,
+      "conflicting_timestamps": 0,
+      "wanted_days": 45,
+      "accepted_days": 45
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "physical_epoch_id": "CZCE.CF.202609",
+      "raw_rows": 8385,
+      "unique_wanted_rows": 0,
+      "conflicting_timestamps": 0,
+      "wanted_days": 12,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "raw_rows": 0,
+      "wanted_days": 25,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "physical_epoch_id": "CZCE.MA.202609",
+      "raw_rows": 7245,
+      "unique_wanted_rows": 0,
+      "conflicting_timestamps": 0,
+      "wanted_days": 12,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "raw_rows": 0,
+      "wanted_days": 23,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "physical_epoch_id": "CZCE.OI.202605",
+      "raw_rows": 30000,
+      "unique_wanted_rows": 7124,
+      "conflicting_timestamps": 0,
+      "wanted_days": 25,
+      "accepted_days": 20
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "physical_epoch_id": "CZCE.OI.202609",
+      "raw_rows": 7005,
+      "unique_wanted_rows": 0,
+      "conflicting_timestamps": 0,
+      "wanted_days": 43,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "physical_epoch_id": "CZCE.SM.202605",
+      "raw_rows": 14175,
+      "unique_wanted_rows": 6975,
+      "conflicting_timestamps": 0,
+      "wanted_days": 31,
+      "accepted_days": 31
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "physical_epoch_id": "SHFE.FU.202605",
+      "raw_rows": 21150,
+      "unique_wanted_rows": 10455,
+      "conflicting_timestamps": 0,
+      "wanted_days": 31,
+      "accepted_days": 27
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "raw_rows": 0,
+      "wanted_days": 16,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "physical_epoch_id": "SHFE.HC.202610",
+      "raw_rows": 9420,
+      "unique_wanted_rows": 1724,
+      "conflicting_timestamps": 0,
+      "wanted_days": 24,
+      "accepted_days": 4
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "physical_epoch_id": "DCE.JM.202605",
+      "raw_rows": 32415,
+      "unique_wanted_rows": 5400,
+      "conflicting_timestamps": 0,
+      "wanted_days": 16,
+      "accepted_days": 16
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "physical_epoch_id": "DCE.JM.202609",
+      "raw_rows": 6555,
+      "unique_wanted_rows": 0,
+      "conflicting_timestamps": 0,
+      "wanted_days": 13,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "raw_rows": 0,
+      "wanted_days": 12,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "physical_epoch_id": "SHFE.RB.202610",
+      "raw_rows": 8040,
+      "unique_wanted_rows": 689,
+      "conflicting_timestamps": 0,
+      "wanted_days": 21,
+      "accepted_days": 1
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "raw_rows": 0,
+      "wanted_days": 12,
+      "accepted_days": 0
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "physical_epoch_id": "SHFE.RU.202605",
+      "raw_rows": 22875,
+      "unique_wanted_rows": 10574,
+      "conflicting_timestamps": 0,
+      "wanted_days": 50,
+      "accepted_days": 30
+    }
+  ],
+  "per_day": [
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-01-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-01-26 09:00:00",
+      "native_last": "2026-01-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-01-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-01-27 09:00:00",
+      "native_last": "2026-01-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-01-28",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-01-28 09:00:00",
+      "native_last": "2026-01-28 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-01-29",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-01-29 09:00:00",
+      "native_last": "2026-01-29 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-01-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-01-30 09:00:00",
+      "native_last": "2026-01-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-02 09:00:00",
+      "native_last": "2026-02-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-03 09:00:00",
+      "native_last": "2026-02-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-04",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-04 09:00:00",
+      "native_last": "2026-02-04 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-05 09:00:00",
+      "native_last": "2026-02-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-06 09:00:00",
+      "native_last": "2026-02-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-09 09:00:00",
+      "native_last": "2026-02-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-10 09:00:00",
+      "native_last": "2026-02-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-11 09:00:00",
+      "native_last": "2026-02-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-12 09:00:00",
+      "native_last": "2026-02-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-13 09:00:00",
+      "native_last": "2026-02-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-24 09:00:00",
+      "native_last": "2026-02-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-25 09:00:00",
+      "native_last": "2026-02-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-26 09:00:00",
+      "native_last": "2026-02-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-02-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-27 09:00:00",
+      "native_last": "2026-02-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-02 09:00:00",
+      "native_last": "2026-03-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-03 09:00:00",
+      "native_last": "2026-03-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-04",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-04 09:00:00",
+      "native_last": "2026-03-04 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-05 09:00:00",
+      "native_last": "2026-03-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-06 09:00:00",
+      "native_last": "2026-03-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-09 09:00:00",
+      "native_last": "2026-03-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-10 09:00:00",
+      "native_last": "2026-03-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-11 09:00:00",
+      "native_last": "2026-03-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-12 09:00:00",
+      "native_last": "2026-03-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-13 09:00:00",
+      "native_last": "2026-03-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-16 09:00:00",
+      "native_last": "2026-03-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-17",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-17 09:00:00",
+      "native_last": "2026-03-17 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-18",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-18 09:00:00",
+      "native_last": "2026-03-18 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-19",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-19 09:00:00",
+      "native_last": "2026-03-19 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-20",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-20 09:00:00",
+      "native_last": "2026-03-20 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-23",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-23 09:00:00",
+      "native_last": "2026-03-23 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-24 09:00:00",
+      "native_last": "2026-03-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-25 09:00:00",
+      "native_last": "2026-03-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-26 09:00:00",
+      "native_last": "2026-03-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-27 09:00:00",
+      "native_last": "2026-03-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-30 09:00:00",
+      "native_last": "2026-03-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-03-31",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-31 09:00:00",
+      "native_last": "2026-03-31 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-04-01",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-01 09:00:00",
+      "native_last": "2026-04-01 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-04-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-02 09:00:00",
+      "native_last": "2026-04-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-04-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-03 09:00:00",
+      "native_last": "2026-04-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "AP605.CZCE",
+      "trading_day": "2026-04-07",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-07 09:00:00",
+      "native_last": "2026-04-07 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF609.CZCE",
+      "trading_day": "2026-07-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-25",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-08-31",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-01",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-02",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-03",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-04",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-07",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "CF701.CZCE",
+      "trading_day": "2026-09-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA609.CZCE",
+      "trading_day": "2026-06-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-07",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-09-30",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "MA610.CZCE",
+      "trading_day": "2026-10-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-13 21:00:00",
+      "native_last": "2026-03-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-17",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-16 21:00:00",
+      "native_last": "2026-03-17 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-18",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-17 21:00:00",
+      "native_last": "2026-03-18 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-19",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-18 21:00:00",
+      "native_last": "2026-03-19 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-20",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-19 21:00:00",
+      "native_last": "2026-03-20 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-23",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-20 21:00:00",
+      "native_last": "2026-03-23 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-23 21:00:00",
+      "native_last": "2026-03-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-24 21:00:00",
+      "native_last": "2026-03-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-25 21:00:00",
+      "native_last": "2026-03-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-26 21:00:00",
+      "native_last": "2026-03-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-27 21:00:00",
+      "native_last": "2026-03-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-03-31",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-30 21:00:00",
+      "native_last": "2026-03-31 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-01",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-31 21:00:00",
+      "native_last": "2026-04-01 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-01 21:00:00",
+      "native_last": "2026-04-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-02 21:00:00",
+      "native_last": "2026-04-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-07",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-07 09:00:00",
+      "native_last": "2026-04-07 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-08",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-07 21:00:00",
+      "native_last": "2026-04-08 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-08 21:00:00",
+      "native_last": "2026-04-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-09 21:00:00",
+      "native_last": "2026-04-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-10 21:00:00",
+      "native_last": "2026-04-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-14",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch",
+        "incomplete_15minute_bucket"
+      ],
+      "raw_rows": 344,
+      "native_first": "2026-04-13 21:00:00",
+      "native_last": "2026-04-14 14:58:00",
+      "daily_differences": {
+        "close": {
+          "minute_aggregate": 9491.0,
+          "approved_daily": 9492.0,
+          "delta": -1.0
+        },
+        "volume": {
+          "minute_aggregate": 93287.0,
+          "approved_daily": 93625.0,
+          "delta": -338.0
+        },
+        "close_oi": {
+          "minute_aggregate": 79195.0,
+          "approved_daily": 79090.0,
+          "delta": 105.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI605.CZCE",
+      "trading_day": "2026-04-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-25",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-05-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-01",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-02",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-03",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-04",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-05",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-06-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-30",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-07-31",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-08-03",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "OI609.CZCE",
+      "trading_day": "2026-08-04",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-02 09:00:00",
+      "native_last": "2026-03-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-03 09:00:00",
+      "native_last": "2026-03-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-04",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-04 09:00:00",
+      "native_last": "2026-03-04 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-05 09:00:00",
+      "native_last": "2026-03-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-06 09:00:00",
+      "native_last": "2026-03-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-09 09:00:00",
+      "native_last": "2026-03-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-10 09:00:00",
+      "native_last": "2026-03-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-11 09:00:00",
+      "native_last": "2026-03-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-12 09:00:00",
+      "native_last": "2026-03-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-13 09:00:00",
+      "native_last": "2026-03-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-16 09:00:00",
+      "native_last": "2026-03-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-17",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-17 09:00:00",
+      "native_last": "2026-03-17 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-18",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-18 09:00:00",
+      "native_last": "2026-03-18 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-19",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-19 09:00:00",
+      "native_last": "2026-03-19 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-20",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-20 09:00:00",
+      "native_last": "2026-03-20 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-23",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-23 09:00:00",
+      "native_last": "2026-03-23 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-24 09:00:00",
+      "native_last": "2026-03-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-25 09:00:00",
+      "native_last": "2026-03-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-26 09:00:00",
+      "native_last": "2026-03-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-27 09:00:00",
+      "native_last": "2026-03-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-30 09:00:00",
+      "native_last": "2026-03-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-03-31",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-03-31 09:00:00",
+      "native_last": "2026-03-31 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-01",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-01 09:00:00",
+      "native_last": "2026-04-01 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-02 09:00:00",
+      "native_last": "2026-04-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-03 09:00:00",
+      "native_last": "2026-04-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-07",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-07 09:00:00",
+      "native_last": "2026-04-07 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-08",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-08 09:00:00",
+      "native_last": "2026-04-08 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-09 09:00:00",
+      "native_last": "2026-04-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-10 09:00:00",
+      "native_last": "2026-04-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-13 09:00:00",
+      "native_last": "2026-04-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "SM605.CZCE",
+      "trading_day": "2026-04-14",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-14 09:00:00",
+      "native_last": "2026-04-14 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-02-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-12 21:00:00",
+      "native_last": "2026-02-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-02-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-24 09:00:00",
+      "native_last": "2026-02-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-02-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-24 21:00:00",
+      "native_last": "2026-02-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-02-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-25 21:00:00",
+      "native_last": "2026-02-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-02-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-26 21:00:00",
+      "native_last": "2026-02-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-27 21:00:00",
+      "native_last": "2026-03-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-03",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch"
+      ],
+      "raw_rows": 345,
+      "native_first": "2026-03-02 21:00:00",
+      "native_last": "2026-03-03 14:59:00",
+      "daily_differences": {
+        "close_oi": {
+          "minute_aggregate": 325962.0,
+          "approved_daily": 325957.0,
+          "delta": 5.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-04",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch"
+      ],
+      "raw_rows": 345,
+      "native_first": "2026-03-03 21:00:00",
+      "native_last": "2026-03-04 14:59:00",
+      "daily_differences": {
+        "close_oi": {
+          "minute_aggregate": 325463.0,
+          "approved_daily": 325459.0,
+          "delta": 4.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-04 21:00:00",
+      "native_last": "2026-03-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-05 21:00:00",
+      "native_last": "2026-03-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-09",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch"
+      ],
+      "raw_rows": 345,
+      "native_first": "2026-03-06 21:00:00",
+      "native_last": "2026-03-09 14:59:00",
+      "daily_differences": {
+        "close_oi": {
+          "minute_aggregate": 255162.0,
+          "approved_daily": 255161.0,
+          "delta": 1.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-10",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch"
+      ],
+      "raw_rows": 345,
+      "native_first": "2026-03-09 21:00:00",
+      "native_last": "2026-03-10 14:59:00",
+      "daily_differences": {
+        "volume": {
+          "minute_aggregate": 2868762.0,
+          "approved_daily": 2868761.0,
+          "delta": 1.0
+        },
+        "close_oi": {
+          "minute_aggregate": 267296.0,
+          "approved_daily": 267291.0,
+          "delta": 5.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-10 21:00:00",
+      "native_last": "2026-03-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-11 21:00:00",
+      "native_last": "2026-03-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-12 21:00:00",
+      "native_last": "2026-03-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-13 21:00:00",
+      "native_last": "2026-03-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-17",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-16 21:00:00",
+      "native_last": "2026-03-17 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-18",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-17 21:00:00",
+      "native_last": "2026-03-18 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-19",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-18 21:00:00",
+      "native_last": "2026-03-19 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-20",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-19 21:00:00",
+      "native_last": "2026-03-20 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-23",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-20 21:00:00",
+      "native_last": "2026-03-23 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-23 21:00:00",
+      "native_last": "2026-03-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-24 21:00:00",
+      "native_last": "2026-03-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-25 21:00:00",
+      "native_last": "2026-03-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-26 21:00:00",
+      "native_last": "2026-03-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-27 21:00:00",
+      "native_last": "2026-03-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-03-31",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-30 21:00:00",
+      "native_last": "2026-03-31 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-04-01",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-31 21:00:00",
+      "native_last": "2026-04-01 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-04-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-01 21:00:00",
+      "native_last": "2026-04-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-04-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-02 21:00:00",
+      "native_last": "2026-04-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2605.SHFE",
+      "trading_day": "2026-04-07",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-04-07 09:00:00",
+      "native_last": "2026-04-07 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-07",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "fu2611.SHFE",
+      "trading_day": "2026-09-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-04-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-23 21:00:00",
+      "native_last": "2026-04-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-04-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-24 21:00:00",
+      "native_last": "2026-04-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-04-28",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-27 21:00:00",
+      "native_last": "2026-04-28 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-04-29",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-28 21:00:00",
+      "native_last": "2026-04-29 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-04-30",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch",
+        "incomplete_15minute_bucket"
+      ],
+      "raw_rows": 344,
+      "native_first": "2026-04-29 21:00:00",
+      "native_last": "2026-04-30 14:58:00",
+      "daily_differences": {
+        "close": {
+          "minute_aggregate": 3426.0,
+          "approved_daily": 3425.0,
+          "delta": 1.0
+        },
+        "volume": {
+          "minute_aggregate": 488552.0,
+          "approved_daily": 493961.0,
+          "delta": -5409.0
+        },
+        "close_oi": {
+          "minute_aggregate": 1912842.0,
+          "approved_daily": 1911884.0,
+          "delta": 958.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-06",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-07",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-25",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-05-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "hc2610.SHFE",
+      "trading_day": "2026-06-01",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-02-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-12 21:00:00",
+      "native_last": "2026-02-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-02-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-24 09:00:00",
+      "native_last": "2026-02-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-02-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-24 21:00:00",
+      "native_last": "2026-02-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-02-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-25 21:00:00",
+      "native_last": "2026-02-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-02-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-26 21:00:00",
+      "native_last": "2026-02-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-27 21:00:00",
+      "native_last": "2026-03-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-02 21:00:00",
+      "native_last": "2026-03-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-04",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-03 21:00:00",
+      "native_last": "2026-03-04 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-04 21:00:00",
+      "native_last": "2026-03-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-05 21:00:00",
+      "native_last": "2026-03-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-06 21:00:00",
+      "native_last": "2026-03-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-09 21:00:00",
+      "native_last": "2026-03-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-10 21:00:00",
+      "native_last": "2026-03-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-11 21:00:00",
+      "native_last": "2026-03-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-12 21:00:00",
+      "native_last": "2026-03-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2605.DCE",
+      "trading_day": "2026-03-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-03-13 21:00:00",
+      "native_last": "2026-03-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-01",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-02",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-03",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-04",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-05",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "jm2609.DCE",
+      "trading_day": "2026-06-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "lh2609.DCE",
+      "trading_day": "2026-06-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-04-29",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-04-28 21:00:00",
+      "native_last": "2026-04-29 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-04-30",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch",
+        "incomplete_15minute_bucket"
+      ],
+      "raw_rows": 344,
+      "native_first": "2026-04-29 21:00:00",
+      "native_last": "2026-04-30 14:58:00",
+      "daily_differences": {
+        "close": {
+          "minute_aggregate": 3213.0,
+          "approved_daily": 3214.0,
+          "delta": -1.0
+        },
+        "volume": {
+          "minute_aggregate": 648953.0,
+          "approved_daily": 658964.0,
+          "delta": -10011.0
+        },
+        "close_oi": {
+          "minute_aggregate": 1886426.0,
+          "approved_daily": 1885016.0,
+          "delta": 1410.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-06",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-07",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-08",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-25",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-28",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-05-29",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2610.SHFE",
+      "trading_day": "2026-06-01",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-14",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-15",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-21",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-22",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "rb2701.SHFE",
+      "trading_day": "2026-10-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-09 21:00:00",
+      "native_last": "2026-01-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-12 21:00:00",
+      "native_last": "2026-01-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-14",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-13 21:00:00",
+      "native_last": "2026-01-14 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-15",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-14 21:00:00",
+      "native_last": "2026-01-15 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-16",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-15 21:00:00",
+      "native_last": "2026-01-16 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-19",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-16 21:00:00",
+      "native_last": "2026-01-19 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-20",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-19 21:00:00",
+      "native_last": "2026-01-20 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-21",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-20 21:00:00",
+      "native_last": "2026-01-21 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-22",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-21 21:00:00",
+      "native_last": "2026-01-22 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-23",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-22 21:00:00",
+      "native_last": "2026-01-23 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-23 21:00:00",
+      "native_last": "2026-01-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-26 21:00:00",
+      "native_last": "2026-01-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-28",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-27 21:00:00",
+      "native_last": "2026-01-28 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-29",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-28 21:00:00",
+      "native_last": "2026-01-29 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-01-30",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-29 21:00:00",
+      "native_last": "2026-01-30 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-01-30 21:00:00",
+      "native_last": "2026-02-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-03",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-02 21:00:00",
+      "native_last": "2026-02-03 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-04",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-03 21:00:00",
+      "native_last": "2026-02-04 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-05",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-04 21:00:00",
+      "native_last": "2026-02-05 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-06",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-05 21:00:00",
+      "native_last": "2026-02-06 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-09",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-06 21:00:00",
+      "native_last": "2026-02-09 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-10",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-09 21:00:00",
+      "native_last": "2026-02-10 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-11",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-10 21:00:00",
+      "native_last": "2026-02-11 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-12",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-11 21:00:00",
+      "native_last": "2026-02-12 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-13",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-12 21:00:00",
+      "native_last": "2026-02-13 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-24",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 225,
+      "native_first": "2026-02-24 09:00:00",
+      "native_last": "2026-02-24 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-25",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-24 21:00:00",
+      "native_last": "2026-02-25 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-26",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-25 21:00:00",
+      "native_last": "2026-02-26 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-02-27",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-26 21:00:00",
+      "native_last": "2026-02-27 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-02",
+      "status": "accepted",
+      "reasons": [],
+      "raw_rows": 345,
+      "native_first": "2026-02-27 21:00:00",
+      "native_last": "2026-03-02 14:59:00",
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-03",
+      "status": "rejected",
+      "reasons": [
+        "daily_OHLCVOI_mismatch",
+        "incomplete_15minute_bucket"
+      ],
+      "raw_rows": 344,
+      "native_first": "2026-03-02 21:00:00",
+      "native_last": "2026-03-03 14:58:00",
+      "daily_differences": {
+        "close": {
+          "minute_aggregate": 16850.0,
+          "approved_daily": 16835.0,
+          "delta": 15.0
+        },
+        "volume": {
+          "minute_aggregate": 456145.0,
+          "approved_daily": 458473.0,
+          "delta": -2328.0
+        },
+        "close_oi": {
+          "minute_aggregate": 160984.0,
+          "approved_daily": 160346.0,
+          "delta": 638.0
+        }
+      }
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-04",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-05",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-06",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-09",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-10",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-11",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-12",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-13",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-16",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-17",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-18",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-19",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-20",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-23",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-24",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-25",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-26",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-27",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    },
+    {
+      "vt_symbol": "ru2605.SHFE",
+      "trading_day": "2026-03-30",
+      "status": "rejected",
+      "reasons": [
+        "no_cached_minutes"
+      ],
+      "raw_rows": 0,
+      "native_first": null,
+      "native_last": null,
+      "daily_differences": {}
+    }
+  ],
+  "financial_replays": 0,
+  "downloads": 0,
+  "production_accesses": 0,
+  "statement": "This qualifies only specified local minute dates. Absence/rejection is not a claim that no other cache exists globally."
+}

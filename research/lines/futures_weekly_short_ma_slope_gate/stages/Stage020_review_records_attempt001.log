@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage020_review_records.py", line 53, in <module>
+    missing=sorted(d.strftime('%Y-%m-%d')for d in wanted-set(visiblemins.trading_day));ok(m['missing_15m_dates']==missing,'honest_missing_complete_minutes');ok(set(m['daily_from_15m_dates'])==set(visiblemins.trading_day.dt.strftime('%Y-%m-%d')),'only_matched_full_days_daily_override')
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage020_review_records.py", line 15, in ok
+    if not v:raise AssertionError(k)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: honest_missing_complete_minutes

@@ -1,0 +1,1 @@
+Probe stopped at actual36marker_data_0: compared active sorted filtered[0] with unsorted records[0]. Canonical default orders by absolute net PnL, not chronological source array. v3 compares every active sorted record to its own marker metadata. Numeric all18 source markers independently already pass. No author file changed.

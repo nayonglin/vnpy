@@ -1,0 +1,35 @@
+F..F.....                                                                [100%]
+=================================== FAILURES ===================================
+_____ AnnualRecapAdapterTests.test_admitted_minute_csv_tamper_is_rejected ______
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_admitted_minute_csv_tamper_is_rejected>
+
+    def test_admitted_minute_csv_tamper_is_rejected(self):
+     m=subject()
+     with tempfile.TemporaryDirectory()as temp:
+      root=Path(temp);data=root/'qualified.csv';data.write_text('first');r=root/'qualification.json'
+      r.write_text(json.dumps(dict(accepted=True,failures=[],qualified_csv=str(data),qualified_csv_sha256=m.sha(data),input_files_sha256={})))
+>     expected=m.sha(r);m.verify_minute_source(data,r,expected_receipt_sha256=expected)
+                        ^^^^^^^^^^^^^^^^^^^^^^
+E     AttributeError: module 'ytd_recap_under_test' has no attribute 'verify_minute_source'
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:54: AttributeError
+_ AnnualRecapAdapterTests.test_market_context_must_match_original_run_input_hashes _
+
+self = <test_Stage020_ytd_recap.AnnualRecapAdapterTests testMethod=test_market_context_must_match_original_run_input_hashes>
+
+    def test_market_context_must_match_original_run_input_hashes(self):
+     m=subject()
+     with tempfile.TemporaryDirectory()as temp:
+      root=Path(temp);pins={}
+      for name in ['daily.sqlite','physical_epoch_daily.csv','metadata.csv','mapping.csv','receipt.json']:
+       p=root/name;p.write_text(name);pins[str(p)]=m.sha(p)
+>     m.verify_market_inputs(pins,root)
+      ^^^^^^^^^^^^^^^^^^^^^^
+E     AttributeError: module 'ytd_recap_under_test' has no attribute 'verify_market_inputs'
+
+research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py:46: AttributeError
+=========================== short test summary info ============================
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_admitted_minute_csv_tamper_is_rejected
+FAILED research/lines/futures_weekly_short_ma_slope_gate/tools/test_Stage020_ytd_recap.py::AnnualRecapAdapterTests::test_market_context_must_match_original_run_input_hashes
+2 failed, 7 passed in 0.39s

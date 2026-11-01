@@ -1,0 +1,1 @@
+{"qualified_days": 174, "qualified_bars": 3354, "rejected_days": 237, "reasons": {"no_cached_minutes": 229, "daily_OHLCVOI_mismatch": 8, "incomplete_15minute_bucket": 4}, "receipt_sha256": "3ce0f6af0a38d38e7b04ac635612afeac0f46c2582260d8ff38a256132577d82", "csv_sha256": "35e294409b278d0eb83aa8d7766d7aaa9c4637f318dd64e13d7dd6cf0af3f454"}

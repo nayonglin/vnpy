@@ -1,0 +1,310 @@
+{
+  "schema": "Stage020.independent-record-arithmetic.v3",
+  "output_attempt": "attempt002",
+  "audit_adapter_correction": "attempt001 expected explicit missing-day list for draw_intraday=0; canonical uses [] when not plotting. Those10 episodes explicitly disclose no admitted minute data. v2 checks zero bars plus that disclosure, and validates lists for all8 minute episodes. No source/output changes for this correction.",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "failures": [],
+  "checks": 1553,
+  "candle_values_compared": 28835,
+  "ma_values_compared": 36484,
+  "rounds": [
+    {
+      "entry_id": "BACKTESTING.1",
+      "exit_id": "BACKTESTING.8",
+      "net_pnl": 1800.0,
+      "daily_bars": 242,
+      "intraday_bars": 682,
+      "missing_intraday_days": 20,
+      "period_bars": {
+        "day30": 9,
+        "day10": 26,
+        "monthly": 13,
+        "weekly": 52,
+        "daily": 242,
+        "intraday": 682
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.2",
+      "exit_id": "BACKTESTING.10",
+      "net_pnl": 8380.0,
+      "daily_bars": 238,
+      "intraday_bars": 675,
+      "missing_intraday_days": 0,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 51,
+        "daily": 238,
+        "intraday": 675
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.3",
+      "exit_id": "BACKTESTING.9",
+      "net_pnl": 46860.0,
+      "daily_bars": 242,
+      "intraday_bars": 605,
+      "missing_intraday_days": 4,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 12,
+        "weekly": 51,
+        "daily": 242,
+        "intraday": 605
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.4",
+      "exit_id": "BACKTESTING.5",
+      "net_pnl": -5160.0,
+      "daily_bars": 239,
+      "intraday_bars": 360,
+      "missing_intraday_days": 0,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 52,
+        "daily": 239,
+        "intraday": 360
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.6",
+      "exit_id": "BACKTESTING.11",
+      "net_pnl": 8960.0,
+      "daily_bars": 241,
+      "intraday_bars": 465,
+      "missing_intraday_days": 0,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 52,
+        "daily": 241,
+        "intraday": 465
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.7",
+      "exit_id": "BACKTESTING.12",
+      "net_pnl": -3910.0,
+      "daily_bars": 236,
+      "intraday_bars": 452,
+      "missing_intraday_days": 5,
+      "period_bars": {
+        "day30": 9,
+        "day10": 24,
+        "monthly": 13,
+        "weekly": 51,
+        "daily": 236,
+        "intraday": 452
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.13",
+      "exit_id": "BACKTESTING.16",
+      "net_pnl": -7800.0,
+      "daily_bars": 196,
+      "intraday_bars": 92,
+      "missing_intraday_days": 20,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 42,
+        "daily": 196,
+        "intraday": 92
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.14",
+      "exit_id": "BACKTESTING.17",
+      "net_pnl": -4800.0,
+      "daily_bars": 196,
+      "intraday_bars": 23,
+      "missing_intraday_days": 20,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 42,
+        "daily": 196,
+        "intraday": 23
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.15",
+      "exit_id": "BACKTESTING.21",
+      "net_pnl": 13200.0,
+      "daily_bars": 228,
+      "intraday_bars": 0,
+      "missing_intraday_days": 31,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 49,
+        "daily": 228,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.18",
+      "exit_id": "BACKTESTING.19",
+      "net_pnl": -18810.0,
+      "daily_bars": 225,
+      "intraday_bars": 0,
+      "missing_intraday_days": 13,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 48,
+        "daily": 225,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.20",
+      "exit_id": "BACKTESTING.23",
+      "net_pnl": -25630.0,
+      "daily_bars": 229,
+      "intraday_bars": 0,
+      "missing_intraday_days": 12,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 49,
+        "daily": 229,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.22",
+      "exit_id": "BACKTESTING.24",
+      "net_pnl": -2400.0,
+      "daily_bars": 220,
+      "intraday_bars": 0,
+      "missing_intraday_days": 12,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 48,
+        "daily": 220,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.25",
+      "exit_id": "BACKTESTING.26",
+      "net_pnl": 4100.0,
+      "daily_bars": 242,
+      "intraday_bars": 0,
+      "missing_intraday_days": 12,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 52,
+        "daily": 242,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.27",
+      "exit_id": "BACKTESTING.28",
+      "net_pnl": -7110.0,
+      "daily_bars": 239,
+      "intraday_bars": 0,
+      "missing_intraday_days": 12,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 13,
+        "weekly": 52,
+        "daily": 239,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.29",
+      "exit_id": "BACKTESTING.30",
+      "net_pnl": -8400.0,
+      "daily_bars": 188,
+      "intraday_bars": 0,
+      "missing_intraday_days": 25,
+      "period_bars": {
+        "day30": 8,
+        "day10": 20,
+        "monthly": 10,
+        "weekly": 40,
+        "daily": 188,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.31",
+      "exit_id": "BACKTESTING.34",
+      "net_pnl": 21910.0,
+      "daily_bars": 237,
+      "intraday_bars": 0,
+      "missing_intraday_days": 27,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 12,
+        "weekly": 51,
+        "daily": 237,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.32",
+      "exit_id": "BACKTESTING.33",
+      "net_pnl": 1750.0,
+      "daily_bars": 241,
+      "intraday_bars": 0,
+      "missing_intraday_days": 16,
+      "period_bars": {
+        "day30": 9,
+        "day10": 25,
+        "monthly": 12,
+        "weekly": 51,
+        "daily": 241,
+        "intraday": 0
+      }
+    },
+    {
+      "entry_id": "BACKTESTING.35",
+      "exit_id": "BACKTESTING.36",
+      "net_pnl": -560.0,
+      "daily_bars": 189,
+      "intraday_bars": 0,
+      "missing_intraday_days": 12,
+      "period_bars": {
+        "day30": 8,
+        "day10": 20,
+        "monthly": 10,
+        "weekly": 41,
+        "daily": 189,
+        "intraday": 0
+      }
+    }
+  ],
+  "records_sha256": "195b032706e4d96181bb82e24098e2f8390d99fe74085ad1494849a4e5c7289a",
+  "summary_sha256": "cbccf9a0e4d157bfa06dad7333ecdf40a7200b4f80c5dd6e35be0da19bd1d416",
+  "chart_manifest_sha256": "a2535dd70ba3ff6c2678a1d639963bbd79c13717a672c6394b495385d1b175f4",
+  "html_sha256": "b20739348912852c6915a6e81c660a3c19fda6d5d2277b944621dfbfcabb747e",
+  "expected_source_receipt_sha256": "e40e89ea12feb1930f183bfad68eef786ed4f8d8a5d03791eec4be7683a722a1",
+  "qualified_minutes_sha256": "fa322e758b7ade3363600c0055670f5b473b680ea6a11da22c836d1ccd6d6b83",
+  "financial_replays": 0,
+  "downloads": 0,
+  "production_accesses": 0
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "Stage020.real-browser-verification.v1",
+  "recorded_at": "2026-11-01T15:55:21.827419+08:00",
+  "status": "BLOCKED_BY_FILE_PROTOCOL_POLICY",
+  "real_browser_verified": false,
+  "actual_plotly_rendering_verified": false,
+  "actual_pointer_zoom_verified": false,
+  "requested_action": "Open generated offline file in the in-app browser",
+  "allowed_protocols": [
+    "http:",
+    "https:"
+  ],
+  "rejected_protocol": "file:",
+  "rejection": "Browser URL policy did not grant file protocol access and explicitly prohibited alternate-browser or indirect workarounds.",
+  "safer_work_completed": [
+    "Local file generation",
+    "Frozen-source reconciliation",
+    "JavaScript compile and synthetic DOM logic checks"
+  ],
+  "http_service_started": false,
+  "alternate_browser_attempted": false,
+  "raw_cdp_attempted": false,
+  "financial_replays": 0,
+  "market_downloads": 0
+}
