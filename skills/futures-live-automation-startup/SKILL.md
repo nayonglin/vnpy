@@ -15,6 +15,7 @@ Use this skill for the C9/15w production control plane. It is an execution SOP, 
 - 初始交易权益15万元，另15万元真正留在场外，不参与权益、风险手数或保证金；新候选显式使用 `cash_verification_mode=operator_manual_v1`。用户已取消自动最终结算单解析和自动银行流水到账producer要求，出入金完整性由operator人工核验；真实权益、Available及Deposit/Withdraw仍来自当前CTP，不得由人工金额虚增。周五下午原始信号批次邮件只建议补足差额，同一原始批次不能因报价/权益或另一品种重复要求补资。
 - Stage945/947所有调用都带明确profile，路由至 `run_qmt_roll_weekly19_live.py`；Stage948仍独占原7个label作为transport所有权，不另起cron。monthly-ai-pool在此分支为明确disabled，不运行Stage935/训练/AI池。
 - 每日完成行情必须经过独立weekly19 immutable generation/真实close_oi与物理交割月校验，并写weekly19 daily receipt；不得把C9旧AI/CSV回执当新策略证据。节假日信号保留原完成日，同周周五建议是外层记录，不重跑历史on_bars。
+- 每日风险邮件复用原 `postclose-report` 标签和SMTP，不新增cron/launchd标签；日报与周五补资邮件按不同类别独立去重。核验时需证明非周五有日报、有/无/未知风险说明准确、平仓原因与生命周期绑定、实际成交日期来自真实回报，并确认日报源码属于新物料。离线预览和mock sender通过不等于已经实际发信或生产已激活。
 - 原生回报/四查询/保护层与资金状态需同一actor、可恢复原子bundle、完整原始子单绑定。新仓必须重新核真实Available、原风险和每个native API child数量；平仓/减风险仍独立校验。未付建议不是欠款，权益恢复15万后不得强迫补旧差额。
 - 跨TradingDay不能凭Balance差、PreBalance、query-last、SettlementInfoConfirm或墙钟假定出入金清零。新人工模式由 `run_qmt_roll_weekly19_manual_cash.py` 发布独立 `operator_manual` 确认记录，再由原actor与运行状态原子消费；逐个闭日人工核对gross Deposit/Withdraw及本次真实到账，记录绑定账户、物料、request和原始快照，备用金不得重复扣减。缺少本次必要人工确认时明确pending，不能永久勾选跳过所有未来现金变化。`--weekly19-settlement-trading-day YYYYMMDD`仍仅可选归档原文，unparsed/unqualified；自动最终结算格式验证不再是本次安装前置。
 - 本机发现的稳定目录是 `/Users/mac/Desktop/person/vnpy_production_live`。这是本次操作目标定位，不是原bytedance主机资格继承；仍需新master fresh clone、新生产qualification/manifest、Stage948激活与7jobs实际回执。

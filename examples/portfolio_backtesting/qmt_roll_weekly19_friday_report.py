@@ -35,6 +35,30 @@ def _now(now):
  if now.astimezone(SHANGHAI).weekday()!=4:raise ReportError('friday_report_only')
  return now
 
+def format_exit_reason(reason_code):
+ """Display original fixed-weekly diagnostics; unknown never means no exit."""
+ if reason_code in (None,''):return '原因未确认（原码：未提供）'
+ if not isinstance(reason_code,str)or not re.fullmatch(r'[A-Za-z0-9_:.+/-]{1,160}',reason_code):raise ReportError('exit_reason_code_invalid')
+ code=reason_code
+ for prefix in ('long_','short_'):
+  if code.startswith(prefix):code=code[len(prefix):];break
+ labels={
+  'risk_cluster_heat_deleverage':'风险簇热度降仓',
+  'forced_margin_deleverage':'保证金压力强制降仓',
+  'portfolio_margin_deleverage':'组合保证金压力降仓',
+  'portfolio_drawdown_deleverage':'组合回撤降仓',
+  'portfolio_volatility_budget_deleverage':'组合波动预算降仓',
+  'portfolio_overheat_cooldown_deleverage':'组合过热冷却降仓',
+  'prev2day_stop':'前两根已完成周线保护价，完成周收盘确认退出',
+  'base_stop':'底仓动态保护线退出',
+  'layer_stop_partial':'分层动态保护线部分退出','layer_stop_all':'分层动态保护线全部退出',
+  'ma_stop':'完成周线均线退出','exit_alignment':'完成周线均线排列退出',
+  'reverse_to_short':'反向空头信号平多','reverse_to_long':'反向多头信号平空',
+  'rsi_partial_exit':'RSI部分退出','rsi_partial_exit_all':'RSI全部退出',
+  'rollover':'换月平仓','rollover_close':'换月平仓','contract_rollover':'换月平仓'}
+ return labels.get(code,'原因未确认')+'（原码：'+reason_code+'）'
+
+
 def build_friday_report(*, funding_state,broker_account,recommendation,decision,data_receipt,now,preview=True,blocking_reasons=(),friday_advice=None):
  """Build the week mail; an unpaid historical suggestion is never a debt.
 
@@ -133,7 +157,7 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  for item in intents:
   symbol=item.get('vt_symbol',item.get('symbol',''));direction=item.get('direction');offset=item.get('offset');volume=item.get('volume',item.get('selected_volume',0))
   if not re.fullmatch(r'[A-Za-z]+\d{3,4}\.(?:SHFE|DCE|CZCE|CFFEX|INE|GFEX)',str(symbol)) or direction not in {'long','short'} or offset not in {'open','close'} or type(volume)is not int or volume<0:raise ReportError('report_intent_invalid')
-  lines.append(f'{symbol}｜'+('多'if direction=='long'else'空')+'｜'+('开仓'if offset=='open'else'平仓/减仓')+f'｜参考 {volume} 手'+('，待到账确认后重新计算与核验'if offset=='open'and not funding_ready else '，执行前仍须实时核验'))
+  lines.append(f'{symbol}｜'+('多'if direction=='long'else'空')+'｜'+('开仓'if offset=='open'else'平仓/减仓')+f'｜参考 {volume} 手'+('，待到账确认后重新计算与核验'if offset=='open'and not funding_ready else '，执行前仍须实时核验')+('｜退出原因：'+format_exit_reason(item.get('exit_reason'))if offset=='close'else''))
  lines += ['', '三、资金与执行状态']
  if 'daily_data_not_ready'in blockers:lines.append('行情数据尚未通过完整性检查，本次不形成可操作的补资/开仓结论。')
  if blockers:lines.append('当前存在数据或账户阻断；以上计算仅供核对，不能据此认定可以开仓。')
@@ -146,7 +170,25 @@ def build_friday_report(*, funding_state,broker_account,recommendation,decision,
  result['report_sha256']=report_digest(result);return result
 
 class FridayMailOutbox:
- """At-most-once attempt per release/week; ambiguous SMTP never retries itself."""
+ """At-most-once attempt per release/week; ambiguous SMTP never retries itself.
+
+ Protected validation/key/record methods support a distinct daily topic without
+ changing the historical Friday key or existing durable weekly records.
+ """
+ REPORT_SCHEMA='weekly19.friday-report.v1'
+ OUTBOX_SCHEMA='weekly19.friday-mail-outbox.v1'
+ def _validate_report(self,report):
+  if (not isinstance(report,dict)or report.get('schema')!=self.REPORT_SCHEMA
+   or report.get('execution_profile')!=WEEKLY19_15W_R150K_PROFILE.profile_key
+   or report_digest(report)!=report.get('report_sha256')):raise ReportError('report_digest_or_identity_invalid')
+  if type(report.get('preview'))is not bool:raise ReportError('preview_boolean_required')
+  if not isinstance(report.get('subject'),str)or '\r'in report['subject']or'\n'in report['subject']:raise ReportError('mail_header_invalid')
+ def _key_fields(self,report):return [report['execution_profile'],report['material_release_id'],report['week_key']]
+ def _record_fields(self,report):return dict(material_release_id=report['material_release_id'],week_key=report['week_key'])
+ def _validate_previous(self,previous,report,key):
+  if previous.get('key')!=key or previous.get('schema')!=self.OUTBOX_SCHEMA:raise ReportError('outbox_key_mismatch')
+  if any(previous.get(k)!=v for k,v in self._record_fields(report).items()):raise ReportError('outbox_identity_mismatch')
+
  def __init__(self,parent):
   self.parent=Path(parent)
   if not self.parent.is_absolute() or self.parent.is_symlink() or self.parent.resolve(strict=True)!=self.parent:raise ReportError('private_outbox_path_required')
@@ -195,10 +237,9 @@ class FridayMailOutbox:
    try:os.unlink(tmp,dir_fd=dirfd)
    except FileNotFoundError:pass
  def deliver(self,report,sender):
-  if report.get('schema')!='weekly19.friday-report.v1'or report.get('execution_profile')!=WEEKLY19_15W_R150K_PROFILE.profile_key or report_digest(report)!=report.get('report_sha256'):raise ReportError('report_digest_or_identity_invalid')
-  if '\r'in report['subject']or'\n'in report['subject']:raise ReportError('mail_header_invalid')
+  self._validate_report(report)
   if report['preview']:return dict(status='preview_only',report_sha256=report['report_sha256'])
-  key=hashlib.sha256(_canonical([report['execution_profile'],report['material_release_id'],report['week_key']])).hexdigest();name=key+'.json'
+  key=hashlib.sha256(_canonical(self._key_fields(report))).hexdigest();name=key+'.json'
   dirfd=self._directory();lock=None
   try:
    lock=self._open('.lock',os.O_RDWR,dirfd,True);fcntl.flock(lock,fcntl.LOCK_EX)
@@ -212,13 +253,13 @@ class FridayMailOutbox:
        d[k]=v
       return d
      previous=json.loads(f.read(1000000),object_pairs_hook=unique)
-    if previous['key']!=key:raise ReportError('outbox_key_mismatch')
+    self._validate_previous(previous,report,key)
     if previous['status']=='sent':return dict(status='already_sent',report_sha256=previous['report_sha256'])
     if previous['status']in{'sending','delivery_unknown'}:return dict(status='delivery_unknown',report_sha256=previous['report_sha256'])
     if previous['status']not in{'blocked_before_send','preview_written'}:raise ReportError('outbox_state_invalid')
    except ReportError as exc:
     if not isinstance(exc.__cause__,FileNotFoundError):raise
-   record=dict(schema='weekly19.friday-mail-outbox.v1',key=key,material_release_id=report['material_release_id'],week_key=report['week_key'],report_sha256=report['report_sha256'],status='sending')
+   record=dict(schema=self.OUTBOX_SCHEMA,key=key,**self._record_fields(report),report_sha256=report['report_sha256'],status='sending')
    self._write(name,record,dirfd)
    try:
     response=sender(copy.deepcopy(report));mail_status=response.get('email_status')if isinstance(response,dict)else None

@@ -11,7 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 import qmt_roll_weekly19_funding as funds
 from qmt_roll_weekly19_pipeline_state import PipelineStateStore,digest
-from qmt_roll_weekly19_runtime import build_weekly19_runtime,DEFAULT_SETTINGS_ASSET
+from qmt_roll_weekly19_runtime import build_weekly19_runtime,DEFAULT_SETTINGS_ASSET,_decode
 from qmt_roll_weekly19_friday_report import build_friday_report,FridayMailOutbox
 from qmt_roll_weekly19_friday_advice import refresh_friday_advice
 
@@ -85,6 +85,58 @@ def _report(context,backend,bundle,data,now,preview):
  result=FridayMailOutbox(context['mail_outbox']).deliver(report,backend.send_mail)
  return dict(report,delivery=result)
 
+def _daily_risk_rows(bundle):
+ """Project proven close lifecycles once, regardless of retries/child count."""
+ target=bundle['decision']['trading_date'];saved=bundle['runtime']
+ engine=_decode(saved['engine']);state=_decode(saved['runtime'])
+ plans=engine['order_intents'];rows=[]
+ for lid,life in state['close_lifecycles'].items():
+  ids=life['order_ids']
+  if not ids:raise Weekly19PipelineError('daily_close_lifecycle_order_missing')
+  original=plans[ids[0]]
+  if (original['offset']!='close'or original.get('close_lifecycle_id')!=lid
+   or any(plans[oid].get('close_lifecycle_id')!=lid or plans[oid]['vt_symbol']!=life['symbol'] for oid in ids)):
+   raise Weekly19PipelineError('daily_close_lifecycle_binding_invalid')
+  evidence=life.get('fill_evidence',[]);seen=set()
+  for e in evidence:
+   tid=e.get('trade_id');oid=e.get('signal_order_id');archive=state['fills'].get(tid)
+   semantic={k:v for k,v in e.items()if k!='raw_sha256'}
+   if (oid not in ids or not archive or tid in seen or type(e.get('volume'))is not int or e['volume']<=0
+    or archive.get('first_raw_sha256')!=e.get('raw_sha256')or archive.get('semantic_sha256')!=digest(semantic)
+    or e.get('account_key')!=saved['account_key']or e.get('material_release_id')!=saved['material_release_id']
+    or any(e.get(k)!=plans[oid][k]for k in ('intent_id','signal_identity','vt_symbol','direction','offset'))):
+    raise Weekly19PipelineError('daily_fill_evidence_binding_invalid')
+   seen.add(tid)
+  observed=sum(e['volume']for e in evidence)
+  if observed>life['filled']or sum(engine['order_filled'][oid]for oid in ids)!=life['filled']:
+   raise Weekly19PipelineError('daily_fill_evidence_volume_invalid')
+  dates=sorted({e['trading_day']for e in evidence})
+  coverage='complete'if observed==life['filled']else'legacy_or_partial'
+  signal=original['target_date']
+  if signal>target:raise Weekly19PipelineError('daily_future_signal')
+  if signal!=target and life['status']=='completed'and target not in dates and coverage=='complete':continue
+  rows.append(dict(vt_symbol=life['symbol'],position_direction='long'if original['direction']=='short'else'short',
+   signal_date=signal,next_execution_day=original['next_execution_day'],reason_code=original.get('exit_reason',''),
+   planned_volume=life['volume'],filled_volume=life['filled'],status=life['status'],
+   close_lifecycle_id=lid,intent_ids=[plans[oid]['intent_id']for oid in ids],fill_trading_dates=dates,
+   fill_date_coverage=coverage))
+ return sorted(rows,key=lambda row:(row['signal_date'],row['vt_symbol'],row['close_lifecycle_id']))
+
+def _daily_report(context,backend,bundle,data,now,preview):
+ from qmt_roll_weekly19_daily_report import build_daily_risk_report,DailyMailOutbox
+ decision=deepcopy(bundle.get('decision'))
+ if not decision or digest(data['receipt'])!=decision['data_receipt_sha256']:
+  raise Weekly19PipelineError('daily_report_original_data_receipt_mismatch')
+ report=build_daily_risk_report(decision=decision,
+  data_receipt=dict(status='ready',material_release_id=context['material_release_id'],target_date=decision['trading_date'],sha256=decision['data_receipt_sha256']),
+  account_key=context['account_key'],material_release_id=context['material_release_id'],rows=_daily_risk_rows(bundle),
+  now=now,preview=preview,blocking_reasons=([backend.cash_source_blocker]if getattr(backend,'cash_source_blocker',None)else()))
+ if preview:return report
+ result=DailyMailOutbox(context['mail_outbox']).deliver(report,backend.send_mail)
+ if result['status']not in {'sent','already_sent','preview_written'}:
+  raise Weekly19PipelineError('daily_mail_delivery_'+result['status'])
+ return dict(report,delivery=result)
+
 def _refresh_advice(bundle,obj,data,now):
  if now.astimezone(SHANGHAI).weekday()!=4:return bundle
  # Advice is an outer operational record. The original strategy decision and
@@ -109,7 +161,7 @@ def run_weekly19_support_job(job,*,context):
    state_sha256=None if bundle is None else digest(bundle),production_qualified=False)
  if context['target_date']<context['cold_start_date']:
   return dict(status='skipped_before_weekly19_cold_start',target_date=context['target_date'],production_qualified=False)
- if not preview and job in {'postclose-precompute','day-close-readonly'}and hasattr(backend,'refresh_readonly'):
+ if not preview and job in {'postclose-precompute','postclose-report','day-close-readonly'}and hasattr(backend,'refresh_readonly'):
   backend.refresh_readonly(now);now=datetime.now(SHANGHAI)
  if not preview and job=='postclose-precompute'and hasattr(backend,'refresh_market_data'):
   backend.refresh_market_data(context['target_date'],now);now=datetime.now(SHANGHAI)
@@ -119,14 +171,18 @@ def run_weekly19_support_job(job,*,context):
  if job=='postclose-report':
   if existing is None or existing['decision']is None or existing['decision']['trading_date']!=target:
    return dict(status='blocked',blockers=['completed_decision_missing'],production_qualified=False)
-  if now.astimezone(SHANGHAI).weekday()==4:
-   def refresh(bundle):
-    cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now);bundle['funding']=cash
-    obj=_runtime(bundle,data,now,backend.read_execution_events(bundle['decision'],now))
-    return _refresh_advice(bundle,obj,data,now)
-   existing=store.transact(refresh)
-  report=_report(context,backend,existing,data,now,preview)
-  return dict(status='preview_complete'if preview else'report_complete',mail=report,production_qualified=False)
+  def refresh(bundle):
+   cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now);bundle['funding']=cash
+   obj=_runtime(bundle,data,now,backend.read_execution_events(bundle['decision'],now))
+   bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+   return _refresh_advice(bundle,obj,data,now)
+  existing=store.transact(refresh)
+  # Daily notification owns this scheduled job. Deliver it before the separate
+  # Friday funding report so an advice failure cannot hide a valid risk notice.
+  daily=_daily_report(context,backend,existing,data,now,preview)
+  weekly=_report(context,backend,existing,data,now,preview)
+  return dict(status='preview_complete'if preview else'report_complete',mail=weekly or daily,
+   daily_mail=daily,weekly_mail=weekly,production_qualified=False)
  if existing is None:
   if not preview:backend.validate_initial_account(data['broker_snapshot'],now)
   store.initialize(_initial(context))

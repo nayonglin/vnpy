@@ -235,8 +235,10 @@ class LocalEvidenceBackend:
  def send_mail(self,report):
   self.require_production()
   if report.get('preview')or report['material_release_id']!=self.config['material_release_id']:raise LocalBackendError('weekly19_mail_identity_invalid')
+  event={'weekly19.friday-report.v1':'weekly19_friday_signal_funding','weekly19.daily-risk-report.v1':'weekly19_daily_risk'}.get(report.get('schema'))
+  if event is None:raise LocalBackendError('weekly19_mail_schema_invalid')
   from qmt_roll_official_live_email_notify import send_official_live_email_notification
-  return send_official_live_email_notification(subject=report['subject'],body=report['body'],event_type='weekly19_friday_signal_funding',
+  return send_official_live_email_notification(subject=report['subject'],body=report['body'],event_type=event,
    severity='warning'if report['blockers']else'info',metadata=dict(material_release_id=report['material_release_id'],report_sha256=report['report_sha256']),
    env_file=self.repo/'examples/portfolio_backtesting/official_live_email.local.env')
  def _refresh_cash_sources(self):

@@ -70,6 +70,13 @@ class FridayReportTest(unittest.TestCase):
   i=inputs();raw=json.loads(i['broker_account']['raw_payload']);raw.pop('PositionProfit');t=json.dumps(raw,ensure_ascii=False,sort_keys=True,separators=(',',':'));i['broker_account']={'raw_payload':t,'raw_sha256':hashlib.sha256(t.encode()).hexdigest()}
   r=build_friday_report(**i);self.assertIn('未取得独立浮盈亏字段',r['body']);self.assertIsNone(r['unrealized_pnl_fen'])
 
+ def test_current_close_shows_chinese_reason_and_exact_original_code(self):
+  i=inputs();i['decision']['intents']=[dict(vt_symbol='rb2701.SHFE',direction='short',offset='close',volume=2,exit_reason='long_risk_cluster_heat_deleverage')]
+  r=build_friday_report(**i)
+  self.assertIn('风险簇热度降仓',r['body']);self.assertIn('long_risk_cluster_heat_deleverage',r['body'])
+  i['decision']['intents'][0]['exit_reason']='unknown_future_reason';r=build_friday_report(**i)
+  self.assertIn('原因未确认',r['body']);self.assertIn('unknown_future_reason',r['body'])
+
 class MailOutboxTest(unittest.TestCase):
  def setUp(self):
   self.t=tempfile.TemporaryDirectory(dir='/private/tmp');self.root=Path(self.t.name).resolve();os.chmod(self.root,0o700);self.out=FridayMailOutbox(self.root);self.r=build_friday_report(**inputs(),preview=False)

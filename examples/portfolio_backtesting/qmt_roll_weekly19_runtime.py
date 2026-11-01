@@ -237,6 +237,20 @@ class IntentEngine:
     def put_strategy_event(self, strategy):
         pass
 
+    def _mail_close_reason(self, strategy, symbol, signal_day, direction):
+        """Notification metadata only: never reuse an older/open-side event."""
+        holding = 'long' if direction == Direction.SHORT else 'short'
+        reasons = set()
+        for event in strategy.trade_event_diagnostics:
+            event_day = str(event.get('date', event.get('datetime', '')))[:10]
+            if (event.get('contract_vt_symbol', event.get('vt_symbol')) == symbol
+                    and event_day == signal_day
+                    and str(event.get('offset', '')).lower() in {'close', '平'}
+                    and event.get('position_direction') == holding
+                    and isinstance(event.get('reason'), str) and event['reason']):
+                reasons.add(event['reason'])
+        return next(iter(reasons)) if len(reasons) == 1 else ''
+
     def send_order(self, strategy, symbol, direction, offset, price, volume, lock=False, net=False):
         rt = self.runtime
         self.sequence += 1
@@ -271,6 +285,8 @@ class IntentEngine:
             funding_receipt_set_sha256=_hash(rt.confirmed_cash_state['receipts']),
             original_funding_admission_id=rt.sizing_contexts.get((symbol,direction.name.lower()),{}).get('original_funding_admission_id'),
             production_qualified=False)
+        if offset == Offset.CLOSE:
+            body['exit_reason'] = self._mail_close_reason(strategy, symbol, signal_day, direction)
         iid = _hash(body)
         order_id = 'W19.' + iid
         body.update(intent_id=iid, signal_order_id=order_id)
@@ -1151,7 +1167,11 @@ class Runtime:
         try:
             self.strategy.update_trade(trade)
             if plan['offset'] == 'close':
-                self._close_fill(plan, volume, price, raw['trading_day'])
+                life = self._close_fill(plan, volume, price, raw['trading_day'])
+                # Recorded only after raw binding, duplicate and volume gates.
+                # Older states may lack this display-only evidence; never infer
+                # historical fill dates from the planned execution date.
+                life.setdefault('fill_evidence', []).append(dict(semantic, raw_sha256=fill['raw_sha256']))
             self.engine.order_filled[order_id] += volume
             if self.engine.order_filled[order_id] == plan['planned_volume']:
                 self.engine.order_terminal[order_id] = 'filled'
