@@ -1,0 +1,70 @@
+FF.FFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ DailyMailIntegrationTests.test_monday_preview_emits_no_signal_mail_without_sender_or_replay _
+
+self = <test_weekly19_daily_mail_pipeline.DailyMailIntegrationTests testMethod=test_monday_preview_emits_no_signal_mail_without_sender_or_replay>
+
+    def test_monday_preview_emits_no_signal_mail_without_sender_or_replay(self):
+        self.monday()
+        before = pipeline.pipeline_store(self.context).read()
+        result = pipeline.run_weekly19_support_job('postclose-report', context=self.context)
+>       self.assertIsNotNone(result['mail'])
+E       AssertionError: unexpectedly None
+
+tests/test_weekly19_daily_mail_pipeline.py:77: AssertionError
+_ DailyMailIntegrationTests.test_monday_repeated_report_sends_once_and_separate_from_friday _
+
+self = <test_weekly19_daily_mail_pipeline.DailyMailIntegrationTests testMethod=test_monday_repeated_report_sends_once_and_separate_from_friday>
+
+    def test_monday_repeated_report_sends_once_and_separate_from_friday(self):
+        self.monday(preview=False)
+        # Friday precompute retains its independent weekly/funding mail.
+        self.assertEqual(self.backend.sends, 1)
+        a = pipeline.run_weekly19_support_job('postclose-report', context=self.context)
+        b = pipeline.run_weekly19_support_job('postclose-report', context=self.context)
+>       self.assertEqual(self.backend.sends, 2)
+E       AssertionError: 1 != 2
+
+tests/test_weekly19_daily_mail_pipeline.py:91: AssertionError
+_ DailyRiskProjectionTests.test_completed_old_signal_is_shown_on_actual_fill_trading_day_only _
+
+self = <test_weekly19_daily_mail_pipeline.DailyRiskProjectionTests testMethod=test_completed_old_signal_is_shown_on_actual_fill_trading_day_only>
+
+    def test_completed_old_signal_is_shown_on_actual_fill_trading_day_only(self):
+        helper, obj, plan, volume = self.fixture()
+        helper.fill(obj, plan, volume, 100.0, 'mail-full-close')
+        bundle = dict(decision=dict(trading_date='2026-11-02'), runtime=obj.export_state())
+>       rows = pipeline._daily_risk_rows(bundle)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'qmt_roll_weekly19_live_pipeline' has no attribute '_daily_risk_rows'
+
+tests/test_weekly19_daily_mail_pipeline.py:131: AttributeError
+____ DailyRiskProjectionTests.test_intent_carries_same_day_raw_exit_reason _____
+
+self = <test_weekly19_daily_mail_pipeline.DailyRiskProjectionTests testMethod=test_intent_carries_same_day_raw_exit_reason>
+
+    def test_intent_carries_same_day_raw_exit_reason(self):
+        helper, obj, plan, volume = self.fixture()
+>       self.assertEqual(plan.get('exit_reason'), 'long_base_stop')
+E       AssertionError: None != 'long_base_stop'
+
+tests/test_weekly19_daily_mail_pipeline.py:110: AssertionError
+_ DailyRiskProjectionTests.test_pending_is_not_a_fill_and_partial_close_uses_original_position_direction _
+
+self = <test_weekly19_daily_mail_pipeline.DailyRiskProjectionTests testMethod=test_pending_is_not_a_fill_and_partial_close_uses_original_position_direction>
+
+    def test_pending_is_not_a_fill_and_partial_close_uses_original_position_direction(self):
+        helper, obj, plan, volume = self.fixture()
+        bundle = dict(decision=dict(trading_date='2026-10-30'), runtime=obj.export_state())
+>       rows = pipeline._daily_risk_rows(bundle)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'qmt_roll_weekly19_live_pipeline' has no attribute '_daily_risk_rows'
+
+tests/test_weekly19_daily_mail_pipeline.py:115: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyMailIntegrationTests::test_monday_preview_emits_no_signal_mail_without_sender_or_replay
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyMailIntegrationTests::test_monday_repeated_report_sends_once_and_separate_from_friday
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyRiskProjectionTests::test_completed_old_signal_is_shown_on_actual_fill_trading_day_only
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyRiskProjectionTests::test_intent_carries_same_day_raw_exit_reason
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyRiskProjectionTests::test_pending_is_not_a_fill_and_partial_close_uses_original_position_direction
+5 failed, 1 passed in 2.59s

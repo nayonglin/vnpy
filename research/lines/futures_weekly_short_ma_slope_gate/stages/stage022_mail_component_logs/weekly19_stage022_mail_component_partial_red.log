@@ -1,0 +1,58 @@
+======================================================================
+ERROR: test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output (tests.test_weekly19_daily_report.DailyReportTests.test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output) (change={'position_direction': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 67, in test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output
+    with self.subTest(change=change),self.assertRaises(ReportError):self.build(rows=[row(**change)])
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 22, in build
+    def build(self,**kw):return daily.build_daily_risk_report(**inputs(**kw))
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py", line 77, in build_daily_risk_report
+    item=_row(raw,target)
+         ^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py", line 32, in _row
+    _require(item.get('position_direction')in {'long','short'},'daily_original_position_direction_required')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+
+======================================================================
+ERROR: test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output (tests.test_weekly19_daily_report.DailyReportTests.test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output) (change={'fill_date_coverage': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 67, in test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output
+    with self.subTest(change=change),self.assertRaises(ReportError):self.build(rows=[row(**change)])
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 22, in build
+    def build(self,**kw):return daily.build_daily_risk_report(**inputs(**kw))
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py", line 77, in build_daily_risk_report
+    item=_row(raw,target)
+         ^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py", line 47, in _row
+    _require(coverage in {'complete','legacy_or_partial'},'daily_fill_coverage_invalid')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+
+======================================================================
+FAIL: test_fixed_weekly_protection_reason_labels_do_not_claim_daily_or_fixed_two_percent_stop (tests.test_weekly19_daily_report.DailyReportTests.test_fixed_weekly_protection_reason_labels_do_not_claim_daily_or_fixed_two_percent_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 70, in test_fixed_weekly_protection_reason_labels_do_not_claim_daily_or_fixed_two_percent_stop
+    self.assertIn('前两根已完成周线',result['body']);self.assertIn('完成周收盘确认',result['body']);self.assertIn('动态保护线',result['body']);self.assertNotIn('前两日',result['body']);self.assertNotIn('2%',result['body'])
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '完成周收盘确认' not found in '周线19｜2026-11-02 每日风险平仓与降仓\n行情完成日：2026-11-02；报告时间：2026-11-02 16:35:00（北京时间）\n候选预览：未发送邮件，不代表生产已激活或获准委托。\n风险事项 2 项：当日新计划 2 项；历史待执行 0 项；当日有已确认成交回报更新 0 项。分类可重叠，同一生命周期只展示一次。\n\nrb2701.SHFE｜持仓多头→卖平｜前两根已完成周线保护退出（原码：long_prev2day_stop）\n信号日 2026-11-02；原下一执行日 2026-11-03；当日新计划\n计划 2 手；累计已成交 0 手；剩余 2 手；状态：待执行（pending）\n生命周期 close-life-1；关联意图 1 个（重试不重复累加计划手数）。\n\nrb2701.SHFE｜持仓多头→卖平｜底仓动态保护线退出（原码：short_base_stop）\n信号日 2026-11-02；原下一执行日 2026-11-03；当日新计划\n计划 2 手；累计已成交 0 手；剩余 2 手；状态：待执行（pending）\n生命周期 base；关联意图 1 个（重试不重复累加计划手数）。\n\n规则说明：风险簇 pressure 是标准化综合压力；固定规则0.4是压力阈值，不是保证金占比40%。\n累计成交仅取已核验生命周期的实际filled_volume；不能把计划手数、订单状态或累计量当作今日新增成交量。\n本邮件仅披露已完成日的计划与执行状态，不生成或授权任何委托；实际持仓、资金、报价和交易时段仍由原执行门核验。\n'
+
+======================================================================
+FAIL: test_pending_lifecycle_with_actual_partial_fills_displays_partial_execution (tests.test_weekly19_daily_report.DailyReportTests.test_pending_lifecycle_with_actual_partial_fills_displays_partial_execution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 40, in test_pending_lifecycle_with_actual_partial_fills_displays_partial_execution
+    self.assertIn('状态：部分成交',result['body']);self.assertIn('剩余待执行',result['body']);self.assertIn('累计已成交 1 手',result['body'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '状态：部分成交' not found in '周线19｜2026-11-02 每日风险平仓与降仓\n行情完成日：2026-11-02；报告时间：2026-11-02 16:35:00（北京时间）\n候选预览：未发送邮件，不代表生产已激活或获准委托。\n风险事项 1 项：当日新计划 0 项；历史待执行 1 项；当日有已确认成交回报更新 1 项。分类可重叠，同一生命周期只展示一次。\n\nrb2701.SHFE｜持仓多头→卖平｜风险簇热度降仓（原码：long_risk_cluster_heat_deleverage）\n信号日 2026-10-30；原下一执行日 2026-11-02；历史待执行 / 当日有实际成交回报更新（手数下列为累计值）\n计划 2 手；累计已成交 1 手；剩余 1 手；状态：待执行（pending）\n生命周期 close-life-1；关联意图 1 个（重试不重复累加计划手数）。\n\n规则说明：风险簇 pressure 是标准化综合压力；固定规则0.4是压力阈值，不是保证金占比40%。\n累计成交仅取已核验生命周期的实际filled_volume；不能把计划手数、订单状态或累计量当作今日新增成交量。\n本邮件仅披露已完成日的计划与执行状态，不生成或授权任何委托；实际持仓、资金、报价和交易时段仍由原执行门核验。\n'
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.063s
+
+FAILED (failures=2, errors=2)

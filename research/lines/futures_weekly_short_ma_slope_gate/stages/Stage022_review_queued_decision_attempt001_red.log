@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_pending_close_queued_bars_cannot_claim_no_new_heat_signal (__main__.QueuedDecision.test_pending_close_queued_bars_cannot_claim_no_new_heat_signal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_queued_decision_tests.py", line 12, in test_pending_close_queued_bars_cannot_claim_no_new_heat_signal
+    self.assertEqual(r['today_cluster_signal_status'],'unconfirmed','actual runtime queued decision has not run on_bars; source-ready must not mean evaluated-none')
+AssertionError: 'none' != 'unconfirmed'
+- none
++ unconfirmed
+ : actual runtime queued decision has not run on_bars; source-ready must not mean evaluated-none
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

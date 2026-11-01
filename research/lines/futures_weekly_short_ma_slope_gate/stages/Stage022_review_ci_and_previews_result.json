@@ -1,0 +1,63 @@
+{
+  "schema": "Stage022.independent-CI-and-preview-audit.v1",
+  "accepted": true,
+  "status": "PASS_WITH_LIMITATIONS",
+  "failures": [],
+  "checks": 332,
+  "full_CI": {
+    "suites": 92,
+    "tests": 2348,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "critical_sources": 291,
+    "source_drift": [],
+    "independently_reran_full_CI": false,
+    "reviewed_complete_XML_log_before_after_and_actual_source": true
+  },
+  "old_failed_CI": {
+    "tests": 2344,
+    "failures": 33,
+    "preserved": true,
+    "all_failed_test_identities_present_and_pass_current": true,
+    "root_reported_cause": "Sandbox Darwin clock/process-group/log permissions; final same legacy sources passed with permitted host test resources",
+    "between_lock_source_changes": [
+      "examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py",
+      "tests/test_weekly19_daily_report.py"
+    ]
+  },
+  "CI_evidence_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.json": "f0b76f86a230415c8c49237a748b508cbc142f2d9178bd249ceaa75a630b88bf",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.xml": "1e2b3764b865f72de59588d43ea62e66be60627ac958583a0947c251e9b7ab21",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.log": "9d3c81d848ec7bbb49d1846c22fa43974afd17112d311c059a70d56412cb04d6",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.source_before.json": "d9e1f61f0e40d7dcf25464232795a427ebb52fa5be49ab5473b1236378233114",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt002.json": "5879ee6f20bbc021e86ecc9c56aa96e8f70ae3ef0b3f06c57f3d2bcc49231f78",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt002.xml": "f69dd6a9da372d64eb2fd68eaaa94d0c0c6a18baf279168a272eaf6ce094f578",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt002.log": "2c3c1ea8157f4c350694a095fb86a0d6c38fff2a53632c2853cb753106a2539d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt002.source_before.json": "d289b5e0eb34378e0cc4b12e7d48e5bc1b766cf3dfce6ffb879add959f23a520",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_implementation_lock_attempt001.json": "a9693caa74a9033e09b5fb74ee96629d0705f1da4550a4486d747e907cffeae7",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_implementation_lock_attempt002.json": "ed862e77e0780ba7ac0714c9edbb22e867d3a8481b9d61f6557e11ecf6638ada"
+  },
+  "preview_manifest_sha256": "5c297978052655217e0437e03cf73bd1ce693cc0cc1bb904582013e6747cc35c",
+  "preview_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/04_以前信号_部分成交待重试.txt": "99cf1487c139b58942458b3cc4b25713d0d883593b6f2962d000143e473f8d90",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/01_无信号.txt": "79c3a82a0ad54fb0558f7e3856b0034f7dd739520747dcd15acf00599b9ce70e",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/02_风险组压力降仓.txt": "0dd3b0c7444966510908783086ca862100652f762ae8e8b3c4c50849dc77ea27",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/05_原因未确认.txt": "e9ea8adb73560bad3cf6449e99bce85b9e8e6a8cf5d0d573cc16a8bfdadad476",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/07_周五信号补资邮件_含退出原因.txt": "5767fcbebb1f36c255a23fe4c997737a23c3ec9106faf4f4bf9d235c1155edd7",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/08_当天策略尚未完成评估.txt": "85e0c71b90bdd13b5c1455cad50278a712d85a789caf8cb21d12f2905a28ae8c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/06_数据未就绪.txt": "c3cb0ccd7491573e2c55346fccdf8581542c9afec2351fdef02b9bffe2a412a1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/artifacts/stage022_daily_mail_previews_attempt002/03_保证金降仓_原空头买平.txt": "c7facd63c760d6c734b35c8869e497454f2afff24909fe1bb66756ed5890d7d0"
+  },
+  "sample_source_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage022_mail_previews.py": "46e14c5afad871cfd46616ac530828afdff5adf6b3737ddfd5b79e61b715fac1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py": "30232803a468b5b41e1159fd2c8460337137aa516e22f900adf895510007d017",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_report.py": "0116243246d5c27d8611a277e2a89809a0bce62e27f11a892d6a0a38ef725436",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py": "2b426e115be251f63d493c1efe64d1de687cdced3d07b368ccb2f122e6d4b3a5",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "dcb41e2fc1a9dfc75873f9899988d8897b096a2e0d0597fad9ab463c2a2b3f59"
+  },
+  "financial_replays": 0,
+  "SMTP_sends": 0,
+  "CTP_connections": 0,
+  "production_qualified": false
+}

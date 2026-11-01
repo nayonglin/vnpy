@@ -1,0 +1,20 @@
+{
+  "schema": "Stage022.failed-CI-environment-audit.v1",
+  "attempt": "001",
+  "counts": {
+    "tests": 2344,
+    "failures": 33,
+    "errors": 0,
+    "skipped": 0
+  },
+  "source_drift": [],
+  "causes": [
+    "Darwin system_clock_domain_unavailable under sandbox",
+    "ps/PGID unavailable in supervisor fixtures",
+    "vnpy import logger path outside writable sandbox"
+  ],
+  "decision": "preserve failed evidence; rerun identical full suite with local resource permission after queued-decision bug fix",
+  "test_removed": false,
+  "test_relaxed": false,
+  "production_qualified": false
+}

@@ -1,0 +1,37 @@
+E..E..
+======================================================================
+ERROR: test_completed_legacy_unknown_date_not_silently_omitted (__main__.FillSourceProjection.test_completed_legacy_unknown_date_not_silently_omitted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_projection_tests.py", line 34, in test_completed_legacy_unknown_date_not_silently_omitted
+    rows=subject._daily_risk_rows(self.bundle(evidence=[]));self.assertTrue(rows,'legacy unknown execution date must remain explicit, not become proven empty updates');self.assertNotEqual(rows[0]['fill_date_coverage'],'complete')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py", line 91, in _daily_risk_rows
+    engine=_decode(_unpack_section(saved['engine']));state=_decode(saved['runtime'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 198, in _unpack_section
+    _fail('compressed_state_bounds_invalid')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 45, in _fail
+    raise RuntimeContractError(reason)
+qmt_roll_weekly19_runtime.RuntimeContractError: compressed_state_bounds_invalid
+
+======================================================================
+ERROR: test_real_bound_archive_row_projects_once (__main__.FillSourceProjection.test_real_bound_archive_row_projects_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_projection_tests.py", line 21, in test_real_bound_archive_row_projects_once
+    rows=subject._daily_risk_rows(self.bundle());self.assertEqual(len(rows),1);self.assertEqual(rows[0]['filled_volume'],3);self.assertEqual(rows[0]['fill_trading_dates'],['2026-11-02'])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py", line 91, in _daily_risk_rows
+    engine=_decode(_unpack_section(saved['engine']));state=_decode(saved['runtime'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 198, in _unpack_section
+    _fail('compressed_state_bounds_invalid')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py", line 45, in _fail
+    raise RuntimeContractError(reason)
+qmt_roll_weekly19_runtime.RuntimeContractError: compressed_state_bounds_invalid
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (errors=2)

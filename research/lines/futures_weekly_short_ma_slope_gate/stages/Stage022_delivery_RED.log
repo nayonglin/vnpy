@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ DailyMailIntegrationTests.test_unknown_delivery_is_explicit_error_and_does_not_resend _
+
+self = <test_weekly19_daily_mail_pipeline.DailyMailIntegrationTests testMethod=test_unknown_delivery_is_explicit_error_and_does_not_resend>
+
+    def test_unknown_delivery_is_explicit_error_and_does_not_resend(self):
+        self.monday(preview=False)
+        self.backend.daily_response = {'email_status':'delivery_unknown'}
+        for _ in range(2):
+>           with self.assertRaisesRegex(ValueError, 'daily_mail_delivery'):
+E           AssertionError: ValueError not raised
+
+tests/test_weekly19_daily_mail_pipeline.py:105: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyMailIntegrationTests::test_unknown_delivery_is_explicit_error_and_does_not_resend
+1 failed in 1.17s

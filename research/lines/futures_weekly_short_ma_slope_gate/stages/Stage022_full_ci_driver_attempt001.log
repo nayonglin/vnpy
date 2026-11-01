@@ -1,0 +1,152 @@
+: str(starts),
+                    "FAKE_STAGE930_TERMS": str(terms),
+                }
+            )
+            process = subprocess.Popen(
+                ["bash", str(supervisor)],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            if not self.wait_for_path(starts):
+                process.send_signal(signal.SIGTERM)
+                stdout, _ = process.communicate(timeout=8)
+                self.fail(f"supervisor daemon never started: {stdout}")
+            process.send_signal(signal.SIGTERM)
+            stdout, _ = process.communicate(timeout=8)
+            time.sleep(0.2)
+    
+>           self.assertEqual(process.returncode, 128 + signal.SIGTERM, stdout)
+E           AssertionError: 2 != 143 : Stage930 supervisor starting daemon at 2026-11-01 23:48:56, restart_count=0
+E           Stage930 supervisor child failed PGID handshake pid=45587 pgid=missing
+
+tests/test_stage930_fast_lane.py:4132: AssertionError
+_________ test_stage905_payload_and_spool_materialize_into_final_gate __________
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1212e5c10>
+
+    def test_stage905_payload_and_spool_materialize_into_final_gate(monkeypatch):
+        import pandas as pd
+        import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
+        from types import SimpleNamespace
+    
+        initial = sizing_row()["broker_sizing_inputs"]
+        intent = {
+            **initial["intent"], "intent_id": "pending-sh", "target_date": "2026-09-07",
+            "source": "stage901_pending_order", "execution_profile": "c9-15w",
+        }
+        sized = stage905._size_c9_open_intent(
+            intent, entry_risk=pd.DataFrame([{
+                **initial["signal"], "date": "2026-09-07", "contract_vt_symbol": "SH611.CZCE",
+                "direction": "long",
+            }]), broker_account=initial["account"], policy=initial["policy"], pricetick=1,
+        )
+>       validated = stage905._validate_intent(
+            sized, contracts=pd.DataFrame([{"vt_symbol": "SH611.CZCE", "pricetick": 1}]),
+            positions=pd.DataFrame(), orders=pd.DataFrame(),
+            stage902_summary={"blocking_failure_count": 0, "allow_new_open": 1},
+            stage260_summary={"executable_count": 1}, stage904_summary={}, mode="dry-run",
+        )
+
+tests/test_stage931_broker_sizing_gate.py:392: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+- generated xml file: /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.xml -
+=========================== short test summary info ============================
+FAILED tests/test_stage174_query_bundle.py::Stage174ReadonlyQueryBundleTest::test_output_paths_follow_official_live_output_dir
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_api_slot_is_durable_before_spool_sending_and_broker_call
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_cycle_authorization_allow_list_is_passed_into_atomic_lease
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_cycle_authorization_blocks_before_spool_lease
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_half_second_dequeue_sla_blocks_before_fresh_bundle_and_api_slot
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_lease_execution_guard_covers_lease_send_and_durable_result
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_lease_execution_guard_releases_on_empty_lease_and_exception
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_socket_loss_is_recovered_by_point_one_second_poll
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_spool_sending_cas_loss_after_api_slot_never_calls_broker
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_transport_disconnect_reconnects_before_next_lease_and_changes_generation
+FAILED tests/test_stage179_fault_matrix.py::Stage179FaultMatrixTest::test_fault_matrix_contracts_fail_closed
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_cooperative_child_exits_on_term_without_escalation
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_restart_delay_supports_python_path_with_spaces
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_term_ignoring_child_and_grandchild_are_killed_without_restart
+FAILED tests/test_stage179_performance_gate_diagnostics.py::Stage179PerformanceGateDiagnosticsTest::test_short_gate_emits_phase_and_gc_diagnostics
+FAILED tests/test_stage179_production_performance_gate.py::Stage179ProductionPerformanceGateTest::test_fixed_production_stress_gate_passes_from_raw_execution
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_empty_action_batch_rejects_malformed_nonempty_cursor
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_empty_action_batch_still_surfaces_summary_contract_blockers
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_invalid_exchange_fails_closed_instead_of_raising
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_manual_position_matching_stage901_open_is_not_duplicated
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_missing_source_role_is_not_synthesized
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_noncanonical_manual_flag_fails_closed
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_requires_authoritative_retry_summary_and_no_migration_blocker
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_stage901_normal_close_can_exit_matching_manual_position
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_stage904_action_requires_fresh_matching_final_summary
+FAILED tests/test_stage905_broker_sizing.py::test_stage905_recalculates_before_payload_hash_and_keeps_shadow_volume
+FAILED tests/test_stage905_broker_sizing.py::test_size_error_produces_no_order_payload
+FAILED tests/test_stage930_fast_lane.py::Stage930FastLaneTest::test_supervisor_forwards_term_waits_and_never_restarts
+FAILED tests/test_stage931_broker_sizing_gate.py::test_stage905_payload_and_spool_materialize_into_final_gate
+33 failed, 2311 passed in 396.18s (0:06:36)
+
+{"accepted_offline_only": false, "actual_cancel_order_api_called_count": 0, "actual_order_api_called_count": 0, "actual_send_order_api_called_count": 0, "counts": {"errors": 0, "failures": 33, "skipped": 0, "tests": 2344}, "critical_file_count": 291, "critical_source_changed": [], "ctp_protocol_login_attempted": false, "exit_code": 1, "financial_replay": false, "finished_at_utc": "2026-11-01T15:53:28.262526+00:00", "junit_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.xml", "log_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.log", "production_qualified": false, "schema": "weekly19.offline-selected-ci.v1", "source_commit": "30b236c973367a859ceae053ee8f1f37a36ac558", "source_worktree_status": "daily_risk_mail_candidate_hash_locked", "started_at_utc": "2026-11-01T15:46:51.218948+00:00", "suite_count": 92}

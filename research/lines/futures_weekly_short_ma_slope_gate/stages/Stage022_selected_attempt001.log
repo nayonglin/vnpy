@@ -1,0 +1,2532 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+...................................................................F.... [ 52%]
+.....FF..FF.......F...FF.............F.F...FFF............F.....F.....F. [ 55%]
+F....................................................................... [ 58%]
+...........................F..F.....FF......F...FF...FFF.FF........F...F [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+.....................................F.................................. [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+..................................................F..................... [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+........................................                                 [100%]
+=================================== FAILURES ===================================
+_ Stage174ReadonlyQueryBundleTest.test_output_paths_follow_official_live_output_dir _
+
+self = <test_stage174_query_bundle.Stage174ReadonlyQueryBundleTest testMethod=test_output_paths_follow_official_live_output_dir>
+
+    def test_output_paths_follow_official_live_output_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            environment = dict(os.environ)
+            environment["OFFICIAL_LIVE_OUTPUT_DIR"] = tmp
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import json, run_ctp_stage174_readonly_probe as m;"
+                        "print(json.dumps({"
+                        "'output':str(m.OUTPUT_DIR),"
+                        "'summary':str(m.SUMMARY_PATH),"
+                        "'positions':str(m.POSITION_PATH),"
+                        "'manifest':str(m.QUERY_BUNDLE_MANIFEST_PATH)"
+                        "},sort_keys=True))"
+                    ),
+                ],
+                cwd=PORTFOLIO_DIR,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+>           self.assertEqual(result.returncode, 0, result.stderr)
+E           AssertionError: 1 != 0 : Traceback (most recent call last):
+E             File "<string>", line 1, in <module>
+E             File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py", line 28, in <module>
+E               from vnpy.trader.engine import MainEngine
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/engine.py", line 44, in <module>
+E               from .logger import logger, DEBUG, INFO, WARNING, ERROR, CRITICAL
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/vnpy/trader/logger.py", line 55, in <module>
+E               logger.add(sink=file_path, level=level, format=format)
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_logger.py", line 802, in add
+E               wrapped_sink = FileSink(path, **kwargs)
+E                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py", line 192, in __init__
+E               self._create_file(path)
+E             File "/Users/mac/Desktop/person/vnpy/.py311/lib/python3.11/site-packages/loguru/_file_sink.py", line 226, in _create_file
+E               self._file = open(path, **self._kwargs)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mac/.vntrader/log/vt_20261101.log'
+
+tests/test_stage174_query_bundle.py:96: AssertionError
+_ Stage179ExecutorServeTest.test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send>
+
+    def test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send(self) -> None:
+        spool = FakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+        self.clock.advance(25.0)
+    
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:2107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_api_slot_is_durable_before_spool_sending_and_broker_call _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_api_slot_is_durable_before_spool_sending_and_broker_call>
+
+    def test_api_slot_is_durable_before_spool_sending_and_broker_call(self) -> None:
+        session = FakeWarmSession(self.clock)
+    
+        class OrderedSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **kwargs: Any) -> None:
+                session.events.append("spool_sending")
+                super().mark_sending(lease, **kwargs)
+    
+        spool = OrderedSpool(["intent-1"], self.clock)
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1459: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_cycle_authorization_allow_list_is_passed_into_atomic_lease _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_cycle_authorization_allow_list_is_passed_into_atomic_lease>
+
+    def test_cycle_authorization_allow_list_is_passed_into_atomic_lease(self) -> None:
+        spool = FakeSpool(["approved"], self.clock)
+        session = FakeWarmSession(self.clock)
+        session.pre_lease_authorized_values = {"approved": "a" * 64}
+    
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:987: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_cycle_authorization_blocks_before_spool_lease _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_cycle_authorization_blocks_before_spool_lease>
+
+    def test_cycle_authorization_blocks_before_spool_lease(self) -> None:
+        spool = FakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+        session.pre_lease_blocker_values = [
+            "stage179_submit_authorization_missing"
+        ]
+    
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: session.pre_lease_calls >= 1,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:966: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_half_second_dequeue_sla_blocks_before_fresh_bundle_and_api_slot _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_half_second_dequeue_sla_blocks_before_fresh_bundle_and_api_slot>
+
+    def test_half_second_dequeue_sla_blocks_before_fresh_bundle_and_api_slot(self) -> None:
+        spool = SlowLeaseFakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+    
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:2129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_lease_execution_guard_covers_lease_send_and_durable_result _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_lease_execution_guard_covers_lease_send_and_durable_result>
+
+    def test_lease_execution_guard_covers_lease_send_and_durable_result(self) -> None:
+        events: list[str] = []
+    
+        class GuardedSession(FakeWarmSession):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__(clock)
+                self.guard_depth = 0
+    
+            @contextmanager
+            def lease_execution_guard(self) -> Any:
+                events.append("guard_enter")
+                self.guard_depth += 1
+                try:
+                    yield
+                finally:
+                    self.guard_depth -= 1
+                    events.append("guard_exit")
+    
+            def pre_lease_blockers(self) -> list[str]:
+                self.assert_guarded("pre_lease")
+                return super().pre_lease_blockers()
+    
+            def pre_lease_authorized_intents(self) -> dict[str, str] | None:
+                self.assert_guarded("authorized_map")
+                return super().pre_lease_authorized_intents()
+    
+            def execute_spool_lease(self, **kwargs: Any) -> ExecutionResult:
+                self.assert_guarded("execute")
+                return super().execute_spool_lease(**kwargs)
+    
+            def assert_guarded(self, phase: str) -> None:
+                if self.guard_depth != 1:
+                    raise AssertionError(f"guard_missing:{phase}")
+                events.append(phase)
+    
+        session = GuardedSession(self.clock)
+    
+        class GuardedSpool(FakeSpool):
+            def lease_next(self, **kwargs: Any) -> Any:
+                session.assert_guarded("lease")
+                return super().lease_next(**kwargs)
+    
+            def mark_sending(self, lease: Any, **kwargs: Any) -> Any:
+                session.assert_guarded("mark_sending")
+                return super().mark_sending(lease, **kwargs)
+    
+            def mark_result(
+                self,
+                lease: Any,
+                result: ExecutionResult,
+                **kwargs: Any,
+            ) -> None:
+                session.assert_guarded("mark_result")
+                super().mark_result(lease, result, **kwargs)
+    
+        spool = GuardedSpool(["intent-1"], self.clock)
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1059: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_lease_execution_guard_releases_on_empty_lease_and_exception _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_lease_execution_guard_releases_on_empty_lease_and_exception>
+
+    def test_lease_execution_guard_releases_on_empty_lease_and_exception(self) -> None:
+        class GuardedSession(FakeWarmSession):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__(clock)
+                self.guard_depth = 0
+                self.guard_exits = 0
+    
+            @contextmanager
+            def lease_execution_guard(self) -> Any:
+                self.guard_depth += 1
+                try:
+                    yield
+                finally:
+                    self.guard_depth -= 1
+                    self.guard_exits += 1
+    
+        empty_session = GuardedSession(self.clock)
+    
+        class EmptySpool(FakeSpool):
+            def __init__(self, clock: FakeClock) -> None:
+                super().__init__([], clock)
+                self.lease_calls = 0
+    
+            def lease_next(self, **kwargs: Any) -> Any:
+                self.lease_calls += 1
+                return None
+    
+        empty_spool = EmptySpool(self.clock)
+>       serve_executor(
+            paths=self.paths,
+            spool=empty_spool,
+            backend_factory=lambda: empty_session,
+            runtime=self.runtime,
+            stop_requested=lambda: empty_spool.lease_calls >= 1,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send>
+
+    def test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send(self) -> None:
+        sent: list[str] = []
+        session = stage931.CtpExecutionSession.for_callbacks(
+            runtime=self.runtime,
+            service_generation="service-1",
+            official_version="official-test",
+            capital=200_000.0,
+            readiness_ttl_seconds=30.0,
+            connect_startup_bundle=lambda: {"ready": True},
+            disconnect_transport=lambda: None,
+            fresh_bundle=lambda *_: (),
+            reserve_api_slot=lambda *_: "batch-slot-1",
+            send_order=lambda *_: sent.append("send") or "CTP.1",
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+        )
+    
+        class CasErrorSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **_: Any) -> Any:
+                raise execution_service.SpoolTransitionError("lease CAS lost")
+    
+            def mark_result(
+                self,
+                lease: Any,
+                result: ExecutionResult,
+                **_: Any,
+            ) -> None:
+                raise execution_service.SpoolTransitionError("state mismatch")
+    
+        spool = CasErrorSpool(["intent-1"], self.clock)
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles>
+
+    def test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles(self) -> None:
+        spool = FakeSpool(["intent-1", "intent-2"], self.clock)
+        session = FakeWarmSession(self.clock)
+    
+>       rc = serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:931: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_socket_loss_is_recovered_by_point_one_second_poll _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_socket_loss_is_recovered_by_point_one_second_poll>
+
+    def test_socket_loss_is_recovered_by_point_one_second_poll(self) -> None:
+        spool = DelayedFakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+        sleeps: list[float] = []
+    
+        @contextmanager
+        def missing_socket(_path: Path) -> Any:
+            yield None
+    
+        def sleep(seconds: float) -> None:
+            sleeps.append(seconds)
+            self.clock.advance(seconds)
+    
+        with patch.object(execution_service, "_wakeup_socket", missing_socket):
+>           serve_executor(
+                paths=self.paths,
+                spool=spool,
+                backend_factory=lambda: session,
+                runtime=self.runtime,
+                stop_requested=lambda: not spool.ready,
+                epoch_ns=self.clock.time_ns,
+                monotonic=self.clock.monotonic,
+                monotonic_ns=lambda: self.clock.monotonic_ns,
+                sleeper=sleep,
+            )
+
+tests/test_stage179_executor_serve.py:1738: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_spool_sending_cas_loss_after_api_slot_never_calls_broker _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_spool_sending_cas_loss_after_api_slot_never_calls_broker>
+
+    def test_spool_sending_cas_loss_after_api_slot_never_calls_broker(self) -> None:
+        session = FakeWarmSession(self.clock)
+    
+        class LostCasSpool(FakeSpool):
+            def mark_sending(self, lease: Any, **_: Any) -> Any:
+                return SimpleNamespace(state="leased")
+    
+        spool = LostCasSpool(["intent-1"], self.clock)
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1484: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ExecutorServeTest.test_transport_disconnect_reconnects_before_next_lease_and_changes_generation _
+
+self = <test_stage179_executor_serve.Stage179ExecutorServeTest testMethod=test_transport_disconnect_reconnects_before_next_lease_and_changes_generation>
+
+    def test_transport_disconnect_reconnects_before_next_lease_and_changes_generation(self) -> None:
+        spool = FakeSpool(["intent-1"], self.clock)
+        session = FakeWarmSession(self.clock)
+        session.transport_failures = 1
+    
+>       serve_executor(
+            paths=self.paths,
+            spool=spool,
+            backend_factory=lambda: session,
+            runtime=self.runtime,
+            stop_requested=lambda: not spool.ready,
+            epoch_ns=self.clock.time_ns,
+            monotonic=self.clock.monotonic,
+            monotonic_ns=lambda: self.clock.monotonic_ns,
+            sleeper=lambda _: None,
+        )
+
+tests/test_stage179_executor_serve.py:1759: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py:660: in serve_executor
+    domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_______ Stage179FaultMatrixTest.test_fault_matrix_contracts_fail_closed ________
+
+self = <test_stage179_fault_matrix.Stage179FaultMatrixTest testMethod=test_fault_matrix_contracts_fail_closed>
+
+    def test_fault_matrix_contracts_fail_closed(self) -> None:
+        evidence: list[dict[str, Any]] = []
+        for case in FAULT_CASES:
+            with self.subTest(case=case.name):
+                module = importlib.import_module(case.test_module)
+                test_class = getattr(module, case.test_class)
+                nested = test_class(case.test_method)
+                result = unittest.TestResult()
+                nested.run(result)
+                details = [
+                    text
+                    for _test, text in (*result.failures, *result.errors)
+                ]
+>               self.assertTrue(result.wasSuccessful(), "\n".join(details))
+E               AssertionError: False is not true : Traceback (most recent call last):
+E                 File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_stage179_executor_serve.py", line 1759, in test_transport_disconnect_reconnects_before_next_lease_and_changes_generation
+E                   serve_executor(
+E                 File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_official_live_execution_service.py", line 660, in serve_executor
+E                   domain_id = system_clock_domain_id() if clock_domain_id is None else str(clock_domain_id)
+E                               ^^^^^^^^^^^^^^^^^^^^^^^^
+E                 File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_official_live_time.py", line 80, in system_clock_domain_id
+E                   raise RuntimeError(
+E               RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+tests/test_stage179_fault_matrix.py:122: AssertionError
+_ Stage179LaunchdLifecycleTest.test_cooperative_child_exits_on_term_without_escalation _
+
+self = <test_stage179_launchd_lifecycle.Stage179LaunchdLifecycleTest testMethod=test_cooperative_child_exits_on_term_without_escalation>
+
+    def test_cooperative_child_exits_on_term_without_escalation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temp = Path(directory)
+            daemon_path = temp / "cooperative.py"
+            ready_path = temp / "cooperative.ready"
+            daemon_path.write_text(
+                "from pathlib import Path\n"
+                "import signal,sys,time\n"
+                "stop = False\n"
+                "def request_stop(*_):\n"
+                "    global stop\n"
+                "    stop = True\n"
+                "signal.signal(signal.SIGTERM, request_stop)\n"
+                "Path(sys.argv[1]).write_text('ready', encoding='utf-8')\n"
+                "while not stop:\n"
+                "    time.sleep(0.01)\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "STAGE930_PYTHON_PATH": sys.executable,
+                    "STAGE930_DAEMON_SCRIPT": str(daemon_path),
+                    "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
+                    "STAGE930_SUPERVISOR_TERM_TIMEOUT_SECONDS": "1",
+                    "STAGE930_SUPERVISOR_KILL_WAIT_SECONDS": "1",
+                    "STAGE930_LOG_DIR": str(temp),
+                }
+            )
+            supervisor = subprocess.Popen(
+                [str(SUPERVISOR), str(ready_path)],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment,
+            )
+            deadline = time.monotonic() + 5
+            while not ready_path.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertTrue(
+                ready_path.exists(), "cooperative daemon never became signal-ready"
+            )
+            supervisor.send_signal(signal.SIGTERM)
+>           output, _ = supervisor.communicate(timeout=4)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage179_launchd_lifecycle.py:509: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:2109: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: None args: ['/Users/mac/.codex/worktrees/weekly19-offici...>
+endtime = 1441527.374104958, orig_timeout = 4
+stdout_seq = [b'Stage930 supervisor starting daemon at 2026-11-01 23:48:12, restart_count=0\n']
+stderr_seq = None, skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh', '/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/tmpht_er8_f/cooperative.ready']' timed out after 4 seconds
+
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:1253: TimeoutExpired
+_ Stage179LaunchdLifecycleTest.test_restart_delay_supports_python_path_with_spaces _
+
+self = <test_stage179_launchd_lifecycle.Stage179LaunchdLifecycleTest testMethod=test_restart_delay_supports_python_path_with_spaces>
+
+    def test_restart_delay_supports_python_path_with_spaces(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            temp = Path(directory)
+            python_path = temp / "python with spaces"
+            python_path.symlink_to(sys.executable)
+            daemon_path = temp / "exit_nonzero.py"
+            daemon_path.write_text(
+                "import time\ntime.sleep(0.2)\nraise SystemExit(7)\n",
+                encoding="utf-8",
+            )
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "STAGE930_PYTHON_PATH": str(python_path),
+                    "STAGE930_DAEMON_SCRIPT": str(daemon_path),
+                    "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
+                    "STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS": "0.1",
+                    "STAGE930_SUPERVISOR_MAX_RESTARTS": "1",
+                    "STAGE930_LOG_DIR": str(temp),
+                }
+            )
+            result = subprocess.run(
+                [str(SUPERVISOR)],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment,
+                timeout=5,
+            )
+    
+>       self.assertEqual(7, result.returncode, result.stdout)
+E       AssertionError: 7 != 2 : Stage930 supervisor starting daemon at 2026-11-01 23:48:16, restart_count=0
+E       Stage930 supervisor child failed PGID handshake pid=44325 pgid=missing
+
+tests/test_stage179_launchd_lifecycle.py:629: AssertionError
+_ Stage179LaunchdLifecycleTest.test_term_ignoring_child_and_grandchild_are_killed_without_restart _
+
+self = <test_stage179_launchd_lifecycle.Stage179LaunchdLifecycleTest testMethod=test_term_ignoring_child_and_grandchild_are_killed_without_restart>
+
+        def test_term_ignoring_child_and_grandchild_are_killed_without_restart(self) -> None:
+            with tempfile.TemporaryDirectory() as directory:
+                temp = Path(directory)
+                python_path = temp / "python with spaces"
+                python_path.symlink_to(sys.executable)
+                state_path = temp / "pids.json"
+                daemon_path = temp / "ignore_term.py"
+                daemon_path.write_text(
+                    """
+    import json
+    import os
+    from pathlib import Path
+    import signal
+    import subprocess
+    import sys
+    import time
+    
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    grandchild = subprocess.Popen([
+        sys.executable,
+        "-c",
+        "import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); signal.signal(signal.SIGINT, signal.SIG_IGN); time.sleep(300)",
+    ])
+    Path(sys.argv[1]).write_text(json.dumps({
+        "child": os.getpid(),
+        "pgid": os.getpgid(0),
+        "grandchild": grandchild.pid,
+    }), encoding="utf-8")
+    while True:
+        time.sleep(1)
+    """.lstrip(),
+                    encoding="utf-8",
+                )
+                environment = dict(os.environ)
+                environment.update(
+                    {
+                        "STAGE930_PYTHON_PATH": str(python_path),
+                        "STAGE930_DAEMON_SCRIPT": str(daemon_path),
+                        "STAGE930_SUPERVISOR_CHILD_HELPER": str(CHILD_HELPER),
+                        "STAGE930_SUPERVISOR_TERM_TIMEOUT_SECONDS": "0.3",
+                        "STAGE930_SUPERVISOR_KILL_WAIT_SECONDS": "1",
+                        "STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS": "0.1",
+                        "STAGE930_SUPERVISOR_MAX_RESTARTS": "3",
+                        "STAGE930_LOG_DIR": str(temp),
+                    }
+                )
+                supervisor = subprocess.Popen(
+                    [str(SUPERVISOR), str(state_path)],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    env=environment,
+                )
+                owned_pgid = None
+    
+                def cleanup() -> None:
+                    if supervisor.poll() is None:
+                        supervisor.kill()
+                        supervisor.wait(timeout=2)
+                    if owned_pgid is not None:
+                        try:
+                            os.killpg(owned_pgid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+    
+                self.addCleanup(cleanup)
+                deadline = time.monotonic() + 5
+                while not state_path.exists() and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                self.assertTrue(state_path.exists(), "daemon never published child PIDs")
+                pids = json.loads(state_path.read_text(encoding="utf-8"))
+                self.assertEqual(pids["child"], pids["pgid"])
+                owned_pgid = int(pids["pgid"])
+    
+                supervisor.send_signal(signal.SIGTERM)
+>               output, _ = supervisor.communicate(timeout=5)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage179_launchd_lifecycle.py:591: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:2109: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/Users/mac/.codex/worktrees/weekly19-official...>
+endtime = 1441533.38868075, orig_timeout = 5
+stdout_seq = [b'Stage930 supervisor starting daemon at 2026-11-01 23:48:17, restart_count=0\n']
+stderr_seq = None, skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage930_official_live_c9_session_supervisor.sh', '/var/folders/gn/2y4fdcp97ts4xd6z9z27w5t40000gn/T/tmpvqhnh8gq/pids.json']' timed out after 5 seconds
+
+/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:1253: TimeoutExpired
+_ Stage179PerformanceGateDiagnosticsTest.test_short_gate_emits_phase_and_gc_diagnostics _
+
+self = <test_stage179_performance_gate_diagnostics.Stage179PerformanceGateDiagnosticsTest testMethod=test_short_gate_emits_phase_and_gc_diagnostics>
+
+    def test_short_gate_emits_phase_and_gc_diagnostics(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+>           result = run_gate(
+                symbols=1,
+                ticks_per_second=100,
+                duration_seconds=1,
+                writer_delay_ms=0.0,
+                output_dir=Path(directory),
+            )
+
+tests/test_stage179_performance_gate_diagnostics.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/stage179_performance_gate.py:543: in run_gate
+    pipeline = TickStreamPipeline(
+examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py:192: in __init__
+    self.clock_domain_id = _clock_domain_id(clock)
+                           ^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py:85: in _clock_domain_id
+    value = provider()
+            ^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage179ProductionPerformanceGateTest.test_fixed_production_stress_gate_passes_from_raw_execution _
+
+self = <test_stage179_production_performance_gate.Stage179ProductionPerformanceGateTest testMethod=test_fixed_production_stress_gate_passes_from_raw_execution>
+
+    def test_fixed_production_stress_gate_passes_from_raw_execution(self) -> None:
+        with tempfile.TemporaryDirectory(
+            prefix="stage179-production-performance-"
+        ) as directory:
+            output_dir = Path(directory)
+>           payload = run_gate(
+                symbols=20,
+                ticks_per_second=2_000,
+                duration_seconds=60,
+                writer_delay_ms=25.0,
+                output_dir=output_dir,
+            )
+
+tests/test_stage179_production_performance_gate.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/stage179_performance_gate.py:543: in run_gate
+    pipeline = TickStreamPipeline(
+examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py:192: in __init__
+    self.clock_domain_id = _clock_domain_id(clock)
+                           ^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_tick_stream.py:85: in _clock_domain_id
+    value = provider()
+            ^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+_ Stage905C9CycleIntentTest.test_empty_action_batch_rejects_malformed_nonempty_cursor _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_empty_action_batch_rejects_malformed_nonempty_cursor>
+
+    def test_empty_action_batch_rejects_malformed_nonempty_cursor(self) -> None:
+>       result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame(columns=["monitor_action"]),
+            stage904_summary={
+                **self._stage904_summary(
+                    "2026-07-13 21:00:01",
+                    action_count=0,
+                    retry_count=0,
+                ),
+                "durable_batch_cursor": {
+                    "feed_session_id": "feed-a",
+                    "journal_schema": "bad",
+                },
+            },
+            snapshots=self._snapshots(),
+            include_stage901_pending=False,
+            write_compat_outputs=False,
+        )
+
+tests/test_stage905_c9_cycle_intents.py:482: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1934: in run_executor_dry_run
+    run_now = ClockStamp.from_clock(clock)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_empty_action_batch_still_surfaces_summary_contract_blockers _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_empty_action_batch_still_surfaces_summary_contract_blockers>
+
+    def test_empty_action_batch_still_surfaces_summary_contract_blockers(self) -> None:
+>       result = stage905.run_executor_dry_run(
+            "2026-07-13",
+            stage904_actions=pd.DataFrame(columns=["monitor_action"]),
+            stage904_summary={
+                **self._stage904_summary(
+                    "2026-07-13 21:00:01",
+                    action_count=1,
+                    retry_count=0,
+                ),
+            },
+            snapshots=self._snapshots(),
+            include_stage901_pending=False,
+            write_compat_outputs=False,
+        )
+
+tests/test_stage905_c9_cycle_intents.py:461: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1934: in run_executor_dry_run
+    run_now = ClockStamp.from_clock(clock)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_invalid_exchange_fails_closed_instead_of_raising _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_invalid_exchange_fails_closed_instead_of_raising>
+
+    def test_invalid_exchange_fails_closed_instead_of_raising(self) -> None:
+        intent = {
+            "intent_id": "bad-exchange",
+            "target_date": "2026-07-13",
+            "source": "stage901_pending_order",
+            "vt_symbol": "JM609.BAD",
+            "direction": "short",
+            "offset": "open",
+            "planned_volume": 1,
+            "limit_price": 1245.5,
+        }
+    
+>       checked = stage905._validate_intent(
+            intent,
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "JM609.BAD",
+                        "pricetick": 0.5,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={},
+            stage260_summary={"executable_count": 1},
+            mode="dry-run",
+        )
+
+tests/test_stage905_c9_cycle_intents.py:902: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks>
+
+    def test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks(self) -> None:
+        intent = {
+            "intent_id": "pending-open-volume",
+            "target_date": "2026-08-10",
+            "source": "stage901_pending_order",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "offset": "open",
+            "planned_volume": 21,
+            "limit_price": 1245.5,
+        }
+        common = {
+            "contracts": pd.DataFrame(
+                [{
+                    "vt_symbol": "JM609.DCE",
+                    "pricetick": 0.5,
+                    "min_volume": 1,
+                    "max_volume": 100,
+                    "gateway_name": "CTP",
+                }]
+            ),
+            "positions": pd.DataFrame(),
+            "orders": pd.DataFrame(),
+            "stage902_summary": {
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            "stage904_summary": {},
+            "stage260_summary": {"executable_count": 1},
+            "mode": "dry-run",
+        }
+    
+>       ready = stage905._validate_intent(intent, **common)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage905_c9_cycle_intents.py:1076: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_manual_position_matching_stage901_open_is_not_duplicated _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_manual_position_matching_stage901_open_is_not_duplicated>
+
+    def test_manual_position_matching_stage901_open_is_not_duplicated(self) -> None:
+>       checked = stage905._validate_intent(
+            {
+                "intent_id": "planned-si-open",
+                "target_date": "2026-08-18",
+                "source": "stage901_pending_order",
+                "intent_role": "c9_initial_open",
+                "vt_symbol": "SI2609.GFEX",
+                "direction": "long",
+                "offset": "open",
+                "planned_volume": 6,
+                "limit_price": 8590.0,
+            },
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "pricetick": 5.0,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "direction": "long",
+                        "volume": 6,
+                        "frozen": 0,
+                    }
+                ]
+            ),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={},
+            stage260_summary={"executable_count": 1},
+            mode="dry-run",
+        )
+
+tests/test_stage905_c9_cycle_intents.py:932: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_retry_open_missing_source_role_is_not_synthesized _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_retry_open_missing_source_role_is_not_synthesized>
+
+    def test_retry_open_missing_source_role_is_not_synthesized(self) -> None:
+        action = {
+            "monitor_action": "retry_open_dry_run",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "action_id": "retry-action",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "volume": 1,
+            "stage847_retry_trigger_price": 1245.5,
+            "stage847_stop_price": 1251.75,
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "manual_intervention_required": 0,
+        }
+        intent = stage905._stage904_intents(pd.DataFrame([action]))[0]
+    
+        self.assertEqual("", intent.get("intent_role", ""))
+>       checked = stage905._validate_intent(
+            intent,
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "JM609.DCE",
+                        "pricetick": 0.5,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={
+                "model_tag": stage905.STAGE904_MODEL_TAG,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": "2026-07-13",
+                "monitor_run_id": "run-001",
+                "monitor_status": "intraday_monitor_retry_open_dry_run",
+            },
+            stage260_summary={"executable_count": 0},
+            mode="dry-run",
+        )
+
+tests/test_stage905_c9_cycle_intents.py:1625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_retry_open_noncanonical_manual_flag_fails_closed _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_retry_open_noncanonical_manual_flag_fails_closed>
+
+    def test_retry_open_noncanonical_manual_flag_fails_closed(self) -> None:
+        action = {
+            "monitor_action": "retry_open_dry_run",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "action_id": "retry-action",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "volume": 1,
+            "stage847_retry_trigger_price": 1245.5,
+            "stage847_stop_price": 1251.75,
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_retry_open_once",
+            "manual_intervention_required": "true",
+        }
+        intent = stage905._stage904_intents(pd.DataFrame([action]))[0]
+        self.assertEqual("true", intent["manual_intervention_required"])
+    
+>       checked = stage905._validate_intent(
+            intent,
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "JM609.DCE",
+                        "pricetick": 0.5,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={
+                "model_tag": stage905.STAGE904_MODEL_TAG,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "target_date": "2026-07-13",
+                "monitor_run_id": "run-001",
+                "monitor_status": "intraday_monitor_retry_open_dry_run",
+            },
+            stage260_summary={"executable_count": 0},
+            mode="dry-run",
+        )
+
+tests/test_stage905_c9_cycle_intents.py:1683: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_retry_open_requires_authoritative_retry_summary_and_no_migration_blocker _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_retry_open_requires_authoritative_retry_summary_and_no_migration_blocker>
+
+    def test_retry_open_requires_authoritative_retry_summary_and_no_migration_blocker(
+        self,
+    ) -> None:
+        action = {
+            "monitor_action": "retry_open_dry_run",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "action_id": "retry-action",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "volume": 2,
+            "stage847_retry_trigger_price": 1245.5,
+            "stage847_stop_price": 1251.75,
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle1",
+            "position_cycle_no": 1,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_retry_open_once",
+            "manual_intervention_required": 0,
+        }
+        intent = stage905._stage904_intents(pd.DataFrame([action]))[0]
+        common = {
+            "contracts": pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "JM609.DCE",
+                        "pricetick": 0.5,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            "positions": pd.DataFrame(),
+            "orders": pd.DataFrame(),
+            "stage902_summary": {
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            "stage260_summary": {"executable_count": 0},
+            "mode": "dry-run",
+        }
+        summary = {
+            "model_tag": stage905.STAGE904_MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "monitor_status": "intraday_monitor_retry_open_dry_run",
+        }
+>       ready = stage905._validate_intent(
+            intent,
+            stage904_summary=summary,
+            **common,
+        )
+
+tests/test_stage905_c9_cycle_intents.py:1542: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_stage901_normal_close_can_exit_matching_manual_position _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_stage901_normal_close_can_exit_matching_manual_position>
+
+    def test_stage901_normal_close_can_exit_matching_manual_position(self) -> None:
+>       checked = stage905._validate_intent(
+            {
+                "intent_id": "planned-si-close",
+                "target_date": "2026-08-19",
+                "source": "stage901_pending_order",
+                "vt_symbol": "SI2609.GFEX",
+                "direction": "short",
+                "offset": "close",
+                "planned_volume": 6,
+                "limit_price": 8500.0,
+            },
+            contracts=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "pricetick": 5.0,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            positions=pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "SI2609.GFEX",
+                        "direction": "long",
+                        "volume": 6,
+                        "frozen": 0,
+                    }
+                ]
+            ),
+            orders=pd.DataFrame(),
+            stage902_summary={
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 1,
+                "allow_reduce_close": 1,
+            },
+            stage904_summary={},
+            stage260_summary={"executable_count": 1},
+            mode="dry-run",
+        )
+
+tests/test_stage905_c9_cycle_intents.py:988: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage905C9CycleIntentTest.test_stage904_action_requires_fresh_matching_final_summary _
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_stage905_c9_cycle_intents.Stage905C9CycleIntentTest testMethod=test_stage904_action_requires_fresh_matching_final_summary>
+
+    def test_stage904_action_requires_fresh_matching_final_summary(self) -> None:
+        action = {
+            "monitor_action": "close_dry_run",
+            "target_date": "2026-07-13",
+            "monitor_run_id": "run-001",
+            "action_id": "close-action",
+            "vt_symbol": "JM609.DCE",
+            "direction": "short",
+            "volume": 2,
+            "stage847_stop_price": 1251.5,
+            "live_ask_price_1": 1252.0,
+            "root_position_id": "root",
+            "position_cycle_id": "root:cycle0",
+            "position_cycle_no": 0,
+            "position_epoch_id": "epoch-001",
+            "intent_role": "c9_initial_stop_close",
+        }
+        intent = stage905._stage904_intents(pd.DataFrame([action]))[0]
+        common = {
+            "contracts": pd.DataFrame(
+                [
+                    {
+                        "vt_symbol": "JM609.DCE",
+                        "pricetick": 0.5,
+                        "min_volume": 1,
+                        "max_volume": 100,
+                        "gateway_name": "CTP",
+                    }
+                ]
+            ),
+            "positions": pd.DataFrame(
+                [{"vt_symbol": "JM609.DCE", "direction": "short", "volume": 2, "frozen": 0}]
+            ),
+            "orders": pd.DataFrame(),
+            "stage902_summary": {
+                "blocking_failure_count": 0,
+                "blocking_failure_count_for_reduce_close": 0,
+                "allow_new_open": 0,
+                "allow_reduce_close": 1,
+            },
+            "stage260_summary": {"executable_count": 0},
+            "mode": "dry-run",
+        }
+        fresh_summary = {
+            "model_tag": stage905.STAGE904_MODEL_TAG,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "target_date": "2026-07-13",
+            "monitor_status": "intraday_monitor_close_dry_run",
+            "monitor_run_id": "run-001",
+        }
+>       ready = stage905._validate_intent(intent, stage904_summary=fresh_summary, **common)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage905_c9_cycle_intents.py:1770: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+____ test_stage905_recalculates_before_payload_hash_and_keeps_shadow_volume ____
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+    def test_stage905_recalculates_before_payload_hash_and_keeps_shadow_volume():
+        row = {**intent(), "intent_id": "pending-sh", "target_date": "2026-09-07",
+               "source": "stage901_pending_order", "root_entry_volume": 4}
+        original = row.copy()
+        sized = stage905._size_c9_open_intent(
+            row, entry_risk=risk_frame(), broker_account=account(equity=100000, available=100000, margin=0, product_margin={}),
+            policy=policy(), pricetick=1,
+        )
+        assert row == original
+        assert sized["planned_volume"] == 3
+        assert sized["root_entry_volume"] == 3
+        assert sized["shadow_planned_volume"] == 4
+        assert sized["intent_id"] == "pending-sh"
+>       checked = stage905._validate_intent(
+            sized, contracts=pd.DataFrame([{"vt_symbol": "SH611.CZCE", "pricetick": 1, "min_volume": 1, "max_volume": 100}]),
+            positions=pd.DataFrame(), orders=pd.DataFrame(),
+            stage902_summary={"blocking_failure_count": 0, "allow_new_open": 1},
+            stage260_summary={"executable_count": 1}, stage904_summary={}, mode="dry-run",
+        )
+
+tests/test_stage905_broker_sizing.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+__________________ test_size_error_produces_no_order_payload ___________________
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+    def test_size_error_produces_no_order_payload():
+>       checked = stage905._validate_intent(
+            {**intent(), "intent_id": "bad", "source": "stage901_pending_order", "broker_sizing_error": "broker_sizing_account_missing"},
+            contracts=pd.DataFrame([{"vt_symbol": "SH611.CZCE", "pricetick": 1}]),
+            positions=pd.DataFrame(), orders=pd.DataFrame(),
+            stage902_summary={"blocking_failure_count": 0, "allow_new_open": 1},
+            stage260_summary={"executable_count": 1}, stage904_summary={}, mode="dry-run",
+        )
+
+tests/test_stage905_broker_sizing.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+_ Stage930FastLaneTest.test_supervisor_forwards_term_waits_and_never_restarts __
+
+self = <test_stage930_fast_lane.Stage930FastLaneTest testMethod=test_supervisor_forwards_term_waits_and_never_restarts>
+
+    def test_supervisor_forwards_term_waits_and_never_restarts(self) -> None:
+        supervisor = PORTFOLIO_DIR / "run_qmt_roll_stage930_official_live_c9_session_supervisor.sh"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fake_daemon = root / "fake_daemon.py"
+            starts = root / "starts.log"
+            terms = root / "terms.log"
+            fake_daemon.write_text(
+                "\n".join(
+                    [
+                        "import os, signal, sys, time",
+                        "from pathlib import Path",
+                        "starts = Path(os.environ['FAKE_STAGE930_STARTS'])",
+                        "terms = Path(os.environ['FAKE_STAGE930_TERMS'])",
+                        "with starts.open('a', encoding='utf-8') as handle: handle.write('start\\n')",
+                        "def stop(signum, frame):",
+                        "    with terms.open('a', encoding='utf-8') as handle: handle.write(str(signum) + '\\n')",
+                        "    raise SystemExit(128 + signum)",
+                        "signal.signal(signal.SIGTERM, stop)",
+                        "signal.signal(signal.SIGINT, stop)",
+                        "while True: time.sleep(0.1)",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            env = os.environ.copy()
+            env.update(
+                {
+                    "STAGE930_PROJECT_DIR": str(root),
+                    "STAGE930_REPO_ROOT": str(root),
+                    "STAGE930_PYTHON_PATH": sys.executable,
+                    "STAGE930_DAEMON_SCRIPT": str(fake_daemon),
+                    "STAGE930_LOG_DIR": str(root / "logs"),
+                    "STAGE930_SUPERVISOR_MAX_RESTARTS": "5",
+                    "STAGE930_SUPERVISOR_RESTART_DELAY_SECONDS": "0.05",
+                    "FAKE_STAGE930_STARTS": str(starts),
+                    "FAKE_STAGE930_TERMS": str(terms),
+                }
+            )
+            process = subprocess.Popen(
+                ["bash", str(supervisor)],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            if not self.wait_for_path(starts):
+                process.send_signal(signal.SIGTERM)
+                stdout, _ = process.communicate(timeout=8)
+                self.fail(f"supervisor daemon never started: {stdout}")
+            process.send_signal(signal.SIGTERM)
+            stdout, _ = process.communicate(timeout=8)
+            time.sleep(0.2)
+    
+>           self.assertEqual(process.returncode, 128 + signal.SIGTERM, stdout)
+E           AssertionError: 2 != 143 : Stage930 supervisor starting daemon at 2026-11-01 23:48:56, restart_count=0
+E           Stage930 supervisor child failed PGID handshake pid=45587 pgid=missing
+
+tests/test_stage930_fast_lane.py:4132: AssertionError
+_________ test_stage905_payload_and_spool_materialize_into_final_gate __________
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+>           value = provider()
+                    ^^^^^^^^^^
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:117: in clock_domain_id
+    return system_clock_domain_id()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def system_clock_domain_id() -> str:
+        """Return one boot-stable identity shared by local exec'ed processes."""
+    
+        global _SYSTEM_CLOCK_DOMAIN_ID
+        if _SYSTEM_CLOCK_DOMAIN_ID is not None:
+            return _SYSTEM_CLOCK_DOMAIN_ID
+        system = platform.system().lower()
+        boot_id = _linux_boot_id() if system == "linux" else ""
+        if system == "darwin":
+            boot_id = _darwin_boot_session_uuid()
+        if not boot_id:
+>           raise RuntimeError(
+                "system_clock_domain_unavailable:"
+                f"platform={system or 'unknown'}"
+            )
+E           RuntimeError: system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_time.py:80: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1212e5c10>
+
+    def test_stage905_payload_and_spool_materialize_into_final_gate(monkeypatch):
+        import pandas as pd
+        import run_qmt_roll_stage905_official_live_executor_dry_run as stage905
+        from types import SimpleNamespace
+    
+        initial = sizing_row()["broker_sizing_inputs"]
+        intent = {
+            **initial["intent"], "intent_id": "pending-sh", "target_date": "2026-09-07",
+            "source": "stage901_pending_order", "execution_profile": "c9-15w",
+        }
+        sized = stage905._size_c9_open_intent(
+            intent, entry_risk=pd.DataFrame([{
+                **initial["signal"], "date": "2026-09-07", "contract_vt_symbol": "SH611.CZCE",
+                "direction": "long",
+            }]), broker_account=initial["account"], policy=initial["policy"], pricetick=1,
+        )
+>       validated = stage905._validate_intent(
+            sized, contracts=pd.DataFrame([{"vt_symbol": "SH611.CZCE", "pricetick": 1}]),
+            positions=pd.DataFrame(), orders=pd.DataFrame(),
+            stage902_summary={"blocking_failure_count": 0, "allow_new_open": 1},
+            stage260_summary={"executable_count": 1}, stage904_summary={}, mode="dry-run",
+        )
+
+tests/test_stage931_broker_sizing_gate.py:392: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+examples/portfolio_backtesting/run_qmt_roll_stage905_official_live_executor_dry_run.py:1414: in _validate_intent
+    current_stamp = now_stamp if now_stamp is not None else ClockStamp.from_clock(clock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:215: in from_clock
+    clock_domain_id=_clock_domain_id(clock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+clock = SystemClock()
+
+    def _clock_domain_id(clock: Clock) -> str:
+        provider = getattr(clock, "clock_domain_id", None)
+        if not callable(provider):
+            raise TraceValidationError("clock_domain_provider_missing")
+        try:
+            value = provider()
+        except Exception as exc:
+>           raise TraceValidationError(
+                f"clock_domain_provider_failed:{type(exc).__name__}:{exc}"
+            ) from exc
+E           qmt_roll_official_live_trace.TraceValidationError: clock_domain_provider_failed:RuntimeError:system_clock_domain_unavailable:platform=darwin
+
+examples/portfolio_backtesting/qmt_roll_official_live_trace.py:131: TraceValidationError
+- generated xml file: /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_selected_attempt001.xml -
+=========================== short test summary info ============================
+FAILED tests/test_stage174_query_bundle.py::Stage174ReadonlyQueryBundleTest::test_output_paths_follow_official_live_output_dir
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_absolute_25s_intent_deadline_blocks_before_api_slot_and_send
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_api_slot_is_durable_before_spool_sending_and_broker_call
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_cycle_authorization_allow_list_is_passed_into_atomic_lease
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_cycle_authorization_blocks_before_spool_lease
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_half_second_dequeue_sla_blocks_before_fresh_bundle_and_api_slot
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_lease_execution_guard_covers_lease_send_and_durable_result
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_lease_execution_guard_releases_on_empty_lease_and_exception
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_real_spool_cas_exception_after_slot_keeps_service_alive_without_send
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_serve_reuses_one_ctp_connection_for_two_intents_but_runs_two_fresh_bundles
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_socket_loss_is_recovered_by_point_one_second_poll
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_spool_sending_cas_loss_after_api_slot_never_calls_broker
+FAILED tests/test_stage179_executor_serve.py::Stage179ExecutorServeTest::test_transport_disconnect_reconnects_before_next_lease_and_changes_generation
+FAILED tests/test_stage179_fault_matrix.py::Stage179FaultMatrixTest::test_fault_matrix_contracts_fail_closed
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_cooperative_child_exits_on_term_without_escalation
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_restart_delay_supports_python_path_with_spaces
+FAILED tests/test_stage179_launchd_lifecycle.py::Stage179LaunchdLifecycleTest::test_term_ignoring_child_and_grandchild_are_killed_without_restart
+FAILED tests/test_stage179_performance_gate_diagnostics.py::Stage179PerformanceGateDiagnosticsTest::test_short_gate_emits_phase_and_gc_diagnostics
+FAILED tests/test_stage179_production_performance_gate.py::Stage179ProductionPerformanceGateTest::test_fixed_production_stress_gate_passes_from_raw_execution
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_empty_action_batch_rejects_malformed_nonempty_cursor
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_empty_action_batch_still_surfaces_summary_contract_blockers
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_invalid_exchange_fails_closed_instead_of_raising
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_local_20_lot_cap_is_disabled_but_contract_max_still_blocks
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_manual_position_matching_stage901_open_is_not_duplicated
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_missing_source_role_is_not_synthesized
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_noncanonical_manual_flag_fails_closed
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_retry_open_requires_authoritative_retry_summary_and_no_migration_blocker
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_stage901_normal_close_can_exit_matching_manual_position
+FAILED tests/test_stage905_c9_cycle_intents.py::Stage905C9CycleIntentTest::test_stage904_action_requires_fresh_matching_final_summary
+FAILED tests/test_stage905_broker_sizing.py::test_stage905_recalculates_before_payload_hash_and_keeps_shadow_volume
+FAILED tests/test_stage905_broker_sizing.py::test_size_error_produces_no_order_payload
+FAILED tests/test_stage930_fast_lane.py::Stage930FastLaneTest::test_supervisor_forwards_term_waits_and_never_restarts
+FAILED tests/test_stage931_broker_sizing_gate.py::test_stage905_payload_and_spool_materialize_into_final_gate
+33 failed, 2311 passed in 396.18s (0:06:36)

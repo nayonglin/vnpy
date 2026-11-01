@@ -1,0 +1,6 @@
+{
+  "source_code_commit": "52b825c4efe88b20b8a9a33116c755003f1c9ab9",
+  "critical_ci_sha256": "5879ee6f20bbc021e86ecc9c56aa96e8f70ae3ef0b3f06c57f3d2bcc49231f78",
+  "critical_sources_still_match_lock": true,
+  "production_qualified": false
+}

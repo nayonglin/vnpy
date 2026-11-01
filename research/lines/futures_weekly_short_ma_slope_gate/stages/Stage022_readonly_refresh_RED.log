@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ DailyMailIntegrationTests.test_daily_report_refreshes_readonly_evidence_before_reading_status _
+
+self = <test_weekly19_daily_mail_pipeline.DailyMailIntegrationTests testMethod=test_daily_report_refreshes_readonly_evidence_before_reading_status>
+
+    def test_daily_report_refreshes_readonly_evidence_before_reading_status(self):
+        self.monday(preview=False)
+        fixed = self.context['now']
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return cls.fromisoformat(fixed.isoformat())
+        self.context['now'] = Clock.fromisoformat(fixed.isoformat())
+        calls = []
+        self.backend.refresh_readonly = lambda at: calls.append(at)
+        with patch.object(pipeline, 'datetime', Clock):
+            pipeline.run_weekly19_support_job('postclose-report', context=self.context)
+>       self.assertEqual(len(calls), 1, 'report must not reuse an expired earlier account/query capture')
+E       AssertionError: 0 != 1 : report must not reuse an expired earlier account/query capture
+
+tests/test_weekly19_daily_mail_pipeline.py:121: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyMailIntegrationTests::test_daily_report_refreshes_readonly_evidence_before_reading_status
+1 failed in 1.23s

@@ -1,0 +1,40 @@
+======================================================================
+FAIL: test_queued_day_preserves_old_pending_and_actual_fill_without_claiming_evaluated_none (tests.test_weekly19_daily_report.DailyReportTests.test_queued_day_preserves_old_pending_and_actual_fill_without_claiming_evaluated_none)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 40, in test_queued_day_preserves_old_pending_and_actual_fill_without_claiming_evaluated_none
+    self.assertEqual(result['today_cluster_signal_status'],'unconfirmed');self.assertIn('daily_strategy_not_evaluated',result['blockers']);self.assertFalse(result['source_complete'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'none' != 'unconfirmed'
+- none
++ unconfirmed
+
+
+======================================================================
+FAIL: test_queued_day_without_rows_never_claims_no_new_risk (tests.test_weekly19_daily_report.DailyReportTests.test_queued_day_without_rows_never_claims_no_new_risk)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 45, in test_queued_day_without_rows_never_claims_no_new_risk
+    self.assertEqual(result['today_cluster_signal_status'],'unconfirmed');self.assertEqual(result['risk_status'],'unconfirmed');self.assertIsNone(result['has_risk']);self.assertNotIn('无新增风险',result['body'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'none' != 'unconfirmed'
+- none
++ unconfirmed
+
+
+======================================================================
+FAIL: test_explicit_unresolved_execution_reason_without_queue_flag_is_unassessed (tests.test_weekly19_daily_report.DailyReportTests.test_explicit_unresolved_execution_reason_without_queue_flag_is_unassessed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 48, in test_explicit_unresolved_execution_reason_without_queue_flag_is_unassessed
+    self.assertEqual(result['today_cluster_signal_status'],'unconfirmed');self.assertIn('daily_strategy_not_evaluated',result['blockers'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'none' != 'unconfirmed'
+- none
++ unconfirmed
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=3)

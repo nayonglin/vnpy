@@ -1,0 +1,38 @@
+{
+  "schema": "Stage022.independent-findings-attempt001.v1",
+  "status": "OPEN_P1_AWAITING_CONTROLLED_FIX",
+  "final_acceptance": false,
+  "implementation_lock_sha256": "a9693caa74a9033e09b5fb74ee96629d0705f1da4550a4486d747e907cffeae7",
+  "reviewed_source_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8d36305b293e027f9657171e31a137c07d8fe6ef2a10b342bf611d2be08dcdde",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "add26d878e7bffe06e7f19386026ffb492102bc3cdab77b3114b0d3e42607f50",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py": "7218ed307ab50a6f8d338c7fa037e4f9232e27f432c2cb33142d765e6f3fad06",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "dcb41e2fc1a9dfc75873f9899988d8897b096a2e0d0597fad9ab463c2a2b3f59"
+  },
+  "open_findings": [
+    {
+      "severity": "P1",
+      "title": "Queued completed-day decision misreported as no new risk-group signal",
+      "runtime_source": "qmt_roll_weekly19_runtime.py Runtime._queue_pending_day bars_queued=True/blocked_reason=unresolved_execution_lifecycle",
+      "report_source": "qmt_roll_weekly19_daily_report.py build_daily_risk_report only tests source-ready, not whether strategy day evaluated",
+      "counterexample": "Stage022_review_queued_decision_tests.py",
+      "evidence": "Stage022_review_queued_decision_attempt001_red.log",
+      "observed": "today_cluster_signal_status=none while on_bars did not run for that day",
+      "required": "explicit unconfirmed/evaluation-pending while still showing historical pending and actual fills; normal evaluated reduce_only must remain present/none as appropriate"
+    }
+  ],
+  "resolved_during_prelock": [
+    {
+      "topic": "Per-fill dates lacked archive semantic/raw binding; completed legacy unknown dates omitted",
+      "evidence": "full-semantic projection7 tests GREEN after source fixes, legacy unknown explicit"
+    },
+    {
+      "topic": "Small legal uncompressed engine rejected by unconditional _unpack_section",
+      "evidence": "projection tests plain and compressed positive GREEN after generic _decode correction"
+    }
+  ],
+  "scoped_legacy_behavior": "Original execution intent_kind selection is deliberately preserved; this notification change isolates newly attached exit_reason only",
+  "financial_replays": 0,
+  "native_API_calls": 0,
+  "SMTP_calls": 0
+}

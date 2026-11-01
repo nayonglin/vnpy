@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_unknown_delivery_is_explicit_error_and_does_not_resend (tests.test_weekly19_daily_mail_pipeline.DailyMailIntegrationTests.test_unknown_delivery_is_explicit_error_and_does_not_resend)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_mail_pipeline.py", line 105, in test_unknown_delivery_is_explicit_error_and_does_not_resend
+    with self.assertRaisesRegex(ValueError, 'daily_mail_delivery'):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 80 tests in 8.856s
+
+FAILED (failures=1)

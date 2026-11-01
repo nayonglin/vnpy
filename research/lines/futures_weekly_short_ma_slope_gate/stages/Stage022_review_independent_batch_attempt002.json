@@ -1,0 +1,29 @@
+{
+  "schema": "Stage022.independent-incremental-batch.v1",
+  "source_before_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8d36305b293e027f9657171e31a137c07d8fe6ef2a10b342bf611d2be08dcdde",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "b942ed37093e1ed74dea6a5d906fb8938abbf897c247cc178bee3fafc68ba472",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py": "abbecec123cb2be453ebc9e0cdeda88dc6e1f5bba78a660ddead2aa62d65083b",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "dcb41e2fc1a9dfc75873f9899988d8897b096a2e0d0597fad9ab463c2a2b3f59"
+  },
+  "source_after_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8d36305b293e027f9657171e31a137c07d8fe6ef2a10b342bf611d2be08dcdde",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "b942ed37093e1ed74dea6a5d906fb8938abbf897c247cc178bee3fafc68ba472",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py": "abbecec123cb2be453ebc9e0cdeda88dc6e1f5bba78a660ddead2aa62d65083b",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "dcb41e2fc1a9dfc75873f9899988d8897b096a2e0d0597fad9ab463c2a2b3f59"
+  },
+  "sources_unchanged": true,
+  "results": [
+    {
+      "test": "Stage022_review_intent_reason_tests_v2.py",
+      "exit_code": 0,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_intent_reason_tests_v2_attempt002.log"
+    },
+    {
+      "test": "Stage022_review_projection_tests_v2.py",
+      "exit_code": 0,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_review_projection_tests_v2_attempt002.log"
+    }
+  ],
+  "scope": "Facade metadata/projection only; no financial runtime replay or native APIs; not final whole-chain qualification"
+}

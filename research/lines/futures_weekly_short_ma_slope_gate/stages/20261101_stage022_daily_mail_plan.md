@@ -49,7 +49,7 @@ Files: 修改qmt_roll_weekly19_runtime.py（仅退出原因元数据）、qmt_ro
 
 ## Task 3 独审、资格边界与交付（root＋独立reviewer）
 
-- [ ] 独立审查data/logic/confidence/bug、源SHA和SMTP/CTP/API计数为0；修复P0/P1/P2，保留失败证据。
+- [x] 独立审查data/logic/confidence/bug、源SHA和SMTP/CTP/API计数为0；修复P0/P1/P2，保留失败证据。
 - [x] 运行正式weekly19选定全套CI及关键源漂移核验；只允许声明的通知组件变化，冻结alpha不变。
 - [ ] 中文stage、LINE及周一安装handoff更新，保存本地提交；新不可变候选物料freeze/verify/fresh-clone。实际资格/激活/production仍由周一真实只读证据闭环。
 - [ ] 结束说明：过拟合否（不改决策规则）；继续价值是（让每日风控可见）；交付文件样例和实际尚未激活边界。

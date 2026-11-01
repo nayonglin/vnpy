@@ -1,0 +1,22 @@
+======================================================================
+ERROR: test_daily_cluster_question_counts_only_new_cluster_signals (tests.test_weekly19_daily_report.DailyReportTests.test_daily_cluster_question_counts_only_new_cluster_signals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 27, in test_daily_cluster_question_counts_only_new_cluster_signals
+    heat=self.build(rows=[row()]);self.assertEqual((heat['today_cluster_signal_status'],heat['today_cluster_signal_count']),('present',1));self.assertIn('今日风险组压力降仓新信号：有 1 项',heat['body'])
+                                                    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'today_cluster_signal_status'
+
+======================================================================
+ERROR: test_unknown_new_reason_or_blocked_data_never_claim_no_cluster_signal (tests.test_weekly19_daily_report.DailyReportTests.test_unknown_new_reason_or_blocked_data_never_claim_no_cluster_signal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 32, in test_unknown_new_reason_or_blocked_data_never_claim_no_cluster_signal
+    unknown=self.build(rows=[row(reason_code='unknown_new_reason')]);self.assertEqual(unknown['today_cluster_signal_status'],'unconfirmed');self.assertEqual(unknown['today_unknown_reason_count'],1)
+                                                                                      ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'today_cluster_signal_status'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (errors=2)

@@ -1,0 +1,12 @@
+======================================================================
+FAIL: test_conflicting_lifecycle_cannot_be_hidden_by_old_completed_filter (tests.test_weekly19_daily_report.DailyReportTests.test_conflicting_lifecycle_cannot_be_hidden_by_old_completed_filter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 55, in test_conflicting_lifecycle_cannot_be_hidden_by_old_completed_filter
+    with self.assertRaises(ReportError):self.build(rows=[old,retry])
+AssertionError: ReportError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

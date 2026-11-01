@@ -1,0 +1,17 @@
+{
+  "schema": "Stage022.author-test-log-archive.v1",
+  "files_sha256": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_cluster_green.log": "982039db959e5ce3a24156dcc64ddc3e5dec613785e2f011947b40a52c60c517",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_cluster_red.log": "08c6bea37036777a136bf6c2062afce354c971a459088568906e8a858b74b113",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_cluster_red_v2.log": "d2fb4ddd3ec276d560a0653a9c2762855024af30248d971e34c14c4167f77df4",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_conflict_red.log": "962910000f52f9169b9a64e636ee48d02e1375b8f229a2b19dd121c82863f2d4",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_green.log": "058929eef9bfa70fe710f9d841c54b9ef7642b077c4228923ad9cf931d48ef35",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_green_v2.log": "40d6b6415bc16f86230f684f14736f6d20d28ce6e9fa2ca2d77ec61beb23e8a2",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_green_v3.log": "1b8bc15985f0cde57744d9f58b0b32849f3bbe5b65d3be06571afd9853f73dbf",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_partial_red.log": "c6c149ed70d8e18805049e11ff5aa00e846ba3f5d4ed2afa2cc80a60b9a1375d",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_queued_green.log": "cb2c7a9253bc02d5705963ea5e6f1bd6de5bea745656d89cbfdf1532a9234a61",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_queued_red.log": "e6d24eff1a6a42daddfe56ab541f990b584667f18033b2d9aaf3b97a7053796b",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_red.log": "1d91defe020aa21f5d8ea5cec63614cc8a37ff2cccde56f68d3a4e60337ccdc3",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/stage022_mail_component_logs/weekly19_stage022_mail_component_related_green.log": "7b08ba6f35cf8b87a31129a668d6a438d94b62c903442fda26e31bf7f9a1acdc"
+  }
+}

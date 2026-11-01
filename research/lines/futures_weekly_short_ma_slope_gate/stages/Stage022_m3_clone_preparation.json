@@ -1,0 +1,33 @@
+{
+  "clone_started": false,
+  "ctp_connections": 0,
+  "current_critical_byte_mismatches": [],
+  "declared_critical_files": 291,
+  "declared_suites": 92,
+  "financial_replays": 0,
+  "frozen_alpha_changed": false,
+  "identity_pending": true,
+  "implementation_lock_path": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_implementation_lock_attempt002.json",
+  "implementation_lock_sha256": "ed862e77e0780ba7ac0714c9edbb22e867d3a8481b9d61f6557e11ecf6638ada",
+  "manifest_file_sha256": null,
+  "material_release_id": null,
+  "old_workflow": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_review_m0002_readback.py",
+  "planned_checks": [
+    "Wait for exact source/release/material ID/raw manifest file SHA; no guessed HEAD clone",
+    "Use new private tmp directory and git clone --no-local of exact local source; detach exact release; record actual command and empty independent LFS cache before fetch",
+    "Verify 291 locked/CI before-after hashes against exact source Git blobs and candidate inventory subset; parse final 92-suite XML only after final CI result exists",
+    "Verify official manifest canonical digest separately from raw file SHA; source/release parent and index/checksum/inventory/payload hashes/sizes and Git executable modes",
+    "Compare m1/m2 trees and CURRENT to pre-release snapshots; no activation/master/production changes",
+    "Fetch LFS only into new clone-local cache, verify exact committed pointer oid/size against actual content, no pointers or shared object alternates/hardlinks",
+    "Verify full fresh clone payload/top-level bytes and file/Git executable modes; verify historical material manifests; record local candidate clone is not remote-master/production qualification"
+  ],
+  "production_qualified": false,
+  "recorded_at": "2026-11-01T23:59:24.199339+08:00",
+  "release_commit": null,
+  "schema": "Stage022.m3-clone-preparation.v1",
+  "scope": "read_only_preparation_waiting_exact_m3_identity",
+  "smtp_sends": 0,
+  "source_commit": null,
+  "tests_run": 0,
+  "unresolved_tooling": "Current PATH lacks git-lfs; retain prior m2 pure Git pointer-content fallback for verification but actual fresh download needs known pinned existing helper binary from root, no package install yet"
+}

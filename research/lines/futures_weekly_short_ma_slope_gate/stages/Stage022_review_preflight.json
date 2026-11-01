@@ -1,0 +1,38 @@
+{
+  "schema": "Stage022.independent-notification-preflight.v1",
+  "generated_at": "2026-11-01T23:32+08:00",
+  "status": "PRELIMINARY_IMPLEMENTATION_NOT_YET_ACCEPTED",
+  "accepted": false,
+  "base_head": "30b236c973367a859ceae053ee8f1f37a36ac558",
+  "baseline_source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "5a7a911af89a1319fa9b7ed752e6f42aef67bb9fbb5d7faf3678b2c5a76e6d1c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "fa25cec3bd6d12524ff0d40039d0da158fd0a69a5bf60d527786f6ee4366fe22",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a4b66c5ce2b70b574cac8797f4741b2600abefdd13d833b0276dacb54a4aec3c",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "4dce7f98f092fdf358b609ba4ff4e6d6f38f31a0f865c9c723abd3c43a586ee1"
+  },
+  "read_only_findings": [
+    "Existing IntentEngine.send_order scans prior same-symbol diagnostics without day/Close/direction filtering and omits reason from intent body. Root accepted correction.",
+    "Existing fill archive stores semantic/raw hashes but not per-fill trading date; lifecycle only cumulative filled. Root accepted actual-source fill_evidence addition.",
+    "Existing postclose-report refreshes Friday only and existing backend routes one Friday event_type. New daily phase must remain separate."
+  ],
+  "required_acceptance_boundaries": [
+    "Exit reason only from same signal day/symbol/Close diagnostic and matching original position direction; conflicts/missing remain unknown. Do not infer from role, direction, price move, or old event.",
+    "Known reason metadata hashes with new intent. Existing intent/decision/decision_state hashes remain immutable; retries keep original lifecycle reason/signal origin.",
+    "Aggregate by close_lifecycle_id, using lifecycle original volume/current actual filled/status; retry planned quantities cannot be summed.",
+    "Actual fill trading dates require immutable light metadata recorded only inside validated apply_broker_fill branch. Replay does not append twice, failure rolls back; legacy missing dates not guessed.",
+    "Report can replay original fills/orders, reconcile actual snapshot, CAS commit runtime/funding, then deliver. Never on_bars/process_completed_day, publish execution, actual send_order/cancel, or mutate original decision_state.",
+    "Data receipt exact same target/account/material source. Missing/foreign/stale decision cannot imply no risk; unknown reason still a close plan.",
+    "Original position direction differs from close order direction: original long=>sell-close, original short=>buy-close.",
+    "Daily completed-date+account+material+profile+category key isolated from Friday week/category. Preview no real sender or real outbox quota, sending/unknown no blind retry.",
+    "Keep immutable m1/m2/frozen alpha unchanged. New notification code remains unactivated/unqualified pending genuine production evidence."
+  ],
+  "scope": "Code/data/lifecycle review only, not alpha/finance or production certification",
+  "financial_replays": 0,
+  "CTP_connections": 0,
+  "SMTP_calls": 0,
+  "production_accesses": 0,
+  "full_final_offline_CI": "To review once all declared source locks and CI receipts are complete",
+  "overfitting": "No alpha or financial parameters changed; notification only",
+  "continuation_value": "Make daily risk reductions and actual execution visible without changing decisions"
+}

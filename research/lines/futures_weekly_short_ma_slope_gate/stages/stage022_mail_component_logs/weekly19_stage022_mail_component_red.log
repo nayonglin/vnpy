@@ -1,0 +1,166 @@
+======================================================================
+FAIL: test_account_release_day_and_friday_topic_have_separate_keys (tests.test_weekly19_daily_report.DailyOutboxTests.test_account_release_day_and_friday_topic_have_separate_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 73, in setUp
+    self.assertIsNotNone(daily,'daily renderer/outbox missing');self.tmp=tempfile.TemporaryDirectory(dir='/private/tmp');self.addCleanup(self.tmp.cleanup);self.parent=Path(self.tmp.name).resolve();self.parent.chmod(0o700)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_daily_sent_once_even_if_same_day_execution_status_updates (tests.test_weekly19_daily_report.DailyOutboxTests.test_daily_sent_once_even_if_same_day_execution_status_updates)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 73, in setUp
+    self.assertIsNotNone(daily,'daily renderer/outbox missing');self.tmp=tempfile.TemporaryDirectory(dir='/private/tmp');self.addCleanup(self.tmp.cleanup);self.parent=Path(self.tmp.name).resolve();self.parent.chmod(0o700)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_friday_schema_tampered_body_and_header_are_rejected_before_sender (tests.test_weekly19_daily_report.DailyOutboxTests.test_friday_schema_tampered_body_and_header_are_rejected_before_sender)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 73, in setUp
+    self.assertIsNotNone(daily,'daily renderer/outbox missing');self.tmp=tempfile.TemporaryDirectory(dir='/private/tmp');self.addCleanup(self.tmp.cleanup);self.parent=Path(self.tmp.name).resolve();self.parent.chmod(0o700)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_preview_does_not_lock_write_or_send_and_unknown_does_not_retry_revised_body (tests.test_weekly19_daily_report.DailyOutboxTests.test_preview_does_not_lock_write_or_send_and_unknown_does_not_retry_revised_body)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 73, in setUp
+    self.assertIsNotNone(daily,'daily renderer/outbox missing');self.tmp=tempfile.TemporaryDirectory(dir='/private/tmp');self.addCleanup(self.tmp.cleanup);self.parent=Path(self.tmp.name).resolve();self.parent.chmod(0o700)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_private_permissions_and_concurrent_daily_attempts_keep_one_transport_call (tests.test_weekly19_daily_report.DailyOutboxTests.test_private_permissions_and_concurrent_daily_attempts_keep_one_transport_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 73, in setUp
+    self.assertIsNotNone(daily,'daily renderer/outbox missing');self.tmp=tempfile.TemporaryDirectory(dir='/private/tmp');self.addCleanup(self.tmp.cleanup);self.parent=Path(self.tmp.name).resolve();self.parent.chmod(0o700)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_blocked_data_never_claims_no_risk (tests.test_weekly19_daily_report.DailyReportTests.test_blocked_data_never_claims_no_risk)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_completed_prior_signal_with_true_fill_today_is_included_but_old_completed_is_excluded (tests.test_weekly19_daily_report.DailyReportTests.test_completed_prior_signal_with_true_fill_today_is_included_but_old_completed_is_excluded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_direction_is_original_holding_and_pressure_is_not_margin_ratio (tests.test_weekly19_daily_report.DailyReportTests.test_direction_is_original_holding_and_pressure_is_not_margin_ratio)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_duplicate_lifecycle_is_deduplicated_only_if_exactly_identical (tests.test_weekly19_daily_report.DailyReportTests.test_duplicate_lifecycle_is_deduplicated_only_if_exactly_identical)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_fixed_weekly_protection_reason_labels_do_not_claim_daily_or_fixed_two_percent_stop (tests.test_weekly19_daily_report.DailyReportTests.test_fixed_weekly_protection_reason_labels_do_not_claim_daily_or_fixed_two_percent_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_inputs_are_unchanged_and_digest_covers_source_rows (tests.test_weekly19_daily_report.DailyReportTests.test_inputs_are_unchanged_and_digest_covers_source_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output (tests.test_weekly19_daily_report.DailyReportTests.test_invalid_fill_volume_completed_status_and_row_dates_fail_before_any_no_signal_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_legacy_date_coverage_never_claims_today_from_accumulated_fills (tests.test_weekly19_daily_report.DailyReportTests.test_legacy_date_coverage_never_claims_today_from_accumulated_fills)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_missing_decision_or_wrong_source_account_release_target_and_hash_are_rejected (tests.test_weekly19_daily_report.DailyReportTests.test_missing_decision_or_wrong_source_account_release_target_and_hash_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_non_friday_zero_signal_requires_ready_matching_completed_source (tests.test_weekly19_daily_report.DailyReportTests.test_non_friday_zero_signal_requires_ready_matching_completed_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_retry_lifecycle_counts_once_and_labels_fills_as_cumulative (tests.test_weekly19_daily_report.DailyReportTests.test_retry_lifecycle_counts_once_and_labels_fills_as_cumulative)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_unknown_reason_remains_a_close_plan_and_never_becomes_no_risk (tests.test_weekly19_daily_report.DailyReportTests.test_unknown_reason_remains_a_close_plan_and_never_becomes_no_risk)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py", line 21, in setUp
+    def setUp(self):self.assertIsNotNone(daily,'daily renderer/outbox missing')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : daily renderer/outbox missing
+
+======================================================================
+FAIL: test_current_close_shows_chinese_reason_and_exact_original_code (tests.test_weekly19_friday_report.FridayReportTest.test_current_close_shows_chinese_reason_and_exact_original_code)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_report.py", line 76, in test_current_close_shows_chinese_reason_and_exact_original_code
+    self.assertIn('风险簇热度降仓',r['body']);self.assertIn('long_risk_cluster_heat_deleverage',r['body'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '风险簇热度降仓' not found in '周线19品种｜2026-10-30 周五信号与场外补资\n行情完成日：2026-10-30；报告时间：2026-10-30 16:35:00（北京时间）\n当前为候选预览，不代表已发送、已到账或已获实盘资格。\n\n一、真实资金与场外备用金\n交易账户权益 E：120,000.00 元（已含未平仓价格变动）\n可用资金：90,000.00 元；已用保证金：30,000.00 元\n账户快照：2026-10-30T16:35:00+08:00；归属交易日：2026-10-30\n未平仓盈亏：1,000.00 元\n仍在场外的备用金：150,000.00 元\n累计已确认补入：0.00 元\n当前距15万元的资金缺口（受剩余备用金上限约束）：30,000.00 元\n本次建议补入：30,000.00 元（仅建议，未计入E或可用资金）\n历史尚未到账的建议上限合计：30,000.00 元；建议不是欠款。\n历史请求 c9e59b2b7e00：尚余 30,000.00 元；有效至 2026-11-06T16:35:00+08:00。\n\n二、本周信号\nrb2701.SHFE｜空｜平仓/减仓｜参考 2 手，执行前仍须实时核验\n\n三、资金与执行状态\n新开仓资金条件未满足；未到账的建议不得当作资金使用。原有平仓/减风险仍独立核验。\n场外转入须以券商真实现金流与账户回报确认；邮件发送本身不证明到账。\n已到账后按真实E重新计算开仓手数；不会自动调用银行转账。\n净值如按E/150000展示，包含已到账资金，不能把补资当成交易利润。\n'
+
+----------------------------------------------------------------------
+Ran 39 tests in 0.053s
+
+FAILED (failures=18)

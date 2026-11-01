@@ -1,0 +1,37 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ DailyRiskProjectionTests.test_fill_date_cannot_be_changed_without_accepted_fill_semantics _
+
+self = <test_weekly19_daily_mail_pipeline.DailyRiskProjectionTests testMethod=test_fill_date_cannot_be_changed_without_accepted_fill_semantics>
+
+    def test_fill_date_cannot_be_changed_without_accepted_fill_semantics(self):
+        helper, obj, plan, volume = self.fixture()
+        helper.fill(obj, plan, volume, 100.0, 'mail-tampered-date')
+        saved = obj.export_state()
+        data = runtime._decode(saved['runtime'])
+        next(iter(data['close_lifecycles'].values()))['fill_evidence'][0]['trading_day'] = '2026-11-03'
+        saved['runtime'] = runtime._encode(data)
+>       with self.assertRaisesRegex(ValueError, 'fill_evidence'):
+E       AssertionError: ValueError not raised
+
+tests/test_weekly19_daily_mail_pipeline.py:185: AssertionError
+_ DailyRiskProjectionTests.test_legacy_completed_without_fill_dates_stays_explicitly_unconfirmed _
+
+self = <test_weekly19_daily_mail_pipeline.DailyRiskProjectionTests testMethod=test_legacy_completed_without_fill_dates_stays_explicitly_unconfirmed>
+
+    def test_legacy_completed_without_fill_dates_stays_explicitly_unconfirmed(self):
+        helper, obj, plan, volume = self.fixture()
+        helper.fill(obj, plan, volume, 100.0, 'mail-legacy-date')
+        saved = obj.export_state()
+        data = runtime._decode(saved['runtime'])
+        next(iter(data['close_lifecycles'].values())).pop('fill_evidence')
+        saved['runtime'] = runtime._encode(data)
+        rows = pipeline._daily_risk_rows(dict(decision=dict(trading_date='2026-11-03'), runtime=saved))
+>       self.assertEqual(len(rows), 1)
+E       AssertionError: 0 != 1
+
+tests/test_weekly19_daily_mail_pipeline.py:196: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyRiskProjectionTests::test_fill_date_cannot_be_changed_without_accepted_fill_semantics
+FAILED tests/test_weekly19_daily_mail_pipeline.py::DailyRiskProjectionTests::test_legacy_completed_without_fill_dates_stays_explicitly_unconfirmed
+2 failed in 1.27s

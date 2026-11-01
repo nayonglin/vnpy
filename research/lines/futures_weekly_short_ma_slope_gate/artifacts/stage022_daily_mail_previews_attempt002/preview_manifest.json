@@ -1,0 +1,77 @@
+{
+  "schema": "Stage022.synthetic-offline-mail-previews.v1",
+  "source_kind": "literal_unit_test_fixtures_not_market_signals",
+  "samples": [
+    {
+      "sample": "01_无信号",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "no_risk_actions",
+      "today_cluster_signal_status": "none",
+      "report_sha256": "1d40439e9ac2393f85076eb3040949c6344b6c19b4af2c74a30fdf0359c732f4"
+    },
+    {
+      "sample": "02_风险组压力降仓",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "risk_actions",
+      "today_cluster_signal_status": "present",
+      "report_sha256": "557cec8194b7d88e1bc0aac801e193f7bd3b80a0d06e8e1f425eb43518a33410"
+    },
+    {
+      "sample": "03_保证金降仓_原空头买平",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "risk_actions",
+      "today_cluster_signal_status": "none",
+      "report_sha256": "d000a303d1417076b6b8fcaaf5bb9b75e62683eb9b7d4846f25515a2498d7d6a"
+    },
+    {
+      "sample": "04_以前信号_部分成交待重试",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "risk_actions",
+      "today_cluster_signal_status": "none",
+      "report_sha256": "bd7e1d1af4ad2d0ad51e1acca3aba4de6e2e1af13cea59833e9212a8acff8ec0"
+    },
+    {
+      "sample": "05_原因未确认",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "risk_actions",
+      "today_cluster_signal_status": "unconfirmed",
+      "report_sha256": "5bf3ee42dd4423101e81da554f4f6113ff4a9182f6e4fbcef6c88518ab7d8e4e"
+    },
+    {
+      "sample": "06_数据未就绪",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "unconfirmed",
+      "today_cluster_signal_status": "unconfirmed",
+      "report_sha256": "2f3dd878b249d667fb06ecf9ad6acc039532f9c48c1bec735b57c0a7e5a14352"
+    },
+    {
+      "sample": "08_当天策略尚未完成评估",
+      "schema": "weekly19.daily-risk-report.v1",
+      "risk_status": "risk_actions",
+      "today_cluster_signal_status": "unconfirmed",
+      "report_sha256": "a9f6f18858b6e2e91727e896d76c4535f414205f1ac2c2797474f5d1ab8a83f4"
+    }
+  ],
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/tools/Stage022_mail_previews.py": "46e14c5afad871cfd46616ac530828afdff5adf6b3737ddfd5b79e61b715fac1",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_daily_report.py": "30232803a468b5b41e1159fd2c8460337137aa516e22f900adf895510007d017",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_friday_report.py": "0116243246d5c27d8611a277e2a89809a0bce62e27f11a892d6a0a38ef725436",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_daily_report.py": "2b426e115be251f63d493c1efe64d1de687cdced3d07b368ccb2f122e6d4b3a5",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py": "dcb41e2fc1a9dfc75873f9899988d8897b096a2e0d0597fad9ab463c2a2b3f59"
+  },
+  "preview_files_sha256": {
+    "04_以前信号_部分成交待重试.txt": "99cf1487c139b58942458b3cc4b25713d0d883593b6f2962d000143e473f8d90",
+    "01_无信号.txt": "79c3a82a0ad54fb0558f7e3856b0034f7dd739520747dcd15acf00599b9ce70e",
+    "02_风险组压力降仓.txt": "0dd3b0c7444966510908783086ca862100652f762ae8e8b3c4c50849dc77ea27",
+    "05_原因未确认.txt": "e9ea8adb73560bad3cf6449e99bce85b9e8e6a8cf5d0d573cc16a8bfdadad476",
+    "07_周五信号补资邮件_含退出原因.txt": "5767fcbebb1f36c255a23fe4c997737a23c3ec9106faf4f4bf9d235c1155edd7",
+    "08_当天策略尚未完成评估.txt": "85e0c71b90bdd13b5c1455cad50278a712d85a789caf8cb21d12f2905a28ae8c",
+    "06_数据未就绪.txt": "c3cb0ccd7491573e2c55346fccdf8581542c9afec2351fdef02b9bffe2a412a1",
+    "03_保证金降仓_原空头买平.txt": "c7facd63c760d6c734b35c8869e497454f2afff24909fe1bb66756ed5890d7d0"
+  },
+  "financial_replays": 0,
+  "smtp_sends": 0,
+  "ctp_connections": 0,
+  "actual_orders": 0,
+  "production_qualified": false
+}

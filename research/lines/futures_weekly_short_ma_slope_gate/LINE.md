@@ -43,3 +43,7 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 ## 2026-11-01 Stage021 平仓原因显示修复
 
 已接受Stage020的18轮原账和全部图表数值保留，仅新增中文退出说明：9周收盘技术保护、7风险组压力降仓、1组合保证金风控、1换月平旧（新合约未开）。独立卡片及图标悬浮显示规则/原始代码/触发与成交日，9技术退出直接列原周close与stop；缺失压力/组合比率不补造。新单文件入口artifacts/stage021_2026_exit_reasons/index.html，旧HTML保留。18Python、root467静态JS/合成DOM、独立502字段/SHA及236JS通过，真实浏览器仍file协议阻断、未绕行。stages/Stage021_review_acceptance.json与版本化delivery_receipt绑定全部交付。未重跑金融/下载/改策略/m2/生产，288关键源保持；详见stages/20261101_1620_stage021_exit_reason_display.md。
+
+## 2026-11-02 Stage022 每日风险通知候选
+
+每日postclose-report已接日报，明确风险组新信号有/无/未确认，中文原因/原码/原持仓与买卖平/计划与累计成交/历史待执行；同日去重、投递不明不重发，周五独立补资邮件保留并显示退出原因。真实回报semantic/rawSHA绑定成交日期，旧缺日期和bars_queued未评估明确未知；不重跑策略或改alpha/资金规则。92套件2348通过/0跳过、291关键源无漂移，独审P0/P1/P2=0，旧CI沙箱33失败和queued RED均保留。8封合成离线样例见artifacts/stage022_daily_mail_previews_attempt002/；独审stages/Stage022_review_acceptance.json。代码本地提交52b825c4e，新不可变候选物料冻结/安装接续由Stage022新handoff记录；旧m2和CURRENT保持，不代表已发送或已安装。
