@@ -1,0 +1,18 @@
+{
+  "status": "PASS_STATIC_JS_AND_SYNTHETIC_DOM_LOGIC",
+  "compiled_scripts": 3,
+  "checks": 252,
+  "episodes": 18,
+  "minute_episodes": 8,
+  "real_browser": false,
+  "browser_validation": "blocked_by_file_protocol_policy",
+  "actual_plotly_rendering": false,
+  "actual_pointer_zoom": false,
+  "linked_zoom": "layout axes.matches and shared ranges checked; actual browser event/render not verified",
+  "network_calls": 0,
+  "stage021_checks": 215,
+  "total_static_checks": 467,
+  "exit_explanations": 18,
+  "technical_price_comparisons": 9,
+  "old_recap_failed_new_behavior": true
+}

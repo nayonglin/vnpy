@@ -1,0 +1,1 @@
+Own receipt sealing attempt stopped at NameError LINE before final JSON write. Existing audit/MD data intact. Recovered by defining LINE=D.parent; no author code/output or financial rerun.

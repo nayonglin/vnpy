@@ -1,0 +1,49 @@
+{
+  "schema": "Stage021.offline-exit-explanations-delivery.v1",
+  "published_at": "2026-11-01T16:25:03.705417+08:00",
+  "accepted_for_file_delivery": true,
+  "status": "PASS_WITH_LIMITATIONS_BROWSER_UNVERIFIED",
+  "source_profile": "stage019_C_R150_20260101",
+  "source_interval": [
+    "2026-01-05",
+    "2026-10-30"
+  ],
+  "closed_rounds": 18,
+  "source_fills": 36,
+  "net_pnl": 22380,
+  "html_sha256": "a92344daff2499f1a3a5256fbe2da1f5748d197883190fbbfe94cb39bfbccfc2",
+  "independent_review_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage021_review_acceptance.json",
+  "independent_review_sha256": "8d7535f3832d65687fe223319d10261acd5b73215ef3dcd246ae6d11c152f313",
+  "browser_validation": {
+    "status": "blocked_by_file_protocol_policy",
+    "actual_browser_rendering": false,
+    "actual_pointer_zoom": false,
+    "static_parse_and_synthetic_DOM_only": true,
+    "workaround_attempted": false
+  },
+  "root_reviewed_pins": 171,
+  "delivered_files_sha256": {
+    "summary.json": "427541867fd3d114fff39ef37de32261dde4d5cf76209a3feddf43ace22bd68e",
+    "embedded_script_2.js": "b9eb6342f3acb51c1f6ac898730994f0761b611ef084ea8576562efc86db68ac",
+    "index.html": "a92344daff2499f1a3a5256fbe2da1f5748d197883190fbbfe94cb39bfbccfc2",
+    "exit_reasons.json": "a7c6d3454638a9fdda077ae2f290b68bb0f179f4c015a5c9610776dec607b09b",
+    "generation_manifest.json": "ba2e34301c9a7010e0099228a5c6d5578224eb9c5f5f2e9023e8c903824589a0",
+    "records.json": "649d4c52106db91535d661202d98bbaa885908a3715375e572fd102e439e6d98",
+    "closed_rounds.csv": "5f43f996e3cf8ec0143bc5884343e95a4bdccb549f4f9c790ad9514da5b54344",
+    "embedded_script_0.js": "3b6e15d45dbb7fca5bd2094291e961ddc5472cd887009e6009a56dab668d721f",
+    "chart_manifest.csv": "a2535dd70ba3ff6c2678a1d639963bbd79c13717a672c6394b495385d1b175f4",
+    "embedded_script_1.js": "5f83b967ec28803b19e83531b12bd471dac760f98f43d555b31442ae95092f4e"
+  },
+  "root_JS_checks_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage021_root_js_checks.json",
+  "root_JS_checks_sha256": "9498c76cb16c9fcab27276b5629f503e6fb907f118b61abe74d44c6a3d9fac18",
+  "stage_record_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261101_1620_stage021_exit_reason_display.md",
+  "stage_record_sha256": "1baf1e5255f98e2653cec0e4a589cae2bace0363458addd021f2c07acb81a94c",
+  "strategy_changes": 0,
+  "financial_replays": 0,
+  "market_downloads": 0,
+  "production_accesses": 0,
+  "HTTP_services": 0,
+  "single_file_offline_html": true,
+  "external_plotly_script_required": false,
+  "accompanying_data_files_required_to_open": false
+}

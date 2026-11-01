@@ -39,3 +39,7 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 ## 2026-11-01 Stage020 年度18轮逐笔离线复盘
 
 基于Stage019唯一2026独立窗，统一Stage038纯函数渲染器的本线窄适配器，18轮/36成交/8盈10亏/净22380。日/周/月/10/30日全部精确epoch，8轮可用部分或完整本地15m；52缓存候选逐日/桶准入及3日隐藏预热，缺日后MA断段，未下载/代理/补造。最终入口artifacts/stage020_2026_ytd_recap_attempt002/index.html，单文件6.24MB内嵌Plotly/数据/年度净值图，9adapter测试、root252JS及独立1553数值+180JS等通过。真实浏览器因file协议安全策略阻止而未验收，未绕行或起HTTP，outer delivery明确此限制。未重跑金融或改策略/m2/生产；初始版本和失败证据保留。
+
+## 2026-11-01 Stage021 平仓原因显示修复
+
+已接受Stage020的18轮原账和全部图表数值保留，仅新增中文退出说明：9周收盘技术保护、7风险组压力降仓、1组合保证金风控、1换月平旧（新合约未开）。独立卡片及图标悬浮显示规则/原始代码/触发与成交日，9技术退出直接列原周close与stop；缺失压力/组合比率不补造。新单文件入口artifacts/stage021_2026_exit_reasons/index.html，旧HTML保留。18Python、root467静态JS/合成DOM、独立502字段/SHA及236JS通过，真实浏览器仍file协议阻断、未绕行。stages/Stage021_review_acceptance.json与版本化delivery_receipt绑定全部交付。未重跑金融/下载/改策略/m2/生产，288关键源保持；详见stages/20261101_1620_stage021_exit_reason_display.md。
