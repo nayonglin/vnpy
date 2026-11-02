@@ -1,0 +1,82 @@
+{
+  "schema": "stage028.master-clone-transport-preserved-attempts.v1",
+  "generated_at_utc": "2026-11-02T13:17:39.883536+00:00",
+  "master_commit": "be365737a258e675ffe0bd4657ccdb1e40c41b0f",
+  "final_source_review_receipt_sha256": "43b268f0f347df881afa52a5fabe94b807bb3533e58515a70c940dfcf130ca72",
+  "historical_attempts_preserved_unchanged": [
+    {
+      "label": "sandbox_dns",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-jddk8sz5/receipt.json",
+      "sha256": "09e6b6f7993d7fef1affad7c753a69ea10998562b34989f5e33172078434d134",
+      "status": "blocked",
+      "error_type": "AssertionError",
+      "error": "command_success:remote_master_before"
+    },
+    {
+      "label": "complete_HTTPS_clone_300s_timeout",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-y6uhc25k/receipt.json",
+      "sha256": "3c98e4bc7646847e2e5d25bcc326bab8742b0f6e1780e37aaf8042f4cddf11a8",
+      "status": "blocked",
+      "error_type": "TimeoutExpired",
+      "error": "TimeoutExpired"
+    },
+    {
+      "label": "partial_LFS_whole_repo_scan_missing_unrelated_blob",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-v2qzu0lk/receipt.json",
+      "sha256": "2c40541748d545e2241a9d7a2227ae54f70314b9ff9b5b1f1fdeefa6d7362004",
+      "status": "blocked",
+      "error_type": "AssertionError",
+      "error": "command_success:fetch_LFS_from_GitHub_empty_cache"
+    },
+    {
+      "label": "exact_include_scan_timeout",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-0vvz0jsl/receipt.json",
+      "sha256": "2f7c2866809f451d2a5bf9693277952443e49092255e10d34bcef687d72da49e",
+      "status": "blocked",
+      "error_type": "TimeoutExpired",
+      "error": "TimeoutExpired"
+    },
+    {
+      "label": "shallow_git_show_hides_parents_review_script_assertion",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-eyf3pid_/receipt.json",
+      "sha256": "8e7d944121a8f8477b696c851de2f416b647a9e85c7fb5fd19ae9ed3037aa9df",
+      "status": "blocked",
+      "error_type": "AssertionError",
+      "error": "M_parents_remote_before_and_activation"
+    },
+    {
+      "label": "successful_remote_LFS_and_all_source_checks_before_index_stat_refresh",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-whfacz6w/receipt.json",
+      "sha256": "3e7e947a16842199c1614094774d400a127395d801eb4277d8095c6723c2f9be",
+      "status": "blocked",
+      "error_type": "AssertionError",
+      "error": "fresh_clone_clean_after_absolute_filters"
+    },
+    {
+      "label": "HTTPS_final_readback_failed_then_strict_SSH_succeeded",
+      "path": "/private/tmp/weekly19-stage028-GitHub-master-fkt3mlfg/receipt.json",
+      "sha256": "b0d7fbec434b99a8964e612e08acf778a1cd70b0dd79f9fcaef3eca2c5a75fdb",
+      "status": "blocked",
+      "error_type": "AssertionError",
+      "error": "command_success:remote_master_before"
+    }
+  ],
+  "publisher_original_status_preserved": "complete_official_promotion_published_but_lfs_unverified",
+  "replacement_proof_scope": "independent real GitHub partial clone of complete formal closure with all registered LFS objects, not a retroactive success for the original publisher clone",
+  "implicit_R6_lookup": {
+    "observed_command": "git -C <private-remote-clone> cat-file -e <R6>:<m6-manifest>",
+    "completed": true,
+    "source": "same GitHub origin promisor object download",
+    "full_ancestor_download_scope": "not asserted",
+    "unmodified_active_resolver_then_passed": true,
+    "local_publisher_object_copy": false,
+    "processes_terminated": 0
+  },
+  "clone_only_LFS_stat_refresh": {
+    "path": "/private/tmp/weekly19_stage028_clone_lfs_stat_refresh001.json",
+    "sha256": "e2e008d772d1dbbd3321e9fc39a5b631b9d100c70a77128a025a6de23498b563",
+    "HEAD_index_and_filtered_blob_identical": true,
+    "source_object_or_mode_change": false
+  },
+  "no_further_LFS_transfer_on_final_audit": true
+}

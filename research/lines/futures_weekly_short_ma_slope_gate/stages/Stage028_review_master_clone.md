@@ -1,0 +1,15 @@
+# Stage028 GitHub M来源闭包独立复核
+
+独立审查通过（PASS_WITH_LIMITATIONS），514项检查全过，P0/P1/P2=0/0/0。实际远端M为 `be365737a258e675ffe0bd4657ccdb1e40c41b0f`；真实commit header两父为原master与A，前后严格known-host/BatchMode SSH读回相同M。
+
+本次采用真正GitHub HTTPS depth-1、blob:none及精确sparse checkout，覆盖全部正式物料、34个历史release、388份顶层/source文件、691项关键闭包和本次全部21份治理文件。每个审查文件都是实际remote下载blob；未使用reference、alternates、hardlinks或从publisher复制待验文件。未宣称完整monorepo工作树或完整Git历史。
+
+388份顶层/payload逐SHA、size、Git mode及文件执行位一致；原R6的690项逐SHA/size/mode不变，新增CURRENT与已授权A逐字节一致，实际active闭包为691项，新tree为 `ce83eef7adfcf00514238fe5e34f493955741bc10cb6997f3ef228546f1478d9`。34个release完整manifest/inventory/checksums/payload通过，历史树与R6/A/原master相应条目一致。
+
+唯一登记LFS对象从真实远端经标准git-lfs 3.8.1 smudge下载到独立空cache，实体2865 bytes、OID/SHA/size及客户端缓存均一致。完整克隆300秒超时、partial全仓LFS扫描、include超时、浅历史父显示断言以及LFS索引stat审查原失败全部保留。最后只刷新私有clone唯一LFS的索引stat，HEAD/index/实际clean-filter blob与mode均未改变，cached diff为空、clone clean；成功下载原件未丢弃，最终审查没有再次下载LFS。
+
+原active resolver在浅clone查询R6 manifest时触发同GitHub隐式promisor下载；下载完成后原resolver通过，未修改或绕过validator，未从本地publisher复制对象。M父字段取实际commit对象，publisher只作为旧S6/R6/A/原master的第二份历史对照。
+
+canonical新报告：`/private/tmp/weekly19_stage028_review_M_001.json`，SHA256 `82a0d05797771b7c6b0b3e0594ad6608df8293a60d14fd2da8db8e216d38ece0`。完整审查回执SHA256 `43b268f0f347df881afa52a5fabe94b807bb3533e58515a70c940dfcf130ca72`；网络/失败保留链见 `Stage028_review_master_clone_transport.json`（SHA256 `6c6be6066b016567ebe63664c95f2739d746fab10509cf05470aab3a1e45df12`）。
+
+结论仅覆盖M来源、物料与关键闭包审查；不是生产Q_M、Stage948安装、账户接管或交易证明。未重跑测试、CTP/TQ/SMTP或金融回放。调研判断：沿用仓库不可变发布合同及实际Git/git-lfs对象证据，工具扫描与浅历史限制不通过降低关键门解决。过拟合：否，没有alpha/参数变化；继续有价值：是，可进入canonical stable的独立Q_M及安装闸门，原研究NO_PROMOTION保留。
