@@ -1,0 +1,272 @@
+"""Weekly19 orchestration; strategy/cash state is committed before delivery.
+
+A process-local backend admits real sources and owns external transports. JSON
+configuration cannot inject functions or assert qualification. Preview uses the
+same runtime but cannot publish an intent or send SMTP. Component output is not
+itself a production-qualification receipt.
+"""
+from copy import deepcopy
+from datetime import date,datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+import qmt_roll_weekly19_funding as funds
+from qmt_roll_weekly19_pipeline_state import PipelineStateStore,digest
+from qmt_roll_weekly19_runtime import build_weekly19_runtime,DEFAULT_SETTINGS_ASSET,_decode
+from qmt_roll_weekly19_friday_report import build_friday_report,FridayMailOutbox
+from qmt_roll_weekly19_friday_advice import refresh_friday_advice
+
+SHANGHAI=ZoneInfo('Asia/Shanghai')
+JOBS={'postclose-precompute','postclose-report','health','monthly-ai-pool','day-close-readonly'}
+class Weekly19PipelineError(ValueError):pass
+
+def _parts(context):
+ now=context.get('now')or datetime.now(SHANGHAI)
+ if not isinstance(now,datetime)or now.tzinfo is None:raise Weekly19PipelineError('weekly19_aware_clock_required')
+ preview=context.get('preview',False)
+ if type(preview)is not bool:raise Weekly19PipelineError('weekly19_preview_boolean_required')
+ backend=context['backend']
+ if not preview:backend.require_production()
+ return backend,now,preview
+
+def pipeline_store(context):
+ return PipelineStateStore(Path(context['state_path']),context['account_key'],context['material_release_id'])
+
+def _initial(context):
+ return dict(schema='weekly19.pipeline-state.v1',revision=0,account_key=context['account_key'],
+  material_release_id=context['material_release_id'],decision_state=None,runtime_mode='preview'if context.get('preview',False)else'production',funding=funds.initial_state(context['account_key'],
+  context['material_release_id'],context['cold_start_date']),runtime=None,decision=None)
+
+def _load(backend,context,now):
+ target=date.fromisoformat(context['target_date']).isoformat()
+ if target>now.astimezone(SHANGHAI).date().isoformat():raise Weekly19PipelineError('weekly19_future_completed_date')
+ data=backend.load_inputs(target,now);receipt=data['receipt']
+ if (receipt.get('schema')!='weekly19.data-receipt.v1'or receipt.get('complete')is not True
+  or receipt.get('material_release_id')!=context['material_release_id']or receipt.get('trading_date')!=target):raise Weekly19PipelineError('weekly19_input_receipt_mismatch')
+ if target not in data['bars_by_day']:raise Weekly19PipelineError('weekly19_completed_bars_missing')
+ return target,data
+
+def _assert_completed_history_sequence(bundle,data,target):
+ previous=bundle['runtime']['input_cursor']if bundle.get('runtime')is not None else None
+ cold=bundle['funding']['cold_start_date']
+ missing=[day for day in data['calendar']if day<target and (day>previous if previous is not None else day>=cold)]
+ if missing:raise Weekly19PipelineError('weekly19_completed_history_gap_requires_explicit_recovery:'+missing[0]+':'+missing[-1])
+
+def _runtime(bundle,data,now,events=()):
+ obj=build_weekly19_runtime(DEFAULT_SETTINGS_ASSET,data['metadata'],data['calendar'],data['physical_epoch_daily'],
+  data['broker_snapshot'],bundle['runtime'],bundle['funding'],clock=lambda:now,recovery_events=events)
+ if bundle['runtime']is None:
+  cold=bundle['funding']['cold_start_date']
+  obj.warmup([data['bars_by_day'][day]for day in sorted(data['bars_by_day'])if day<cold])
+ return obj
+
+def _apply_events(obj,events):
+ # A terminal query order can include fills not yet applied locally. Apply raw
+ # actual fills first; only then release a completed/cancelled reservation.
+ for event in sorted(events,key=lambda row:0 if row['kind']=='fill'else 1):
+  if event['kind']=='fill':obj.apply_broker_fill(event['envelope'],event['signal_identity'])
+  elif event['kind']=='order':obj.apply_order_update(event['envelope'])
+  else:raise Weekly19PipelineError('weekly19_execution_event_kind_invalid')
+
+def initialize_weekly19_existing_account(*,context):
+ """Explicit one-time cutover, atomically save real cash and protected holdings.
+
+ Not a scheduler task, precompute, execution submission or email operation.
+ A complete production authority is required by the backend. Failed bootstrap
+ leaves no partial initial cash or unprotected runtime on disk.
+ """
+ if context.get('preview',False):raise Weekly19PipelineError('production_existing_account_initialization_required')
+ backend,now,preview=_parts(context);store=pipeline_store(context)
+ from qmt_roll_weekly19_startup import load_startup_authorization
+ policy=load_startup_authorization(backend.config)
+ if policy is None:raise Weekly19PipelineError('production_existing_account_initialization_required')
+ existing=store.read()
+ if existing is not None:
+  if (existing.get('runtime_mode')!='production'or existing.get('runtime')is None
+   or existing['funding'].get('opening_equity',{}).get('operator_decision_id')!=policy['operator_decision_id']):
+   raise Weekly19PipelineError('weekly19_existing_account_initialization_conflict')
+  # Resuming is ordinary source reconciliation. Never re-seed or reset stops.
+  target,data=_load(backend,context,now)
+  _runtime(existing,data,now,backend.read_execution_events(existing['decision'],now))
+  return dict(status='already_initialized',state_sha256=digest(existing),production_qualified=False)
+ target,data=_load(backend,context,now)
+ if target!=policy['authorization']['completed_day']or context['cold_start_date']!=policy['authorization']['cold_start_date']:
+  raise Weekly19PipelineError('weekly19_existing_account_cutover_dates_mismatch')
+ backend.validate_initial_account(data['broker_snapshot'],now,allow_carry_in=True)
+ bundle=_initial(context);cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now)
+ if (cash.get('opening_equity',{}).get('operator_decision_id')!=policy['operator_decision_id']
+  or getattr(backend,'cash_source_blocker',None)):
+  raise Weekly19PipelineError('weekly19_existing_account_initial_cash_not_confirmed')
+ bundle['funding']=cash
+ obj=backend.bootstrap_existing_account(bundle,data,now)
+ bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+ funds.assert_opening_equity_forward(_initial(context)['funding'],bundle['funding'])
+ if _decode(bundle['runtime']['engine']).get('order_intents'):
+  raise Weekly19PipelineError('weekly19_existing_account_bootstrap_created_orders')
+ saved=store.initialize(bundle)
+ return dict(status='existing_account_initialized',state_sha256=digest(saved),production_qualified=False)
+
+def _report(context,backend,bundle,data,now,preview):
+ if now.astimezone(SHANGHAI).weekday()!=4:return None
+ decision=deepcopy(bundle.get('decision'))
+ if not decision:raise Weekly19PipelineError('completed_decision_missing')
+ if digest(data['receipt'])!=decision['data_receipt_sha256']:raise Weekly19PipelineError('report_original_data_receipt_mismatch')
+ advice=bundle.get('friday_advice')
+ if advice is None:raise Weekly19PipelineError('committed_friday_advice_missing')
+ checked=refresh_friday_advice(bundle,data['broker_snapshot']['account'],now)
+ if (checked['status']!=advice['status']or checked['recommendation']!=advice['recommendation']
+  or checked.get('advice_id')!=advice.get('advice_id')or checked.get('funding')!=bundle['funding']):raise Weekly19PipelineError('committed_friday_advice_not_current')
+ report=build_friday_report(funding_state=bundle['funding'],broker_account=data['broker_snapshot']['account'],
+  recommendation=advice['recommendation'],friday_advice=advice,
+  decision=decision,data_receipt=dict(status='ready',material_release_id=context['material_release_id'],
+  target_date=decision['trading_date'],sha256=decision['data_receipt_sha256']),now=now,preview=preview,blocking_reasons=([backend.cash_source_blocker]if getattr(backend,'cash_source_blocker',None)else()))
+ if preview:return report
+ result=FridayMailOutbox(context['mail_outbox']).deliver(report,backend.send_mail)
+ return dict(report,delivery=result)
+
+def _daily_risk_rows(bundle):
+ """Project proven close lifecycles once, regardless of retries/child count."""
+ target=bundle['decision']['trading_date'];saved=bundle['runtime']
+ engine=_decode(saved['engine']);state=_decode(saved['runtime'])
+ plans=engine['order_intents'];rows=[]
+ for lid,life in state['close_lifecycles'].items():
+  ids=life['order_ids']
+  if not ids:raise Weekly19PipelineError('daily_close_lifecycle_order_missing')
+  original=plans[ids[0]]
+  if (original['offset']!='close'or original.get('close_lifecycle_id')!=lid
+   or any(plans[oid].get('close_lifecycle_id')!=lid or plans[oid]['vt_symbol']!=life['symbol'] for oid in ids)):
+   raise Weekly19PipelineError('daily_close_lifecycle_binding_invalid')
+  evidence=life.get('fill_evidence',[]);seen=set()
+  for e in evidence:
+   tid=e.get('trade_id');oid=e.get('signal_order_id');archive=state['fills'].get(tid)
+   semantic={k:v for k,v in e.items()if k!='raw_sha256'}
+   if (oid not in ids or not archive or tid in seen or type(e.get('volume'))is not int or e['volume']<=0
+    or archive.get('first_raw_sha256')!=e.get('raw_sha256')or archive.get('semantic_sha256')!=digest(semantic)
+    or e.get('account_key')!=saved['account_key']or e.get('material_release_id')!=saved['material_release_id']
+    or any(e.get(k)!=plans[oid][k]for k in ('intent_id','signal_identity','vt_symbol','direction','offset'))):
+    raise Weekly19PipelineError('daily_fill_evidence_binding_invalid')
+   seen.add(tid)
+  observed=sum(e['volume']for e in evidence)
+  if observed>life['filled']or sum(engine['order_filled'][oid]for oid in ids)!=life['filled']:
+   raise Weekly19PipelineError('daily_fill_evidence_volume_invalid')
+  dates=sorted({e['trading_day']for e in evidence})
+  coverage='complete'if observed==life['filled']else'legacy_or_partial'
+  signal=original['target_date']
+  if signal>target:raise Weekly19PipelineError('daily_future_signal')
+  if signal!=target and life['status']=='completed'and target not in dates and coverage=='complete':continue
+  rows.append(dict(vt_symbol=life['symbol'],position_direction='long'if original['direction']=='short'else'short',
+   signal_date=signal,next_execution_day=original['next_execution_day'],reason_code=original.get('exit_reason',''),
+   planned_volume=life['volume'],filled_volume=life['filled'],status=life['status'],
+   close_lifecycle_id=lid,intent_ids=[plans[oid]['intent_id']for oid in ids],fill_trading_dates=dates,
+   fill_date_coverage=coverage))
+ return sorted(rows,key=lambda row:(row['signal_date'],row['vt_symbol'],row['close_lifecycle_id']))
+
+def _daily_report(context,backend,bundle,data,now,preview):
+ from qmt_roll_weekly19_daily_report import build_daily_risk_report,DailyMailOutbox
+ decision=deepcopy(bundle.get('decision'))
+ if not decision or digest(data['receipt'])!=decision['data_receipt_sha256']:
+  raise Weekly19PipelineError('daily_report_original_data_receipt_mismatch')
+ report=build_daily_risk_report(decision=decision,
+  data_receipt=dict(status='ready',material_release_id=context['material_release_id'],target_date=decision['trading_date'],sha256=decision['data_receipt_sha256']),
+  account_key=context['account_key'],material_release_id=context['material_release_id'],rows=_daily_risk_rows(bundle),
+  now=now,preview=preview,blocking_reasons=([backend.cash_source_blocker]if getattr(backend,'cash_source_blocker',None)else()))
+ if preview:return report
+ result=DailyMailOutbox(context['mail_outbox']).deliver(report,backend.send_mail)
+ if result['status']not in {'sent','already_sent','preview_written'}:
+  raise Weekly19PipelineError('daily_mail_delivery_'+result['status'])
+ return dict(report,delivery=result)
+
+def _refresh_advice(bundle,obj,data,now):
+ if now.astimezone(SHANGHAI).weekday()!=4:return bundle
+ # Advice is an outer operational record. The original strategy decision and
+ # complete decision_state remain immutable, including holiday Thursdays.
+ bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+ advice=refresh_friday_advice(bundle,data['broker_snapshot']['account'],now)
+ if advice['funding']!=bundle['funding']:
+  obj.reconcile_broker_snapshot(data['broker_snapshot'],advice['funding'])
+  bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+ previous=bundle.get('friday_advice')
+ if not(previous and previous.get('advice_id')==advice.get('advice_id')and previous.get('broker_account_raw_sha256')==advice.get('broker_account_raw_sha256')and previous.get('status')==advice['status']):
+  bundle['friday_advice']=advice
+ return bundle
+
+def run_weekly19_support_job(job,*,context):
+ if job not in JOBS:raise Weekly19PipelineError('weekly19_unknown_support_job')
+ if job=='monthly-ai-pool':return dict(status='disabled_for_fixed19',reason='fixed_19_universe_ai_off',production_qualified=False)
+ backend,now,preview=_parts(context);store=pipeline_store(context)
+ if job=='health':
+  bundle=store.read()
+  return dict(status='ready_state'if bundle else'not_initialized',revision=None if bundle is None else bundle['revision'],
+   state_sha256=None if bundle is None else digest(bundle),production_qualified=False)
+ if context['target_date']<context['cold_start_date']:
+  return dict(status='skipped_before_weekly19_cold_start',target_date=context['target_date'],production_qualified=False)
+ if not preview and job in {'postclose-precompute','postclose-report','day-close-readonly'}and hasattr(backend,'refresh_readonly'):
+  backend.refresh_readonly(now);now=datetime.now(SHANGHAI)
+ if not preview and job=='postclose-precompute'and hasattr(backend,'refresh_market_data'):
+  backend.refresh_market_data(context['target_date'],now);now=datetime.now(SHANGHAI)
+ target,data=_load(backend,context,now)
+ existing=store.read()
+ if existing is not None and not preview and existing.get('runtime_mode')!='production':raise Weekly19PipelineError('preview_state_cannot_become_production')
+ if job=='postclose-report':
+  if existing is None or existing['decision']is None or existing['decision']['trading_date']!=target:
+   return dict(status='blocked',blockers=['completed_decision_missing'],production_qualified=False)
+  def refresh(bundle):
+   cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now);bundle['funding']=cash
+   obj=_runtime(bundle,data,now,backend.read_execution_events(bundle['decision'],now))
+   bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+   return _refresh_advice(bundle,obj,data,now)
+  existing=store.transact(refresh)
+  # Daily notification owns this scheduled job. Deliver it before the separate
+  # Friday funding report so an advice failure cannot hide a valid risk notice.
+  daily=_daily_report(context,backend,existing,data,now,preview)
+  weekly=_report(context,backend,existing,data,now,preview)
+  return dict(status='preview_complete'if preview else'report_complete',mail=weekly or daily,
+   daily_mail=daily,weekly_mail=weekly,production_qualified=False)
+ if existing is None:
+  if not preview:backend.validate_initial_account(data['broker_snapshot'],now)
+  store.initialize(_initial(context))
+ def advance(bundle):
+  if job=='postclose-precompute':_assert_completed_history_sequence(bundle,data,target)
+  cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now)
+  funds.validate_state(cash);bundle['funding']=cash
+  obj=_runtime(bundle,data,now,backend.read_execution_events(bundle['decision'],now))
+  if job=='postclose-precompute':
+   decision=obj.process_completed_day(target,data['bars_by_day'][target],data['receipt'],data['broker_snapshot'],cash)
+   bundle['decision']=decision
+   if bundle.get('decision_state')is None or bundle['decision_state']['state_sha256']!=decision['after_state_sha256']:
+    if obj.export_state()['state_sha256']!=decision['after_state_sha256']:raise Weekly19PipelineError('decision_origin_state_missing')
+    bundle['decision_state']=obj.export_state()
+  else:
+   obj.reconcile_broker_snapshot(data['broker_snapshot'],cash)
+  bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+  return _refresh_advice(bundle,obj,data,now)if job=='postclose-precompute'else bundle
+ bundle=store.transact(advance)
+ if job=='postclose-precompute'and hasattr(backend,'complete_postclose'):backend.complete_postclose(bundle,data,now)
+ report=_report(context,backend,bundle,data,now,preview)if job=='postclose-precompute'else None
+ return dict(status='preview_complete'if preview else'completed',job=job,target_date=target,
+  revision=bundle['revision'],state_sha256=digest(bundle),decision_sha256=digest(bundle['decision']),
+  mail=report,production_qualified=False)
+
+def run_weekly19_session_cycle(*,context):
+ backend=context.get('backend')
+ if not context.get('preview',False)and getattr(backend,'_service',None)is not None:
+  now=context.get('now')or datetime.now(SHANGHAI)
+  if now.tzinfo is None or now.utcoffset()is None:raise Weekly19PipelineError('aware_now_required')
+  return backend.execution_session_cycle(target_date=context['target_date'],now=now)
+ backend,now,preview=_parts(context);target,data=_load(backend,context,now);store=pipeline_store(context)
+ if target<context['cold_start_date']:return dict(status='skipped_before_weekly19_cold_start',production_qualified=False)
+ existing=store.read()
+ if existing is None:return dict(status='blocked',blockers=['completed_decision_missing'],production_qualified=False)
+ if not preview and existing.get('runtime_mode')!='production':raise Weekly19PipelineError('preview_state_cannot_become_production')
+ runtime_holder={}
+ def reconcile(bundle):
+  cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now);bundle['funding']=cash
+  obj=_runtime(bundle,data,now,backend.read_execution_events(bundle['decision'],now))
+  obj.reconcile_broker_snapshot(data['broker_snapshot'],cash,quote_snapshot=backend.quote_snapshot(now)if hasattr(backend,'quote_snapshot')else None)
+  bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state);runtime_holder['runtime']=obj;return bundle
+ bundle=store.transact(reconcile)
+ if preview:return dict(status='preview_no_execution',state_sha256=digest(bundle),production_qualified=False)
+ if not bundle['decision']or bundle['decision']['trading_date']!=target:return dict(status='blocked',blockers=['completed_decision_missing'],production_qualified=False)
+ # This backend must use the real journal→quote-spool→controller→931 contract;
+ # a producer decision alone is never an authorized execution record.
+ result=backend.publish_execution(runtime=runtime_holder['runtime'],bundle=deepcopy(bundle),data=data,now=now)
+ return dict(status='session_cycle',execution=result,state_sha256=digest(bundle),production_qualified=False)
