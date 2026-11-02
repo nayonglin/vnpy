@@ -223,6 +223,8 @@ class FridayMailOutbox:
       try:fd=os.open(name,base,0o600,dir_fd=dirfd);break
       except FileNotFoundError:
        if attempt==7:raise
+     except FileNotFoundError:
+      if attempt==7:raise
     else:raise ReportError('outbox_lock_race_exhausted')
   except OSError as exc:raise ReportError('outbox_open_failed')from exc
   st=os.fstat(fd)

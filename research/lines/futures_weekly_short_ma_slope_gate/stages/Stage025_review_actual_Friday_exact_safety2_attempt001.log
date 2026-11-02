@@ -1,0 +1,7 @@
+test_initial_exclusive_ENOENT_exact8_no_sender_preserves_outer_error (__main__.ActualExhaustionSemantics.test_initial_exclusive_ENOENT_exact8_no_sender_preserves_outer_error) ... ok
+test_existing_inode_removed_each_time_exact8_no_sender (__main__.ActualExhaustionSemantics.test_existing_inode_removed_each_time_exact8_no_sender) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+OK

@@ -59,3 +59,9 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 用户明确选择直接切换，保留真实账户盈余及现仓，替代Stage023精确15万空仓启动条件。独立查找未见可验证旧保护档案，故固定为新接管管理周期：原生OpenCost/真实乘数核聚合成本，管理日期重置、旧止损/峰值/计龄及旧风险记忆未知，不造旧成交；最近完整周原公式保护、完整layers/identity与真实现金同一原子初始化。启动前盈余单列，场外R15万/T0，后续风险仍按真实交易权益，人工现金确认不变。新入口不发单/邮件、不追历史开仓，默认flat门保留。
 
 96套件2405通过、0跳过、298关键源无漂移；独审发现并修复实际E0高水位遗漏、非投机仓错误接管、旧一周保护可被采用三P1，原RED均保留且原断言复验绿，另有76次独立定向调用。详见Stage024_implementation_lock与独审记录；真实静态合约metadata已捕获仅作启动来源，旧9:04 CTP诊断不升级为新资格。尚未新m4冻结/真实新资格/激活/master/生产安装，后续从新版本化交接记录继续；m1/m2/m3和44品种线保持。
+
+## 2026-11-02 Stage025 m4资格失败与m5工程修复候选
+
+m4 source d43e23ca9a501acae3665501a28ecefb6918d7b1、release 1a4f7d06c2f964f8bb3bab3b818ac5e05b7b5876已冻结且local clone388payload/298critical/LFS及mode通过。可信逐套件资格失败于三组测试，尚未进入native捕获；不activate/master/生产。两组稳定复现为隔离HOME缺生产目录导致源门错误类型，最小改expected path resolve(strict=False)，actual repo仍strict存在/身份链不变。另独立故障注入证实通知lock首次exclusive-create ENOENT缺原8次retry分支，补catch保留权限/NOFOLLOW/最后raise/未知投递不重发；不把它冒认原Friday故障原因。原Friday30轮及原序前链未复现，保留UNKNOWN与原失败，下一次旁路尽力归档原始观察，不修改可信producer或用sidecopy授予资格。
+
+4文件代码/测试最小delta，新增3回归先RED后GREEN；96套件2408/0F/0E/0skip、298锁前后/current一致，独审613绑定检查通过/剩余实现P0/P1/P2=0，原AST原型错误文本差异1F及历史原始轨迹丢失明确保存。无金融重跑/alpha/资金规则改变，未接管实账户；需新m5及真实新资格。最新离线入口Stage025_implementation_lock.json / Stage025_review_acceptance.json；m4不可变负结果不覆盖。

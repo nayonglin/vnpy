@@ -1,0 +1,15 @@
+# Stage025 m4真实资格前的独立测试失败与最小修复
+
+记录时间：2026-11-02T15:40:19.320544+08:00，line_id=futures_weekly_short_ma_slope_gate。不是alpha突破，无新增金融回测、收益指标或参数搜索。
+
+m4 source=d43e23ca9a501acae3665501a28ecefb6918d7b1，release=1a4f7d06c2f964f8bb3bab3b818ac5e05b7b5876，物料m0004_20261102T145655+0800_d43e23ca9a50已不可变冻结、本地独立clone通过。原整批96套件2405通过及源/物料独审保持其原范围。
+
+本次精确R可信资格器独立进程逐套件运行失败，列出backend_execution、friday_report、live_entry三组。尚未运行可信native捕获，不具备qualification，不得activate/promote/安装。原builder在finally删除临时raw suite文件，实际保留下来的wrapper错误仅证明失败列表；不能编造原Friday堆栈或将本次称为通过。下一次由外部只读observer按已完成原文件字节另存失败审计，不改可信runner/argv/env/资格判断。
+
+精确受控HOME/TMP/原argv诊断中，两组稳定复现：PRODUCTION_DEPLOY_ROOT.resolve(strict=True)在隔离HOME缺Desktop时抛FileNotFoundError，而预期应是稳定生产来源拒绝LocalBackendError；source actual repo在构造器仍严格要求存在。独审在内存AST仅改expected path strict=False的7项路径安全矩阵通过，未放宽canonical目标、真实仓库、manifest/qualification/activation等闸。作者新回归先RED后修一行GREEN，原backend/live_entry合计19项通过。
+
+Friday原失败细因仍未知：同一受控HOME独立30轮660项及原序index0至Friday的22套件前序链均未复现，不能称为修复或静默抹去；原负结果及诊断每次output/XML/exit保留。另独审正在检查持久化冷竞争边界，只有可复现证据才修改，不以重新跑绿代替根因。
+
+后续计划：仅修已证实的入口/持久化缺陷，保留m4与全部失败；如有源码字节变化，重做source锁、96套件、独审、新m5物料与精确release真实资格，再走原master/生产链。没有改变19池、空头底部20%、原风险、资金/备用金、交易时钟、无加仓或邮件节奏，也不改44品种研究。实际账户未接管，CURRENT/master/stable/生产五件套和launchd仍未变。
+
+开始与结束判断：过拟合为否，本次是资格和运行边界缺陷定位，不调金融阈值；仍有继续价值，必须保证可独立复验及真实来源完整，不能把失败候选直接装入实盘。

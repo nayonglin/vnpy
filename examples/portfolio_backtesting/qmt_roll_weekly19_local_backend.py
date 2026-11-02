@@ -47,7 +47,7 @@ class LocalEvidenceBackend:
   self._service=None;self._bridge=None;self._session_owner_closed=False;self._session_context_invalidated=None
  def require_production(self):
   if self.preview:raise LocalBackendError('preview_backend_cannot_be_production')
-  if self.repo!=PRODUCTION_DEPLOY_ROOT.resolve(strict=True):raise LocalBackendError('weekly19_stable_production_root_required')
+  if self.repo!=PRODUCTION_DEPLOY_ROOT.resolve(strict=False):raise LocalBackendError('weekly19_stable_production_root_required')
   # Check all real artifacts before loading account secrets or building a gateway.
   for label,path in [('release_manifest',self.release_manifest),('activation_receipt',self.activation_receipt),('production_qualification',self.qualification_evidence)]:
    if not path.is_file():raise LocalBackendError('weekly19_missing_'+label)

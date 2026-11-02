@@ -1,0 +1,44 @@
+test_eight_enoent_fail_closed_without_sender (builtins.Cases.test_eight_enoent_fail_closed_without_sender) ... FAIL
+test_existed_then_removed_inode_still_retries (builtins.Cases.test_existed_then_removed_inode_still_retries) ... ok
+test_final_status_write_failure_preserves_sending_no_blind_retry (builtins.Cases.test_final_status_write_failure_preserves_sending_no_blind_retry) ... ok
+test_one_transient_exclusive_create_enoent_retries_before_send (builtins.Cases.test_one_transient_exclusive_create_enoent_retries_before_send) ... ok
+test_permissions_are_not_retried_or_bypassed (builtins.Cases.test_permissions_are_not_retried_or_bypassed) ... ok
+test_symlink_lock_stays_fail_closed (builtins.Cases.test_symlink_lock_stays_fail_closed) ... ok
+test_unknown_after_sender_never_retries (builtins.Cases.test_unknown_after_sender_never_retries) ... ok
+
+======================================================================
+FAIL: test_eight_enoent_fail_closed_without_sender (builtins.Cases.test_eight_enoent_fail_closed_without_sender)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_friday_report.py", line 221, in _open
+    fd=os.open(name,base|os.O_CREAT|os.O_EXCL,0o600,dir_fd=dirfd);break
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1124, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1128, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/mock.py", line 1189, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/weekly19_stage024_friday_lock_review002.py", line 34, in wrapped
+    if how=='always_enoent'or how=='once_enoent'and self.creates==1:raise FileNotFoundError(errno.ENOENT,'synthetic transient exclusive-create ENOENT')
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] synthetic transient exclusive-create ENOENT
+
+The above exception was the direct cause of the following exception:
+
+qmt_roll_weekly19_friday_report.ReportError: outbox_open_failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/private/tmp/weekly19_stage024_friday_lock_review002.py", line 46, in test_eight_enoent_fail_closed_without_sender
+    with patch.object(mail.os,'open',side_effect=self.hook('always_enoent')),self.assertRaisesRegex(mail.ReportError,'outbox_lock_race_exhausted'):self.out.deliver(report(),self.sender)
+AssertionError: "outbox_lock_race_exhausted" does not match "outbox_open_failed"
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.008s
+
+FAILED (failures=1)

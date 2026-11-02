@@ -1,0 +1,12 @@
+test_actual_repo_must_still_exist_in_constructor (builtins.Cases.test_actual_repo_must_still_exist_in_constructor) ... ok
+test_dangling_expected_symlink_remains_rejected (builtins.Cases.test_dangling_expected_symlink_remains_rejected) ... ok
+test_exact_existing_root_does_not_bypass_manifest (builtins.Cases.test_exact_existing_root_does_not_bypass_manifest) ... ok
+test_existing_symlink_canonical_behavior_unchanged_and_still_requires_authority (builtins.Cases.test_existing_symlink_canonical_behavior_unchanged_and_still_requires_authority) ... ok
+test_existing_wrong_root_still_rejected (builtins.Cases.test_existing_wrong_root_still_rejected) ... ok
+test_missing_expected_root_rejects_with_stable_domain_error (builtins.Cases.test_missing_expected_root_rejects_with_stable_domain_error) ... ok
+test_preview_still_fails_before_source_or_files (builtins.Cases.test_preview_still_fails_before_source_or_files) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.004s
+
+OK

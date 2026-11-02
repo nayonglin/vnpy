@@ -107,6 +107,28 @@ class MailOutboxTest(unittest.TestCase):
    with ThreadPoolExecutor(max_workers=2)as pool:
     futures=[pool.submit(worker)for _ in range(2)];statuses=[f.result()for f in futures]
    self.assertEqual(sorted(statuses),['already_sent','sent']);self.assertEqual(calls,[1])
+ def test_transient_missing_first_lock_creation_recovers_without_duplicate_send(self):
+  from unittest.mock import patch
+  original=os.open;attempts=[];sent=[]
+  def transient(name,flags,*args,**kwargs):
+   if name=='.lock'and flags&os.O_EXCL:
+    attempts.append(1)
+    if len(attempts)==1:raise FileNotFoundError(2,'synthetic cold lock creation transient')
+   return original(name,flags,*args,**kwargs)
+  with patch('qmt_roll_weekly19_friday_report.os.open',side_effect=transient):
+   result=self.out.deliver(self.r,lambda _:sent.append(1)or{'email_status':'sent'})
+  self.assertEqual(result['status'],'sent');self.assertEqual(len(attempts),2);self.assertEqual(sent,[1])
+  self.assertEqual(self.out.deliver(self.r,lambda _:sent.append(1))['status'],'already_sent');self.assertEqual(sent,[1])
+ def test_permanent_missing_lock_creation_is_bounded_and_never_sends(self):
+  from unittest.mock import patch
+  original=os.open;attempts=[];sent=[]
+  def missing(name,flags,*args,**kwargs):
+   if name=='.lock'and flags&os.O_EXCL:
+    attempts.append(1);raise FileNotFoundError(2,'synthetic permanent lock creation failure')
+   return original(name,flags,*args,**kwargs)
+  with patch('qmt_roll_weekly19_friday_report.os.open',side_effect=missing):
+   with self.assertRaises(ReportError):self.out.deliver(self.r,lambda _:sent.append(1))
+  self.assertEqual(len(attempts),8);self.assertEqual(sent,[])
  def test_preview_never_calls_transport(self):
   r=build_friday_report(**inputs());calls=[]
   self.assertEqual(self.out.deliver(r,lambda _:calls.append(1))['status'],'preview_only');self.assertEqual(calls,[])

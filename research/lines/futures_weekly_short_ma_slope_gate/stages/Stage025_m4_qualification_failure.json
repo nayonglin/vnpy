@@ -1,0 +1,32 @@
+{
+  "diagnosis": {
+    "friday_independent_runs": "30 suites/660 cases passed; no inference original resolved",
+    "friday_original_cause": "UNKNOWN",
+    "friday_original_order_prefix": "22 suites/313 cases: only known backend failure; Friday passed",
+    "reproduced_missing_expected_path_gate": "two suites, real RED with controlled original argv/env"
+  },
+  "failed_suites": [
+    "tests/test_weekly19_backend_execution.py",
+    "tests/test_weekly19_friday_report.py",
+    "tests/test_weekly19_live_entry.py"
+  ],
+  "failure_code": "production_bundle_runner_pytest_failed",
+  "master_or_production_changed": false,
+  "material_release_id": "m0004_20261102T145655+0800_d43e23ca9a50",
+  "new_candidate_repairs": [
+    "canonical expected production path comparison fails closed when target absent",
+    "bounded existing mail-lock retry also catches first exclusive-create ENOENT"
+  ],
+  "original_raw_suite_outputs": "deleted by unchanged trusted runner finally; no original Friday stack retained; do not invent attribution",
+  "private_wrapper_log": {
+    "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage025_m4_20261102T151205/qualification-R-wrapper.log",
+    "sha256": "c1a5aa11a05e30464ac1c8eb1df20bb70fc39507fe8350bceb4d00bb49a27b7a"
+  },
+  "production_qualified": false,
+  "qualification_file_exists": false,
+  "release_commit": "1a4f7d06c2f964f8bb3bab3b818ac5e05b7b5876",
+  "schema": "Stage025.m4-trusted-qualification-failure.v1",
+  "source_commit": "d43e23ca9a501acae3665501a28ecefb6918d7b1",
+  "status": "failed_before_native_capture",
+  "trusted_formal_readonly_invocations": 0
+}

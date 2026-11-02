@@ -22,6 +22,11 @@ class EntryTest(unittest.TestCase):
    with self.assertRaisesRegex(LocalBackendError,'missing_release_manifest'):b.require_production()
  def test_source_checkout_cannot_run_as_stable_production(self):
   with self.assertRaisesRegex(LocalBackendError,'stable_production_root_required'):self.backend().require_production()
+ def test_missing_expected_stable_path_rejects_before_authority_or_broker_read(self):
+  missing=self.root/'missing-home'/'Desktop'/'person'/'vnpy_production_live'
+  with patch('qmt_roll_weekly19_local_backend.PRODUCTION_DEPLOY_ROOT',missing),patch('qmt_roll_weekly19_broker_evidence.load_broker_snapshot',side_effect=AssertionError('source rejected before reading broker')):
+   with self.assertRaisesRegex(LocalBackendError,'stable_production_root_required'):self.backend().require_production()
+  self.assertFalse(missing.exists())
  def test_json_cannot_supply_qualification_or_callable_capability(self):
   for key in ['qualified','production_qualified','backend','context_provider','sender']:
    with self.assertRaisesRegex(LocalBackendError,'capability_injection'):self.backend(dict(schema='weekly19.live-context.v1',execution_profile=PROFILE.profile_key,**{key:True}))
