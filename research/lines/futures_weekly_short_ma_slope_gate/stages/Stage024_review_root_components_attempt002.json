@@ -1,0 +1,73 @@
+{
+  "schema": "stage024.independent.partial-component-test.v1",
+  "scope": "source snapshot only; runtime/adoption implementation not covered; not production qualified",
+  "production_qualified": false,
+  "final_acceptance": false,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "8e3631bad218a30bc56c9942446447fa7ec8cf1249d09d03c510897bfd6d8734",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "855a2c12a137a68185d3bda74757209a3786898b643eb624e7718c3da9a14072",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "323e76e0ec2058cb1af1089974df2c063256ec95a982f3e17080259572bcf96d",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "5a730df5e22b83e35cacfc2d0cc5174a4f16bc51f2e4283f4bff7d91661e6948",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "2f36685376bf96c4b3a3349c71fa254cbdd338296c858753bdf73ba7fd39f78a",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "tests/test_weekly19_opening_surplus.py": "2422937b51f186108d86fed76ab956995ef0ace394f59d012925aa0beb790c7a",
+    "tests/test_weekly19_startup_policy.py": "1d3a57f82ab53b70e89f04e8d3e1f99e862014350aab4e185210758c6cf19ae7",
+    "tests/test_weekly19_existing_account_startup.py": "2d4fec5191c550752c33fe392a77c27c9cb3e5f7990d7472e5265d9d9f0a9dc9"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "8e3631bad218a30bc56c9942446447fa7ec8cf1249d09d03c510897bfd6d8734",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "855a2c12a137a68185d3bda74757209a3786898b643eb624e7718c3da9a14072",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "323e76e0ec2058cb1af1089974df2c063256ec95a982f3e17080259572bcf96d",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "5a730df5e22b83e35cacfc2d0cc5174a4f16bc51f2e4283f4bff7d91661e6948",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "2f36685376bf96c4b3a3349c71fa254cbdd338296c858753bdf73ba7fd39f78a",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "tests/test_weekly19_opening_surplus.py": "2422937b51f186108d86fed76ab956995ef0ace394f59d012925aa0beb790c7a",
+    "tests/test_weekly19_startup_policy.py": "1d3a57f82ab53b70e89f04e8d3e1f99e862014350aab4e185210758c6cf19ae7",
+    "tests/test_weekly19_existing_account_startup.py": "2d4fec5191c550752c33fe392a77c27c9cb3e5f7990d7472e5265d9d9f0a9dc9"
+  },
+  "source_drift": [],
+  "runs": [
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_adversarial_attempt001.py"
+      ],
+      "exit_code": 0,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002_1.log",
+      "log_sha256": "8a4f6dee3ed8e234bdf1cd7432bed8b160ba2c182013fdb470bb7fd71939f5fa"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_weekly19_opening_surplus",
+        "tests.test_weekly19_existing_account_startup",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002_2.log",
+      "log_sha256": "ca9deead77380163fb49dbd58759133c5ad7e7a717629215b1ff4794de88d0b8"
+    }
+  ],
+  "counts": {
+    "independent_tests": 3,
+    "reused_author_startup_tests": 14,
+    "reused_author_opening_equity_tests": 20,
+    "reused_author_carry_source_and_cli_tests": 5,
+    "total": 42
+  },
+  "actions": {
+    "native_connections": 0,
+    "orders": 0,
+    "cancels": 0,
+    "SMTP": 0,
+    "financial_replays": 0
+  }
+}

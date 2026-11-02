@@ -57,6 +57,10 @@ PRODUCTION_QUALIFICATION_EVIDENCE_KIND = (
 PRODUCTION_QUALIFICATION_MAX_AGE = timedelta(days=7)
 PRODUCTION_QUALIFICATION_MAX_FUTURE_SKEW = timedelta(minutes=5)
 PRODUCTION_REQUIRED_TEST_SUITES = (
+    'tests/test_weekly19_adoption.py',
+    'tests/test_weekly19_opening_surplus.py',
+    'tests/test_weekly19_startup_policy.py',
+    'tests/test_weekly19_existing_account_startup.py',
     'tests/test_weekly19_manual_cash_cli.py',
     'tests/test_weekly19_manual_cash.py',
     'tests/test_weekly19_physical_gate.py',
@@ -412,6 +416,13 @@ _TRUSTED_READONLY_INVOCATION_FIELDS = {
     "environment_sha256",
 }
 DEFAULT_CRITICAL_FILES = (
+    'research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_existing_account_cutover_runbook.md',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py',
+    'tests/test_weekly19_adoption.py',
+    'examples/portfolio_backtesting/qmt_roll_weekly19_startup.py',
+    'tests/test_weekly19_opening_surplus.py',
+    'tests/test_weekly19_startup_policy.py',
+    'tests/test_weekly19_existing_account_startup.py',
     'research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_operator_manual_cash_runbook.md',
     'tests/test_weekly19_physical_gate.py',
     'tests/test_weekly19_backend_execution.py',

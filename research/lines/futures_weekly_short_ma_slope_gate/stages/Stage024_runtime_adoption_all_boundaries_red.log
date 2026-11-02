@@ -1,0 +1,94 @@
+test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents) ... ok
+test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer) ... ok
+test_cutover_must_use_latest_prior_session_and_real_forward_calendar (tests.test_weekly19_adoption.AdoptionTests.test_cutover_must_use_latest_prior_session_and_real_forward_calendar) ... FAIL
+test_known_cutover_equity_initializes_new_peak_and_estimate_baselines (tests.test_weekly19_adoption.AdoptionTests.test_known_cutover_equity_initializes_new_peak_and_estimate_baselines) ... FAIL
+test_night_native_next_trading_day_and_terminal_alias_preserve_wall_management_date (tests.test_weekly19_adoption.AdoptionTests.test_night_native_next_trading_day_and_terminal_alias_preserve_wall_management_date) ... ERROR
+test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap (tests.test_weekly19_adoption.AdoptionTests.test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap) ... ok
+test_normal_constructor_still_rejects_unknown_nonzero_positions (tests.test_weekly19_adoption.AdoptionTests.test_normal_constructor_still_rejects_unknown_nonzero_positions) ... ok
+test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) ... 
+  test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='2') ... FAIL
+  test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='3') ... FAIL
+  test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='5') ... FAIL
+  test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='6') ... FAIL
+  test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='7') ... FAIL
+test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price (tests.test_weekly19_adoption.AdoptionTests.test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price) ... ok
+test_real_metadata_size_tick_and_native_instrument_are_bound (tests.test_weekly19_adoption.AdoptionTests.test_real_metadata_size_tick_and_native_instrument_are_bound) ... ok
+test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl (tests.test_weekly19_adoption.AdoptionTests.test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl) ... ok
+test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed (tests.test_weekly19_adoption.AdoptionTests.test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed) ... ok
+test_short_carry_uses_original_weekly_stop_and_actual_aggregate_cost (tests.test_weekly19_adoption.AdoptionTests.test_short_carry_uses_original_weekly_stop_and_actual_aggregate_cost) ... ok
+test_source_sha_quantity_and_native_direction_cannot_be_forged (tests.test_weekly19_adoption.AdoptionTests.test_source_sha_quantity_and_native_direction_cannot_be_forged) ... ok
+
+======================================================================
+ERROR: test_night_native_next_trading_day_and_terminal_alias_preserve_wall_management_date (tests.test_weekly19_adoption.AdoptionTests.test_night_native_next_trading_day_and_terminal_alias_preserve_wall_management_date)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 117, in test_night_native_next_trading_day_and_terminal_alias_preserve_wall_management_date
+    seed=adoption.build_carry_in_seed(operator_decision=v[7],broker_snapshot=v[4],raw_position_evidence=v[5],contract_metadata_evidence=v[6],metadata=v[3],now=night)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py", line 52, in build_carry_in_seed
+    _require(management==account['trading_day'],'management_broker_trading_day_mismatch')
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py", line 17, in _require
+    if not value:raise AdoptionError('weekly19_carry_in_'+reason)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+qmt_roll_weekly19_adoption.AdoptionError: weekly19_carry_in_management_broker_trading_day_mismatch
+
+======================================================================
+FAIL: test_cutover_must_use_latest_prior_session_and_real_forward_calendar (tests.test_weekly19_adoption.AdoptionTests.test_cutover_must_use_latest_prior_session_and_real_forward_calendar)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 133, in test_cutover_must_use_latest_prior_session_and_real_forward_calendar
+    with self.assertRaises(ValueError):self.bootstrap(v,batches=[v[2][d] for d in sorted(v[2]) if d<='2026-10-23'])
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_known_cutover_equity_initializes_new_peak_and_estimate_baselines (tests.test_weekly19_adoption.AdoptionTests.test_known_cutover_equity_initializes_new_peak_and_estimate_baselines)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 95, in test_known_cutover_equity_initializes_new_peak_and_estimate_baselines
+    self.assertEqual(a.strategy.portfolio_equity_high_water,170000.)
+AssertionError: 150000.0 != 170000.0
+
+======================================================================
+FAIL: test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 107, in test_only_speculation_positions_have_an_existing_native_execution_route
+    with self.subTest(flag=flag),self.assertRaises(ValueError):self.seed(v)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='3')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 107, in test_only_speculation_positions_have_an_existing_native_execution_route
+    with self.subTest(flag=flag),self.assertRaises(ValueError):self.seed(v)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='5')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 107, in test_only_speculation_positions_have_an_existing_native_execution_route
+    with self.subTest(flag=flag),self.assertRaises(ValueError):self.seed(v)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='6')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 107, in test_only_speculation_positions_have_an_existing_native_execution_route
+    with self.subTest(flag=flag),self.assertRaises(ValueError):self.seed(v)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_only_speculation_positions_have_an_existing_native_execution_route (tests.test_weekly19_adoption.AdoptionTests.test_only_speculation_positions_have_an_existing_native_execution_route) (flag='7')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 107, in test_only_speculation_positions_have_an_existing_native_execution_route
+    with self.subTest(flag=flag),self.assertRaises(ValueError):self.seed(v)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.935s
+
+FAILED (failures=7, errors=1)

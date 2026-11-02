@@ -1,0 +1,8 @@
+test_first_post_cutover_equity_decline_is_not_erased (__main__.OpeningPeak.test_first_post_cutover_equity_decline_is_not_erased) ... ok
+test_new_cohort_known_opening_equity_is_its_initial_high_water (__main__.OpeningPeak.test_new_cohort_known_opening_equity_is_its_initial_high_water) ... ok
+test_positive_control_real_cash_and_original_stop (__main__.OpeningPeak.test_positive_control_real_cash_and_original_stop) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.346s
+
+OK

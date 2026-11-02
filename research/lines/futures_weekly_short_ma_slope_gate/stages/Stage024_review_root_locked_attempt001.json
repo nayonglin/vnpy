@@ -1,0 +1,131 @@
+{
+  "schema": "stage024.independent.locked-component-tests.v1",
+  "status": "OFFLINE_COMPONENT_TESTS_PASS",
+  "production_qualified": false,
+  "full_ci_pending": true,
+  "source_before": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "2f36685376bf96c4b3a3349c71fa254cbdd338296c858753bdf73ba7fd39f78a",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "8e3631bad218a30bc56c9942446447fa7ec8cf1249d09d03c510897bfd6d8734",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "855a2c12a137a68185d3bda74757209a3786898b643eb624e7718c3da9a14072",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "46400dbd90ddab2b60e99b2cbbcd6335d7d1eae054f4f9bdd028f05f92224d62",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "5a730df5e22b83e35cacfc2d0cc5174a4f16bc51f2e4283f4bff7d91661e6948",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "0fef13f72c85730a1b7ef50842d8f88981e1dce83af40b8b4b519dd2f2a2defe",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py": "0f60f54bf440730228787d975daad87a0da8e663caf5973935f9fce01aa5ac47",
+    "tests/test_weekly19_opening_surplus.py": "2422937b51f186108d86fed76ab956995ef0ace394f59d012925aa0beb790c7a",
+    "tests/test_weekly19_startup_policy.py": "1d3a57f82ab53b70e89f04e8d3e1f99e862014350aab4e185210758c6cf19ae7",
+    "tests/test_weekly19_existing_account_startup.py": "fd2afce98a582c095f4549b3211411b5731249a973249c2584546d0a9fde58ee",
+    "tests/test_weekly19_adoption.py": "d65e840bc1cecdaf9f4798e3a49928ab32bbdb96c1ac2fd17c9f94212d5953f0",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd"
+  },
+  "source_after": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "2f36685376bf96c4b3a3349c71fa254cbdd338296c858753bdf73ba7fd39f78a",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "8e3631bad218a30bc56c9942446447fa7ec8cf1249d09d03c510897bfd6d8734",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "855a2c12a137a68185d3bda74757209a3786898b643eb624e7718c3da9a14072",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "46400dbd90ddab2b60e99b2cbbcd6335d7d1eae054f4f9bdd028f05f92224d62",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "5a730df5e22b83e35cacfc2d0cc5174a4f16bc51f2e4283f4bff7d91661e6948",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "0fef13f72c85730a1b7ef50842d8f88981e1dce83af40b8b4b519dd2f2a2defe",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py": "0f60f54bf440730228787d975daad87a0da8e663caf5973935f9fce01aa5ac47",
+    "tests/test_weekly19_opening_surplus.py": "2422937b51f186108d86fed76ab956995ef0ace394f59d012925aa0beb790c7a",
+    "tests/test_weekly19_startup_policy.py": "1d3a57f82ab53b70e89f04e8d3e1f99e862014350aab4e185210758c6cf19ae7",
+    "tests/test_weekly19_existing_account_startup.py": "fd2afce98a582c095f4549b3211411b5731249a973249c2584546d0a9fde58ee",
+    "tests/test_weekly19_adoption.py": "d65e840bc1cecdaf9f4798e3a49928ab32bbdb96c1ac2fd17c9f94212d5953f0",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd"
+  },
+  "source_drift": [],
+  "owned_locks_match": true,
+  "runs": [
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_adversarial_attempt001.py"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 17,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_1.log",
+      "log_sha256": "3364cea13c2f61be572edd2e5c721e111211a24c81ce018b8e15661d10f5301a"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_weekly19_opening_surplus",
+        "tests.test_weekly19_existing_account_startup",
+        "tests.test_weekly19_adoption",
+        "tests.test_weekly19_strategy_equivalence",
+        "-v"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 49,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_2.log",
+      "log_sha256": "f7054858097619777052d2b4dcb8af3cb7f34c88fbeae62e6e58cfbbad52cbdb"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_peak_probe_attempt001.py"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 3,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_3.log",
+      "log_sha256": "8c3a408900d74d22fd0c02c7fbdfa1d01fe579c6f84cf1d4b8e181030b4e8ec8"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_hedge_probe_attempt001.py"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 3,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_4.log",
+      "log_sha256": "69010d5fc4f31f1e1e228d20be540f05e70e74c5a98bfde2da86dc2818a6b798"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_stale_week_probe_attempt001.py"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 2,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_5.log",
+      "log_sha256": "aaa60b1be45309b8b50dca2311ce1f602c4f360c38c07f1b96c2065fb5e60aaa"
+    },
+    {
+      "argv": [
+        ".py311/bin/python",
+        "-B",
+        "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_terminal_probe_attempt001.py"
+      ],
+      "exit_code": 0,
+      "reported_test_count": 2,
+      "log": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001_6.log",
+      "log_sha256": "5a7678d1f09ef86c203e1e51a135352496d010ed685d1cbe4b8565ce43fa4d38"
+    }
+  ],
+  "reported_total_test_invocations": 76,
+  "independent_test_invocations": 13,
+  "scope_note": "3 independent root shape/CLI +10 independent peak/hedge/stale/terminal tests; other counted invocations are author component/equivalence tests. All fixture-only; no financial engine replay.",
+  "closed_findings": [
+    "P1-01",
+    "P1-02",
+    "P1-03"
+  ],
+  "actions": {
+    "native_connections": 0,
+    "orders": 0,
+    "cancels": 0,
+    "SMTP": 0,
+    "financial_replays": 0
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "contracts": 1,
+  "ctp_connections": 0,
+  "envelope_sha256": "9450d36b14b2a26655fb996b4a3094b3c74fad657cd1c820b8a0cb2c5339873a",
+  "observed_at": "2026-11-02T14:08:19.630190+08:00",
+  "order_api_calls": 0,
+  "private_capture_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage024_contracts_20261102T140805/contract_metadata.json",
+  "private_capture_sha256": "7eafebc4a13851115929cb3d0ce85559105dcd543470f866f742924cfb608a24",
+  "producer_current_source_matches": true,
+  "producer_source_sha256": "dfe396a552c77b650ff0c2c7db7b147d862f10ead1ed7b8d561f4af111fea365",
+  "production_qualified": false,
+  "schema": "Stage024.actual-static-contract-metadata-observation.v1",
+  "scope": "real_TQ_static_instrument_metadata_only_not_broker_or_production_qualification",
+  "tq_connections": 1
+}

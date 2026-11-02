@@ -1,0 +1,85 @@
+{
+  "schema": "stage024.independent.root-source-review.v1",
+  "generated_at_cst": "2026-11-02T14:45:25.129485+08:00",
+  "status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "scope": "locked startup/carry-in/funding/runtime source and offline component evidence only",
+  "final_full_ci_acceptance": false,
+  "full_ci_pending": true,
+  "production_qualified": false,
+  "actual_account_initialized": false,
+  "actual_source_qualified": false,
+  "source_files_sha256": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_funding_store.py": "2f36685376bf96c4b3a3349c71fa254cbdd338296c858753bdf73ba7fd39f78a",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "8e3631bad218a30bc56c9942446447fa7ec8cf1249d09d03c510897bfd6d8734",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "855a2c12a137a68185d3bda74757209a3786898b643eb624e7718c3da9a14072",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "46400dbd90ddab2b60e99b2cbbcd6335d7d1eae054f4f9bdd028f05f92224d62",
+    "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py": "5a730df5e22b83e35cacfc2d0cc5174a4f16bc51f2e4283f4bff7d91661e6948",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "0fef13f72c85730a1b7ef50842d8f88981e1dce83af40b8b4b519dd2f2a2defe",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py": "0f60f54bf440730228787d975daad87a0da8e663caf5973935f9fce01aa5ac47",
+    "tests/test_weekly19_opening_surplus.py": "2422937b51f186108d86fed76ab956995ef0ace394f59d012925aa0beb790c7a",
+    "tests/test_weekly19_startup_policy.py": "1d3a57f82ab53b70e89f04e8d3e1f99e862014350aab4e185210758c6cf19ae7",
+    "tests/test_weekly19_existing_account_startup.py": "fd2afce98a582c095f4549b3211411b5731249a973249c2584546d0a9fde58ee",
+    "tests/test_weekly19_adoption.py": "d65e840bc1cecdaf9f4798e3a49928ab32bbdb96c1ac2fd17c9f94212d5953f0",
+    "tests/test_weekly19_strategy_equivalence.py": "ef03927995ea9c7cec41f43952f08c58d99700b64f786017bfaf89c46ba025cd"
+  },
+  "test_evidence": {
+    "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_locked_attempt001.json",
+    "sha256": "f32083aa8c2526f09309882540a5eb44b44325d2286253efde576e9a5a77695f",
+    "total_invocations": 76,
+    "independent_invocations": 13,
+    "author_invocations": 63,
+    "all_passed": true,
+    "source_drift": []
+  },
+  "prior_findings": {
+    "path": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_findings_attempt001.json",
+    "sha256": "07d231ffe81f5297c6d22c6469c6e16d116f275a8919b6428cc5ccfbf11dd1de",
+    "P1_closed": [
+      "P1-01",
+      "P1-02",
+      "P1-03"
+    ],
+    "original_red_artifacts_preserved": true
+  },
+  "findings": [],
+  "P0_open": 0,
+  "P1_open": 0,
+  "P2_open": 0,
+  "conclusions": [
+    "User authorization permits explicit all-current-positions new-management-cohort adoption with retained actual equity; no new general risk permission or forced liquidation is required by this design.",
+    "Original default exact150k/flat initialization remains fail closed; carry-in requires the separate explicit initializer, private digest-bound authorization and fresh real production authority before data/cash loading.",
+    "Native OpenCost divided by exact aggregated actual lots and verified multiplier is the only cost basis; PositionCost/generic zero price/operator price are not substituted. Instrument/class/size/tick/explicit delivery epoch/expiry are checked against fixed reference metadata. Source integrity alone is not production qualification.",
+    "No historical opening date/peak/stop is invented. Cutover day is management age0; maximum prior profit/extrema are reset and disclosed unknown. Original stop uses the last complete pre-cutover weekly context; empty/unready/incomplete/stale/incorrect physical epoch protection fails closed.",
+    "Known actual cutover E0 now anchors new-cohort high-water and volatility prior-equity; original future risk refresh methods remain unchanged. Only speculation HedgeFlag1 has a supported execution route and is admitted.",
+    "Opening surplus S0=E0-150000 is signed operator-designated pre-start equity, not verified strategy history or T. New T alone debits external R, R+T=150000; initial gross Deposit is a baseline. First observation cannot be combined with other funding activity and is immutable after CAS.",
+    "First cash checkpoint and full protected actual holdings/runtime are saved together; a protection error or injected funding revision leaves no state file. Successful replay restores the original state and does not recreate a seed or change its stored bytes.",
+    "Initialization creates no strategy decision, historical fills, native orders, mailbox delivery or scheduled job. Subsequent unknown positions remain blocked; all original live source/session/quote/physical child/private actor/execution gates remain.",
+    "Automatic bank producer/final settlement parser work is not revived; operator_manual_v1 remains the authorized cash path."
+  ],
+  "limits": [
+    "76 are offline test invocations, including 13 independent tests and 63 author component/equivalence tests; not 76 independent financial reviews or a backtest.",
+    "Fixture construction explicitly substitutes source authorities only to test conditional component semantics; no fixture or self-consistent JSON is accepted as real broker/source/production authority.",
+    "This review does not accept the actual private TQ metadata packet or a new broker capture as production-qualified. These real artifacts and the final material/qualification/activation/runtime/data chain require separate actual-source review.",
+    "The previous09:04 archived diagnostic remains unqualified and old-source-bound. It may not be re-stamped or have producer hashes altered to qualify the new source.",
+    "Full selected CI and final lock map are still pending. Root documentation, future release manifests and future external observations are intentionally excluded to avoid hash cycles."
+  ],
+  "actions": {
+    "CTP_connections": 0,
+    "order_calls": 0,
+    "cancel_calls": 0,
+    "SMTP_sends": 0,
+    "financial_replays": 0,
+    "core_modifications": 0,
+    "Git_index_or_commit_changes": 0
+  },
+  "reflection": {
+    "overfitting": false,
+    "reason": "Deterministic operational migration with no historical alpha tuning or parameter search.",
+    "worth_continuing": true,
+    "reason_to_continue": "The new startup path now has bounded offline correctness evidence; proceed to full CI and exact real qualification evidence before activation."
+  }
+}

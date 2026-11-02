@@ -439,8 +439,13 @@ def _live_boundary(base):
 
 class Runtime:
     def __init__(self, settings_asset, metadata, session_calendar, physical_epoch_daily,
-                 broker_snapshot, durable_state, confirmed_cash_state, *, clock=None, recovery_events=()):
+                 broker_snapshot, durable_state, confirmed_cash_state, *, clock=None, recovery_events=(),
+                 carry_in_seed=None, carry_in_warmup=()):
         recovery_events=tuple(recovery_events)
+        if carry_in_seed is not None and (durable_state is not None or recovery_events):
+            _fail("carry_in_requires_new_cohort_without_recovery_events")
+        if carry_in_seed is None and carry_in_warmup:
+            _fail("carry_in_warmup_requires_explicit_seed")
         if recovery_events and durable_state is None:
             _fail('recovery_events_require_durable_state')
         self.clock = clock or (lambda: datetime.now(SHANGHAI))
@@ -540,8 +545,99 @@ class Runtime:
         if durable_state is not None:
             self._restore(durable_state)
         self._recover_events(recovery_events)
+        if carry_in_seed is not None:
+            self._bootstrap_carry_in(carry_in_seed,broker_snapshot,carry_in_warmup)
         self.reconcile_broker_snapshot(broker_snapshot, confirmed_cash_state)
         self._assert_fixed_parameters()
+
+    def _bootstrap_carry_in(self, seed, snapshot, batches):
+        """Fresh explicit cohort only; real snapshot is never replaced by flat."""
+        from qmt_roll_weekly19_adoption import validate_carry_in_seed
+        from weekly19_frozen.qmt_roll_portfolio_strategy import PositionLayer
+        verified=validate_carry_in_seed(seed,broker_snapshot=snapshot,metadata=self.metadata,now=self.clock())
+        management=verified['management_start_date']
+        prior=[day for day in self.calendar if day<management]
+        if (management not in self.calendar or not any(day>management for day in self.calendar)
+                or not prior or verified['completed_day']!=max(prior)):
+            _fail('carry_in_latest_prior_session_or_forward_calendar_missing')
+        opening=self.confirmed_cash_state.get('opening_equity')
+        if (not isinstance(opening,dict) or opening.get('mode')!='operator_existing_account_v1'
+                or opening.get('operator_decision_id')!=verified['operator_decision']['operator_decision_id']
+                or self.confirmed_cash_state['cold_start_date']!=verified['management_start_date']):
+            _fail('carry_in_opening_equity_or_operator_identity_mismatch')
+        opening_account=opening.get('broker_account')
+        observed=funding._parse(snapshot['account'],'weekly19.ctp-account.v1','ctp_account_callback')
+        if (not isinstance(opening_account,dict)
+                or opening_account.get('raw_sha256')!=verified['operator_decision']['broker_account_raw_sha256']
+                or opening.get('observed_equity_fen')!=funding._money(observed['Balance'])):
+            _fail('carry_in_opening_account_snapshot_mismatch')
+        if self.last_processed_day or self.engine.intents or any(self.strategy.pos_data.values()) or any(s.layers for s in self.strategy.states.values()):
+            _fail('carry_in_requires_fresh_management_cohort')
+        batches=tuple(batches)
+        if not batches or any(self._validate_bars(batch)>verified['completed_day'] for batch in batches):
+            _fail('carry_in_warmup_scope_invalid')
+        # Keep actual broker cash even while the private constructor has not yet
+        # installed protection. No half-constructed actor is returned or stored.
+        account=funding._broker(snapshot['account'],self.confirmed_cash_state,self.clock())
+        self.broker_snapshot=deepcopy(snapshot);self.broker_equity=account['balance_fen']/100
+        raw=funding._parse(snapshot['account'],'weekly19.ctp-account.v1','ctp_account_callback')
+        self.broker_available=funding._money(raw['Available'])/100
+        self.strategy.settled_balance=self.broker_equity;self.strategy.estimated_equity=self.broker_equity
+        # The new cohort knows its actual cutover E0, but no historical peak
+        # or return path. Preserve all original future refresh methods.
+        self.strategy.portfolio_equity_high_water=self.broker_equity
+        self.strategy.portfolio_drawdown_pct=0.0
+        self.strategy.portfolio_volatility_budget_last_equity=self.broker_equity
+        self.warmup(batches)
+        if self.warmup_cursor!=verified['completed_day']:_fail('carry_in_completed_history_missing')
+        expected_week=max((days[-1] for days in self.weeks.values() if days[-1]<=verified['completed_day']),default=None)
+        latest=batches[-1];planned=[];protection=[]
+        for row in verified['positions']:
+            symbol=row['vt_symbol'];product=row['product_vt_symbol'];am=self.strategy.ams[symbol]
+            if (symbol not in latest or not am.inited or not am.completed
+                    or am.completed[-1]['week_end']!=expected_week):
+                _fail('carry_in_latest_completed_week_missing')
+            epoch=self.epoch_lookup.get((symbol,verified['completed_day']))
+            source=self.approved_bar_lookup.loc[(symbol,verified['completed_day'])]
+            explicit=str(source.get('contract_yyyymm',''))
+            if not explicit or explicit=='nan':
+                match=__import__('re').search(r'\.(\d{6})$',str(epoch));explicit=match.group(1) if match else ''
+            if explicit.endswith('.0'):explicit=explicit[:-2]
+            if not epoch or explicit!=row['contract_yyyymm']:_fail('carry_in_physical_delivery_epoch_mismatch')
+            stop,valid,context=self.strategy._weekly_initial_stop_qualification(symbol,row['direction'],latest[symbol])
+            if not valid:_fail('carry_in_invalid_original_weekly_stop')
+            reference=float(am.completed[-1]['close'])
+            layer=PositionLayer(kind='base',direction=row['direction'],volume=row['volume'],
+                entry_price=float(row['aggregate_entry_price']),stop_price=float(stop),
+                highest_price=reference,lowest_price=reference,signal='carry_in_new_management_cohort',
+                entry_date=verified['management_start_date'],max_profit_pct=0.0,
+                margin_ratio=self.strategy._margin_ratio_for_symbol(symbol),entry_price_synced=True,
+                profit_giveback_stop_active=False)
+            root='w19-root-'+_hash([self.account,self.release,'carry_in',verified['operator_decision']['operator_decision_id'],product,verified['management_start_date']])
+            cycle='w19-cycle-'+_hash([root,symbol,epoch])
+            identity=dict(root_position_id=root,position_cycle_id=cycle,position_epoch_id='w19-pos-'+_hash([root,cycle]),
+                entry_signal_day=verified['management_start_date'],origin='carry_in_new_management_cohort')
+            planned.append((self.strategy.states[product],symbol,row,layer,identity))
+            protection.append(dict(vt_symbol=symbol,physical_epoch_id=epoch,direction=row['direction'],volume=row['volume'],
+                aggregate_entry_price=row['aggregate_entry_price'],stop_price=float(stop),completed_week_end=expected_week,
+                management_reference_price=reference,management_reference_kind='last_completed_week_close',
+                protection_timing='fresh_completed_week_close',original_stop_context=deepcopy(context)))
+        # Every source/protection check passed before any position is installed.
+        for state,symbol,row,layer,identity in planned:
+            state.reset();state.contract_vt_symbol=symbol;state.direction=row['direction'];state.risk_mode='regular'
+            state.entry_date=verified['management_start_date'];state.last_signal='carry_in_new_management_cohort';state.layers=[layer]
+            signed=row['volume']*(1 if row['direction']=='long' else -1)
+            self.strategy.pos_data[symbol]=signed;self.strategy.target_data[symbol]=signed;self.position_identities[symbol]=identity
+        self.engine.bars=dict(latest);self.engine.datetime=pd.Timestamp(verified['completed_day']).to_pydatetime()
+        self.current_receipt_hash=''
+        self.carry_in_receipt=dict(schema='weekly19.carry-in-receipt.v1',seed_sha256=verified['seed_sha256'],
+            seed=deepcopy(verified),management_start_date=verified['management_start_date'],completed_day=verified['completed_day'],
+            protection=protection,historical_open_date=None,prior_stop=None,prior_extrema=None,
+            historical_risk_memory=None,old_profit_lock_state=None,verified_historical_strategy_pnl=False,
+            initial_account_reference=dict(equity=self.broker_equity,portfolio_equity_high_water=self.broker_equity,
+                volatility_last_equity=self.broker_equity,pre_start_return_history='unknown_not_reconstructed'),
+            risk_memory_policy='new_management_cohort_neutral_memory_not_reconstructed_history',production_qualified=False)
+        self.revision+=1
 
     def _recover_events(self,events):
         if any(not isinstance(event,dict) or event.get('kind') not in ('fill','order') for event in events):
@@ -661,6 +757,7 @@ class Runtime:
         if confirmed_cash_state['revision'] < self.confirmed_cash_state['revision']:
             _fail('funding_state_rollback')
         previous=self.confirmed_cash_state
+        funding.assert_opening_equity_forward(previous,confirmed_cash_state)
         if (confirmed_cash_state['reserve_remaining_fen']>previous['reserve_remaining_fen']
                 or confirmed_cash_state['confirmed_topup_fen']<previous['confirmed_topup_fen']
                 or any(confirmed_cash_state['receipts'].get(k)!=v for k,v in previous['receipts'].items())
@@ -1610,7 +1707,7 @@ class Runtime:
             'warmup_cursor','current_receipt_hash','days','fills','order_updates',
             'close_lifecycles','queued_days','open_contexts','sizing_contexts','pending_rollovers',
             'admission_contexts','position_identities','broker_order_bindings','child_batches','revision',
-            'physical_epoch_state','physical_epoch_transitions','expired_signal_days','funding_replans') if hasattr(self,k)}
+            'physical_epoch_state','physical_epoch_transitions','expired_signal_days','funding_replans','carry_in_receipt') if hasattr(self,k)}
         shared=dict(weeks=self.weeks,weeks_sha256=_hash(_encode(self.weeks)))
         body = dict(schema='weekly19.runtime-state.v1', revision=self.revision,
             shared_inputs=dict(weeks=dict(calendar=list(self.calendar),sha256=shared['weeks_sha256'])),
@@ -1741,3 +1838,14 @@ def build_weekly19_runtime(settings_asset, metadata, session_calendar, physical_
                            broker_snapshot, durable_state, confirmed_cash_state, *, clock=None, recovery_events=()):
     return Runtime(settings_asset, metadata, session_calendar, physical_epoch_daily,
                    broker_snapshot, durable_state, confirmed_cash_state, clock=clock, recovery_events=recovery_events)
+
+
+def bootstrap_weekly19_runtime(settings_asset, metadata, session_calendar, physical_epoch_daily,
+                               broker_snapshot, confirmed_cash_state, *, carry_in_seed, warmup_batches, clock=None):
+    """Explicit one-time source-bound carry-in, never historical signal replay.
+
+    Durable recovery continues through build_weekly19_runtime; supplying a new
+    seed is never a reconciliation route for a later unknown position.
+    """
+    return Runtime(settings_asset,metadata,session_calendar,physical_epoch_daily,broker_snapshot,None,
+        confirmed_cash_state,clock=clock,carry_in_seed=carry_in_seed,carry_in_warmup=warmup_batches)

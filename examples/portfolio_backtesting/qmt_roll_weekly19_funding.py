@@ -36,6 +36,8 @@ from zoneinfo import ZoneInfo
 INITIAL_FEN = 15_000_000
 MAX_SNAPSHOT_AGE_SECONDS = 300
 REQUEST_VALID_DAYS = 7
+MAX_OPENING_EQUITY_FEN = 2**63 - 1
+OPENING_EXISTING_ACCOUNT_MODE = 'operator_existing_account_v1'
 SHANGHAI = ZoneInfo('Asia/Shanghai')
 _SHA = re.compile(r'[0-9a-f]{64}')
 _MONEY = re.compile(r'-?(?:0|[1-9][0-9]*)(?:\.[0-9]{1,2})?')
@@ -283,6 +285,7 @@ def validate_state(state: Any) -> None:
         if previous_following and (cp is None or cp['trading_day'] != previous_following['trading_day']):
             _fail('day_roll_checkpoint_invalid')
         _validate_operator_cash_ledger(state)
+        _validate_opening_equity(state)
         if is_v2:
             if set(state['request_attempts'])!=set(state['admitted_entries']):
                 _fail('admission_attempt_ledger_keys_invalid')
@@ -442,16 +445,7 @@ def _finish(original, changed):
     return changed
 
 
-def begin_cash_observation(state: dict, broker: dict, now: datetime) -> dict:
-    """Pin the real initial 150k account cash baseline on any weekday.
-
-    This is a conditional accounting transition, not source qualification.
-    The production caller must first enforce its qualified real-account/flat
-    cold-start gate. Initial daily Deposit may contain the initial capital;
-    it is a baseline and never debits the offsite reserve. Persist one CAS
-    before enabling any signal/open. Later day changes need real continuity.
-    """
-    validate_state(state); _require_v2(state); now=_time(now)
+def _initial_account_snapshot(state, broker, now):
     snapshot=_broker(broker,state,now)
     raw=_parse(broker,'weekly19.ctp-account.v1','ctp_account_callback')
     try:
@@ -459,19 +453,124 @@ def begin_cash_observation(state: dict, broker: dict, now: datetime) -> dict:
         if (raw.get('query_last_seen') is not True or type(raw.get('query_error_rows')) is not int
                 or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
     except (KeyError,TypeError): _fail('initial_account_available_missing')
-    if (any(state[key] for key in ('requests','receipts','admitted_entries','day_rolls','retirements','request_attempts'))
-            or state['confirmed_topup_fen']!=0 or state['reserve_remaining_fen']!=INITIAL_FEN):
-        _fail('initial_cash_observation_after_activity')
-    checkpoint=_checkpoint(snapshot)
-    if (snapshot['balance_fen']!=INITIAL_FEN or snapshot['trading_day']<state['cold_start_date']
+    return snapshot
+
+
+def _opening_start_valid(state,snapshot,now):
+    if (snapshot['trading_day']<state['cold_start_date']
             or now.astimezone(SHANGHAI).date().isoformat()<state['cold_start_date']
             or _time(snapshot['observed_at']).astimezone(SHANGHAI).date().isoformat()<state['cold_start_date']):
         _fail('initial_cash_observation_capital_or_start_invalid')
+
+
+def _validate_opening_equity(state):
+    """A private source-bound baseline, never verified strategy PnL or cash T."""
+    if 'opening_equity' not in state:return
+    row=state['opening_equity']
+    fields={'schema','mode','source_kind','classification','operator_decision_id',
+            'baseline_trading_fen','observed_equity_fen','opening_surplus_fen',
+            'verified_strategy_pnl','baseline_checkpoint','broker_account','accepted_at'}
+    if (state['schema']!='weekly19.external-funding.v2' or not isinstance(row,dict) or set(row)!=fields
+            or row['schema']!='weekly19.opening-equity.v1' or row['mode']!=OPENING_EXISTING_ACCOUNT_MODE
+            or row['source_kind']!='operator_manual' or row['classification']!='operator_designated_pre_start_surplus'
+            or row['verified_strategy_pnl']is not False):
+        _fail('opening_equity_metadata_invalid')
+    _sha(row['operator_decision_id'])
+    equity=_integer(row['observed_equity_fen'],1)
+    if (equity>MAX_OPENING_EQUITY_FEN or _integer(row['baseline_trading_fen'])!=INITIAL_FEN
+            or type(row['opening_surplus_fen'])is not int or row['opening_surplus_fen']!=equity-INITIAL_FEN):
+        _fail('opening_equity_bridge_or_range_invalid')
+    if not isinstance(row['accepted_at'],str):_fail('opening_equity_accepted_time_invalid')
+    accepted=_time(row['accepted_at'])
+    evidence=row['broker_account']
+    if not isinstance(evidence,dict) or set(evidence)!={'raw_payload','raw_sha256'}:
+        _fail('opening_equity_raw_account_required')
+    snapshot=_initial_account_snapshot(state,evidence,accepted)
+    _opening_start_valid(state,snapshot,accepted)
+    if snapshot['balance_fen']!=equity or row['baseline_checkpoint']!=_checkpoint(snapshot):
+        _fail('opening_equity_raw_binding_invalid')
+    cursor=row['baseline_checkpoint'];_checkpoint_valid(cursor)
+    current=state['cashflow_checkpoint']
+    if current is None or state['revision']<1:_fail('opening_equity_checkpoint_required')
+    for boundary in state['day_rolls']:
+        closing=boundary['closing']
+        if (closing['trading_day']!=cursor['trading_day'] or _time(closing['observed_at'])<_time(cursor['observed_at'])
+                or closing['deposit_fen']<cursor['deposit_fen'] or closing['withdraw_fen']<cursor['withdraw_fen']):
+            _fail('opening_equity_cashflow_bridge_invalid')
+        cursor=boundary['following']
+    if (current['trading_day']!=cursor['trading_day'] or _time(current['observed_at'])<_time(cursor['observed_at'])
+            or current['deposit_fen']<cursor['deposit_fen'] or current['withdraw_fen']<cursor['withdraw_fen']
+            or (not state['day_rolls'] and current['deposit_fen']-cursor['deposit_fen']!=state['confirmed_topup_fen'])):
+        _fail('opening_equity_cashflow_bridge_invalid')
+    for request in state['requests'].values():
+        baseline=request['baseline'];opening=row['baseline_checkpoint']
+        if (baseline['trading_day']<opening['trading_day'] or _time(baseline['observed_at'])<_time(opening['observed_at'])
+                or (baseline['trading_day']==opening['trading_day'] and
+                    (baseline['deposit_fen']<opening['deposit_fen'] or baseline['withdraw_fen']<opening['withdraw_fen']))):
+            _fail('opening_equity_request_before_baseline')
+
+
+def begin_cash_observation(state: dict, broker: dict, now: datetime, *,
+                           opening_equity_mode='exact_150k', operator_decision_id=None) -> dict:
+    """Pin initial gross cash without treating its Deposit as a reserve topup.
+
+    Default exact_150k keeps the historical state bytes. The explicit existing
+    account mode records real E minus the 150k capital anchor as operator-
+    designated PRE-start surplus (possibly negative), never verified strategy
+    profit, external reserve or new cash. Source qualification and position
+    adoption remain the production caller's independent responsibility.
+    """
+    validate_state(state); _require_v2(state); now=_time(now)
+    if not isinstance(opening_equity_mode,str) or opening_equity_mode not in {'exact_150k',OPENING_EXISTING_ACCOUNT_MODE}:
+        _fail('opening_equity_mode_invalid')
+    existing_account=opening_equity_mode==OPENING_EXISTING_ACCOUNT_MODE
+    if existing_account:_sha(operator_decision_id)
+    elif operator_decision_id is not None:_fail('opening_equity_decision_without_policy')
+    snapshot=_initial_account_snapshot(state,broker,now)
+    if (any(state[key] for key in ('requests','receipts','admitted_entries','day_rolls','retirements','request_attempts'))
+            or state['confirmed_topup_fen']!=0 or state['reserve_remaining_fen']!=INITIAL_FEN):
+        _fail('initial_cash_observation_after_activity')
+    opening=state.get('opening_equity')
+    if state['cashflow_checkpoint']is not None:
+        if ((opening is not None) != existing_account or
+                (opening is not None and opening['operator_decision_id']!=operator_decision_id)):
+            _fail('opening_equity_policy_or_decision_change_forbidden')
+    if existing_account:
+        if not 0<snapshot['balance_fen']<=MAX_OPENING_EQUITY_FEN:_fail('opening_equity_positive_real_account_required')
+        if state['cashflow_checkpoint']is None and state['revision']!=0:_fail('opening_equity_initial_revision_required')
+    elif snapshot['balance_fen']!=INITIAL_FEN:
+        _fail('initial_cash_observation_capital_or_start_invalid')
+    _opening_start_valid(state,snapshot,now)
+    checkpoint=_checkpoint(snapshot)
     if state['cashflow_checkpoint'] is not None:
         if state['cashflow_checkpoint']!=checkpoint: _fail('initial_cash_observation_already_exists')
         return copy.deepcopy(state)
     changed=copy.deepcopy(state);changed['cashflow_checkpoint']=checkpoint
+    if existing_account:
+        changed['opening_equity']=dict(schema='weekly19.opening-equity.v1',mode=OPENING_EXISTING_ACCOUNT_MODE,
+            source_kind='operator_manual',classification='operator_designated_pre_start_surplus',
+            operator_decision_id=operator_decision_id,baseline_trading_fen=INITIAL_FEN,
+            observed_equity_fen=snapshot['balance_fen'],opening_surplus_fen=snapshot['balance_fen']-INITIAL_FEN,
+            verified_strategy_pnl=False,baseline_checkpoint=copy.deepcopy(checkpoint),
+            broker_account={key:broker[key]for key in ('raw_payload','raw_sha256')},accepted_at=now.isoformat())
     return _finish(state,changed)
+
+
+def assert_opening_equity_forward(current,following):
+    """Shared private-store CAS invariant; callers must never make it optional."""
+    old_present='opening_equity'in current;new_present='opening_equity'in following
+    if not old_present and not new_present:return
+    validate_state(current);validate_state(following)
+    if old_present:
+        if not new_present or current['opening_equity']!=following['opening_equity']:
+            _fail('opening_equity_rewrite_or_removal_forbidden')
+        return
+    if current['cashflow_checkpoint']is not None:
+        _fail('opening_equity_policy_after_observation_forbidden')
+    row=following['opening_equity']
+    expected=begin_cash_observation(current,row['broker_account'],_time(row['accepted_at']),
+        opening_equity_mode=row['mode'],operator_decision_id=row['operator_decision_id'])
+    if following!=expected:_fail('opening_equity_one_initial_cas_required')
 
 
 def _admission_key(state, week, entry_id):

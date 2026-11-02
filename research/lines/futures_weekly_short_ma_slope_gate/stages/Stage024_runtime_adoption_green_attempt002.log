@@ -1,0 +1,14 @@
+test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents) ... ok
+test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer) ... ok
+test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap (tests.test_weekly19_adoption.AdoptionTests.test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap) ... ok
+test_normal_constructor_still_rejects_unknown_nonzero_positions (tests.test_weekly19_adoption.AdoptionTests.test_normal_constructor_still_rejects_unknown_nonzero_positions) ... ok
+test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price (tests.test_weekly19_adoption.AdoptionTests.test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price) ... ok
+test_real_metadata_size_tick_and_native_instrument_are_bound (tests.test_weekly19_adoption.AdoptionTests.test_real_metadata_size_tick_and_native_instrument_are_bound) ... ok
+test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl (tests.test_weekly19_adoption.AdoptionTests.test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl) ... ok
+test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed (tests.test_weekly19_adoption.AdoptionTests.test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed) ... ok
+test_source_sha_quantity_and_native_direction_cannot_be_forged (tests.test_weekly19_adoption.AdoptionTests.test_source_sha_quantity_and_native_direction_cannot_be_forged) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.712s
+
+OK

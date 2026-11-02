@@ -1,0 +1,25 @@
+test_first_post_cutover_equity_decline_is_not_erased (__main__.OpeningPeak.test_first_post_cutover_equity_decline_is_not_erased) ... FAIL
+test_new_cohort_known_opening_equity_is_its_initial_high_water (__main__.OpeningPeak.test_new_cohort_known_opening_equity_is_its_initial_high_water) ... FAIL
+test_positive_control_real_cash_and_original_stop (__main__.OpeningPeak.test_positive_control_real_cash_and_original_stop) ... ok
+
+======================================================================
+FAIL: test_first_post_cutover_equity_decline_is_not_erased (__main__.OpeningPeak.test_first_post_cutover_equity_decline_is_not_erased)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_peak_probe_attempt001.py", line 25, in test_first_post_cutover_equity_decline_is_not_erased
+    self.assertAlmostEqual(a.strategy.portfolio_drawdown_pct,20000/170000)
+AssertionError: 0.0 != 0.11764705882352941 within 7 places (0.11764705882352941 difference)
+
+======================================================================
+FAIL: test_new_cohort_known_opening_equity_is_its_initial_high_water (__main__.OpeningPeak.test_new_cohort_known_opening_equity_is_its_initial_high_water)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_peak_probe_attempt001.py", line 22, in test_new_cohort_known_opening_equity_is_its_initial_high_water
+    a=self.actor();self.assertEqual(a.strategy.portfolio_equity_high_water,170000)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 150000.0 != 170000
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.307s
+
+FAILED (failures=2)

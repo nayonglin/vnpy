@@ -1,0 +1,14 @@
+test_first_bootstrap_cannot_mix_same_operator_with_another_account_baseline (tests.test_weekly19_adoption.AdoptionTests.test_first_bootstrap_cannot_mix_same_operator_with_another_account_baseline) ... FAIL
+
+======================================================================
+FAIL: test_first_bootstrap_cannot_mix_same_operator_with_another_account_baseline (tests.test_weekly19_adoption.AdoptionTests.test_first_bootstrap_cannot_mix_same_operator_with_another_account_baseline)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 140, in test_first_bootstrap_cannot_mix_same_operator_with_another_account_baseline
+    with self.assertRaises(ValueError):self.bootstrap(v)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.183s
+
+FAILED (failures=1)

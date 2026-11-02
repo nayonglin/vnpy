@@ -8,13 +8,13 @@ import time
 from zoneinfo import ZoneInfo
 from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE as PROFILE
 from qmt_roll_weekly19_local_backend import LocalEvidenceBackend,private_json,LocalBackendError
-from qmt_roll_weekly19_live_pipeline import run_weekly19_support_job,run_weekly19_session_cycle,JOBS
+from qmt_roll_weekly19_live_pipeline import run_weekly19_support_job,run_weekly19_session_cycle,initialize_weekly19_existing_account,JOBS
 
 SHANGHAI=ZoneInfo('Asia/Shanghai');ROOT=Path(__file__).resolve().parents[2]
 
 def parser():
  p=argparse.ArgumentParser(description='Weekly19 original risk / real external reserve')
- p.add_argument('--job',choices=sorted(JOBS|{'session'}),required=True)
+ p.add_argument('--job',choices=sorted(JOBS|{'session','initialize-existing-account'}),required=True)
  p.add_argument('--execution-profile',choices=[PROFILE.profile_key],required=True)
  p.add_argument('--context-file',type=Path,required=True)
  p.add_argument('--release-manifest',type=Path,required=True)
@@ -76,11 +76,17 @@ def main(argv=None):
   backend=LocalEvidenceBackend(cfg,repo_root=ROOT,release_manifest=args.release_manifest,activation_receipt=args.activation_receipt,
    qualification_evidence=args.production_qualification_evidence,preview=args.preview)
   backend.context_file=args.context_file.absolute()
-  target=args.target_date or(cfg.get('target_date')if args.job in {'health','monthly-ai-pool'}else backend.resolve_target_date(datetime.now(SHANGHAI)))
+  if args.job=='initialize-existing-account':
+   from qmt_roll_weekly19_startup import load_startup_authorization
+   policy=load_startup_authorization(cfg)
+   if policy is None:raise LocalBackendError('weekly19_explicit_existing_account_policy_required')
+   target=args.target_date or policy['authorization']['completed_day']
+  else:target=args.target_date or(cfg.get('target_date')if args.job in {'health','monthly-ai-pool'}else backend.resolve_target_date(datetime.now(SHANGHAI)))
   if not target:raise LocalBackendError('weekly19_resolved_target_date_required')
   context=dict(backend=backend,state_path=Path(cfg['state_path']),mail_outbox=Path(cfg['mail_outbox']),
    account_key=cfg['account_key'],material_release_id=cfg['material_release_id'],cold_start_date=cfg['cold_start_date'],target_date=target,preview=args.preview)
-  result=run_session(context,duration_seconds=args.duration_seconds,names=args.require_current_session_name)if args.job=='session'else run_weekly19_support_job(args.job,context=context)
+  if args.job=='initialize-existing-account':result=initialize_weekly19_existing_account(context=context)
+  else:result=run_session(context,duration_seconds=args.duration_seconds,names=args.require_current_session_name)if args.job=='session'else run_weekly19_support_job(args.job,context=context)
   print(json.dumps(result,ensure_ascii=False,sort_keys=True,allow_nan=False));return 0
  except (ValueError,KeyError,OSError,RuntimeError)as exc:
   # Never print raw payload, credentials or the private JSON configuration.

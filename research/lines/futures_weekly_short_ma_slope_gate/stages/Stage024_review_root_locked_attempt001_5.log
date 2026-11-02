@@ -1,0 +1,7 @@
+test_latest_pre_cutover_completed_week_control (__main__.LatestProtection.test_latest_pre_cutover_completed_week_control) ... ok
+test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week (__main__.LatestProtection.test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.224s
+
+OK

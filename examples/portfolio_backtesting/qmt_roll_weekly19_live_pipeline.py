@@ -67,6 +67,44 @@ def _apply_events(obj,events):
   elif event['kind']=='order':obj.apply_order_update(event['envelope'])
   else:raise Weekly19PipelineError('weekly19_execution_event_kind_invalid')
 
+def initialize_weekly19_existing_account(*,context):
+ """Explicit one-time cutover, atomically save real cash and protected holdings.
+
+ Not a scheduler task, precompute, execution submission or email operation.
+ A complete production authority is required by the backend. Failed bootstrap
+ leaves no partial initial cash or unprotected runtime on disk.
+ """
+ if context.get('preview',False):raise Weekly19PipelineError('production_existing_account_initialization_required')
+ backend,now,preview=_parts(context);store=pipeline_store(context)
+ from qmt_roll_weekly19_startup import load_startup_authorization
+ policy=load_startup_authorization(backend.config)
+ if policy is None:raise Weekly19PipelineError('production_existing_account_initialization_required')
+ existing=store.read()
+ if existing is not None:
+  if (existing.get('runtime_mode')!='production'or existing.get('runtime')is None
+   or existing['funding'].get('opening_equity',{}).get('operator_decision_id')!=policy['operator_decision_id']):
+   raise Weekly19PipelineError('weekly19_existing_account_initialization_conflict')
+  # Resuming is ordinary source reconciliation. Never re-seed or reset stops.
+  target,data=_load(backend,context,now)
+  _runtime(existing,data,now,backend.read_execution_events(existing['decision'],now))
+  return dict(status='already_initialized',state_sha256=digest(existing),production_qualified=False)
+ target,data=_load(backend,context,now)
+ if target!=policy['authorization']['completed_day']or context['cold_start_date']!=policy['authorization']['cold_start_date']:
+  raise Weekly19PipelineError('weekly19_existing_account_cutover_dates_mismatch')
+ backend.validate_initial_account(data['broker_snapshot'],now,allow_carry_in=True)
+ bundle=_initial(context);cash=backend.reconcile_cash(bundle['funding'],data['broker_snapshot'],now)
+ if (cash.get('opening_equity',{}).get('operator_decision_id')!=policy['operator_decision_id']
+  or getattr(backend,'cash_source_blocker',None)):
+  raise Weekly19PipelineError('weekly19_existing_account_initial_cash_not_confirmed')
+ bundle['funding']=cash
+ obj=backend.bootstrap_existing_account(bundle,data,now)
+ bundle['runtime']=obj.export_state();bundle['funding']=deepcopy(obj.confirmed_cash_state)
+ funds.assert_opening_equity_forward(_initial(context)['funding'],bundle['funding'])
+ if _decode(bundle['runtime']['engine']).get('order_intents'):
+  raise Weekly19PipelineError('weekly19_existing_account_bootstrap_created_orders')
+ saved=store.initialize(bundle)
+ return dict(status='existing_account_initialized',state_sha256=digest(saved),production_qualified=False)
+
 def _report(context,backend,bundle,data,now,preview):
  if now.astimezone(SHANGHAI).weekday()!=4:return None
  decision=deepcopy(bundle.get('decision'))

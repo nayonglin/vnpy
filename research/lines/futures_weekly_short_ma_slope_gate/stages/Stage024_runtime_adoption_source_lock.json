@@ -1,0 +1,53 @@
+{
+  "combined_seconds": 1.708,
+  "combined_tests": 22,
+  "ctp_connections": 0,
+  "equivalence_tests": 6,
+  "evidence_sha256": {
+    "Stage024_runtime_adoption_all_boundaries_red.log": "e93d5570e502452155657df7bc16b924c5deb63669fbc71c7686599e5b88b9ab",
+    "Stage024_runtime_adoption_final_cases_red.log": "1ea1a70f90c0bba11b1da969eb3f332df482bfb529db7c04c42df00f8c6f170f",
+    "Stage024_runtime_adoption_final_green.log": "27461d14ac397bf841ecb7f65a90d71e8d174d8ccbc35661c05a6dd845f8545e",
+    "Stage024_runtime_adoption_first_green.log": "85359b481ae2416df46e28703009f4a2c30452005996b0bc23b5bb864f63da3b",
+    "Stage024_runtime_adoption_green_attempt002.log": "d1513317e47c42f7db642ff0287ded8e9f68370d4270b32d19271dfc6d333f25",
+    "Stage024_runtime_adoption_locked_green.log": "932e550a1609bef6184d8311e0a43e06e1a0229ca670426544e204101667e439",
+    "Stage024_runtime_adoption_mixed_baseline_red.log": "dc768512de545b3f047430ef929c4c9eaa09a5f2efc13e476b12d27f72b8246b",
+    "Stage024_runtime_adoption_red.log": "f4ae9a42564016f3f9119f3cb99b3c235c3d1e1443d2f7516a485c5fe98c3d1f",
+    "Stage024_runtime_hedge_probe_final_green.log": "db151b654da31745146c66ac2e0923f39295e34f9b508f5b5ca53fbec5bb0d4b",
+    "Stage024_runtime_hedge_probe_green.log": "db151b654da31745146c66ac2e0923f39295e34f9b508f5b5ca53fbec5bb0d4b",
+    "Stage024_runtime_peak_probe_final_green.log": "778c8902bffb451ea243670cd2d2f78268893720cf6839d6b105be966f77e0f0",
+    "Stage024_runtime_peak_probe_green.log": "c0cbb240074ee7ae7cf6ec1cda334464946bd96912cb1b2c5fcfe3408b9f47b1",
+    "Stage024_runtime_stale_week_probe_final_green.log": "99d5fed2b259b338ac2101d93fcd93bfeb62f339d772f7f623b0ccb481c7296a",
+    "Stage024_runtime_stale_week_probe_green.log": "99d5fed2b259b338ac2101d93fcd93bfeb62f339d772f7f623b0ccb481c7296a"
+  },
+  "files": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py": "0f60f54bf440730228787d975daad87a0da8e663caf5973935f9fce01aa5ac47",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "0fef13f72c85730a1b7ef50842d8f88981e1dce83af40b8b4b519dd2f2a2defe",
+    "tests/test_weekly19_adoption.py": "d65e840bc1cecdaf9f4798e3a49928ab32bbdb96c1ac2fd17c9f94212d5953f0"
+  },
+  "financial_replays": 0,
+  "frozen_alpha_method_count": 565,
+  "frozen_asset_manifest_sha256": "b473e88f21d2d139615e638c9df0e0fac5358596d919624f55411438926a303c",
+  "funding_forward_guard_dependency_sha256": "5fdaa73e81d2503ba35dc78575167c8e21af6f1cbd614b8015af908bd6bb9609",
+  "git_mutations": 0,
+  "original_independent_probes": {
+    "hedge": [
+      3,
+      0.006
+    ],
+    "peak": [
+      3,
+      0.336
+    ],
+    "stale_week": [
+      2,
+      0.22
+    ]
+  },
+  "owned_adoption_tests": 16,
+  "production_qualified": false,
+  "record_sha256": "42692308b545d3a545cd11837d2607b5a458df2e897f71ed4c4034eba3cb2d56",
+  "recorded_at": "2026-11-02T14:43:00.652969+08:00",
+  "schema": "Stage024.runtime-adoption-source-lock.v1",
+  "smtp_sends": 0,
+  "source_qualified": false
+}

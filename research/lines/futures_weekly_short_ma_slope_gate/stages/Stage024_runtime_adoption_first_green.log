@@ -1,0 +1,194 @@
+test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents) ... ERROR
+test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer) ... ERROR
+test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap (tests.test_weekly19_adoption.AdoptionTests.test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap) ... ERROR
+test_normal_constructor_still_rejects_unknown_nonzero_positions (tests.test_weekly19_adoption.AdoptionTests.test_normal_constructor_still_rejects_unknown_nonzero_positions) ... ERROR
+test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price (tests.test_weekly19_adoption.AdoptionTests.test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price) ... ERROR
+test_real_metadata_size_tick_and_native_instrument_are_bound (tests.test_weekly19_adoption.AdoptionTests.test_real_metadata_size_tick_and_native_instrument_are_bound) ... ERROR
+test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl (tests.test_weekly19_adoption.AdoptionTests.test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl) ... ERROR
+test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed (tests.test_weekly19_adoption.AdoptionTests.test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed) ... ERROR
+test_source_sha_quantity_and_native_direction_cannot_be_forged (tests.test_weekly19_adoption.AdoptionTests.test_source_sha_quantity_and_native_direction_cannot_be_forged) ... ERROR
+
+======================================================================
+ERROR: test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 60, in test_bootstrap_actual_nonflat_source_creates_complete_real_layers_without_intents
+    v=sources();actor=self.bootstrap(v);state=actor.strategy.states['rb.SHFE'];layer=state.layers[0]
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer (tests.test_weekly19_adoption.AdoptionTests.test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 72, in test_bootstrap_is_deterministic_and_durable_restore_does_not_recreate_layer
+    v=sources();seed=self.seed(v);a=self.bootstrap(v,seed);b=self.bootstrap(v,seed);saved=a.export_state();self.assertEqual(saved,b.export_state())
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap (tests.test_weekly19_adoption.AdoptionTests.test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 55, in test_nonterminal_orders_and_stale_position_cohort_reject_before_bootstrap
+    v=sources();raw=json.loads(v[4]['orders']['raw_payload']);raw['orders']=[dict(status='working')];v[4]['orders']=envelope(raw)
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_normal_constructor_still_rejects_unknown_nonzero_positions (tests.test_weekly19_adoption.AdoptionTests.test_normal_constructor_still_rejects_unknown_nonzero_positions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 78, in test_normal_constructor_still_rejects_unknown_nonzero_positions
+    c,f,b,m,s,r,q,d,cash=sources()
+                         ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price (tests.test_weekly19_adoption.AdoptionTests.test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 35, in test_raw_open_cost_is_only_price_source_not_position_cost_or_operator_price
+    v=sources();seed=self.seed(v);row=seed['positions'][0]
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_real_metadata_size_tick_and_native_instrument_are_bound (tests.test_weekly19_adoption.AdoptionTests.test_real_metadata_size_tick_and_native_instrument_are_bound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 52, in test_real_metadata_size_tick_and_native_instrument_are_bound
+    v=sources();raw=json.loads(v[6]['raw_payload']);raw['quotes'][0][key]=value;v[6].update(envelope(raw));v[7]['contract_metadata_raw_sha256']=v[6]['raw_sha256']
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl (tests.test_weekly19_adoption.AdoptionTests.test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 89, in test_reconcile_cannot_drop_immutable_opening_equity_or_double_count_carry_pnl
+    v=sources();a=self.bootstrap(v);before=a.export_state();cash=copy.deepcopy(v[8]);cash.pop('opening_equity')
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed (tests.test_weekly19_adoption.AdoptionTests.test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 82, in test_seed_hash_opening_operator_identity_and_incomplete_week_fail_closed
+    v=sources();seed=self.seed(v);seed['positions'][0]['aggregate_entry_price']='1'
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+======================================================================
+ERROR: test_source_sha_quantity_and_native_direction_cannot_be_forged (tests.test_weekly19_adoption.AdoptionTests.test_source_sha_quantity_and_native_direction_cannot_be_forged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 42, in test_source_sha_quantity_and_native_direction_cannot_be_forged
+    v=sources();raw=json.loads(v[5]['raw_payload'])
+      ^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/tests/test_weekly19_adoption.py", line 23, in sources
+    cash=funds.begin_cash_observation(funds.initial_state(ACCOUNT,RELEASE,'2026-11-02'),snapshot['account'],NOW,opening_equity_mode='operator_existing_account_v1',operator_decision_id=DECISION)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 529, in begin_cash_observation
+    snapshot=_initial_account_snapshot(state,broker,now)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 454, in _initial_account_snapshot
+    or raw['query_error_rows']!=0): _fail('initial_complete_account_query_required')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py", line 51, in _fail
+    raise FundingError(reason)
+qmt_roll_weekly19_funding.FundingError: initial_complete_account_query_required
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.016s
+
+FAILED (errors=9)

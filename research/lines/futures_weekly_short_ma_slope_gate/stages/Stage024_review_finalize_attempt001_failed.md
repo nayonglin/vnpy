@@ -1,0 +1,3 @@
+# Stage024 最终汇总适配失败保留
+
+首次finalizer已核CI/lock固定SHA、298项源实物、原76定向结果及JUnit2405全绿，在最后比较JSON_counts_match_JUnit时停止；原因是独审导出对象用了passed键，而CI实际schema使用tests总数键。未写最终acceptance文件，不是CI/源码或数值不一致。第二次按tests/failures/errors/skipped原schema核对，不改源码/CI/JUnit，不重跑测试、CTP或金融。

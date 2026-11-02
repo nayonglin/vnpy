@@ -1,0 +1,24 @@
+test_arbitrage_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_arbitrage_position_is_not_adopted_by_speculation_only_executor) ... FAIL
+test_hedge_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_hedge_position_is_not_adopted_by_speculation_only_executor) ... FAIL
+test_speculation_positive_control (__main__.HedgeCompatibility.test_speculation_positive_control) ... ok
+
+======================================================================
+FAIL: test_arbitrage_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_arbitrage_position_is_not_adopted_by_speculation_only_executor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_hedge_probe_attempt001.py", line 26, in test_arbitrage_position_is_not_adopted_by_speculation_only_executor
+    with self.assertRaises(ValueError):self.seed()
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_hedge_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_hedge_position_is_not_adopted_by_speculation_only_executor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_hedge_probe_attempt001.py", line 23, in test_hedge_position_is_not_adopted_by_speculation_only_executor
+    with self.assertRaises(ValueError):self.seed()
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.007s
+
+FAILED (failures=2)

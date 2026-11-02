@@ -1,0 +1,8 @@
+test_arbitrage_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_arbitrage_position_is_not_adopted_by_speculation_only_executor) ... ok
+test_hedge_position_is_not_adopted_by_speculation_only_executor (__main__.HedgeCompatibility.test_hedge_position_is_not_adopted_by_speculation_only_executor) ... ok
+test_speculation_positive_control (__main__.HedgeCompatibility.test_speculation_positive_control) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK

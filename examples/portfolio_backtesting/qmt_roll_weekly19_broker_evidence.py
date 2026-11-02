@@ -446,6 +446,27 @@ def load_broker_snapshot(summary_path,manifest_path,**policy):
         raise BrokerEvidenceError('broker_evidence_invalid:'+str(exc)) from exc
 
 
+def load_broker_carry_in_positions(summary_path,manifest_path,**policy):
+    """Retain native aggregate cost for an explicit first-start adoption only.
+
+    Uses the very same admission as the real account snapshot. A normalized
+    zero price is never substituted for native OpenCost; this private envelope
+    does not attest a historical trade, its owner or its protection state.
+    """
+    try:
+        admitted=_load(summary_path,manifest_path,**policy)
+        summary,manifest,capture,rows=admitted
+        snapshot=_public(*admitted)
+        return _envelope(dict(_common(capture,capture['queries']['positions']),
+            schema='weekly19.ctp-carry-in-positions.v1',source_kind='ctp_position_query',
+            native_positions=copy.deepcopy(capture['raw_queried_positions']),
+            normalized_positions_sha256=snapshot['positions']['raw_sha256'],
+            raw_capture_sha256=manifest['weekly19_capture']['sha256']))
+    except (ValueError,KeyError,TypeError,AttributeError,OverflowError,csv.Error) as exc:
+        if isinstance(exc,BrokerEvidenceError):raise
+        raise BrokerEvidenceError('broker_carry_in_evidence_invalid:'+str(exc)) from exc
+
+
 def read_account_snapshot(account_envelope, *, expected_account_key, material_release_id,
                           now, max_age_seconds=300):
     """Conditionally parse one account; never confer broker/source qualification.

@@ -143,12 +143,32 @@ class LocalEvidenceBackend:
   raw=funds._parse(snapshot['account'],'weekly19.ctp-account.v1','ctp_account_callback')
   if self._market_cache is None:raise LocalBackendError('weekly19_market_generation_not_admitted')
   return resolve_weekly19_session(now=now,broker_trading_date=raw['trading_day'],calendar=self._market_cache['calendar'])
- def validate_initial_account(self,snapshot,now):
+ def validate_initial_account(self,snapshot,now,*,allow_carry_in=False):
   self.require_production()
+  from qmt_roll_weekly19_startup import load_startup_authorization,assert_startup_snapshot
+  policy=load_startup_authorization(self.config)
+  if policy is not None:
+   if not allow_carry_in:raise LocalBackendError('weekly19_explicit_existing_account_initializer_required')
+   assert_startup_snapshot(policy,snapshot,account_key=self.config['account_key'],material_release_id=self.config['material_release_id'],now=now)
+   return
   account=broker.read_account_snapshot(snapshot['account'],expected_account_key=self.config['account_key'],material_release_id=self.config['material_release_id'],now=now)
   positions=funds._parse(snapshot['positions'],'weekly19.ctp-positions.v1','ctp_position_query')['positions']
   orders=funds._parse(snapshot['orders'],'weekly19.ctp-orders.v1','ctp_order_query')['orders']
   if account['equity_fen']!=funds.INITIAL_FEN or positions or any(r['status']not in {'filled','cancelled','rejected'}for r in orders):raise LocalBackendError('weekly19_initial_real_150k_flat_account_required')
+ def bootstrap_existing_account(self,bundle,data,now):
+  self.require_production()
+  from qmt_roll_weekly19_startup import load_startup_authorization,build_initial_carry_in_seed
+  from qmt_roll_weekly19_runtime import bootstrap_weekly19_runtime,DEFAULT_SETTINGS_ASSET
+  policy=load_startup_authorization(self.config)
+  if policy is None:raise LocalBackendError('weekly19_explicit_existing_account_policy_required')
+  if bundle['runtime']is not None or bundle['decision']is not None:raise LocalBackendError('weekly19_existing_account_bootstrap_first_state_only')
+  evidence=self.config['broker']
+  raw=broker.load_broker_carry_in_positions(evidence['summary_path'],evidence['manifest_path'],**self._broker_policy(now))
+  seed=build_initial_carry_in_seed(policy,data,raw,now)
+  completed=policy['authorization']['completed_day']
+  return bootstrap_weekly19_runtime(DEFAULT_SETTINGS_ASSET,data['metadata'],data['calendar'],data['physical_epoch_daily'],
+   data['broker_snapshot'],bundle['funding'],carry_in_seed=seed,
+   warmup_batches=[data['bars_by_day'][day]for day in sorted(data['bars_by_day'])if day<=completed],clock=lambda:now)
  def reconcile_cash(self,state,snapshot,now):
   if getattr(self,'context_file',None)is not None:self._refresh_cash_sources()
   funds.validate_state(state);original=deepcopy(state);updated=deepcopy(state);self.cash_source_blocker=None
@@ -164,7 +184,10 @@ class LocalEvidenceBackend:
     if not isinstance(references,list)or len(references)>1000:raise ManualCashError('manual_cash_reference_list_invalid')
     if checkpoint is None:
      if references:raise ManualCashError('initial_real_cash_observation_required_before_manual_review')
-     return funds.begin_cash_observation(updated,snapshot['account'],now)
+     from qmt_roll_weekly19_startup import load_startup_authorization
+     policy=load_startup_authorization(self.config)
+     options={}if policy is None else dict(opening_equity_mode='operator_existing_account_v1',operator_decision_id=policy['operator_decision_id'])
+     return funds.begin_cash_observation(updated,snapshot['account'],now,**options)
     # Load EVERY reference before changing even the candidate state. A later
     # invalid reference cannot be hidden by a successful earlier review.
     records={}

@@ -1,0 +1,211 @@
+{
+  "schema": "stage024.independent.bootstrap-design-preflight.v1",
+  "generated_at_cst": "2026-11-02T13:50:59.737708+08:00",
+  "status": "DESIGN_PREFLIGHT_WITH_REQUIRED_ADOPTION_CONTRACT",
+  "accepted_scope": "read-only architecture/preconditions only",
+  "production_qualified": false,
+  "implemented": false,
+  "source_head": "b81d1689e457f7598d72c4aa0308bf96a4026d10",
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "8d36305b293e027f9657171e31a137c07d8fe6ef2a10b342bf611d2be08dcdde",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a39703087fc80fe8e400de84a6186c6dfb39fd2d9515d8c918a43584142f936c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "add26d878e7bffe06e7f19386026ffb492102bc3cdab77b3114b0d3e42607f50",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_pipeline_state.py": "7ac409569aa576ed09cbb9e4b3f7448e3e648eb1263a7b9d95701274a6bc5dab",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_session_bridge.py": "4207284a4c2166d9f6e909e6895f1d0acdd0b007b523050327036a04e9d54474",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/qmt_roll_portfolio_strategy.py": "7e84731ddd27b52430d4cab79b0742e7a7c60ba4daf094bdb1c3421afc1aca57",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/stage032_daily_addon.py": "cae5a104ca1e8f5c9faf06475b1598b4e92d6f3d97270236ff17e9ceb1064391",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/stage029_week_close_exits.py": "d75fa3fc830ca48cc295e2728b2f7952ba4e24f730a1c1cb78a9d48ffb58e0c4",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/stage029_week_close_exits_v2.py": "f6a9439ab3a506cc5740f2531f462f75177e05dec2495c9545f04a5bb232018d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_assets/actual_settings.json": "513ef478b031ad819dd0a81baf11b76f1fee1bad8671de6526966ad68e6b71ab"
+  },
+  "user_authorization": {
+    "meaning": "User explicitly authorizes retaining the actual account equity as already-earned opening surplus and switching the strategy without withdrawing the difference or forcibly flattening the existing position.",
+    "does_not_imply": [
+      "historical weekly19 trading PnL has been verified",
+      "an unknown stop/entry date/cost/high-water mark is known",
+      "current material automatically production-qualified",
+      "existing position may be represented by only pos_data",
+      "a synthetic opening fill may be invented"
+    ]
+  },
+  "current_m3_gates": {
+    "initial_backend": "requires real E150000 and flat",
+    "runtime_reconcile": "requires actual positions equal protected confirmed layers and directions",
+    "restore": "requires account/release/settings/full state digest/input-prefix identity",
+    "cash_observation": "currently requires real initial balance150000 and no prior funding activity",
+    "addon_enabled": false,
+    "addon_disabled_ast_verified": true
+  },
+  "field_inventory": {
+    "PositionLayer": [
+      "kind",
+      "direction",
+      "volume",
+      "entry_price",
+      "stop_price",
+      "highest_price",
+      "lowest_price",
+      "signal",
+      "entry_date",
+      "max_profit_pct",
+      "margin_ratio",
+      "entry_price_synced",
+      "profit_giveback_stop_active"
+    ],
+    "ProductState": [
+      "product_vt_symbol",
+      "contract_vt_symbol",
+      "direction",
+      "risk_mode",
+      "layers",
+      "last_signal",
+      "entry_date",
+      "last_add_date",
+      "last_donchian_add_date",
+      "last_post_quality_add_date",
+      "rollover_opened_today",
+      "rollover_pending_target_contract",
+      "rollover_pending_signal_date",
+      "rollover_pending_last_counted_date",
+      "rollover_pending_elapsed_trading_days",
+      "bars_since_entry",
+      "prev2day_stop_price",
+      "post_quality_prev2day_relax_done",
+      "rsi_partial_exit_done",
+      "portfolio_drawdown_gate_reference_contract",
+      "portfolio_drawdown_gate_reference_volume",
+      "portfolio_volatility_budget_reference_contract",
+      "portfolio_volatility_budget_reference_volume",
+      "portfolio_overheat_cooldown_reference_contract",
+      "portfolio_overheat_cooldown_reference_volume"
+    ]
+  },
+  "feasible_routes": [
+    {
+      "priority": 1,
+      "route": "compatible_state_migration",
+      "condition": "Existing old ledger/runtime provides independently attributable cost, protection and state path; explicit mapper validates every consumed field and fresh actual position/cash.",
+      "verdict": "Preferred when evidence exists; old C9 settings/release are never silently made weekly19-compatible."
+    },
+    {
+      "priority": 2,
+      "route": "explicit_new_adoption_cohort",
+      "condition": "User-directed switch is implemented as a one-time adopted-position cohort with a declared new protection/age/high-water/PnL baseline; all consumed fields are bounded and source-backed.",
+      "verdict": "Technically feasible under the current authorization, but requires a new reviewed startup policy/material. It cannot claim historical protection continuity or m3 already passed."
+    },
+    {
+      "priority": 3,
+      "route": "delete_flat_guard_or_copy_pos_only",
+      "condition": "Only relax E==150000/flat guard or insert strategy.pos_data without full protection/ownership.",
+      "verdict": "Reject; existing downstream reconciliation and close-identity contracts correctly fail closed."
+    }
+  ],
+  "required_contract": [
+    {
+      "area": "cash",
+      "requirements": [
+        "Principal remains150000; external reserve starts150000; confirmed new topups T0=0.",
+        "Pin E0 from the actual source-qualified account, Available and gross Deposit/Withdraw as a checkpoint. Opening surplus S0=E0-150000 is separately labeled opening carried equity, not verified strategy history or a transfer.",
+        "For t after cutover: post_cutover_net_pnl=Et-E0-new_Tcum; Et=150000+S0+post_cutover_net_pnl+new_Tcum; Rt=150000-new_Tcum.",
+        "Sizing must use actual broker E and Available and include margin/heat from the adopted holding. Do not set E0 to150000, add S0 twice, or make reserve available inside the account.",
+        "Actual broker cash remains authoritative; later manual cash reviews preserve existing request/receipt/account/release/day/duplicate guards."
+      ]
+    },
+    {
+      "area": "position_ownership",
+      "requirements": [
+        "Same source-bound actual account, symbol/epoch, direction, lots/yd/today split, frozen quantity and no unresolved external order ownership; no synthetic trade or broker-order identifiers.",
+        "ProductState contract/direction/layers, strategy.pos_data and target_data, confirmed entry_price_synced quantities and runtime.position_identities must all exactly agree with actual physical holdings.",
+        "One append-only adoption identity binds account/material/cohort/snapshot rawSHA/physical epoch and actual quantity; risk_close/rollover_close must have a confirmed root/cycle/position identity.",
+        "Runtime close_lifecycles must retain actual lots/remaining and preserve real fill/retry/idempotency after adoption. New adoption is not a pending or executed native_entry.",
+        "Daily-addon is disabled in this C branch; _da_inventory/_da_close_queue from the enabled sleeve are not required or consumed."
+      ]
+    },
+    {
+      "area": "protection_and_history",
+      "requirements": [
+        "Prefer source-verified complete compatible old protection/cost state through an explicit migration mapper; never directly relabel an old C9 runtime with the new release/settings hash.",
+        "If compatible old strategy history is unavailable, explicitly version a fresh adoption baseline, including basis date, PnL attribution, initial stop rule, highest/lowest/max_profit_pct, prev2week age/ratchet and portfolio high-water/reset policy. Label unknown pre-cutover history rather than inventing it.",
+        "Stage174 generic position.price is intentionally0; native PositionCost is not OpenCost. OpenCost can at most support a verified aggregate cost calculation with correct multiplier/lot convention; it cannot establish actual entry date/stop/high-water path. Native position detail fields OpenDate/TradeID/OpenPrice are not in the existing four-query capture.",
+        "Derive protection only from approved completed physical-epoch weekly bars and a declared deterministic rule; no forming bars, retrospective optimized window, or synthetic historical on_bars/fills.",
+        "Changing entry_date to cutover changes prev2week activation: it counts two complete post-entry weeks. Zeroing high-water/max-profit/prev2week ratchet may loosen protection; disclose and review the explicit migration semantics.",
+        "Existing real entry-cost lifecycle PnL may include pre-cutover holding PnL. Keep lifetime trade outcome distinct from Et-E0-newT; broker cash must never be incremented by reconstructed historical PnL."
+      ]
+    },
+    {
+      "area": "atomic_startup",
+      "requirements": [
+        "Do not remove m3 normal flat initial gate or use a fake flat broker snapshot to get through the constructor. Add a narrow immutable startup mode/receipt that validates and installs complete adoption before strict reconcile.",
+        "If weekly history is needed to derive protection, warm actual completed AM data without historical decision replay before final reconciliation; actual snapshot is never modified.",
+        "Cash checkpoint, adoption receipt/position state, full runtime snapshot and source/data identity commit together through the existing single-actor PipelineStateStore CAS. No partial cash/runtime publication.",
+        "Replaying the same adoption is idempotent; changed account/release/quantity/source snapshot or re-adopting after trading activity is rejected. Crash recovery validates the committed adoption, not a fresh invented baseline.",
+        "Coordinate exclusive account ownership and retire old pending intent/executor authority before enabling the new one; preserve prior evidence/history, do not replay old C9 drafts."
+      ]
+    },
+    {
+      "area": "production_gate",
+      "requirements": [
+        "A new migration version changes m3 startup semantics and requires fresh material/source binding, offline adversarial review and the existing real production qualification/manifest/activation/runtime/data-readiness gates. User authorization does not replace any technical gate.",
+        "Keep the real qualified capture authority, exact stable/source/material identity and fresh account/positions/orders/fills/quote/session/physical-child execution gates. No reuse of unqualified direct diagnostic as production authority.",
+        "Do not revive the canceled automatic bank producer/final settlement parser work. operator_manual_v1 remains the authorized cash mode.",
+        "No new native connection, financial replay, order/cancel, SMTP or production action is performed by this review."
+      ]
+    }
+  ],
+  "unknowns": [
+    "Whether a complete compatible prior owner state exists is assigned to the other evidence reviewer and was not inspected by this review.",
+    "Actual original entry date/price/cost conventions and prior stop/highest/lowest/max_profit/prev2week ratchet remain unproven from the four-query aggregate snapshot alone.",
+    "Whether to migrate proven old state or declare a new protection/age/high-water reset must be fixed in Stage024 contract before implementation; user need not repeat general risk authorization.",
+    "New exact cutover timestamp/cold-start cursor, latest approved completed physical bars, old pending authority and exclusivity must be bound to the real adoption receipt."
+  ],
+  "existing_source_bug_findings": [],
+  "reject_if": [
+    {
+      "severity": "P0",
+      "condition": "enable real operations after only copying raw pos_data or fabricating source/fills"
+    },
+    {
+      "severity": "P1",
+      "condition": "treat opening surplus as reserve transfer or add lifetime PnL on top of real broker Balance"
+    },
+    {
+      "severity": "P1",
+      "condition": "silently reset position age/peak/stops while claiming old continuous protection"
+    },
+    {
+      "severity": "P1",
+      "condition": "relax default m3 initial/source gates globally instead of a versioned one-time adoption contract"
+    }
+  ],
+  "review_correction": "Earlier exploratory message incorrectly included enabled daily-addon inventory requirements. Actual Runtime ctor passes enabled=False and Stage032 returns the weekly wrapper before DailyAddonStrategy; that requirement is withdrawn.",
+  "source_locations": {
+    "runtime_ctor_and_addon_disabled": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py:441",
+    "runtime_strict_reconcile": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py:660",
+    "runtime_position_identity": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py:1189",
+    "runtime_owned_close_lots": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py:1372",
+    "runtime_strict_restore": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py:1626",
+    "position_layer_fields": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/qmt_roll_portfolio_strategy.py:42",
+    "prev2week_age": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/stage029_week_close_exits.py:158",
+    "dynamic_stops": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/weekly19_frozen/qmt_roll_portfolio_strategy.py:8181",
+    "normalized_price_not_cost": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py:959",
+    "funding_initial_baseline": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py:445",
+    "backend_initial_gate": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py:146"
+  },
+  "actions": {
+    "CTP_connections": 0,
+    "order_calls": 0,
+    "cancel_calls": 0,
+    "SMTP_sends": 0,
+    "financial_replays": 0,
+    "production_modifications": 0,
+    "Git_changes": 0,
+    "credential_files_read": 0
+  },
+  "reflection": {
+    "overfitting": false,
+    "reason": "No alpha tuning, historical parameter selection or financial replay; a necessary explicit live-state transition.",
+    "worth_continuing": true,
+    "reason_to_continue": "User has authorized a retained-profit cutover. Correct ownership/protection/cash initialization is necessary to implement it safely and truthfully."
+  }
+}

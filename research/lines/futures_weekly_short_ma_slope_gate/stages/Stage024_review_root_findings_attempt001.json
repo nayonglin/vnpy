@@ -1,0 +1,83 @@
+{
+  "schema": "stage024.independent.interim-findings.v1",
+  "generated_at_cst": "2026-11-02T14:36:24.360575+08:00",
+  "status": "INTERIM_NOT_ACCEPTED_PENDING_FIX_AND_SOURCE_FREEZE",
+  "final_acceptance": false,
+  "production_qualified": false,
+  "source_scope": "interim mutable author implementation; fixes require original independent probes rerun after source LOCK",
+  "findings": [
+    {
+      "id": "P1-01",
+      "severity": "P1",
+      "title": "Known opening equity absent from new management high-water",
+      "evidence_prefix": "Stage024_review_root_peak_probe_attempt001",
+      "result": "1 positive control passed, 2 independent assertions failed",
+      "observed": "Synthetic E0=170000, stored high-water150000; first E150000 produces drawdown0 instead of11.7647%.",
+      "impact": "Suppresses the original drawdown component of risk-cluster heat after cutover.",
+      "required": "Initialize new-cohort portfolio peak to include actual E0 while preserving original parent capital floor; do not invent unknown historical peaks."
+    },
+    {
+      "id": "P1-02",
+      "severity": "P1",
+      "title": "Non-speculation positions accepted by speculation-only execution path",
+      "evidence_prefix": "Stage024_review_root_hedge_probe_attempt001",
+      "result": "Speculation positive control passed; HedgeFlag2 and3 rejection assertions failed",
+      "observed": "Adoption allows multiple hedge flags and drops the identity, while actual Stage931/native gateway CombHedgeFlag is fixed speculation1.",
+      "impact": "Durable claimed protected holding may have no compatible future close path.",
+      "required": "Fail closed for any active carry-in HedgeFlag other than1; no expanded hedging executor needed."
+    },
+    {
+      "id": "P1-03",
+      "severity": "P1",
+      "title": "Prior completed week can be selected despite known later pre-cutover history",
+      "evidence_prefix": "Stage024_review_root_stale_week_probe_attempt001",
+      "result": "Latest10/30 positive control passed;10/23 stale-source rejection assertion failed",
+      "observed": "Synthetic current account/cutover11/2 and calendar knows10/30, but authorization completed10/23 plus truncated warmup still bootstraps.",
+      "impact": "Starts management with stale indicator/protection state; may also trigger deferred history gaps only after admission.",
+      "required": "Require completed_day equal authoritative calendar last pre-management trading day and latest accepted full week; do not silently replay historical decisions."
+    }
+  ],
+  "evidence_files_sha256": {
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_peak_probe_attempt001.py": "26c8df9b89c713ddef200990e1c152be32d4844bb8e81b4ace1e3c45e6543eb6",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_peak_probe_attempt001.log": "0dd54c47f43f82ebf34370b853eba6b731be8aac7c9b38d65a67d165df46daaf",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_hedge_probe_attempt001.py": "5860dabd3e13d3131664b5b6e89c8e49e2d2a8feb6fbc819603dcf962a92b645",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_hedge_probe_attempt001.log": "30f73811caa23a0b72fe2bff1d94e574fd370ad62710cf5fc1a7bd8ab036579e",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_stale_week_probe_attempt001.py": "2aee75431666c9cc08c2dc6c75860ef1e7851f95ce15d849759ce20dd83a4a90",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_stale_week_probe_attempt001.log": "0602af3258dc0993c5d4300c8e9e2a632c54f85de7bb668afa181cdf0d046eb0",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002.json": "c301fa9a4e049dc885a9340bdbcd632f3333135cd31f212f1cd8651aa120f1b3",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002_1.log": "8a4f6dee3ed8e234bdf1cd7432bed8b160ba2c182013fdb470bb7fd71939f5fa",
+    "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002_2.log": "ca9deead77380163fb49dbd58759133c5ad7e7a717629215b1ff4794de88d0b8"
+  },
+  "source_snapshot_after_review": {
+    "examples/portfolio_backtesting/qmt_roll_weekly19_runtime.py": "94f113618ee39161ff5da4b4fce7e8dc116e0fe28beffcf344328e3653c695b4",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_adoption.py": "0f60f54bf440730228787d975daad87a0da8e663caf5973935f9fce01aa5ac47",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_startup.py": "2a07a6c396462a43b69277a871688b276a530678a9f061cdce4158e9bd79eaff",
+    "examples/portfolio_backtesting/qmt_roll_weekly19_live_pipeline.py": "46400dbd90ddab2b60e99b2cbbcd6335d7d1eae054f4f9bdd028f05f92224d62"
+  },
+  "component_check": {
+    "record": "research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_components_attempt002.json",
+    "calls_passed": 42,
+    "source_drift": [],
+    "scope": "3 independent startup/CLI negatives+14 author startup+20 opening-equity+5 carry-source/CLI; not adoption final acceptance"
+  },
+  "source_qualification_notes": [
+    "Private metadata packet hash and source-kind strings alone do not grant production authority. Root fixes a real vendor packet by reference and builder compares instrument/multiplier/tick/delivery epoch to approved metadata; final production evidence remains separate.",
+    "No automatic bank-producer or final-statement-parser work is required; operator_manual_v1 remains in force.",
+    "User authorization covers explicit new management-cohort adoption, not fabricated historical cost/date/peak/protection continuity."
+  ],
+  "actions": {
+    "CTP_connections": 0,
+    "order_calls": 0,
+    "cancel_calls": 0,
+    "SMTP_sends": 0,
+    "financial_replays": 0,
+    "core_modifications": 0,
+    "Git_index_or_commit_changes": 0
+  },
+  "reflection": {
+    "overfitting": false,
+    "reason": "Source/cash/ownership/risk initialization checks only; no tuned alpha or financial replay.",
+    "worth_continuing": true,
+    "reason_to_continue": "Correct these narrow startup defects before freezing a newly authorized migration material."
+  }
+}

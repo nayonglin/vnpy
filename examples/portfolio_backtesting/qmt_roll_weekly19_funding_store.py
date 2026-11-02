@@ -16,7 +16,7 @@ from pathlib import Path
 import stat
 import uuid
 
-from qmt_roll_weekly19_funding import FundingError, _canonical, _time, _hash, _parse, upgrade_funding_state, validate_state
+from qmt_roll_weekly19_funding import FundingError, _canonical, _time, _hash, _parse, upgrade_funding_state, validate_state, assert_opening_equity_forward
 
 
 class FundingStore:
@@ -154,6 +154,7 @@ class FundingStore:
     @staticmethod
     def _forward_ledger(current, following, *, strict_manual_parent=False):
         if current==following: return
+        assert_opening_equity_forward(current,following)
         if current['schema']=='weekly19.external-funding.v1':
             if following!=upgrade_funding_state(current):
                 raise FundingError('store_explicit_v2_migration_required')

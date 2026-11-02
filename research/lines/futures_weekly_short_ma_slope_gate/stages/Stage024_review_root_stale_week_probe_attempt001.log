@@ -1,0 +1,15 @@
+test_latest_pre_cutover_completed_week_control (__main__.LatestProtection.test_latest_pre_cutover_completed_week_control) ... ok
+test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week (__main__.LatestProtection.test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week) ... FAIL
+
+======================================================================
+FAIL: test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week (__main__.LatestProtection.test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_review_root_stale_week_probe_attempt001.py", line 21, in test_one_week_stale_protection_rejected_when_calendar_knows_later_completed_week
+    with self.assertRaises(ValueError):self.bootstrap('2026-10-23')
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.276s
+
+FAILED (failures=1)
