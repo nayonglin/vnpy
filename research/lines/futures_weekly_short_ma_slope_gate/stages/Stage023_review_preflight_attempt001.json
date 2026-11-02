@@ -1,0 +1,158 @@
+{
+  "schema": "stage023.independent.readonly-preflight.v1",
+  "generated_at_utc": "2026-11-02T01:07:31.308163+00:00",
+  "status": "PREFLIGHT_REVIEWED_WITH_QUALIFICATION_PENDING",
+  "accepted_for": "root-owned formal-environment read-only diagnostic only",
+  "production_qualified": false,
+  "source_qualified": false,
+  "can_install_or_trade": false,
+  "actual_native_result_reviewed": false,
+  "source_head": "5328499b149b6f29ed60e024c2be6dafe796503c",
+  "observed_stable_head": "d55887e1def72629fbfa310e439dc3a879969a14",
+  "observed_stable_material_release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+  "observed_stable_current_sha256": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+  "m3_material_release": "m0003_20261102T001414+0800_39913bc2821c",
+  "m3_material_source_commit": "39913bc2821c47a485913f6d7b2d2631c19e19ab",
+  "m3_material_release_commit": "65594f6320f4c625892be534f750275c9667e315",
+  "source_files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py": "0135b9e8d67af734f5e9ad6f8e039c89b4b50a0a16a5eab1536e3590cd65aabd",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py": "8a891f36df3cd1391ecaf36c3911b4f743c52487f3cc1b00b6294da419d737f5",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/build_qmt_roll_stage179_production_qualification_bundle.py": "938a53a712c65f9b9f8a762b93b68ff37a855796c61b87bf822b66383f2deb48",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py": "e9a3f3ce06617afe92aff294818deaa406ebfe81e64890368e2d878f09e399bd",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py": "0e236c68ae19c51a633521e708ac7973acc4b30b1321f1be56ae3ee48ebba10d",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py": "a39703087fc80fe8e400de84a6186c6dfb39fd2d9515d8c918a43584142f936c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py": "419b8c31b9685ab69ef47c4abc35f266cfc56ad7c9fb9f76c1ceffa44609c677",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py": "f6574a39173e5e8185895c0ebceee1f0a8ce79f44e95463f16d066491ef0a064",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_m3_release_receipt.json": "853143be1d9bc2ce67d4200af8d2faeec7feb91a4502ef38284bfa0a6fe75170",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_implementation_lock_attempt002.json": "ed862e77e0780ba7ac0714c9edbb22e867d3a8481b9d61f6557e11ecf6638ada",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0003_20261102T001414+0800_39913bc2821c/manifest.json": "e1e6fb3a560f9bbaa2981b1ea347d424bddd9de6463ac0936ebb2906fa84b8a6",
+    "/Users/mac/Desktop/person/vnpy_production_live/official_strategy_materials/CURRENT.json": "975ea27f5d9a809855acd2b0a0405743ec7b6d6ac1f3e97abccfe91cabdd0e92",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_review_preflight_attempt001.py": "950dc6f8c3e493ca78332351a4fb23ee901e01ec0a37e4935c24b2277ea5ea51"
+  },
+  "m3_critical_count": 291,
+  "m3_critical_map_sha256": "d4333d1b75a5a2cd1dd2f2e7d0b40ee3c4a5c41ae5ce553e7351dc755a4519dc",
+  "m3_payload_count": 381,
+  "checks": [
+    {
+      "name": "shell_not_executed_and_wrapper_bash_lc",
+      "passed": true
+    },
+    {
+      "name": "formal_env_only",
+      "passed": true
+    },
+    {
+      "name": "formal_framework_before_py311_lib",
+      "passed": true
+    },
+    {
+      "name": "exact_python_probe",
+      "passed": true
+    },
+    {
+      "name": "connect_readonly_30s",
+      "passed": true
+    },
+    {
+      "name": "m3_capture_options_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_authority_fabricated",
+      "passed": true
+    },
+    {
+      "name": "invocation_shell_quoted",
+      "passed": true
+    },
+    {
+      "name": "invalid_option_rejected_8",
+      "passed": true
+    },
+    {
+      "name": "invalid_option_rejected_9",
+      "passed": true
+    },
+    {
+      "name": "all_291_m3_critical_sources_match",
+      "passed": true
+    },
+    {
+      "name": "m3_manifest_file_pin",
+      "passed": true
+    },
+    {
+      "name": "all_381_m3_payload_files_match",
+      "passed": true
+    }
+  ],
+  "check_count": 13,
+  "failures": [],
+  "production_authority_files": {
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/release-manifest.json": {
+      "exists": false
+    },
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/qualification-bundle/qualification.json": {
+      "exists": false
+    },
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/activation/latest.json": {
+      "exists": false
+    },
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/runtime/state/activation_receipt.json": {
+      "exists": false
+    },
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/production-live/data-readiness/latest.json": {
+      "exists": false
+    }
+  },
+  "generated_command_never_executed": {
+    "argv": [
+      "bash",
+      "-lc",
+      "set -euo pipefail\nset -a; source /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/ctp_live.local.env; set +a\nexport DYLD_FRAMEWORK_PATH=/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib/python3.11/site-packages/vnpy_ctp/api/libs:/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/lib${DYLD_FRAMEWORK_PATH:+:${DYLD_FRAMEWORK_PATH}}\n/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/.py311/bin/python /Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_ctp_stage174_readonly_probe.py --connect --wait-seconds 30 --invocation-id stage023-readonly-placeholder --weekly19-material-release-id m0003_20261102T001414+0800_39913bc2821c --weekly19-execution-profile weekly19-15w-r150k --weekly19-private-capture-dir /private/tmp/weekly19-review-capture-placeholder"
+    ],
+    "outer_required_env_gate": "OFFICIAL_LIVE_PHASE_D_READONLY_REFRESH_ENABLED=1",
+    "outer_refresh_confirmation": "I_UNDERSTAND_THIS_RUNS_CTP_READONLY_REFRESH_ONLY",
+    "outer_email_policy": "never"
+  },
+  "source_findings": [],
+  "qualification_requirements": [
+    "Trusted Stage179 runner must own exact clean source, required-suite executions and at least two native Stage907 captures; standalone diagnostic JSON is not trusted-runner evidence.",
+    "Candidate explicit material mode requires actual HEAD equal exact material release_commit. Current source HEAD and candidate release commit are distinct identities; no same-critical/ancestor shortcut.",
+    "Raw TD authentication/login/settlement-confirm readiness and MD lifecycle, same live connection generation; account/positions/orders/trades query reqids, completion-last/error/timestamps and normalized raw mappings; contracts query complete.",
+    "All eight send/cancel/native-mutation attempted and called counters explicitly zero; mutation firewall remains installed through engine close and evidence freezing.",
+    "Actual fresh account Balance must be exactly CNY150000 for initial cohort, Available known nonnegative, positions empty and no nonterminal orders; do not infer from a historical or simulated baseline.",
+    "Initial cash observation only pins actual cash after production/flat gate, preserves external R150000 and T0; manual operator cash review remains separate from actual broker Balance.",
+    "Private raw capture and HMAC registry do not self-qualify. Registry creation requires actual full production qualification, final manifest and activation plus exact stable HEAD, active material and semantic source closure.",
+    "Final production chain and scheduler/runtime/data readiness must be separately accepted. No automatic bank-producer or final-settlement parser requirement is revived; operator_manual_v1 is the authorized mode."
+  ],
+  "source_locations": {
+    "formal_command": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/run_qmt_roll_stage907_official_live_readonly_refresh_gate.py:223",
+    "trusted_native_captures": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/build_qmt_roll_stage179_production_qualification_bundle.py:412",
+    "candidate_exact_head": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/build_qmt_roll_stage179_production_qualification_bundle.py:1215",
+    "raw_native_validator": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/build_qmt_roll_stage179_release_manifest.py:1270",
+    "registry_final_production_gate": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_broker_evidence.py:1185",
+    "initial_real_account": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_local_backend.py:146",
+    "initial_cash_observation": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/examples/portfolio_backtesting/qmt_roll_weekly19_funding.py:445"
+  },
+  "operational_actions": {
+    "ctp_connections": 0,
+    "order_calls": 0,
+    "cancel_calls": 0,
+    "smtp_sends": 0,
+    "financial_replays": 0,
+    "production_changes": 0,
+    "credential_files_read": 0
+  },
+  "limitations": [
+    "This is static source/command review with isolated AST function evaluation; generated command was never executed.",
+    "No actual native capture, real account balance/positions, connection outcome or production authority is accepted by this receipt.",
+    "Stable checkout existence/CURRENT identity are observed; qualification/activation cannot be inferred from either."
+  ],
+  "reflection": {
+    "overfitting": false,
+    "reason": "No alpha/parameter selection or financial replay; validating runtime/source evidence boundaries only.",
+    "worth_continuing": true,
+    "value": "Determine real connectivity/account facts while preserving qualification and cash/execution safety gates."
+  }
+}

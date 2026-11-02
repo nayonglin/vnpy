@@ -1,0 +1,26 @@
+{
+  "schema": "Stage023.resume-installation-after-operator-decision.v1",
+  "status": "awaiting_operator_inventory_and_initial_baseline_decision",
+  "candidate_handoff_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage022_installation_handoff.json",
+  "candidate_handoff_sha256": "40f9b0712735bb77fb0e5cec09ad46ba2d43c36750c825bd0b1e5abc3faa8309",
+  "candidate_release_id": "m0003_20261102T001414+0800_39913bc2821c",
+  "diagnostic_observation_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_readonly_result.json",
+  "diagnostic_observation_sha256": "a0614b6ffc35887bf95473f4f19944a4c9cd60b07582933ad2c1ea7cd67d2ab3",
+  "independent_review_path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_review_observation.json",
+  "independent_review_sha256": "08bdbbc65fed3426c80a5090cdc8d79b7fb5945b41c9308151e2b16b4cb04f96",
+  "user_question_pending": true,
+  "blockers": [
+    "initial_equity_not_equal_to_frozen_150000",
+    "real_existing_inventory_not_flat"
+  ],
+  "required_next_steps": [
+    "obtain operator decision on current inventory management and starting equity requirement",
+    "obtain a new complete formal readonly snapshot after any operator changes; this diagnostic is not qualified and is stale for activation",
+    "if frozen strategy must change, create and independently qualify a new release; do not mutate m0003 or invent holdings/cash",
+    "trusted qualification must use exact m0003 release tree if unchanged, then controlled activation/master/fresh master clone/Stage948 as already authorized"
+  ],
+  "one_shot_automation_deleted": true,
+  "production_qualified": false,
+  "activated": false,
+  "source_code_changed": false
+}

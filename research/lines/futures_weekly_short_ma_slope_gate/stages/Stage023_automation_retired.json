@@ -1,0 +1,11 @@
+{
+  "schema": "Stage023.once-only-check-completed.v1",
+  "recorded_at": "2026-11-02T09:18:39.515936+08:00",
+  "automation_id": "9-19",
+  "name": "周一9点核验周线19品种实盘安装",
+  "action": "deleted",
+  "reason": "scheduled readonly check completed; installation blocked pending operator account/inventory decision",
+  "new_automation_created": false,
+  "daily_mail_code_deleted": false,
+  "production_jobs_changed": false
+}

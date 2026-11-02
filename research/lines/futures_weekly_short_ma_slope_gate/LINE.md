@@ -49,3 +49,7 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 每日postclose-report已接日报，明确风险组新信号有/无/未确认，中文原因/原码/原持仓与买卖平/计划与累计成交/历史待执行；同日去重、投递不明不重发，周五独立补资邮件保留并显示退出原因。真实回报semantic/rawSHA绑定成交日期，旧缺日期和bars_queued未评估明确未知；不重跑策略或改alpha/资金规则。92套件2348通过/0跳过、291关键源无漂移，独审P0/P1/P2=0，旧CI沙箱33失败和queued RED均保留。8封合成离线样例见artifacts/stage022_daily_mail_previews_attempt002/；独审stages/Stage022_review_acceptance.json。代码本地提交52b825c4e，新不可变候选物料冻结/安装接续由Stage022新handoff记录；旧m2和CURRENT保持，不代表已发送或已安装。
 
 - Stage022最终新m3已冻结并独立clone实物验收：m0003_20261102T001414+0800_39913bc2821c，source39913bc2821c47a485913f6d7b2d2631c19e19ab，release65594f6320f4c625892be534f750275c9667e315，381payload/291CI/实际LFS与执行位通过，旧m1/m2/CURRENT均保留。最新安装只读接续入口stages/Stage022_installation_handoff.json（替代安装目标，Stage018证据仅历史）；既有9-19任务已同步新候选，时点仍11/2 09:00。尚未激活/master/生产安装或真实发邮件，外层Stage022_delivery_receipt绑定全证据。
+
+## 2026-11-02 Stage023 09:04真实只读与初始账户阻断
+
+正式ctp_live env/framework已实测，CTP TD/MD认证登录成功，单连接账户/持仓/委托/成交查询完整、8 mutation API计数全0；原始回执及真实资金/仓位仅私有归档。实际账户非空仓且权益不符冻结的150000初始门，故保留m3、现仓和现金，不执行接管/初始化/激活/master/Stage948或SMTP。79项独审通过仅为真实只读观察，不是正式资格；Git保留脱敏Stage023_readonly_result/Stage023_review_observation，完整审计及失败版本私有原字节保留。既有一次性9点任务9-19已结束删除，未改每日通知代码或生产job。已询问用户现仓管理与启动基准；待答复从stages/Stage023_resume_handoff.json继续，必须取新快照，不复用本次诊断冒资格。

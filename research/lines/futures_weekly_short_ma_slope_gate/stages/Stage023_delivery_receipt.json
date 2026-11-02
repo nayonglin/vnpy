@@ -1,0 +1,23 @@
+{
+  "schema": "Stage023.initial-account-blocked-delivery.v1",
+  "recorded_at": "2026-11-02T09:18:39.516914+08:00",
+  "status": "REAL_READONLY_SUCCESS_INITIAL_ACCOUNT_BLOCKED",
+  "accepted_for": "diagnostic_observation_only",
+  "files_sha256": {
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_readonly_result.json": "a0614b6ffc35887bf95473f4f19944a4c9cd60b07582933ad2c1ea7cd67d2ab3",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_review_observation.json": "08bdbbc65fed3426c80a5090cdc8d79b7fb5945b41c9308151e2b16b4cb04f96",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_automation_retired.json": "827292939dcf6be9f7b490e7412844091300a219e90fb5d531efc8ce4d8314c0",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage023_resume_handoff.json": "5437dfbce7d2c7366b8c6d666264ccbd3aa091f2d68c9e859d92e84afc58bc5c",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/20261102_0904_stage023_real_readonly_initial_account_blocked.md": "0837d89b65b1255039c8500ffbc1787e0f051c7219c533fefe809f06b91a17e9"
+  },
+  "initial_cohort_admissible": false,
+  "operator_decision_required": true,
+  "source_qualified": false,
+  "production_qualified": false,
+  "activated": false,
+  "one_shot_automation_deleted": true,
+  "real_readonly_invocations": 1,
+  "actual_order_send_cancel_mutation_calls": 0,
+  "SMTP_sends": 0,
+  "financial_replays": 0
+}
