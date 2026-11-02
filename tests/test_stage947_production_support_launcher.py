@@ -192,6 +192,7 @@ blocked_roots = (
 before = set(sys.modules)
 
 import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
+import qmt_roll_official_live_lightweight_context as lightweight
 
 loaded = sorted(
     name
@@ -204,7 +205,15 @@ print("CONTRACT=" + json.dumps({
     "outputs": {key: str(path) for key, path in stage935._paths("fixture").items()},
     "stage173": str(stage935.STAGE173_SUMMARY_PATH),
     "stage182_combined": str(stage935.STAGE182_COMBINED_ELIGIBILITY_PATH),
-    "official_ai": str(stage935.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
+    "material_strategy": lightweight.OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version,
+    "official_ai": (
+        None if stage935.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH is None
+        else str(stage935.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
+    ),
+    "active_ai_paths": {
+        key: None if path is None else str(path)
+        for key, path in stage935._active_material_stage182_paths().items()
+    },
     "forbidden_imports": loaded,
 }))
 """
@@ -246,10 +255,23 @@ print("CONTRACT=" + json.dumps({
             "backtest_outputs",
             Path(payload["stage182_combined"]).parts,
         )
-        self.assertIn(
-            "official_strategy_materials",
-            Path(payload["official_ai"]).parts,
+        self.assertEqual(
+            {"live_pool", "live_eligibility", "combined_eligibility", "summary", "report"},
+            set(payload["active_ai_paths"]),
         )
+        if payload["material_strategy"] == OFFICIAL_AI_PRODUCT_POOL_STRATEGY:
+            self.assertIn(
+                "official_strategy_materials",
+                Path(payload["official_ai"]).parts,
+            )
+            for path in payload["active_ai_paths"].values():
+                self.assertIsInstance(path, str)
+                self.assertIn("official_strategy_materials", Path(path).parts)
+        elif payload["material_strategy"] == "official_live_weekly19_base15w_reserve15w_stage014":
+            self.assertIsNone(payload["official_ai"])
+            self.assertTrue(all(path is None for path in payload["active_ai_paths"].values()))
+        else:
+            self.fail(f"unexpected active material strategy: {payload['material_strategy']}")
         self.assertEqual([], payload["forbidden_imports"])
 
     def test_stage935_reads_stage173_from_data_and_ai_candidates_from_control(
@@ -364,6 +386,28 @@ print("CONTRACT=" + json.dumps({
                 for rank, symbol in live_rows
             )
             combined.write_text(combined_text, encoding="utf-8")
+
+            # A complete historical C9 material is independent of both the
+            # mutable data publication and the control-root candidate outputs.
+            active_root = root / "active-material"
+            active_root.mkdir()
+            active_sources = {
+                "live_pool": live_pool,
+                "live_eligibility": live_eligibility,
+                "combined_eligibility": combined,
+                "summary": stage182_summary,
+                "report": report,
+            }
+            active_paths = {name: active_root / path.name for name, path in active_sources.items()}
+            for name, path in active_paths.items():
+                path.write_bytes(active_sources[name].read_bytes())
+            active_summary = json.loads(active_paths["summary"].read_text(encoding="utf-8"))
+            active_summary["outputs"] = {name: str(path) for name, path in active_paths.items()}
+            active_paths["summary"].write_text(json.dumps(active_summary), encoding="utf-8")
+            active_before = {
+                name: hashlib.sha256(path.read_bytes()).hexdigest()
+                for name, path in active_paths.items()
+            }
 
             stage183_daily = control / "stage183-daily.csv"
             stage183_daily.write_text(
@@ -505,7 +549,11 @@ print("CONTRACT=" + json.dumps({
                     STAGE182_LIVE_ELIGIBILITY_PATH=live_eligibility,
                     STAGE182_COMBINED_ELIGIBILITY_PATH=combined,
                     STAGE182_REPORT_PATH=report,
-                    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
+                    OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=active_paths["combined_eligibility"],
+                    OFFICIAL_LIVE_AI_LATEST_POOL_PATH=active_paths["live_pool"],
+                    OFFICIAL_LIVE_AI_LIVE_ELIGIBILITY_PATH=active_paths["live_eligibility"],
+                    OFFICIAL_LIVE_AI_SUMMARY_PATH=active_paths["summary"],
+                    OFFICIAL_LIVE_AI_REPORT_PATH=active_paths["report"],
                     STAGE183_SUMMARY_PATH=stage183_summary,
                 ),
                 # This is the frozen historical C9 monthly-AI publication
@@ -515,10 +563,19 @@ print("CONTRACT=" + json.dumps({
                 patch.object(stage935, "_run_command", return_value=success) as run_command,
             ):
                 result = stage935._run(args)
+            active_after = {
+                name: hashlib.sha256(path.read_bytes()).hexdigest()
+                for name, path in active_paths.items()
+            }
             stage173_summary_text = str(stage173_summary)
             commands = [call.args[0] for call in run_command.call_args_list]
 
         self.assertEqual("monthly_ai_pool_updated", result["automation_status"])
+        self.assertEqual("valid", result["current_stage182_validation"]["validation_status"])
+        self.assertEqual("valid", result["stage182_candidate_validation"]["validation_status"])
+        self.assertEqual(str(active_paths["summary"]), result["current_stage182_validation"]["summary_path"])
+        self.assertEqual(str(active_paths["combined_eligibility"]), result["current_stage182_validation"]["combined_eligibility_path"])
+        self.assertEqual(active_before, active_after)
         self.assertNotIn(
             "stage173_max_saved_date_not_resolved_target_date",
             result.get("blockers", []),

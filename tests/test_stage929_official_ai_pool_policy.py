@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 from unittest.mock import patch
 
@@ -109,11 +111,62 @@ def test_stage929_pool_threshold_uses_tenth_model_rank() -> None:
 
 
 def test_stage929_explains_ai_selection_from_active_immutable_material() -> None:
-    parts = stage929.STAGE182_LATEST_POOL_PATH.parts
+    import qmt_roll_official_live_config as live_config
+    import qmt_roll_official_live_lightweight_context as material_context
 
-    assert "official_strategy_materials" in parts
-    assert "backtest_outputs" not in parts
-    assert stage929.STAGE182_LATEST_POOL_PATH.is_file()
+    strategy = material_context.OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version
+    if strategy == "official_live_weekly19_base15w_reserve15w_stage014":
+        from qmt_roll_official_execution_profile import resolve_configured_execution_profile
+
+        assert resolve_configured_execution_profile().profile_key == "weekly19-15w-r150k"
+        assert live_config.OFFICIAL_LIVE_AI_POOL_POLICY["enabled"] is False
+        assert live_config.OFFICIAL_LIVE_EXECUTION_POLICY["ai_enabled"] is False
+        assert material_context.OFFICIAL_LIVE_AI_LATEST_POOL_PATH is None
+        assert stage929.STAGE182_LATEST_POOL_PATH is None
+    elif strategy == "ai_top10_plus_fu_official_live_v1":
+        parts = stage929.STAGE182_LATEST_POOL_PATH.parts
+        assert "official_strategy_materials" in parts
+        assert "backtest_outputs" not in parts
+        assert stage929.STAGE182_LATEST_POOL_PATH.is_file()
+    else:
+        pytest.fail(f"Unexpected active material strategy: {strategy}")
+
+
+def test_stage929_frozen_c9_fixture_reads_verified_immutable_pool() -> None:
+    script = """
+import hashlib, json, sys
+from unittest.mock import patch
+from weekly19_legacy_c9_fixture import RELEASE, load_historical_c9_config
+config = load_historical_c9_config()
+sys.modules['qmt_roll_official_live_config'] = config
+import qmt_roll_official_live_lightweight_context as context
+manifest = json.loads((RELEASE / 'manifest.json').read_text())
+row = next(row for row in manifest['files'] if row['logical_path'] == 'ai/stage182/latest_pool.csv')
+path = RELEASE / row['payload_path']
+assert row['sha256'] == '755ea08262ef7fd1bc2de85f424eba12777d74643a105f469f390834bde4d94d'
+assert hashlib.sha256(path.read_bytes()).hexdigest() == row['sha256']
+# Only the upstream historical input is supplied; the real consumer imports
+# that input and reads the actual frozen CSV in this isolated process.
+with patch.object(context, 'OFFICIAL_LIVE_AI_LATEST_POOL_PATH', path):
+    import run_qmt_roll_stage929_official_live_15w_timed_cycle as consumer
+assert consumer.STAGE182_LATEST_POOL_PATH.resolve(strict=True) == path.resolve(strict=True)
+assert 'official_strategy_materials' in consumer.STAGE182_LATEST_POOL_PATH.parts
+assert 'backtest_outputs' not in consumer.STAGE182_LATEST_POOL_PATH.parts
+pool = consumer._read_csv_maybe(consumer.STAGE182_LATEST_POOL_PATH)
+assert len(pool) == 11
+assert sorted(pool.ai_rank.astype(int)) == list(range(1, 12))
+assert pool.loc[pool.ai_rank.astype(int) == 11, 'product_vt_symbol'].tolist() == ['fu.SHFE']
+threshold, product = consumer._pool_threshold(pool)
+assert threshold > 0 and product != 'fu.SHFE'
+"""
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = os.pathsep.join([str(PORTFOLIO_DIR), str(ROOT / "tests")])
+    result = subprocess.run(
+        [sys.executable, "-c", script], cwd=ROOT, env=environment,
+        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        timeout=60, check=False,
+    )
+    assert result.returncode == 0, result.stdout
 
 
 def test_stage929_pool_threshold_does_not_fallback_when_rank_ten_is_missing() -> None:

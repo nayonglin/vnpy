@@ -1,0 +1,47 @@
+{
+  "schema": "Stage029.actual-M6-production-qualification-failure.v1",
+  "recorded_at_cst": "2026-11-02T21:35:36.622164+08:00",
+  "source_commit": "be365737a258e675ffe0bd4657ccdb1e40c41b0f",
+  "material_release_id": "m0006_20261102T162146+0800_42fdb977fc28",
+  "status": "FAILED_NOT_QUALIFIED",
+  "suite_count": 96,
+  "counts": {
+    "tests": 2408,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failed_cases": [
+    {
+      "class": "tests.test_official_live_config_import.OfficialLiveConfigImportTest",
+      "test": "test_production_receipt_uses_active_material_ai_pool_identity",
+      "raw_xml_sha256": "cf8f72baac5219b7771aa48671a5c8499f599de5305ff09439b976747e5b9fe9"
+    },
+    {
+      "class": "tests.test_stage929_official_ai_pool_policy",
+      "test": "test_stage929_explains_ai_selection_from_active_immutable_material",
+      "raw_xml_sha256": "5da2faedab6f0fecbf338d118ecbf06f2aaf98e7e495b0b66faa6340d32fe920"
+    },
+    {
+      "class": "tests.test_stage947_production_support_launcher.Stage947ProductionSupportLauncherTest",
+      "test": "test_stage935_import_keeps_control_and_data_roots_separate",
+      "raw_xml_sha256": "45efc333067e3528bcf88f211c4bf95c28b01f073e3907cac51606e0612df5fc"
+    },
+    {
+      "class": "tests.test_stage947_production_support_launcher.Stage947ProductionSupportLauncherTest",
+      "test": "test_stage935_reads_stage173_from_data_and_ai_candidates_from_control",
+      "raw_xml_sha256": "45efc333067e3528bcf88f211c4bf95c28b01f073e3907cac51606e0612df5fc"
+    }
+  ],
+  "native_captures": 0,
+  "production_qualified": false,
+  "activated": false,
+  "account_initialized": false,
+  "observer_result_sha256": "2e70edc9a797595112b89fd3d3d67d7345e17040c927630f21b25484d124c7ef",
+  "independent_failure_review": {
+    "path": "/private/tmp/weekly19_stage028_QM_ai_test_failure_review001.json",
+    "sha256": "ef6bec15edfff20959d5a889f28fb81f0fcc96717aedd6f63a6c4b4c60a2a206"
+  },
+  "failure_interpretation": "Old C9-only test unconditionally dereferences AI path; active weekly19 correctly has no AI asset. Product code not changed to satisfy this test.",
+  "m6_Q_R6_pass_not_promoted_to_Q_M": true
+}

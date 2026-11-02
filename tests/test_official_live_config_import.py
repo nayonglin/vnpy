@@ -317,16 +317,65 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
 
     def test_production_receipt_uses_active_material_ai_pool_identity(self) -> None:
         import qmt_roll_official_live_config as live_config
+        import qmt_roll_official_live_lightweight_context as material_context
         import run_qmt_roll_stage945_official_live_production_session_launcher as stage945
 
-        self.assertEqual(
-            live_config.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve(strict=True),
-            stage945.PRODUCTION_AI_ELIGIBILITY_PATH.resolve(strict=True),
+        strategy = material_context.OFFICIAL_LIVE_MATERIAL_RELEASE.strategy_version
+        if strategy == "official_live_weekly19_base15w_reserve15w_stage014":
+            from qmt_roll_official_execution_profile import resolve_configured_execution_profile
+
+            profile = resolve_configured_execution_profile()
+            self.assertEqual("weekly19-15w-r150k", profile.profile_key)
+            self.assertEqual("weekly19", profile.decision_mode)
+            self.assertIs(False, live_config.OFFICIAL_LIVE_AI_POOL_POLICY["enabled"])
+            self.assertIs(False, live_config.OFFICIAL_LIVE_EXECUTION_POLICY["ai_enabled"])
+            self.assertIsNone(live_config.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
+            self.assertIsNone(stage945.PRODUCTION_AI_ELIGIBILITY_PATH)
+        elif strategy == "ai_top10_plus_fu_official_live_v1":
+            self.assertEqual(
+                live_config.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve(strict=True),
+                stage945.PRODUCTION_AI_ELIGIBILITY_PATH.resolve(strict=True),
+            )
+            self.assertNotIn(
+                "backtest_outputs",
+                stage945.PRODUCTION_AI_ELIGIBILITY_PATH.parts,
+            )
+        else:
+            self.fail(f"Unexpected active material strategy: {strategy}")
+
+    def test_frozen_c9_receipt_still_uses_its_immutable_ai_asset(self) -> None:
+        script = """
+import hashlib, json, sys
+from unittest.mock import patch
+from weekly19_legacy_c9_fixture import RELEASE, load_historical_c9_config
+config = load_historical_c9_config()
+sys.modules['qmt_roll_official_live_config'] = config
+import qmt_roll_official_live_lightweight_context as context
+from qmt_roll_official_execution_profile import resolve_configured_execution_profile
+# Select the named historical profile at its real lightweight input boundary;
+# the current deployment's weekly profile is never changed by this subprocess.
+with patch.object(context, 'OFFICIAL_LIVE_VERSION', config.OFFICIAL_LIVE_VERSION):
+    import run_qmt_roll_stage945_official_live_production_session_launcher as producer
+    assert resolve_configured_execution_profile().profile_key == 'c9-15w'
+    path = producer.PRODUCTION_AI_ELIGIBILITY_PATH
+    assert path.resolve(strict=True) == config.OFFICIAL_LIVE_AI_ELIGIBILITY_PATH.resolve(strict=True)
+    assert 'official_strategy_materials' in path.parts
+    assert 'backtest_outputs' not in path.parts
+    manifest = json.loads((RELEASE / 'manifest.json').read_text())
+    row = next(row for row in manifest['files'] if row['logical_path'] == 'ai/stage182/combined_eligibility.csv')
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == row['sha256']
+"""
+        environment = dict(os.environ)
+        environment["PYTHONPATH"] = os.pathsep.join(
+            [str(PORTFOLIO_DIR), str(PORTFOLIO_DIR.parents[1] / "tests")]
         )
-        self.assertNotIn(
-            "backtest_outputs",
-            stage945.PRODUCTION_AI_ELIGIBILITY_PATH.parts,
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            cwd=PORTFOLIO_DIR.parents[1], env=environment,
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            timeout=60, check=False,
         )
+        self.assertEqual(0, result.returncode, result.stdout)
 
     def test_stage901_live_artifacts_follow_signal_input_across_process_import(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
