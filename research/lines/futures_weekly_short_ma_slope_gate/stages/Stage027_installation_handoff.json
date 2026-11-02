@@ -1,0 +1,321 @@
+{
+  "schema": "Stage027.weekly19-installation-resume.v1",
+  "created_at_cst": "2026-11-02T17:16:03.745442+08:00",
+  "line_id": "futures_weekly_short_ma_slope_gate",
+  "status": "CANDIDATE_FROZEN_ENGINEERING_PASS_REAL_CTP_BLOCKED_NOT_INSTALLED",
+  "supersedes_installation_target": [
+    "Stage018 m0002",
+    "Stage022 m0003",
+    "Stage024 m0004",
+    "Stage025 m0005"
+  ],
+  "historical_evidence_preserved": true,
+  "user_authorization": {
+    "promote_master_and_replace_current_production": true,
+    "scope": "19品种Stage014 C_R150；44品种路线与MAIN开发树不变",
+    "latest_explicit_user_message": "直接切换，就当作已经15万已经盈利了一部分就行",
+    "cash_verification_mode": "operator_manual_v1",
+    "automatic_final_settlement_and_bank_flow_parsers_required": false,
+    "startup_mode": "operator_existing_account_v1",
+    "initial_equity": "以新的真实CTP实际权益E0接管；E0-150000单列启动前盈余，不伪造策略历史盈利",
+    "existing_positions": "仅接管明确授权且由新原生查询验证的原持仓；不造旧成交、旧峰值、旧保护档或空仓",
+    "external_reserve": {
+      "initial_amount": 150000,
+      "included_in_trading_equity": false,
+      "initial_transferred_amount": 0,
+      "manual_receipts_required_before_credit": true
+    },
+    "risk_basis": "后续按真实交易账户全部权益动态计算；有效新开仓信号且不足150000时提示人工补差额；场外余额不参与",
+    "mutation_limits": "本次只读资格与安装不得手工发单、撤单、转资、smoke或发送实际测试邮件；不追补历史理论仓位"
+  },
+  "candidate": {
+    "strategy_version": "official_live_weekly19_base15w_reserve15w_stage014",
+    "ruleset_version": "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1",
+    "execution_profile": "weekly19-15w-r150k",
+    "release_id": "m0006_20261102T162146+0800_42fdb977fc28",
+    "source_commit": "42fdb977fc28ad55ddd8c6cf8d364e97e4acf967",
+    "release_commit": "4c9b645eefb509d3026246f2f16843c57341ddaa",
+    "payload_count": 388,
+    "default_critical_count": 298,
+    "qualification_union_count": 690,
+    "qualification_tree_fingerprint": "9620db46fbf0e40f0505a66a49c2c35787b6226b353a823980bcb25dc146e545",
+    "strategy_rules": "空头全历史底部20%过滤；原版1.8/6/6/2.5风险；不加仓；不启用MA斜率或多头过滤；每日风险邮件复用postclose-report/SMTP，周五补资独立去重"
+  },
+  "actual_attempt": {
+    "private_root": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009",
+    "qualification_directory": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/qualification-R6",
+    "qualification_file_exists": false,
+    "engineering": {
+      "trusted_suite_count": 96,
+      "tests": 2408,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "all_exit_zero": true,
+      "observer_file_versions": 288,
+      "observer_errors": 0
+    },
+    "readonly": {
+      "status": "FAILED_CONNECTION_NOT_READY",
+      "probe_invoked": true,
+      "observed_attempt_count": 1,
+      "second_capture_observed": false,
+      "stage174_status": "readonly_logs_without_ctp_progress",
+      "stage907_status": "readonly_refresh_blocked",
+      "TD_MD_connected": false,
+      "authentication_or_login_confirmed": false,
+      "broker_trading_day_available": false,
+      "query_callbacks_received": 0,
+      "position_state": "UNKNOWN_position_query_not_available",
+      "account_cash_state": "UNKNOWN_no_account_query",
+      "confirmed_flat": false,
+      "actual_positions_not_inferred": true,
+      "mutation_attempted_and_called_counts": {
+        "send_order_api_attempted_count": 0,
+        "cancel_order_api_attempted_count": 0,
+        "send_order_api_called_count": 0,
+        "cancel_order_api_called_count": 0,
+        "native_mutation_api_attempted_count": 0,
+        "native_mutation_api_called_count": 0,
+        "order_api_attempted_count": 0,
+        "order_api_called_count": 0
+      },
+      "zero_API_evidence_complete": true
+    },
+    "qualification": {
+      "status": "FAILED_NOT_QUALIFIED",
+      "wrapper_returncode": 1,
+      "qualification_file_exists": false,
+      "failure_gate": "release_builder_production_readonly_raw_capture_invalid",
+      "production_qualified": false,
+      "source_qualified": false,
+      "can_activate": false,
+      "can_install_as_qualified": false,
+      "account_adoption_allowed": false
+    },
+    "tcp_diagnostic": {
+      "status": "two_timeout_observations",
+      "rows": [
+        {
+          "role": "td",
+          "tcp_connected": false,
+          "error_type": "TimeoutError",
+          "errno": null,
+          "elapsed_ms": 5006
+        },
+        {
+          "role": "md",
+          "tcp_connected": false,
+          "error_type": "TimeoutError",
+          "errno": null,
+          "elapsed_ms": 5006
+        }
+      ],
+      "endpoint_details_redacted": true,
+      "inference": "Reachability was not established; this does not isolate routing/firewall/server schedule/front health or credential correctness."
+    },
+    "error": "release_builder_production_readonly_raw_capture_invalid",
+    "independent_review": {
+      "checks": 1213,
+      "failures": 0,
+      "accepted_scope": "engineering success and failed actual readonly evidence correctly classified only"
+    },
+    "prohibited_inference": "零行/零回调不等于空仓或零权益；不能复用09:04旧快照初始化；不能将工程通过或observer旁路副本当正式资格"
+  },
+  "production_readback": {
+    "observed_at_utc": "2026-11-02T09:12:50.004191+00:00",
+    "stable_head": "d55887e1def72629fbfa310e439dc3a879969a14",
+    "stable_clean": true,
+    "CURRENT": {
+      "strategy_version": "ai_top10_plus_fu_official_live_v1",
+      "ruleset_version": "stage037_stage034_long_short_mirror_hard_block_v1",
+      "release_id": "m0008_20261008T204054+0800_2a7420a9f955",
+      "release_commit": "334d18f069de06df3aa7728203e942e3ecb94ce9",
+      "source_commit": "2a7420a9f9550ab912b5c4a302a61acc5740b04c"
+    },
+    "authority_files": {
+      "release-manifest.json": false,
+      "qualification-bundle/qualification.json": false,
+      "activation/latest.json": false,
+      "runtime/state/activation_receipt.json": false,
+      "data-readiness/latest.json": false
+    }
+  },
+  "production_launchd": {
+    "status": "verified",
+    "blockers": [],
+    "disk_owned_labels": [],
+    "loaded_owned_labels": [],
+    "unknown_owned_labels": []
+  },
+  "actions_completed": {
+    "candidate_frozen": true,
+    "independent_source_review": true,
+    "fresh_local_candidate_clone_and_real_LFS": true,
+    "real_qualification_attempt": true,
+    "qualified": false,
+    "activate": false,
+    "promote_master": false,
+    "stable_checkout": false,
+    "Stage948_install_activate": false,
+    "account_adoption": false,
+    "manual_SMTP": false
+  },
+  "evening_followup": {
+    "target_local_time": "2026-11-02T21:00:00+08:00",
+    "one_time": true,
+    "same_chat": true,
+    "scheduler_receipt": "Stage027_evening_followup_receipt.json",
+    "status": "ACTIVE_CREATED_AND_VIEWED",
+    "automation_id": "19",
+    "configuration_verified": true
+  },
+  "resume": {
+    "read_first": [
+      "本文件以及Stage027之后最新已独审冻结交接/用户指示",
+      "Stage027_review_acceptance.json/.md",
+      "Stage024_existing_account_cutover_runbook.md",
+      "Stage018_operator_manual_cash_runbook.md",
+      "实际stable HEAD/CURRENT、生产五件套和Stage948完整所属launchd surface"
+    ],
+    "exact_R6_repo": "/private/tmp/weekly19-stage026-m6-fresh-cgbt9ta1/clone",
+    "exact_source_policy": "本handoff提交后ROOT将为R6的纯文档后代，不是exact R6。新资格只在干净、HEAD精确为R6且690关键源匹配的树运行；不可把ROOT新HEAD冒称R6，不reset/stash/discard新工作。既有local clone须先复验HEAD/clean/LFS/执行位，再补ignored本机依赖。",
+    "dependency_policy": "只准备本机既有.py311、数据库和backtest_outputs等ignored链接；.vntrader使用真实0700目录和必要资产，ctp_live.local.env为owner0600 regular文件；不得回显、提交凭证或安装升级未知依赖。",
+    "network_runtime_gate": "正式ctp_live.local.env，Python/扩展SHA与两正式framework actual Dyld优先已核；重试仍先复核，绝不误用broker-test或CP评测runtime。可先实际TD/MD TCP探测，若仍不可达则保留新失败、不激活，不更换未经授权前置。",
+    "new_qualification": "网络可达才新exact-R6 trusted full96 suites + 两次新Stage907 production-live readonly/email-policy never；新目录、新nonce，保留所有原件。不得拼接本轮2408绿与别次native，不复用旧09:04或失败捕获。",
+    "qualification_cli": "build_qmt_roll_stage179_production_qualification_bundle.py --repo-root <exactR6> --output-dir <new-private-output> --review-report <canonical-R6-independent-review> --material-release-id m0006_20261102T162146+0800_42fdb977fc28 --material-release-commit 4c9b645eefb509d3026246f2f16843c57341ddaa --confirm-trusted-production-qualification-run I_APPROVE_RUNNING_EXACT_TESTS_AND_TWO_FORMAL_CTP_READONLY_CAPTURES",
+    "after_true_Q_R6": "完整validator+独立来源审计通过后才派生material资格wrapper；activate A→受控promote实际GitHub master M→真正远端fresh clone/LFS/388顶层SHA及mode→备份旧stable私有资产/clean回滚点→MAIN只fetch对象、不切开发树→canonical stable切M→Stage948 prepare→stable原目录完整新Q_M。",
+    "remote_warning": "现有R6 local clone origin指向本地ROOT，不是真GitHub。promote须核真实github.com/nayonglin/vnpy远端master，不能向本地origin推送后宣称远端发布。",
+    "governance": "按Stage026_promote_governance_plan重新对实际remote比较；两份manual/cutover runbook必须显式governance；14 vnpy默认不复制需逐SHA/mode比对；其他研究线不改。新增本线治理须来自真正已提交activation源，不能从/tmp偷渡。",
+    "production_after_Q_M": "真实生产manifest/source=M + 静态activation receipt→capture authority registry→新签名完整raw snapshot→私有启动授权/context→显式initialize-existing-account原子接管真实现金/完整layers/stop/identity→更新真实完成日行情并postclose-precompute产真实daily receipt→Stage948受控激活7标签并读回；源码顺序细节见已审安装序列。",
+    "cash_and_position_gate": "新的真实权益/Available/持仓/报价、原生OpenCost及真实合约乘数必须同源；仅投机仓、无未完成委托，范围变化/来源不全即停止接管。旧保护档未知不伪装恢复；新管理周期按最近完整周原公式保护。",
+    "calendar_market_policy": "2026-10-30旧行情不冒称11/2完成日。切换管理日不能晚于实际本地日、可早于夜盘native交易日；completed_day严格为切换前最后权威交易日。正式当日daily receipt需真实完整行情/日历；不回填旧理论仓。",
+    "fallback": "若CTP或任何真实资格失败，只保留新候选/原始失败和明确缺项，保持未激活，不伪造五件套/qualification/receipt；不无限参数试探，不把开发树当生产。",
+    "notification": "仅有实际完成、新失败或需用户处理的变化时通知；一次跟进结束删除/停用对应一次性自动化。",
+    "activation_parent_after_real_Q_R6": "真实Q_R6完整通过后，可在ROOT已提交clean纯docs后代D执行activate原R6生成A，前提690关键闭包、388payload及所有历史release逐SHA/mode未变；Q仅代表原R6、原cwd，不能改Q source/path冒称D资格。后续gov从A读取，新handoff已在D提交才可复制。独立实际代码核验见evidence。"
+  },
+  "evidence": {
+    "immutable_manifest": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/official_strategy_materials/official_live_weekly19_base15w_reserve15w_stage014/releases/m0006_20261102T162146+0800_42fdb977fc28/manifest.json",
+      "sha256": "925ed174909b94ffc76ae61cf74aa039762d8eeabed6badd2b7d739042b6641a",
+      "bytes": 153897
+    },
+    "m6_release_receipt": {
+      "path": "/private/tmp/weekly19_stage026_m6_release001.json",
+      "sha256": "3f32577ed791dafb7e019c58a04872fc396426f5a4be52c782bd81562d866e92",
+      "bytes": 806
+    },
+    "m6_local_clone_receipt": {
+      "path": "/private/tmp/weekly19-stage026-m6-fresh-cgbt9ta1/receipt.json",
+      "sha256": "48376cd6393184bb2bef8f16c175030a650a94d50127eb3731b63f9e1f32d654",
+      "bytes": 11510
+    },
+    "independent_R6_formal_review": {
+      "path": "/private/tmp/weekly19_stage026_review_R6_001.json",
+      "sha256": "5a0f23d8f944689f381f42d5494932055ac67300f73e1cf29328cc51856f25f6",
+      "bytes": 449
+    },
+    "independent_R6_formal_review_receipt": {
+      "path": "/private/tmp/weekly19_stage026_review_R6_001_receipt.json",
+      "sha256": "a3f2e3db2e4ac2efe5a57f192181d366d5e0180e8e5bc22d7e1bea2b4671d43f",
+      "bytes": 814297
+    },
+    "Stage027_actual_result_review_json": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage027_review_acceptance.json",
+      "sha256": "fd71769d4f1556234a22269331fdd12edbe49f243a2ef21f6b59511143d20e5c",
+      "bytes": 163755
+    },
+    "Stage027_actual_result_review_md": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage027_review_acceptance.md",
+      "sha256": "5a1ee8049597c0948c41bcaa9fa1f7ce4cf2391d0854c437fb5d5e5a93615e7d",
+      "bytes": 1925
+    },
+    "Stage027_observer_invocation": {
+      "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/observer-invocation.json",
+      "sha256": "92070467e8b8c2e805df9fc83c1aaf16ea83e76847bdf448b1ed3a9bc9bddd0c",
+      "bytes": 1314
+    },
+    "Stage027_observer_result": {
+      "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/observer-result.json",
+      "sha256": "b85e633af708211c3f18d01d4298b6356292ee4d01a9cc68a3927f9c7f1d9f6d",
+      "bytes": 177317
+    },
+    "Stage027_actual_formal_runtime_guard": {
+      "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/formal-runtime-guard.json",
+      "sha256": "8e01f3eea93a33ea88f859c23a2f47dd442d63cbedca2230e6d8e8aa0e2126ec",
+      "bytes": 1534
+    },
+    "Stage027_native_originals_archive_v2": {
+      "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/archive-index-v2.json",
+      "sha256": "86cbf056e5ef295d1d7ac9c95ee3b4b95fd92ace1298bacb034d03a1238c6f42",
+      "bytes": 7785
+    },
+    "Stage027_tcp_only_diagnostic": {
+      "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/tcp-diagnostic.json",
+      "sha256": "3ab07d25c2bdf06f443e0fe4d1c4de72d7b91ec2f8f31f843751b83ad5de53a9",
+      "bytes": 655
+    },
+    "Stage027_production_after": {
+      "path": "/private/tmp/weekly19_stage027_production_after001.json",
+      "sha256": "035623f5ac2e41d7899d17d9c7040cd5e428c53a880e7576e6119227a88efb65",
+      "bytes": 17131
+    },
+    "historical_production_before": {
+      "path": "/private/tmp/weekly19_stage025_production_before002.json",
+      "sha256": "a76296e80c42d9438503608d94a874c159059a63e5ba85c1d9889046aec37156",
+      "bytes": 1407
+    },
+    "installation_sequence_API_review": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_installation_sequence.md",
+      "sha256": "222123f35fbf4bd25a4c2ecd18e4e9f8b10988e98bc9d79717ea7c47bead4776",
+      "bytes": 20669
+    },
+    "stable_upgrade_plan": {
+      "path": "/private/tmp/weekly19_stage025_stable_upgrade_plan.md",
+      "sha256": "053ee0201e4d15fca9dcb18a08f575e5df3c3e753ff1caf3b1297a98b91ea83c",
+      "bytes": 11320
+    },
+    "promote_governance_plan_R6": {
+      "path": "/private/tmp/weekly19_stage026_promote_governance_plan.md",
+      "sha256": "3fc29449f2110ed3f4a8c741003467727e7fcf0edebf55e1b889ed1f8265a817",
+      "bytes": 8145
+    },
+    "promote_governance_inventory_R6": {
+      "path": "/private/tmp/weekly19_stage026_promote_governance_inventory.json",
+      "sha256": "e70f6016fb9651f9b6ca550907048c1526c815aada88215eb4cdd9b57d65babe",
+      "bytes": 186940
+    },
+    "manual_cash_runbook": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage018_operator_manual_cash_runbook.md",
+      "sha256": "c537973ce61457ac61e60f171765e631358eeace08805b0d45416c3ee5013467",
+      "bytes": 5128
+    },
+    "existing_account_cutover_runbook": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage024_existing_account_cutover_runbook.md",
+      "sha256": "057abd83f22c1eafeb0fe092ab1c53378e791aff94d0ae1c82804a9a5ecd836b",
+      "bytes": 4815
+    },
+    "market_synthetic_carry_smoke": {
+      "path": "/private/tmp/Stage024_real_market_synthetic_carry_smoke.json",
+      "sha256": "b0ab8c3cebca8990d0d54f448a188a09493fcbff800848fb69fb06c9c1371c25",
+      "bytes": 28731
+    },
+    "actual_evening_followup_receipt": {
+      "path": "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage027_evening_followup_receipt.json",
+      "sha256": "822e2ed77972b27cbf3c2280a286a10ce211c2b9c3f1725ed17e8abdffe481c3",
+      "bytes": 1062
+    },
+    "docs_descendant_activation_API_review": {
+      "path": "/private/tmp/weekly19_stage027_docs_descendant_activation_readonly_receipt.md",
+      "sha256": "41dd4691899718f11867a71ab99d64e7663e57fc0490f66827e41aae3fa8a16c",
+      "bytes": 3952
+    }
+  },
+  "reflection": {
+    "overfitting": false,
+    "reason": "仅工程接管、权限夹具和真实安装来源核验，无金融复跑/参数搜索",
+    "worth_continuing": true,
+    "reason_to_continue": "等待真实前置恢复，完成已授权实盘切换；不可达时重复连接不能提供资格"
+  },
+  "research_and_judgment": "沿用已审本仓只读runtime guard、不可变发布与官方OpenAI同聊天跟进机制；没有为了连通性替换交易前置、降低来源闸门或修改alpha。TCP超时只证当前未连通，未证明凭证错误或服务窗口原因。"
+}

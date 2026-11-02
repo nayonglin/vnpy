@@ -71,3 +71,10 @@ m4 source d43e23ca9a501acae3665501a28ecefb6918d7b1、release 1a4f7d06c2f964f8bb3
 m5 R5=836e5272b78bb542b038bc605a67fd7c2f26245f可信测试2408项仅Friday坏parent断言1失败、未到native；本轮288原文件观察版本/0归档错误，已明确mkdir0755被私有umask077收紧成0700，产品正确拒宽/接受安全权限。仅测试加显式chmod0755，所有原断言不变，077/022各24项通过且独审复现；297其他critical/全部产品源码同m5。旧m4具体trace缺失仍保留，不改写。
 
 最新候选m6需新source/material及exactR6真实完整96套件+2readonly，其实际aggregate作为本版本fullCI；未通过不得安装。没有重复额外全局CI或改alpha/资金、降低umask/安全门。最新源码锁Stage026_implementation_lock.json与失败Stage026_m5_qualification_failure.json。实际账户尚未接管，master/stable/生产原状。
+
+
+## 2026-11-02 Stage027 m6工程通过、真实CTP受阻
+
+最新不可变m6=m0006_20261102T162146+0800_42fdb977fc28，S6=42fdb977fc28ad55ddd8c6cf8d364e97e4acf967，R6=4c9b645eefb509d3026246f2f16843c57341ddaa，388payload/298critical/690资格闭包、local fresh clone实际LFS和mode已独审。实际trusted96套件2408通过/0失败错误跳过；独审1213项通过。真实第一次readonly无TD/MD连接/认证登录/query回调，brokerDay空、账户持仓UNKNOWN；8 mutation API严格0。后续TD/MD TCP各5秒超时；未定位具体网络/服务器原因。qualification.json未产出，FAILED_NOT_QUALIFIED，不能安装。12原件私有原SHA保留。
+
+新生产只读核实stable仍d55887e1 clean/CURRENT旧m8，五件套缺、Stage948所属surface verified且无磁盘/loaded/unknown标签；未activate/master/stable/Stage948或实际接管。唯一安装接续stages/Stage027_installation_handoff.json，替代旧安装目标，旧证据不删。已实际创建本日21:00同聊天一次性跟进id19/ACTIVE/COUNT1，回执Stage027_evening_followup_receipt.json。新资格须clean exactR6完整新trusted run，不拼接本轮测试与别次native，不复用9:04快照；本记录提交使ROOT成为纯docs后代，既有R6 clone origin为本地，晋升务必真正GitHub。未回测/改alpha，过拟合否，真实安装接续仍有价值。
