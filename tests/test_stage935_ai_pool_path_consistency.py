@@ -9,6 +9,8 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from contextlib import redirect_stdout
+import io
 
 import pandas as pd
 
@@ -31,7 +33,14 @@ import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935  #
 
 
 class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
+    """Explicit historical C9 AI publication fixtures; weekly stays disabled."""
     SOURCE_PREFIX = "qmt_roll_stage183_ai_source_floor35"
+
+    def setUp(self) -> None:
+        from qmt_roll_official_execution_profile import C9_15W_PROFILE
+        historical = patch.object(stage935, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+        historical.start()
+        self.addCleanup(historical.stop)
 
     def _write_stage182_sources(self, root: Path, max_date: str) -> None:
         root.mkdir(parents=True, exist_ok=True)
@@ -240,6 +249,7 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
             self._write_stage182_bundle(artifacts, "candidate")
             with (
                 patch.object(stage935, "CONTROL_OUTPUT_DIR", root / "control"),
+                patch.object(stage935, "OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION", OFFICIAL_AI_PRODUCT_POOL_STRATEGY),
                 patch.object(
                     stage935,
                     "_current_source_commit",
@@ -1458,6 +1468,35 @@ class Stage935AiPoolPathConsistencyTest(unittest.TestCase):
                 )
 
         self.assertEqual(eval_dates, audit["invalid_rank_eval_dates"])
+
+
+class Weekly19LegacyAiDisabledTest(unittest.TestCase):
+    def test_current_weekly_manual_entry_stops_before_files_download_training_and_mail(self):
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+        with tempfile.TemporaryDirectory() as directory:
+            control = Path(directory) / "must-not-create"
+            output = io.StringIO()
+            with (patch.object(sys, "argv", ["stage935", "--mode", "run", "--force", "--email-policy", "always"]),
+                  patch.object(stage935, "CONTROL_OUTPUT_DIR", control),
+                  patch.object(stage935, "resolve_configured_execution_profile", return_value=WEEKLY19_15W_R150K_PROFILE, create=True),
+                  patch.object(stage935, "_stage935_lock", side_effect=AssertionError("must stop before locking files")) as lock,
+                  patch.object(stage935, "_run", side_effect=AssertionError("must stop before downloads/training")) as run,
+                  patch.object(stage935, "_send_email_if_needed", side_effect=AssertionError("must stop before mail")) as mail,
+                  redirect_stdout(output), self.assertRaises(SystemExit) as stopped):
+                stage935.main()
+            self.assertEqual(stopped.exception.code, 0)
+            self.assertFalse(control.exists())
+            lock.assert_not_called(); run.assert_not_called(); mail.assert_not_called()
+            result=json.loads(output.getvalue())
+            self.assertEqual(result['automation_status'], 'disabled_for_weekly19_fixed_universe')
+            self.assertEqual(result['order_api_called_count'],0)
+
+    def test_current_weekly_material_request_rejects_even_if_caller_labels_old_ai_material(self):
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+        with (patch.object(stage935, "resolve_configured_execution_profile", return_value=WEEKLY19_15W_R150K_PROFILE, create=True),
+              patch.object(stage935, "OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION", OFFICIAL_AI_PRODUCT_POOL_STRATEGY),
+              self.assertRaisesRegex(RuntimeError,'disabled_for_weekly19_fixed_universe')):
+            stage935._write_material_publication_request(artifacts={},eval_date='',source_max_date='',training_label_cutoff='')
 
 
 if __name__ == "__main__":

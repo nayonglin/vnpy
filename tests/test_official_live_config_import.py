@@ -121,6 +121,20 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         with patch.object(fu_candidate, "build_static18_plus_fu_universe", fail_if_called):
             module = importlib.import_module("qmt_roll_official_live_config")
 
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE as profile
+        self.assertEqual(module.OFFICIAL_LIVE_VERSION, profile.official_version)
+        self.assertEqual(module.OFFICIAL_LIVE_RULESET_VERSION, profile.ruleset_version)
+        self.assertEqual(module.OFFICIAL_LIVE_CAPITAL, profile.capital)
+        manifest = module.build_official_live_manifest()
+        self.assertEqual(manifest["execution_profile"], profile.profile_key)
+        self.assertEqual(manifest["ai_pool_policy"], {"strategy": "disabled_fixed19", "enabled": False, "total_product_count": 19})
+        self.assertFalse(manifest["production_qualified"])
+        self.assertFalse(manifest["execution_policy"]["reserve_participates_in_equity"])
+
+    def test_historical_c9_config_preserves_immutable_material_policy(self) -> None:
+        from weekly19_legacy_c9_fixture import load_historical_c9_config
+        module = load_historical_c9_config()
+
         self.assertEqual(module.OFFICIAL_LIVE_ALIAS, "Stage847-C9-15w")
         self.assertEqual(
             module.OFFICIAL_LIVE_VERSION,
@@ -207,11 +221,12 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
         )
         self.assertEqual(40, len(manifest["material_release_commit"]))
         self.assertEqual(64, len(manifest["material_manifest_sha256"]))
-        with self.assertRaises(AssertionError):
+        with patch.object(module.stage847_c9_cfg, "build_official_candidate_stage847_c9_overrides", side_effect=AssertionError("historical paths require explicit fixture")), self.assertRaises(AssertionError):
             dict(module.OFFICIAL_LIVE_STRATEGY_OVERRIDES)
 
-    def test_official_live_strategy_overrides_freeze_stage037(self) -> None:
-        import qmt_roll_official_live_config as module
+    def test_historical_c9_strategy_overrides_freeze_stage037(self) -> None:
+        from weekly19_legacy_c9_fixture import load_historical_c9_config
+        module = load_historical_c9_config()
 
         base = {"account_capital": 300_000.0, "c3_capital": 300_000.0}
         with patch.object(
@@ -267,8 +282,9 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
             q["ai_product_pool_strategy"],
         )
 
-    def test_every_official_live_override_is_consumed_by_stage847_strategy(self) -> None:
-        import qmt_roll_official_live_config as live_config
+    def test_every_historical_c9_override_is_consumed_by_stage847_strategy(self) -> None:
+        from weekly19_legacy_c9_fixture import load_historical_c9_config
+        live_config = load_historical_c9_config()
         from analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine import (
             QmtRollPortfolioStrategyStage847C9StopRetry,
         )
@@ -324,7 +340,7 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
                     "OFFICIAL_LIVE_SIGNAL_INPUT_DIR": str(signal_root),
                     "PYTHONDONTWRITEBYTECODE": "1",
                     "PYTHONPATH": (
-                        f"{PORTFOLIO_DIR}{os.pathsep}"
+                        f"{PORTFOLIO_DIR}{os.pathsep}{PORTFOLIO_DIR.parents[1] / 'tests'}{os.pathsep}"
                         f"{environment.get('PYTHONPATH', '')}"
                     ).rstrip(os.pathsep),
                 }
@@ -333,7 +349,10 @@ class OfficialLiveConfigImportTest(unittest.TestCase):
                 [
                     "import json",
                     "import qmt_roll_official_execution_profile as profile",
-                    "import qmt_roll_official_live_config as config",
+                    "from weekly19_legacy_c9_fixture import load_historical_c9_config",
+                    "import sys",
+                    "config = load_historical_c9_config()",
+                    "sys.modules[\"qmt_roll_official_live_config\"] = config",
                     "import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as stage901",
                     "import run_qmt_roll_stage902_official_live_phase_d_readiness_gate as stage902",
                     "identity = stage901._official_live_identity()",

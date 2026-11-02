@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable, Iterator, Mapping
+from copy import deepcopy
 import hashlib
 import json
 import math
@@ -135,6 +136,7 @@ FAK_OPEN_EXCHANGES = {
     Exchange.GFEX,
 }
 _ORDER_QUERY_FORWARD_CONTEXT = local()
+_WEEKLY19_NATIVE_FORWARD_CONTEXT = local()
 
 CTP_ENV_KEYS = ("CTP_USERID", "CTP_PASSWORD", "CTP_BROKERID", "CTP_TD_ADDRESS", "CTP_MD_ADDRESS", "CTP_APPID", "CTP_AUTH_CODE")
 ACTIVE_ORDER_STATUSES = {"submitting", "submitted", "not traded", "nottraded", "part traded", "parttraded", "未成交", "提交中", "部分成交"}
@@ -251,7 +253,14 @@ STAGE904_ONLY_INTENT_FIELDS = (
 
 def _intent_ledger_metadata(row: dict[str, Any]) -> dict[str, Any]:
     metadata: dict[str, Any] = {}
-    for key in LEDGER_METADATA_FIELDS:
+    fields = LEDGER_METADATA_FIELDS
+    if str(row.get("source", "")).startswith("weekly19_"):
+        fields = (*fields, "source", "execution_profile", "official_live_version", "ruleset_version",
+            "material_release_id", "account_fingerprint", "trading_date", "physical_epoch_id", "planned_intent_id",
+            "signal_order_id", "signal_datetime", "signal_identity", "signal_identity_json",
+            "data_receipt_sha256", "completed_week_end", "protection_timing",
+            "requires_funding_revision", "depends_on_close_intent_id", "rollover_from_vt_symbol")
+    for key in fields:
         value = row.get(key)
         if value is None:
             continue
@@ -260,7 +269,72 @@ def _intent_ledger_metadata(row: dict[str, Any]) -> dict[str, Any]:
         if str(value).strip() == "":
             continue
         metadata[key] = value
+    if str(row.get("source", "")).startswith("weekly19_"):
+        metadata["weekly19_intent_kind"] = row.get("weekly19_intent_kind") or row.get("intent_kind")
+        metadata["planned_direction"] = row.get("planned_direction") or _normalize_direction_text(row.get("direction"))
+        metadata["planned_offset"] = row.get("planned_offset") or _normalize_offset_text(row.get("offset"))
+        for key in ("planned_volume", "order_request_volume", "broker_order_volume"):
+            if row.get(key) is not None:
+                metadata[key] = row[key]
     return metadata
+
+
+def weekly19_physical_batch_manifest(row, requests, *, fingerprint, lease_token,
+                                    payload_sha256, service_generation, connection_generation):
+    """Describe the complete *converted* child request set before any insert.
+
+    Broker IDs are deliberately absent until the native insert actually creates
+    them. The existing fsync quota transaction is the authority for this plan.
+    """
+    offsets = {Offset.OPEN: "open", Offset.CLOSE: "close", Offset.CLOSETODAY: "closetoday",
+               Offset.CLOSEYESTERDAY: "closeyesterday"}
+    children = []
+    for index, request in enumerate(requests):
+        volume = float(request.volume)
+        direction = {Direction.LONG: "long", Direction.SHORT: "short"}.get(request.direction)
+        symbol = f"{request.symbol}.{request.exchange.value}"
+        if (request.offset not in offsets or direction != row.get("direction")
+                or symbol != row.get("vt_symbol") or volume <= 0 or not volume.is_integer()):
+            raise ValueError("weekly19_physical_child_request_invalid")
+        business_offset = "open" if request.offset == Offset.OPEN else "close"
+        if business_offset != row.get("offset"):
+            raise ValueError("weekly19_physical_child_business_offset_mismatch")
+        children.append(dict(child_order_id=f"{fingerprint}:{index + 1}/{len(requests)}",
+            child_order_index=index, volume=int(volume), broker_offset=offsets[request.offset],
+            vt_symbol=symbol, direction=direction, trading_date=str(row["trading_date"])))
+    if not children or sum(x["volume"] for x in children) > float(row.get("planned_volume", 0)):
+        raise ValueError("weekly19_physical_batch_volume_invalid")
+    return dict(schema="weekly19.physical-batch-manifest.v1", intent_id=row["intent_id"],
+        planned_intent_id=row.get("planned_intent_id") or row["intent_id"],
+        signal_identity=deepcopy(row.get("signal_identity")), intent_payload_sha256=payload_sha256,
+        parent_intent_fingerprint=fingerprint, spool_lease_token=lease_token,
+        service_generation=service_generation, connection_generation=connection_generation,
+        approved_parent_volume=sum(x["volume"] for x in children), expected_children=children,
+        expected_children_sha256=_canonical_evidence_sha256(children))
+
+
+def _weekly19_batch_ledger_metadata(context):
+    row = context.get("row", {})
+    manifest = context.get("weekly19_batch_manifest") or row.get("weekly19_batch_manifest")
+    if not isinstance(manifest, Mapping):
+        return {}
+    return {"weekly19_batch_manifest": deepcopy(manifest),
+            **{key: deepcopy(manifest[key]) for key in
+               ("approved_parent_volume", "expected_children", "expected_children_sha256")},
+            "api_slot_batch_id": str(context.get("api_slot_batch_id") or row.get("api_slot_batch_id", ""))}
+
+
+def weekly19_authorization_row_bindings(row):
+    """The leased immutable row must match the independently published source."""
+    return dict(execution_profile=row.get("execution_profile"), official_version=row.get("official_live_version"),
+        ruleset_version=row.get("ruleset_version"), material_release_id=row.get("material_release_id"),
+        account_fingerprint=row.get("account_fingerprint"), planned_intent_id=row.get("planned_intent_id"),
+        signal_identity_sha256=_canonical_evidence_sha256(row.get("signal_identity")),
+        physical_epoch_id=row.get("physical_epoch_id"),
+        durable_state_sha256=row.get("weekly19_quote_proof", {}).get("durable_state_sha256"),
+        quote_proof_sha256=_canonical_evidence_sha256(row.get("weekly19_quote_proof")),
+        source_data_receipt_sha256=row.get("data_receipt_sha256"),
+        target_cutoff_date=row.get("completed_target_date") or row.get("target_date"), trading_date=row.get("trading_date"))
 
 
 def _paths(target_date: str) -> dict[str, Path]:
@@ -496,8 +570,99 @@ def _object_to_row(obj: Any) -> dict[str, Any]:
             row[key] = json.dumps(value, ensure_ascii=False, default=str)
         elif value is None:
             row[key] = ""
+    if getattr(obj, "_weekly19_normalized_query", False):
+        row["source_event_layer"] = "vnpy_normalized_query"
+    native_proof = getattr(obj, "_weekly19_native_proof", None)
+    if isinstance(native_proof, Mapping):
+        row["weekly19_native_proof"] = deepcopy(dict(native_proof))
+        row["source_event_layer"] = "vnpy_normalized_with_native_reference"
+        row["broker_offset"] = getattr(obj, "_weekly19_broker_offset")
+        row["native_offset_flag"] = getattr(obj, "_weekly19_native_offset_flag")
     row.setdefault("received_at", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     return row
+
+
+def attach_weekly19_native_proof(kind: str, obj: Any) -> bool:
+    """Bind the synchronously normalized object to its actual native callback.
+
+    Failure never hides the broker event. The caller must revoke readiness and
+    the raw query recovery bridge must reconcile the retained actual fact.
+    """
+    proof = getattr(_WEEKLY19_NATIVE_FORWARD_CONTEXT, "proof", None)
+    if not isinstance(proof, Mapping):
+        return False
+    try:
+        native = proof["native"]
+        method = "onRtnOrder" if kind == "order" else "onRtnTrade"
+        if proof["source_callback"] != method:
+            raise ValueError("weekly19_native_normalized_kind_mismatch")
+        value = lambda name: getattr(getattr(obj, name, ""), "value", getattr(obj, name, ""))
+        symbol = str(value("vt_symbol"))
+        if symbol != f"{native['InstrumentID']}.{native['ExchangeID']}":
+            raise ValueError("weekly19_native_normalized_symbol_mismatch")
+        direction = {"0": "long", "1": "short"}.get(str(native["Direction"]))
+        if direction is None or direction != _normalize_direction_text(value("direction")):
+            raise ValueError("weekly19_native_normalized_direction_mismatch")
+        flag = str(native["CombOffsetFlag"] if kind == "order" else native["OffsetFlag"])
+        offset = {"0": "open", "1": "close", "3": "closetoday", "4": "closeyesterday"}.get(flag)
+        if offset is None:
+            raise ValueError("weekly19_native_offset_unknown")
+        actual = str(value("offset")).lower()
+        normalized_offset = {"开": "open", "平": "close", "平今": "closetoday", "平昨": "closeyesterday",
+                             "close today": "closetoday", "close yesterday": "closeyesterday"}.get(actual, actual)
+        if normalized_offset != offset:
+            raise ValueError("weekly19_native_normalized_offset_mismatch")
+        if kind == "order":
+            if str(value("orderid")) != f"{native['FrontID']}_{native['SessionID']}_{native['OrderRef']}":
+                raise ValueError("weekly19_native_normalized_order_identity_mismatch")
+            if float(value("volume")) != float(native["VolumeTotalOriginal"]) or float(value("traded")) != float(native["VolumeTraded"]):
+                raise ValueError("weekly19_native_normalized_order_volume_mismatch")
+        else:
+            if str(value("tradeid")).strip() != str(native["TradeID"]).strip():
+                raise ValueError("weekly19_native_normalized_trade_identity_mismatch")
+            if float(value("volume")) != float(native["Volume"]) or float(value("price")) != float(native["Price"]):
+                raise ValueError("weekly19_native_normalized_trade_value_mismatch")
+        setattr(obj, "_weekly19_native_proof", deepcopy(dict(proof)))
+        setattr(obj, "_weekly19_broker_offset", offset)
+        setattr(obj, "_weekly19_native_offset_flag", flag)
+        return True
+    except (ValueError, KeyError, TypeError, AttributeError) as exc:
+        setattr(obj, "_weekly19_native_matching_blocker", str(exc))
+        return False
+
+
+def _weekly19_freeze_query_receipt(rows, kind, receipt):
+    if receipt.get("last_seen") is not True:
+        return
+    frozen = deepcopy(receipt)
+    rows.setdefault("_weekly19_native_receipts", {})[kind] = frozen
+    epoch_name = {"account": "_final_account_funds_epoch", "positions": "_position_query_epoch",
+                  "orders": "_order_query_epoch", "trades": "_trade_query_epoch"}[kind]
+    epoch = rows.get(epoch_name)
+    if isinstance(epoch, dict):
+        epoch["weekly19_native_receipt"] = deepcopy(frozen)
+
+
+def _weekly19_query_callback(rows, kind, data, error, reqid, last):
+    if not rows.get("_weekly19_capture_identity"):
+        return
+    receipt = rows.get("_weekly19_native_queries", {}).get(reqid)
+    if not isinstance(receipt, dict) or receipt.get("kind") != kind:
+        rows.setdefault("_weekly19_native_capture_blockers", []).append("weekly19_native_query_without_matching_request")
+        return
+    observed = rows.get("_weekly19_clock", lambda: datetime.now().astimezone())().isoformat()
+    if receipt.get("last_seen"):
+        receipt.setdefault("late_callback_blockers", []).append("weekly19_query_callback_after_last")
+    callback = dict(data=deepcopy(data), error=deepcopy(error), reqid=reqid, last=last,
+                    received_at=observed, connection_generation=receipt["connection_generation"])
+    receipt["native_callbacks"].append(callback)
+    error_id = error.get("ErrorID", 0) if isinstance(error, dict) else (0 if error is None else -1)
+    if type(error_id) is not int or error_id != 0:
+        receipt["error_rows"] += 1
+    if last is True:
+        receipt["last_seen"] = True
+        receipt["completed_at"] = observed
+    _weekly19_freeze_query_receipt(rows, kind, receipt)
 
 
 def _stage179_callback_key(kind: str, payload: Mapping[str, Any]) -> str:
@@ -596,6 +761,9 @@ def _stage179_warm_callback_base(
         "connection_generation": str(context.get("connection_generation", "")),
         "spool_lease_owner": str(context.get("spool_lease_owner", "")),
         "spool_lease_token": str(context.get("spool_lease_token", "")),
+        **({"reservation_record_checksum": str(context.get("reservation_record_checksum") or row.get("reservation_record_checksum", "")),
+            "child_order_volume": float(request.volume)}
+           if str(row.get("source", "")).startswith("weekly19_") and request is not None else {}),
         "child_order_id": str(context.get("child_order_id", "")),
         "child_order_index": int(context.get("child_order_index", 0) or 0),
         "child_order_count": int(context.get("child_order_count", 1) or 1),
@@ -606,6 +774,10 @@ def _stage179_warm_callback_base(
             context.get("close_attempt_lease_token", "")
         ),
         **_intent_ledger_metadata(row),
+        **_weekly19_batch_ledger_metadata(context),
+        **({"broker_order_volume": float(request.volume)} if str(row.get("source", "")).startswith("weekly19_") and request is not None else {}),
+        **({key: callback[key] for key in ("broker_offset", "native_offset_flag", "source_event_layer", "weekly19_native_proof") if key in callback}
+           if str(row.get("source", "")).startswith("weekly19_") else {}),
     }
 
 
@@ -951,6 +1123,8 @@ class CtpExecutionSession:
         lease_execution_guard: Callable[[], Any] | None = None,
         post_lease_blockers: Callable[[Any], list[str]] | None = None,
         connection_generation_observer: Callable[[str], None] | None = None,
+        transport_context_provider: Callable[[], Mapping[str, Any]] | None = None,
+        refresh_context_provider: Callable[[], Mapping[str, Any]] | None = None,
         order_api_count_snapshot: (
             Callable[[], Mapping[str, Any]] | None
         ) = None,
@@ -982,6 +1156,8 @@ class CtpExecutionSession:
             connection_generation_observer or (lambda _: None)
         )
         self._order_api_count_snapshot = order_api_count_snapshot
+        self._transport_context_provider = transport_context_provider or (lambda: {})
+        self._refresh_context_provider = refresh_context_provider
         self._epoch_ns = epoch_ns
         self._monotonic = monotonic
         self._connected = False
@@ -992,6 +1168,14 @@ class CtpExecutionSession:
         self.send_order_call_count = 0
         self.cancel_order_call_count = 0
 
+    def transport_context(self) -> Mapping[str, Any]:
+        return self._transport_context_provider()
+
+    def refresh_weekly19_context(self) -> Mapping[str, Any]:
+        if self._refresh_context_provider is None:
+            raise RuntimeError("weekly19_periodic_refresh_not_installed")
+        return self._refresh_context_provider()
+
     @classmethod
     def for_callbacks(cls, **kwargs: Any) -> CtpExecutionSession:
         return cls(**kwargs)
@@ -1001,19 +1185,44 @@ class CtpExecutionSession:
         with self._lifecycle_lock:
             return self._connection_generation
 
+    def connection_ready(self) -> bool:
+        """Observe completed startup without waiting behind a query or callback.
+
+        Startup owns the lifecycle lock and can require the strategy actor for
+        durable replay. A producer must yield while that work is in progress.
+        """
+        if not self._lifecycle_lock.acquire(blocking=False):
+            return False
+        try:
+            return bool(self._connected and self._connection_generation)
+        finally:
+            self._lifecycle_lock.release()
+
     def connect(self) -> None:
         with self._lifecycle_lock:
             if self._connected:
                 return
-            startup = self._connect_startup_bundle()
+            self._connection_generation = uuid.uuid4().hex
+            self._connection_generation_observer(self._connection_generation)
+            try:
+                startup = self._connect_startup_bundle()
+            except BaseException:
+                self._connection_generation = ""
+                self._connection_generation_observer("")
+                try:
+                    self._revoke_readiness("ctp_startup_bundle_failed")
+                finally:
+                    self._disconnect_transport()
+                raise
             if not isinstance(startup, dict) or startup.get("ready") is not True:
+                self._connection_generation = ""
+                self._connection_generation_observer("")
                 try:
                     self._revoke_readiness("ctp_startup_bundle_not_ready")
                 finally:
                     self._disconnect_transport()
                 raise RuntimeError("stage179_ctp_startup_bundle_not_ready")
-            self._connection_generation = uuid.uuid4().hex
-            self._connection_generation_observer(self._connection_generation)
+            self._connected = True
             self._last_complete_startup_bundle_epoch_ns = int(self._epoch_ns())
             self._connected = True
 
@@ -2071,8 +2280,14 @@ def _final_order_query_epoch(
         if pd.isna(last_query_raw)
         else float(last_query_raw) + max(1.0, float(query_interval_seconds))
     )
-    while monotonic() + 1e-9 < next_allowed:
-        remaining = min(next_allowed, deadline) - monotonic()
+    while True:
+        # Use one sample for the boundary and remaining wait. Two reads can
+        # straddle next_allowed and incorrectly report a pacing timeout while
+        # the absolute deadline is still far in the future.
+        now = monotonic()
+        if now + 1e-9 >= next_allowed:
+            break
+        remaining = min(next_allowed, deadline) - now
         if remaining <= 0:
             result["elapsed_seconds"] = max(0.0, monotonic() - started)
             result["blockers"] = [
@@ -2212,12 +2427,20 @@ def _final_trade_query_epoch(
         return result
     last_query = _to_float(rows.get("_ctp_last_query_monotonic"), 0.0)
     next_allowed = last_query + CTP_QUERY_INTERVAL_SECONDS if last_query else started
-    while monotonic() < next_allowed:
-        remaining = min(next_allowed, deadline) - monotonic()
+    while True:
+        # Do not misclassify crossing the pacing boundary between clock reads
+        # as reaching the separate absolute query deadline.
+        now = monotonic()
+        if now >= next_allowed:
+            break
+        remaining = min(next_allowed, deadline) - now
         if remaining <= 0:
             result["blockers"] = ["final_trade_query_pacing_timeout"]
             return result
         sleeper(min(0.05, remaining))
+    if monotonic() >= deadline:
+        result["blockers"] = ["final_trade_query_deadline_exceeded"]
+        return result
     reqid = _to_int(getattr(td_api, "reqid", 0), 0) + 1
     td_api.reqid = reqid
     result["reqid"] = reqid
@@ -2291,8 +2514,13 @@ def _final_position_detail_query_epoch(
         return result
     last_query = _to_float(rows.get("_ctp_last_query_monotonic"), 0.0)
     next_allowed = last_query + CTP_QUERY_INTERVAL_SECONDS if last_query else started
-    while monotonic() < next_allowed:
-        remaining = min(next_allowed, deadline) - monotonic()
+    while True:
+        # Do not misclassify crossing the pacing boundary between clock reads
+        # as reaching the separate absolute query deadline.
+        now = monotonic()
+        if now >= next_allowed:
+            break
+        remaining = min(next_allowed, deadline) - now
         if remaining <= 0:
             result["blockers"] = ["position_detail_query_pacing_timeout"]
             return result
@@ -2388,8 +2616,14 @@ def _final_position_query_epoch(
         if pd.isna(last_query_raw)
         else float(last_query_raw) + max(1.0, float(query_interval_seconds))
     )
-    while monotonic() + 1e-9 < next_allowed:
-        remaining = min(next_allowed, deadline) - monotonic()
+    while True:
+        # Use one sample for the boundary and remaining wait. Two reads can
+        # straddle next_allowed and incorrectly report a pacing timeout while
+        # the absolute deadline is still far in the future.
+        now = monotonic()
+        if now + 1e-9 >= next_allowed:
+            break
+        remaining = min(next_allowed, deadline) - now
         if remaining <= 0:
             result["elapsed_seconds"] = max(0.0, monotonic() - started)
             result["blockers"] = [
@@ -2548,8 +2782,14 @@ def _wait_for_ctp_query_pacing(
         else float(last_query_raw)
         + max(1.0, float(query_interval_seconds))
     )
-    while monotonic() + 1e-9 < next_allowed:
-        remaining = min(next_allowed, deadline) - monotonic()
+    while True:
+        # Use one sample for the boundary and remaining wait. Two reads can
+        # straddle next_allowed and incorrectly report a pacing timeout while
+        # the absolute deadline is still far in the future.
+        now = monotonic()
+        if now + 1e-9 >= next_allowed:
+            break
+        remaining = min(next_allowed, deadline) - now
         if remaining <= 0:
             return f"{blocker_namespace}_pacing_timeout"
         sleeper(min(max(0.001, float(poll_seconds)), remaining))
@@ -4551,6 +4791,8 @@ def _instrument_ctp_readiness_callbacks(
     rows: dict[str, list[dict[str, Any]]],
     *,
     on_front_disconnected: Callable[[int], None] | None = None,
+    weekly19_native_capture: Callable[..., Mapping[str, Any]] | None = None,
+    on_weekly19_native_capture_failure: Callable[[str], None] | None = None,
 ) -> Iterator[None]:
     rows.setdefault(
         "_native_order_api_call_counts",
@@ -4573,6 +4815,8 @@ def _instrument_ctp_readiness_callbacks(
     trade_rsp_existed = hasattr(td_api_class, "onRspQryTrade")
     original_trade_rsp = getattr(td_api_class, "onRspQryTrade", None)
     original_trade_rtn = getattr(td_api_class, "onRtnTrade", None)
+    order_rtn_existed = hasattr(td_api_class, "onRtnOrder")
+    original_order_rtn = getattr(td_api_class, "onRtnOrder", None)
     detail_rsp_existed = hasattr(td_api_class, "onRspQryInvestorPositionDetail")
     original_detail_rsp = getattr(td_api_class, "onRspQryInvestorPositionDetail", None)
     order_insert_existed = hasattr(td_api_class, "reqOrderInsert")
@@ -4586,11 +4830,25 @@ def _instrument_ctp_readiness_callbacks(
         None,
     )
     original_query_methods = {name: getattr(td_api_class, name) for name in (
-        "reqQryOrder", "reqQryTrade", "reqQryInvestorPosition", "reqQryInvestorPositionDetail"
+        "reqQryOrder", "reqQryTrade", "reqQryInvestorPosition", "reqQryInvestorPositionDetail", "reqQryTradingAccount"
     ) if callable(getattr(td_api_class, name, None))}
 
-    def guarded_query_callback(original: Callable[..., Any]) -> Callable[..., Any]:
+    def foreign_weekly19_instance(instance, method, data):
+        active = rows.get("_weekly19_active_td_api")
+        if active is None or active is instance:
+            return False
+        blocker = "weekly19_native_foreign_connection_callback:" + method
+        rows.setdefault("_weekly19_native_capture_blockers", []).append(blocker)
+        rows.setdefault("_weekly19_native_capture_failed_packets", []).append(
+            dict(source_callback=method, native=deepcopy(data), foreign_connection=True))
+        if on_weekly19_native_capture_failure is not None:
+            on_weekly19_native_capture_failure(blocker)
+        return True
+
+    def guarded_query_callback(original: Callable[..., Any], passthrough=None) -> Callable[..., Any]:
         def wrapped(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+            if foreign_weekly19_instance(self, original.__name__, data):
+                return passthrough(self, data, error, reqid, last) if callable(passthrough) else None
             lock = rows.get("_execution_event_ingress_lock")
             with lock if hasattr(lock, "__enter__") else nullcontext():
                 flat_watch = rows.get("_open_date_flat_query_watches", {}).get((self, reqid))
@@ -4608,8 +4866,10 @@ def _instrument_ctp_readiness_callbacks(
                 return original(self, data, error, reqid, last)
         return wrapped
 
-    def capture_query(original: Callable[..., Any]) -> Callable[..., Any]:
+    def capture_query(original: Callable[..., Any], method_name: str) -> Callable[..., Any]:
         def wrapped(self: Any, request: dict, reqid: int) -> Any:
+            if foreign_weekly19_instance(self, method_name, request):
+                raise RuntimeError("weekly19_query_foreign_connection")
             capture = rows.get("_open_date_capture")
             entry = None
             if isinstance(capture, dict):
@@ -4621,7 +4881,35 @@ def _instrument_ctp_readiness_callbacks(
                 capture["requests"][key] = entry
                 if capture.get("flat_watch") is not None:
                     rows.setdefault("_open_date_flat_query_watches", {})[(self, reqid)] = capture["flat_watch"]
-            result = original(self, request, reqid)
+            native_receipt = None
+            identity = rows.get("_weekly19_capture_identity")
+            kind = {"reqQryTradingAccount": "account", "reqQryInvestorPosition": "positions",
+                    "reqQryOrder": "orders", "reqQryTrade": "trades"}.get(method_name)
+            if isinstance(identity, Mapping) and kind is not None:
+                native_receipt = dict(deepcopy(dict(identity)), schema="weekly19.warm-native-query-epoch.v1",
+                    kind=kind, query_reqid=reqid, request_sent_at=rows.get("_weekly19_clock", lambda: datetime.now().astimezone())().isoformat(),
+                    completed_at=None, request_return_code=None, last_seen=False, error_rows=0,
+                    native_callbacks=[], late_callback_blockers=[], native_request=deepcopy(request))
+                rows.setdefault("_weekly19_native_queries", {})[reqid] = native_receipt
+                # Completed raw epochs are already frozen and durably signed
+                # by the bridge. Retain a bounded tail for late-callback
+                # diagnosis; a callback to a pruned reqid fails closed.
+                queries = rows["_weekly19_native_queries"]
+                for prior in list(queries):
+                    if len(queries) <= 128:
+                        break
+                    if prior != reqid and queries[prior].get("last_seen"):
+                        del queries[prior]
+            try:
+                result = original(self, request, reqid)
+            except BaseException as exc:
+                if native_receipt is not None:
+                    native_receipt["request_exception"] = type(exc).__name__
+                    _weekly19_freeze_query_receipt(rows, kind, native_receipt)
+                raise
+            if native_receipt is not None:
+                native_receipt["request_return_code"] = result
+                _weekly19_freeze_query_receipt(rows, kind, native_receipt)
             if entry is not None:
                 entry["request_ret"] = result
             return result
@@ -4657,6 +4945,7 @@ def _instrument_ctp_readiness_callbacks(
         return original_settlement_rsp(self, data, error, reqid, last)
 
     def instrumented_account_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        _weekly19_query_callback(rows, "account", data, error, reqid, last)
         row = _callback_row(data, error, reqid, last)
         row["account_id"] = str(data.get("AccountID", "") or "") if isinstance(data, dict) else ""
         if isinstance(data, dict):
@@ -4747,6 +5036,7 @@ def _instrument_ctp_readiness_callbacks(
         return None
 
     def instrumented_position_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        _weekly19_query_callback(rows, "positions", data, error, reqid, last)
         row = _callback_row(data, error, reqid, last)
         row["instrument"] = str(data.get("InstrumentID", "") or "") if isinstance(data, dict) else ""
         row["position"] = data.get("Position", "") if isinstance(data, dict) else ""
@@ -4862,6 +5152,7 @@ def _instrument_ctp_readiness_callbacks(
             _ORDER_QUERY_FORWARD_CONTEXT.depth = previous_depth
 
     def instrumented_order_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        _weekly19_query_callback(rows, "orders", data, error, reqid, last)
         row = _callback_row(data, error, reqid, last)
         if isinstance(data, dict):
             row.update(
@@ -4926,6 +5217,7 @@ def _instrument_ctp_readiness_callbacks(
         return result
 
     def instrumented_trade_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
+        _weekly19_query_callback(rows, "trades", data, error, reqid, last)
         row = _callback_row(data, error, reqid, last)
         rows.setdefault("trade_query_callbacks", []).append(row)
         epoch = rows.get("_trade_query_epoch", {})
@@ -4970,7 +5262,7 @@ def _instrument_ctp_readiness_callbacks(
         epoch["pending_callbacks"] = []
         return None
 
-    def instrumented_trade_rtn(self: Any, data: dict) -> Any:
+    def tracked_trade_rtn(self: Any, data: dict) -> Any:
         evidence = _raw_trade_ownership_evidence(self, data)
         cache = rows.setdefault("_raw_trade_ownership_evidence", {})
         if not evidence.get("invalid"):
@@ -4990,6 +5282,39 @@ def _instrument_ctp_readiness_callbacks(
                 except (ValueError, TypeError):
                     pass
         return original_trade_rtn(self, data)
+
+    def forward_native(method, original, instance, data):
+        if weekly19_native_capture is None:
+            return original(instance, data) if callable(original) else None
+        previous = getattr(_WEEKLY19_NATIVE_FORWARD_CONTEXT, "proof", None)
+        _WEEKLY19_NATIVE_FORWARD_CONTEXT.proof = None
+        try:
+            try:
+                if foreign_weekly19_instance(instance, method, data):
+                    raise ValueError("weekly19_native_foreign_connection")
+                observed = datetime.now().astimezone()
+                reference = weekly19_native_capture(method, deepcopy(data), observed_at=observed)
+                if not isinstance(reference, Mapping) or not reference.get("path") or re.fullmatch(r"[0-9a-f]{64}", str(reference.get("sha256", ""))) is None:
+                    raise ValueError("weekly19_native_capture_reference_invalid")
+                _WEEKLY19_NATIVE_FORWARD_CONTEXT.proof = dict(source_callback=method, native=deepcopy(data),
+                    raw_native_sha256=_canonical_evidence_sha256(data), capture_reference=deepcopy(dict(reference)),
+                    observed_at=observed.isoformat(), normalized_event_layer="vnpy_object")
+            except BaseException as exc:
+                blocker = "weekly19_native_capture_failed:" + type(exc).__name__
+                rows.setdefault("_weekly19_native_capture_blockers", []).append(blocker)
+                rows.setdefault("_weekly19_native_capture_failed_packets", []).append(dict(source_callback=method,native=deepcopy(data)))
+                if on_weekly19_native_capture_failure is not None:
+                    on_weekly19_native_capture_failure(blocker)
+            # Even a capture failure must not suppress the broker's actual fact.
+            return original(instance, data) if callable(original) else None
+        finally:
+            _WEEKLY19_NATIVE_FORWARD_CONTEXT.proof = previous
+
+    def instrumented_order_rtn(self, data):
+        return forward_native("onRtnOrder", original_order_rtn, self, data)
+
+    def instrumented_trade_rtn(self, data):
+        return forward_native("onRtnTrade", tracked_trade_rtn, self, data)
 
     def instrumented_position_detail_rsp(self: Any, data: dict, error: dict, reqid: int, last: bool) -> Any:
         callback = _callback_row(data, error, reqid, last)
@@ -5122,17 +5447,19 @@ def _instrument_ctp_readiness_callbacks(
 
     try:
         for name, original in original_query_methods.items():
-            setattr(td_api_class, name, capture_query(original))
+            setattr(td_api_class, name, capture_query(original, name))
         td_api_class.onRspSettlementInfoConfirm = instrumented_settlement_rsp
-        td_api_class.onRspQryTradingAccount = instrumented_account_rsp
+        td_api_class.onRspQryTradingAccount = guarded_query_callback(instrumented_account_rsp, original_account_rsp)
         td_api_class.onRspQryMaxOrderVolume = (
             instrumented_max_order_volume_rsp
         )
-        td_api_class.onRspQryInvestorPosition = guarded_query_callback(instrumented_position_rsp)
-        td_api_class.onRspQryOrder = guarded_query_callback(instrumented_order_rsp)
-        td_api_class.onRspQryTrade = guarded_query_callback(instrumented_trade_rsp)
+        td_api_class.onRspQryInvestorPosition = guarded_query_callback(instrumented_position_rsp, original_position_rsp)
+        td_api_class.onRspQryOrder = guarded_query_callback(instrumented_order_rsp, original_order_rsp)
+        td_api_class.onRspQryTrade = guarded_query_callback(instrumented_trade_rsp, original_trade_rsp)
         if callable(original_trade_rtn):
             td_api_class.onRtnTrade = instrumented_trade_rtn
+        if weekly19_native_capture is not None:
+            td_api_class.onRtnOrder = instrumented_order_rtn
         td_api_class.onRspQryInvestorPositionDetail = guarded_query_callback(instrumented_position_detail_rsp)
         if order_insert_existed and callable(original_order_insert):
             td_api_class.reqOrderInsert = instrumented_order_insert
@@ -5163,6 +5490,11 @@ def _instrument_ctp_readiness_callbacks(
             delattr(td_api_class, "onRspQryTrade")
         if callable(original_trade_rtn):
             td_api_class.onRtnTrade = original_trade_rtn
+        if weekly19_native_capture is not None:
+            if order_rtn_existed:
+                td_api_class.onRtnOrder = original_order_rtn
+            elif hasattr(td_api_class, "onRtnOrder"):
+                delattr(td_api_class, "onRtnOrder")
         if detail_rsp_existed:
             td_api_class.onRspQryInvestorPositionDetail = original_detail_rsp
         else:
@@ -5186,7 +5518,7 @@ def _normalize_direction_text(value: Any) -> str:
 
 def _normalize_offset_text(value: Any) -> str:
     text = str(value or "").strip().lower()
-    if text in {"close", "closetoday", "closeyesterday", "平", "平今", "平昨", "offset.close", "offset.closetoday", "offset.closeyesterday"}:
+    if text in {"close", "closetoday", "closeyesterday", "close today", "close yesterday", "平", "平今", "平昨", "offset.close", "offset.closetoday", "offset.closeyesterday"}:
         return "close"
     if text in {"open", "开", "offset.open"}:
         return "open"
@@ -5207,6 +5539,11 @@ def _direction_from_payload(value: Any) -> Direction:
 
 
 def _offset_from_payload(value: Any) -> Offset:
+    native_text = str(value or "").strip().lower()
+    if native_text in {"closetoday", "close today", "平今", "offset.closetoday"}:
+        return Offset.CLOSETODAY
+    if native_text in {"closeyesterday", "close yesterday", "平昨", "offset.closeyesterday"}:
+        return Offset.CLOSEYESTERDAY
     text = _normalize_offset_text(value)
     if text == "open":
         return Offset.OPEN
@@ -7645,6 +7982,9 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
             ):
                 expected_type = OrderType.LIMIT
                 expected_policy = "stage179_limit_gfd_v1"
+            if source in {"weekly19_pending_order", "weekly19_risk_reduce"}:
+                expected_type = OrderType.FAK if row_offset == "open" else OrderType.LIMIT
+                expected_policy = "stage179_open_fak_v1" if row_offset == "open" else "stage179_limit_gfd_v1"
             if expected_type is None or actual_type != expected_type:
                 blockers.append(f"stage905_order_payload_type_invalid:{label}")
             if not expected_policy or policy != expected_policy:
@@ -7804,6 +8144,22 @@ def _stage905_ready_intent_artifact_blockers(intents: pd.DataFrame) -> list[str]
                     "stage905_initial_open_stage904_lineage_forbidden:"
                     f"{label}:{','.join(forbidden_fields)}"
                 )
+        elif source in {"weekly19_pending_order", "weekly19_risk_reduce"}:
+            from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+            blockers.extend(f"{value}:{label}" for value in _execution_profile_intent_blockers(
+                WEEKLY19_15W_R150K_PROFILE, row.to_dict()))
+            for key in ("material_release_id", "account_fingerprint", "ruleset_version", "trading_date",
+                        "physical_epoch_id", "signal_order_id", "signal_datetime", "data_receipt_sha256",
+                        "completed_week_end", "protection_timing", "requires_funding_revision",
+                        "depends_on_close_intent_id", "rollover_from_vt_symbol"):
+                if _artifact_text(row.get(key)) != _artifact_text(payload.get(key)):
+                    blockers.append(f"weekly19_order_payload_{key}_mismatch:{label}")
+            try:
+                identity = json.loads(str(row.get("signal_identity_json", "")))
+                if identity != payload.get("signal_identity"):
+                    blockers.append(f"weekly19_order_payload_signal_identity_mismatch:{label}")
+            except (ValueError, TypeError):
+                blockers.append(f"weekly19_order_payload_signal_identity_invalid:{label}")
         elif source == "stage260_stage372_daily":
             if role or any(
                 _artifact_text(row.get(key))
@@ -7884,6 +8240,14 @@ def _execution_profile_intent_blockers(
     source = _artifact_text(row.get("source"))
     if source not in profile.allowed_intent_sources:
         blockers.append("intent_source_not_allowed_for_execution_profile")
+    if profile.decision_mode == "weekly19":
+        if _artifact_text(row.get("ruleset_version")) != profile.ruleset_version:
+            blockers.append("weekly19_ruleset_version_mismatch")
+        if any(_artifact_text(row.get(key)) for key in ("monitor_run_id", "action_id", "retry_trigger_price", "retry_stop_price")):
+            blockers.append("weekly19_c9_intent_metadata_forbidden")
+        if _artifact_text(row.get("intent_role")).startswith("c9_"):
+            blockers.append("weekly19_c9_intent_role_forbidden")
+        return list(dict.fromkeys(blockers))
     if not profile.intraday_stop_retry_enabled:
         c9_metadata = (
             source.startswith("stage904_c9_intraday_")
@@ -7903,6 +8267,154 @@ def _execution_profile_intent_blockers(
         if c9_metadata:
             blockers.append("stage372_c9_intent_metadata_forbidden")
     return list(dict.fromkeys(blockers))
+
+
+def _weekly19_physical_volume_blockers(row, context, transport_context):
+    """Conserve the signed delivery cap across real fills and split children."""
+    from decimal import Decimal
+    transport = transport_context or {}
+    parent = transport.get("weekly19_immutable_parent_intent") or row
+    child = transport.get("weekly19_current_physical_child")
+    life = context.get("actual_fill_lifecycle")
+    if child is not None and (not isinstance(life, Mapping) or not transport.get("weekly19_immutable_parent_intent")):
+        return ["weekly19_actual_fill_lifecycle_required"]
+    if life is None:
+        return []  # Conditional old pure-gate fixtures; production bridge supplies it.
+    def integer(value):
+        if isinstance(value, bool):
+            raise ValueError("weekly19_actual_fill_lifecycle_invalid")
+        parsed = Decimal(str(value))
+        if not parsed.is_finite() or parsed < 0 or parsed != parsed.to_integral_value():
+            raise ValueError("weekly19_actual_fill_lifecycle_invalid")
+        return int(parsed)
+    if (life.get("schema") != "weekly19.actual-fill-lifecycle.v1"
+            or life.get("planned_intent_id") != (row.get("planned_intent_id") or row["intent_id"])
+            or life.get("delivery_intent_id") != row["intent_id"]
+            or life.get("signal_order_id") != row["signal_order_id"]
+            or life.get("durable_state_sha256") != context.get("durable_state_sha256")
+            or any(parent.get(key) != row.get(key) for key in ("intent_id", "planned_intent_id", "signal_identity", "vt_symbol", "direction", "offset"))):
+        return ["weekly19_actual_fill_lifecycle_invalid"]
+    approved,filled,remaining = (integer(life.get("business_"+key)) for key in ("approved_volume","filled_volume","remaining_volume"))
+    cap,done,left = (integer(life.get("delivery_"+key)) for key in ("approved_volume","filled_volume","remaining_volume"))
+    trades = life.get("delivery_trade_ids")
+    if (approved != filled + remaining or cap != done + left or cap != integer(parent.get("planned_volume"))
+            or cap > approved or done > filled or not isinstance(trades,list) or len(trades)!=len(set(trades))
+            or any(not isinstance(item,str) or not item for item in trades) or bool(done)!=bool(trades)):
+        return ["weekly19_actual_fill_lifecycle_invalid"]
+    requested = integer(row.get("planned_volume"))
+    if left <= 0 or requested > left:
+        return ["weekly19_delivery_remaining_volume_exceeded"]
+    if child is not None:
+        actual = child.get("volume") if isinstance(child,Mapping) else getattr(child,"volume",None)
+        if integer(actual) != requested:
+            return ["weekly19_physical_child_volume_mismatch"]
+    if row.get("offset") == "open":
+        proof = context.get("open_risk_proof") or {}
+        if integer(proof.get("selected_volume")) < left:
+            return ["weekly19_signed_delivery_volume_changed"]
+    return []
+
+
+def weekly19_pre_submit_blockers(
+    row: Mapping[str, Any], fresh_context_provider: Any, *, now: datetime,
+    transport_context: Mapping[str, Any] | None = None,
+    now_provider: Callable[[], datetime] | None = None,
+) -> list[str]:
+    """Re-read current evidence at the API boundary, never trust a dry-run flag.
+
+    The provider is a process-local callable supplied by the qualified pipeline;
+    no environment flag or caller JSON can manufacture this capability.
+    """
+    if not callable(fresh_context_provider):
+        return ["weekly19_fresh_execution_provider_missing"]
+    try:
+        from qmt_roll_weekly19_execution import evaluate_intent
+        context = (fresh_context_provider(dict(row)) if transport_context is None else
+                   fresh_context_provider(dict(row), transport_context=transport_context))
+        context = dict(context)
+        if transport_context is not None:
+            context["immutable_parent_intent"] = transport_context.get("weekly19_immutable_parent_intent")
+            context["current_physical_batch"] = transport_context.get("weekly19_current_physical_batch")
+        if transport_context is not None and transport_context.get("lease") is not None:
+            lease = transport_context["lease"]
+            context = dict(context)
+            context["current_delivery_lease"] = dict(intent_id=lease.intent.intent_id,
+                payload_sha256=lease.intent.payload_sha256, lease_token=lease.lease_token,
+                lease_owner=lease.intent.lease_owner, connection_generation=transport_context.get("connection_generation"))
+        volume_blockers = _weekly19_physical_volume_blockers(row, context, transport_context)
+        at = now_provider() if now_provider is not None else now
+        result = evaluate_intent(dict(row), context, now=at)
+        blockers = list(result["blockers"]) + volume_blockers
+        if result.get("allowed"):
+            from decimal import Decimal
+            if Decimal(str(result["volume"])) != Decimal(str(row.get("planned_volume"))):
+                blockers.append("weekly19_signed_delivery_volume_changed")
+        return blockers
+    except Exception as exc:
+        return ["weekly19_fresh_execution_provider_failed:" + type(exc).__name__]
+
+
+def _weekly19_deferred_id(value):
+    if not isinstance(value, str) or not value.strip() or len(value.encode("utf-8")) > 256:
+        raise ValueError("weekly19_durable_deferred_id_invalid")
+    return value
+
+
+def weekly19_reconcile_deferred_events(rows, receipt, *, query_admission=False):
+    """Only a durable replay receipt clears exact recoverable pending IDs.
+
+    These are not transport failures. Queries, actual callbacks and existing
+    cancel duty must continue so the pending native fact can be replayed.
+    """
+    resolved = receipt.get("resolved_deferred_ids", [])
+    if not isinstance(resolved, list) or len(set(map(str, resolved))) != len(resolved):
+        raise ValueError("weekly19_resolved_deferred_ids_invalid")
+    ids = [_weekly19_deferred_id(item) for item in resolved]
+    status = receipt.get("status")
+    if status == "deferred_durable" or ids:
+        if re.fullmatch(r"[0-9a-f]{64}", str(receipt.get("state_sha256", ""))) is None:
+            raise ValueError("weekly19_deferred_state_not_durable")
+    if query_admission and ids:
+        reference = receipt.get("warm_capture_reference", {})
+        if (receipt.get("source_qualified") is not True or not isinstance(reference, Mapping)
+                or not reference.get("path") or re.fullmatch(r"[0-9a-f]{64}", str(reference.get("sha256", ""))) is None):
+            raise ValueError("weekly19_deferred_query_replay_not_admitted")
+    elif ids and status not in {"applied", "duplicate"}:
+        raise ValueError("weekly19_deferred_replay_status_invalid")
+    pending = rows.setdefault("_weekly19_deferred_broker_events", {})
+    if not isinstance(pending, dict):
+        raise ValueError("weekly19_deferred_event_state_invalid")
+    if status == "deferred_durable":
+        if ids:
+            raise ValueError("weekly19_deferred_cannot_claim_replayed")
+        pending[_weekly19_deferred_id(receipt.get("durable_deferred_id"))] = {"state_sha256": receipt["state_sha256"]}
+    for identity in ids:
+        pending.pop(identity, None)
+
+
+def weekly19_deferred_event_blockers(rows):
+    pending = rows.get("_weekly19_deferred_broker_events", {})
+    if not isinstance(pending, dict):
+        return ["weekly19_deferred_event_state_invalid"]
+    return ["weekly19_durable_broker_events_awaiting_replay"] if pending else []
+
+
+def weekly19_broker_event_blockers(kind, callback, intent, event_consumer, *, receipt_observer=None) -> list[str]:
+    if not callable(event_consumer):
+        return ["weekly19_durable_event_consumer_missing"]
+    try:
+        receipt = event_consumer(kind, dict(callback), dict(intent))
+        if (not isinstance(receipt, Mapping) or receipt.get("status") not in {"applied", "duplicate", "deferred_durable"}
+                or not isinstance(receipt.get("state_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", receipt["state_sha256"]) is None):
+            return ["weekly19_event_durable_receipt_invalid"]
+        if receipt.get("status") == "deferred_durable":
+            _weekly19_deferred_id(receipt.get("durable_deferred_id"))
+        if receipt_observer is not None:
+            receipt_observer(receipt)
+        return []
+    except Exception as exc:
+        return ["weekly19_event_consumer_failed:" + type(exc).__name__]
 
 
 def _stage905_execution_profile_blockers(
@@ -9680,6 +10192,8 @@ def run_once(args: argparse.Namespace) -> dict[str, Any]:
             "stage931_once_live_real_disabled_use_command_serve"
         )
     execution_profile = _execution_profile_for_args(args)
+    if execution_profile.decision_mode == "weekly19":
+        raise RuntimeProfileError("weekly19_once_legacy_pipeline_forbidden_use_qualified_warm_providers")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)
     stage905_intents = _stage905_intents(args.target_date)
@@ -10964,6 +11478,12 @@ def _stage179_spool_lease_row(lease: Any) -> tuple[dict[str, Any], dict[str, Any
         "order_request_price": order_payload.get("price", 0.0),
         "order_request_volume": order_payload.get("volume", 0.0),
     }
+    if str(payload.get("source", "")).startswith("weekly19_"):
+        if (_normalize_direction_text(order_payload.get("direction")) != payload.get("direction")
+                or _normalize_offset_text(order_payload.get("offset")) != payload.get("offset")):
+            raise ValueError("weekly19_spool_request_business_identity_mismatch")
+        row["direction"] = payload["direction"]
+        row["offset"] = payload["offset"]
     return row, dict(order_payload)
 
 
@@ -11051,10 +11571,14 @@ def _build_stage179_warm_ctp_session(
     args: argparse.Namespace,
     runtime: Any,
     paths: ExecutorServicePaths,
+    *, weekly19_context_provider=None, weekly19_event_consumer=None, weekly19_native_capture_factory=None,
 ) -> CtpExecutionSession:
     """Build the real warm backend only after the Task9 gate has passed."""
 
     execution_profile = _execution_profile_for_args(args)
+    weekly = execution_profile.decision_mode == "weekly19"
+    if weekly and not (callable(weekly19_context_provider) and callable(weekly19_event_consumer) and callable(weekly19_native_capture_factory)):
+        raise RuntimeProfileError("weekly19_qualified_execution_providers_required")
     service_generation = uuid.uuid4().hex
     reconciliation_lock = threading.RLock()
     execution_event_ingress_lock = threading.RLock()
@@ -11331,6 +11855,7 @@ def _build_stage179_warm_ctp_session(
                 allow_expired_if_record_digest=str(
                     pin.get("record_digest", "")
                 ),
+                weekly19_bindings=weekly19_authorization_row_bindings(payload) if weekly else None,
             )
         )
         return list(dict.fromkeys(str(item) for item in blockers if str(item)))
@@ -11367,6 +11892,84 @@ def _build_stage179_warm_ctp_session(
         schedule_open_date_seal(orderid) if orderid in state["open_date_owned_order_ids"] else None
     )
 
+    def current_transport_context():
+        result = dict(td_api=state.get("td_api"), main_engine=state.get("main_engine"),
+            event_engine=state.get("event_engine"), gateway=state.get("gateway"), rows=state["rows"],
+            ctp_query_lock=state["ctp_query_lock"], ledger_path=paths.ledger_path,
+            service_generation=service_generation, connection_generation=state.get("connection_generation", ""))
+        reference = state["rows"].get("_weekly19_warm_capture_reference")
+        if reference is not None:
+            result["weekly19_warm_capture_reference"] = reference
+        return result
+
+    def admit_completed_queries(method):
+        bridge = state.get("weekly19_native_bridge")
+        admit = getattr(bridge, method, None)
+        if not callable(admit):
+            return ["weekly19_query_source_admission_bridge_missing:" + method]
+        context = current_transport_context()
+        receipt = admit(transport_context=context)
+        reference = receipt.get("warm_capture_reference") if isinstance(receipt, Mapping) else None
+        reference = reference or context.get("weekly19_warm_capture_reference")
+        if reference is not None:
+            state["rows"]["_weekly19_warm_capture_reference"] = deepcopy(reference)
+        if not isinstance(receipt, Mapping) or receipt.get("source_qualified") is not True or reference is None:
+            return ["weekly19_query_source_not_admitted:" + method]
+        weekly19_reconcile_deferred_events(state["rows"], dict(receipt, warm_capture_reference=reference), query_admission=True)
+        return []
+
+    def refresh_weekly19_context():
+        """Refresh outside an execution lease, using this connection only.
+
+        The service holds the exclusive authorization lock around this call.
+        Source admission freezes/signs completed queries; it never starts any.
+        """
+        if not weekly:
+            return {"ready": False, "blockers": ["weekly19_refresh_profile_required"]}
+        blockers = transport_probe()
+        td_api = state.get("td_api")
+        if td_api is None or blockers:
+            return {"ready": False, "blockers": blockers or ["weekly19_transport_missing"]}
+        rows = state["rows"]
+        with state["ctp_query_lock"]:
+            if state.get("active_physical_batch"):
+                return {"ready": False, "blockers": ["weekly19_refresh_physical_batch_active"]}
+            for kind, query in (("orders", _final_order_query_epoch), ("trades", _final_trade_query_epoch),
+                                ("positions", _final_position_query_epoch), ("account", _final_open_account_funds_query_epoch)):
+                result = query(td_api, rows, max_wait_seconds=max(3.0, float(args.connect_wait_seconds)))
+                errors = list(result.get("blockers", []))
+                # This is a read-only source refresh, including accounts unable
+                # to open. The funding/risk gates still reject every such open.
+                if kind == "account":
+                    errors = [item for item in errors if item != "final_open_account_funds_available_not_positive"]
+                    complete = (result.get("callback_count", 0) > 0 and not errors)
+                else:
+                    complete = bool(result.get("confirmed"))
+                if not complete or errors:
+                    blockers.extend(errors or ["weekly19_refresh_query_incomplete:" + kind])
+                    break
+                readiness = state.get("readiness_state")
+                if kind in {"positions", "account"} and isinstance(readiness, CtpReadinessState):
+                    reqid = result.get("reqid")
+                    if type(reqid) is not int or reqid <= 0:
+                        blockers.append("weekly19_refresh_query_reqid_invalid:" + kind)
+                        break
+                    setattr(readiness, "expected_position_reqid" if kind == "positions" else "expected_account_reqid", reqid)
+            if not blockers:
+                blockers.extend(admit_completed_queries("admit_completed_query_bundle"))
+            blockers.extend(rows.get("_weekly19_native_capture_blockers", []))
+        return {"ready": not blockers, "blockers": list(dict.fromkeys(blockers))}
+
+    def native_capture(method, native, *, observed_at):
+        bridge = state.get("weekly19_native_bridge")
+        if bridge is None or not callable(getattr(bridge, "capture_native", None)):
+            raise RuntimeError("weekly19_native_capture_bridge_missing")
+        return bridge.capture_native(method, native, observed_at=observed_at)
+
+    def native_capture_failed(reason):
+        state["transport_generation_invalidated"] = True
+        state["callback_persistence_blockers"].append(reason)
+
     def connect_startup_bundle() -> dict[str, Any]:
         # This import is deliberately inside the post-gate adapter factory.
         from vnpy_ctp import CtpGateway
@@ -11380,6 +11983,8 @@ def _build_stage179_warm_ctp_session(
             ctp_gateway_module.CtpTdApi,
             rows,
             on_front_disconnected=on_front_disconnected,
+            weekly19_native_capture=native_capture if weekly else None,
+            on_weekly19_native_capture_failure=native_capture_failed if weekly else None,
         )
         callback_context.__enter__()
         state["callback_context"] = callback_context
@@ -11394,6 +11999,19 @@ def _build_stage179_warm_ctp_session(
                 gateway=gateway,
                 td_api=td_api,
             )
+
+            if weekly:
+                rows["_weekly19_active_td_api"] = td_api
+                bridge = weekly19_native_capture_factory(transport_context=current_transport_context())
+                if not callable(getattr(bridge, "capture_native", None)) or not isinstance(getattr(bridge, "identity", None), Mapping):
+                    raise RuntimeError("weekly19_native_bridge_contract_invalid")
+                identity = dict(bridge.identity)
+                if (identity.get("execution_profile") != execution_profile.profile_key or not identity.get("account_key")
+                        or not identity.get("material_release_id")):
+                    raise RuntimeError("weekly19_native_bridge_identity_invalid")
+                rows["_weekly19_capture_identity"] = dict(identity, service_generation=service_generation,
+                    connection_generation=state["connection_generation"])
+                state["weekly19_native_bridge"] = bridge
 
             ingress_lock = state["execution_event_ingress_lock"]
             callback_persistence_lock = Lock()
@@ -11415,6 +12033,11 @@ def _build_stage179_warm_ctp_session(
                 return original_tick(tick)
 
             def ingress_order(order: Any) -> Any:
+                if weekly:
+                    if int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0)):
+                        setattr(order, "_weekly19_normalized_query", True)
+                    elif not attach_weekly19_native_proof("order", order):
+                        native_capture_failed("weekly19_normalized_order_without_unique_native_proof")
                 if not int(getattr(_ORDER_QUERY_FORWARD_CONTEXT, "depth", 0)):
                     with ingress_lock:
                         increment("order")
@@ -11424,6 +12047,8 @@ def _build_stage179_warm_ctp_session(
                 return original_order(order)
 
             def ingress_trade(trade: Any) -> Any:
+                if weekly and not attach_weekly19_native_proof("trade", trade):
+                    native_capture_failed("weekly19_normalized_trade_without_unique_native_proof")
                 with ingress_lock:
                     increment("trade")
                     row = _object_to_row(trade)
@@ -11600,6 +12225,16 @@ def _build_stage179_warm_ctp_session(
                         blocker = str(result.get("blocker", "") or "")
                         if blocker:
                             state["callback_persistence_blockers"].append(blocker)
+                            state["transport_generation_invalidated"] = True
+                            persistence_confirmed = False
+                    if (weekly and kind in {"order", "trade"} and context is not None
+                            and row.get("source_event_layer") != "vnpy_normalized_query"
+                            and row.get("weekly19_native_proof", {}).get("capture_reference", {}).get("admission_state") != "buffered"):
+                        event_blockers = weekly19_broker_event_blockers(
+                            kind, row, context.get("row", {}), weekly19_event_consumer,
+                            receipt_observer=lambda receipt: weekly19_reconcile_deferred_events(rows, receipt))
+                        if event_blockers:
+                            state["callback_persistence_blockers"].extend(event_blockers)
                             state["transport_generation_invalidated"] = True
                             persistence_confirmed = False
                     if kind == "order" and context is not None:
@@ -12160,22 +12795,32 @@ def _build_stage179_warm_ctp_session(
                         context["recovery_order"] = current
                         schedule_residual_cancel(vt_orderid, context)
                 ready = bool(ready and not blockers)
+            if weekly and ready and not blockers:
+                for kind, query in (("orders", _final_order_query_epoch), ("trades", _final_trade_query_epoch)):
+                    capture = query(td_api, rows, max_wait_seconds=max(3.0, float(args.connect_wait_seconds)))
+                    if not capture.get("confirmed"):
+                        blockers.extend(capture.get("blockers") or ["weekly19_startup_native_query_incomplete:" + kind])
+                if not blockers:
+                    blockers.extend(admit_completed_queries("admit_completed_startup"))
+                blockers.extend(rows.get("_weekly19_native_capture_blockers", []))
             return {
                 "ready": bool(ready and not blockers),
                 "flags": flags,
                 "blockers": blockers,
             }
         except BaseException:
-            main_engine = state.get("main_engine")
-            if main_engine is not None:
-                main_engine.close()
-            callback_context.__exit__(*sys.exc_info())
-            state["callback_context"] = None
+            try:
+                disconnect_transport()
+            except BaseException:
+                # Cleanup records every failed component and attempts hook
+                # restoration independently; retain the startup exception.
+                pass
             raise
 
     def disconnect_transport() -> None:
         main_engine = state.get("main_engine")
         callback_context = state.get("callback_context")
+        native_bridge = state.pop("weekly19_native_bridge", None)
         state.update(
             main_engine=None,
             event_engine=None,
@@ -12185,10 +12830,21 @@ def _build_stage179_warm_ctp_session(
             callback_context=None,
             transport_generation_invalidated=True,
         )
-        if main_engine is not None:
-            main_engine.close()
-        if callback_context is not None:
-            callback_context.__exit__(None, None, None)
+        failures = []
+        cleanups = (("transport", getattr(main_engine, "close", None)),
+                    ("native_capture", getattr(native_bridge, "close", None)),
+                    ("native_hooks", (lambda: callback_context.__exit__(None, None, None)) if callback_context is not None else None))
+        for name, cleanup in cleanups:
+            if not callable(cleanup):
+                continue
+            try:
+                cleanup()
+            except BaseException as exc:
+                blocker = "stage179_transport_cleanup_failed:" + name + ":" + type(exc).__name__
+                failures.append(blocker)
+                state["callback_persistence_blockers"].append(blocker)
+        if failures:
+            raise RuntimeError(";".join(failures))
 
     def fresh_bundle(lease: Any, hard_deadline_monotonic: float) -> dict[str, Any]:
         _prune_stage179_warm_rows(state["rows"])
@@ -12237,6 +12893,7 @@ def _build_stage179_warm_ctp_session(
             ),
             path=paths.ledger_path,
             base_event={
+                **(_intent_ledger_metadata(row) if weekly else {}),
                 "intent_id": lease.intent.intent_id,
                 "intent_payload_sha256": lease.intent.payload_sha256,
                 "intent_kind": lease.intent.intent_kind,
@@ -12447,6 +13104,8 @@ def _build_stage179_warm_ctp_session(
                 )
             )
         blockers = list(dict.fromkeys(str(item) for item in blockers if str(item)))
+        if weekly and not blockers:
+            blockers.extend(admit_completed_queries("admit_completed_query_bundle"))
         state["intent_contexts"][lease.intent.intent_id] = {
             "target_date": lease.intent.target_date,
             "intent_id": lease.intent.intent_id,
@@ -12496,6 +13155,8 @@ def _build_stage179_warm_ctp_session(
     def pre_api_slot_blockers(lease: Any) -> list[str]:
         context = state["intent_contexts"].get(lease.intent.intent_id, {})
         blockers = leased_authorization_blockers(lease)
+        if weekly:
+            blockers.extend(weekly19_deferred_event_blockers(state["rows"]))
         blockers.extend(_post_final_gate_pre_api_slot_blockers(
             state["rows"],
             dict(context.get("final_watermark", {})),
@@ -12533,6 +13194,13 @@ def _build_stage179_warm_ctp_session(
         blockers.extend(
             _execution_profile_intent_blockers(execution_profile, row)
         )
+        if weekly:
+            blockers.extend(weekly19_pre_submit_blockers(
+                row, weekly19_context_provider, now=datetime.now().astimezone(),
+                now_provider=lambda: datetime.now().astimezone(),
+                transport_context={"td_api": state.get("td_api"), "main_engine": state.get("main_engine"),
+                    "rows": state["rows"], "ctp_query_lock": state["ctp_query_lock"],
+                    "connection_generation": state.get("connection_generation"), "ledger_path": paths.ledger_path, "lease": lease}))
         requests = list(context.get("requests", []))
         request = context.get("request")
         if request is None or not requests:
@@ -12612,9 +13280,16 @@ def _build_stage179_warm_ctp_session(
         requests = list(context.get("requests", []))
         if not requests:
             return ""
+        if weekly:
+            context["weekly19_batch_manifest"] = weekly19_physical_batch_manifest(
+                dict(context.get("row", {})), requests, fingerprint=context.get("fingerprint", ""),
+                lease_token=lease.lease_token, payload_sha256=lease.intent.payload_sha256,
+                service_generation=lease.intent.lease_owner, connection_generation=state.get("connection_generation", ""))
         base_events: list[dict[str, Any]] = []
         for index, request in enumerate(requests):
             base_event = {
+                **(_intent_ledger_metadata(dict(context.get("row", {}))) if weekly else {}),
+                **_weekly19_batch_ledger_metadata(context),
                 "target_date": lease.intent.target_date,
                 "intent_id": lease.intent.intent_id,
                 "intent_payload_sha256": lease.intent.payload_sha256,
@@ -12671,7 +13346,8 @@ def _build_stage179_warm_ctp_session(
                 path=paths.ledger_path,
             )
             return ""
-        return str(result.get("api_slot_batch_id", ""))
+        context["api_slot_batch_id"] = str(result.get("api_slot_batch_id", ""))
+        return context["api_slot_batch_id"]
 
     def schedule_residual_cancel(
         vt_orderid: str,
@@ -13506,7 +14182,23 @@ def _build_stage179_warm_ctp_session(
             blockers = leased_authorization_blockers(
                 lease, child_offset=child_request.offset.value
             )
+            if weekly:
+                blockers.extend(weekly19_deferred_event_blockers(state["rows"]))
             blockers.extend(_open_date_risk_blockers(state, child_request.offset.value))
+            if weekly:
+                candidate = dict(context.get("row", {}))
+                candidate["planned_volume"] = child_request.volume
+                candidate["limit_price"] = child_request.price
+                blockers.extend(weekly19_pre_submit_blockers(
+                    candidate, weekly19_context_provider, now=datetime.now().astimezone(),
+                    now_provider=lambda: datetime.now().astimezone(),
+                    transport_context={"td_api": state.get("td_api"), "main_engine": state.get("main_engine"),
+                        "rows": state["rows"], "ctp_query_lock": state["ctp_query_lock"],
+                        "connection_generation": state.get("connection_generation"), "ledger_path": paths.ledger_path, "lease": lease,
+                        "weekly19_immutable_parent_intent": dict(context.get("row", {})),
+                        "weekly19_current_physical_child": child_request,
+                        "weekly19_current_physical_batch": {key: context.get(key) for key in
+                            ("api_slot_batch_id", "weekly19_batch_manifest", "reservation_record_checksum")}}))
             if child_request.offset == Offset.OPEN and _requires_c9_broker_sizing(context.get("row", {})):
                 proof = context.get("open_date_flat_proof", {})
                 blockers.extend(_open_date_flat_watch_blockers(state.get("td_api"), state["rows"], proof))
@@ -13679,6 +14371,10 @@ def _build_stage179_warm_ctp_session(
                 "child_order_offset": request.offset.value,
                 "child_order_volume": float(request.volume),
                 **_intent_ledger_metadata(dict(context.get("row", {}))),
+                **_weekly19_batch_ledger_metadata(context),
+                **({"broker_order_volume": float(request.volume), "broker_offset": {Offset.OPEN: "open", Offset.CLOSE: "close", Offset.CLOSETODAY: "closetoday", Offset.CLOSEYESTERDAY: "closeyesterday"}[request.offset],
+                    "native_offset_flag": {Offset.OPEN: "0", Offset.CLOSE: "1", Offset.CLOSETODAY: "3", Offset.CLOSEYESTERDAY: "4"}[request.offset]}
+                   if weekly else {}),
             }
             if int(context.get("close_submit_attempt_no", 0)) > 0:
                 send_base["close_submit_attempt_no"] = int(
@@ -14054,6 +14750,8 @@ def _build_stage179_warm_ctp_session(
         if state.get("transport_generation_invalidated"):
             blockers.append("stage179_ctp_transport_generation_invalidated")
         blockers.extend(state.get("callback_persistence_blockers", []))
+        if weekly:
+            blockers.extend(state["rows"].get("_weekly19_native_capture_blockers", []))
         td_api = state.get("td_api")
         readiness_state = state.get("readiness_state")
         if td_api is None or readiness_state is None:
@@ -14070,6 +14768,8 @@ def _build_stage179_warm_ctp_session(
 
     def warm_pre_lease_blockers() -> list[str]:
         blockers = authorization_blockers(target_date=args.target_date)
+        if weekly:
+            blockers.extend(weekly19_deferred_event_blockers(state["rows"]))
         blockers.extend(
             f"stage179_order_reconciliation_pending:{vt_orderid}"
             for vt_orderid in sorted(
@@ -14082,6 +14782,8 @@ def _build_stage179_warm_ctp_session(
     return CtpExecutionSession.for_callbacks(
         runtime=runtime,
         service_generation=service_generation,
+        transport_context_provider=current_transport_context,
+        refresh_context_provider=refresh_weekly19_context if weekly else None,
         official_version=execution_profile.official_version,
         capital=execution_profile.capital,
         readiness_ttl_seconds=(
@@ -14133,7 +14835,7 @@ def _atomic_write_stage179_status(path: Path, payload: dict[str, Any]) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
-def _serve_stage179_no_submit_prewarm(runtime: Any) -> int:
+def _serve_stage179_no_submit_prewarm(runtime: Any, *, stop_requested=None) -> int:
     """Heartbeat-only process: never opens the spool or imports/loads CTP."""
 
     paths = ExecutorServicePaths.for_spool(
@@ -14172,11 +14874,11 @@ def _serve_stage179_no_submit_prewarm(runtime: Any) -> int:
         )
 
     try:
-        for signum in (signal.SIGINT, signal.SIGTERM):
+        for signum in (() if stop_requested is not None else (signal.SIGINT, signal.SIGTERM)):
             previous_handlers[signum] = signal.getsignal(signum)
             signal.signal(signum, request_stop)
         with singleton_executor_lock(paths.singleton_lock_path):
-            while not stop.is_set():
+            while not stop.is_set() and not (stop_requested is not None and stop_requested()):
                 write_status("prewarm_no_submit")
                 stop.wait(0.25)
     finally:
@@ -14186,10 +14888,17 @@ def _serve_stage179_no_submit_prewarm(runtime: Any) -> int:
     return 0
 
 
-def run_serve(args: argparse.Namespace) -> int:
+def run_serve(args: argparse.Namespace, *, weekly19_context_provider=None, weekly19_event_consumer=None, weekly19_native_capture_factory=None, stop_requested=None, backend_observer=None) -> int:
     if not args.stage179_warm_executor:
         raise RuntimeProfileError("stage179_warm_executor_opt_in_missing")
     execution_profile = _execution_profile_for_args(args)
+    weekly_provider_kwargs = {}
+    if execution_profile.decision_mode == "weekly19":
+        if not (callable(weekly19_context_provider) and callable(weekly19_event_consumer) and callable(weekly19_native_capture_factory)):
+            raise RuntimeProfileError("weekly19_qualified_execution_providers_required")
+        weekly_provider_kwargs = {"weekly19_context_provider": weekly19_context_provider,
+                                  "weekly19_event_consumer": weekly19_event_consumer,
+                                  "weekly19_native_capture_factory": weekly19_native_capture_factory}
     runtime = resolve_runtime_profile(
         profile=args.runtime_profile,
         order_scope=args.order_scope,
@@ -14212,7 +14921,8 @@ def run_serve(args: argparse.Namespace) -> int:
             raise RuntimeProfileError(
                 "stage179_no_submit_prewarm_profile_invalid"
             )
-        return _serve_stage179_no_submit_prewarm(runtime)
+        return (_serve_stage179_no_submit_prewarm(runtime) if stop_requested is None else
+                _serve_stage179_no_submit_prewarm(runtime, stop_requested=stop_requested))
     if not str(args.target_date).strip():
         raise RuntimeProfileError("stage179_serve_requires_target_date")
     permitted_submit_profiles = {
@@ -14297,8 +15007,14 @@ def run_serve(args: argparse.Namespace) -> int:
     def request_stop(_signum: int, _frame: Any) -> None:
         stop.set()
 
+    def build_backend():
+        backend = _build_stage179_warm_ctp_session(args, runtime, paths, **weekly_provider_kwargs)
+        if backend_observer is not None:
+            backend_observer(backend)
+        return backend
+
     try:
-        for signum in (signal.SIGINT, signal.SIGTERM):
+        for signum in (() if stop_requested is not None else (signal.SIGINT, signal.SIGTERM)):
             previous_handlers[signum] = signal.getsignal(signum)
             signal.signal(signum, request_stop)
         return serve_executor(
@@ -14311,13 +15027,9 @@ def run_serve(args: argparse.Namespace) -> int:
                     int(args.close_retry_after_cancel_seconds),
                 ),
             ),
-            backend_factory=lambda: _build_stage179_warm_ctp_session(
-                args,
-                runtime,
-                paths,
-            ),
+            backend_factory=build_backend,
             runtime=runtime,
-            stop_requested=stop.is_set,
+            stop_requested=lambda: stop.is_set() or (stop_requested is not None and stop_requested()),
             poll_seconds=build_phase_d_config().hard_limits.executor_spool_poll_seconds,
             readiness_heartbeat_seconds=(
                 build_phase_d_config().hard_limits.readiness_heartbeat_seconds

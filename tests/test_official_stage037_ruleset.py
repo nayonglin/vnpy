@@ -10,12 +10,16 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import qmt_roll_candidate_stage037_short_mirror_block_config as candidate_cfg
-import qmt_roll_official_live_config as live_cfg
+from weekly19_legacy_c9_fixture import load_historical_c9_config
+live_cfg = load_historical_c9_config()
 import qmt_roll_official_stage021_q_ruleset_config as stage021_q_cfg
 import qmt_roll_official_stage037_ruleset_config as stage037_cfg
 
 
-def test_formal_stage037_ruleset_equals_frozen_research_candidate() -> None:
+def test_historical_c9_stage037_ruleset_equals_frozen_research_candidate(monkeypatch) -> None:
+    import qmt_roll_candidate_stage027_target_contract_history_config as historical_candidate
+    monkeypatch.setattr(historical_candidate.stage847_c9_cfg, "build_official_candidate_stage847_c9_overrides",
+                        live_cfg.stage847_c9_cfg.build_official_candidate_stage847_c9_overrides)
     formal = live_cfg.build_official_live_strategy_overrides()
     candidate = candidate_cfg.build_candidate_overrides()
 
@@ -47,7 +51,7 @@ def test_formal_stage037_ruleset_equals_frozen_research_candidate() -> None:
     assert stage037_cfg.PREVIOUS_RULESET_VERSION == stage021_q_cfg.RULESET_VERSION
 
 
-def test_formal_stage037_delta_is_exactly_thirteen_fields_over_q() -> None:
+def test_historical_c9_stage037_delta_is_exactly_thirteen_fields_over_q() -> None:
     stage847 = live_cfg.stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
     q = stage021_q_cfg.apply_stage021_q_ruleset(stage847)
     stage037 = stage037_cfg.apply_stage037_ruleset(stage847)

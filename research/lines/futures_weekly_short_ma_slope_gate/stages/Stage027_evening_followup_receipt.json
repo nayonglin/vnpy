@@ -1,0 +1,22 @@
+{
+  "schema": "Stage027.same-chat-evening-followup-receipt.v1",
+  "recorded_at_utc": "2026-11-02T09:17:55.127591+00:00",
+  "created_via": "mcp__codex_app.automation_update",
+  "view_called": true,
+  "local_configuration_verified": true,
+  "automation_id": "19",
+  "kind": "heartbeat",
+  "status": "ACTIVE",
+  "name": "19品种正式切换：夜盘一次跟进",
+  "target_thread_id": "01a1877c-6120-7550-aef1-630a3b75ba9b",
+  "target_local_time": "2026-11-02T21:00:00+08:00",
+  "recurrence": "FREQ=DAILY;BYHOUR=21;BYMINUTE=0;BYSECOND=0;COUNT=1",
+  "one_time_count": 1,
+  "created_at_epoch_ms": 1793611024566,
+  "configuration_path": "/Users/mac/.codex/automations/19/automation.toml",
+  "configuration_sha256": "e1d5f52fb0bf49fa2dac1541b9b56f7877fefc51eb25e8b63e544966b801ef31",
+  "prompt_sha256": "4e40b9991f04d367d2324c1715d12158c7b8b4e62f3842af0c3c6ee075179ca7",
+  "production_jobs_added": 0,
+  "orders_or_emails_sent": 0,
+  "purpose": "当晚一次接续已授权安装；先取真实证据，失败不激活；完成/失败后停用或删除本跟进。"
+}

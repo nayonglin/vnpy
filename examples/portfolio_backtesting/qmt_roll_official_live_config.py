@@ -6,6 +6,7 @@ from typing import Any
 
 import qmt_roll_official_candidate_stage847_c9_config as stage847_c9_cfg
 import qmt_roll_official_stage037_ruleset_config as stage037_ruleset_cfg
+import qmt_roll_weekly19_official_config as weekly19_cfg
 from qmt_roll_official_ai_pool_policy import (
     OFFICIAL_AI_FIXED_PRODUCT,
     OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
@@ -35,52 +36,32 @@ from qmt_roll_official_live_phase_d_config import (
 
 
 OUTPUT_DIR: Path = DATA_ASSET_DIR
-OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage847/Stage928 + Stage037 + Stage061-Top10+fu"
+OFFICIAL_LIVE_SOURCE_STAGE: str = "Stage014 C_R150 / weekly19 external reserve"
 OFFICIAL_LIVE_FAMILY_VERSION: str = (
-    "stage819_c9_intraday_stop_retry_stage037_ai_top10_plus_fu"
+    "weekly19_base_no_addon_short_bottom20_external_reserve"
 )
 OFFICIAL_LIVE_RULESET_VERSION: str = (
-    "stage037_stage034_long_short_mirror_hard_block_v1"
+    "stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1"
 )
-OFFICIAL_LIVE_AI_POOL_POLICY_VERSION: str = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
+OFFICIAL_LIVE_AI_POOL_POLICY_VERSION: str = "disabled_fixed19"
 OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION: str = (
     stage037_ruleset_cfg.PREVIOUS_RULESET_VERSION
 )
-OFFICIAL_LIVE_BASE_PROFILE_NAME: str = stage847_c9_cfg.OFFICIAL_CANDIDATE_STAGE847_C9_PROFILE_NAME
-OFFICIAL_LIVE_PROFILE_NAME: str = "stage847_c9_15w_stage819_05r_stop_retry_live"
-OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_30w_stage819_05r_stop_retry_once"
-OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "stage847_c9_30w_stage819_05r_stop_retry_live"
+OFFICIAL_LIVE_BASE_PROFILE_NAME: str = weekly19_cfg.PROFILE_NAME
+OFFICIAL_LIVE_PROFILE_NAME: str = weekly19_cfg.PROFILE_NAME
+OFFICIAL_LIVE_PREVIOUS_VERSION: str = "official_live_stage847_c9_15w_stage819_05r_stop_retry_once"
+OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME: str = "c9-15w"
 OFFICIAL_LIVE_ROLE: str = (
-    "official_live_deployment_profile_operator_promoted_stage037_ai_top10_plus_fu"
+    "operator_requested_weekly19_replacement_qualification_required"
 )
 OFFICIAL_LIVE_CAPITAL: float = 150_000.0
 OFFICIAL_LIVE_CAPITAL_LABEL: str = "15w"
 
 OFFICIAL_LIVE_AI_POOL_POLICY: dict[str, Any] = {
-    "strategy": OFFICIAL_AI_PRODUCT_POOL_STRATEGY,
-    "ranked_product_count": OFFICIAL_AI_RANKED_PRODUCT_COUNT,
-    "ranked_product_rank_min": 1,
-    "ranked_product_rank_max": OFFICIAL_AI_RANKED_PRODUCT_COUNT,
-    "fixed_product": OFFICIAL_AI_FIXED_PRODUCT,
-    "fixed_product_rank": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
-    "total_product_count": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
-    "top_n": OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
-    "source_stage": "Stage061",
-    "source_commit": "6750783fe7aab92e6dbdd6820fa212e2e53ea353",
-    "source_eligibility_sha256": (
-        "cf3cced22a61b354dadbc2f67091143eec74d7a2f03577faf2fd4c10dcec0c0d"
-    ),
-    "natural_promotion_permitted": False,
-    "operator_override": True,
-    "hard_failures": [
-        "stage061_fullperiod_slippage_ratio_130.36pct_gt_105pct_gate",
-        "stage063_fixed_multicycle_hard_fail",
-        "stage064_random_windows_drawdown_cost_broker_hard_fail",
-    ],
+    "strategy": "disabled_fixed19", "enabled": False, "total_product_count": 19,
 }
-
-if OFFICIAL_LIVE_RULESET_VERSION != stage037_ruleset_cfg.RULESET_VERSION:
-    raise RuntimeError("official_stage037_ruleset_identity_drift")
+if OFFICIAL_LIVE_RULESET_VERSION != weekly19_cfg.RULESET_VERSION:
+    raise RuntimeError("official_weekly19_ruleset_identity_drift")
 
 LEGACY_STAGE78_VERSION: str = "official_stage78_1_defensive_50w_no_sizing_cap"
 LEGACY_STAGE78_STATUS: str = "research_baseline_only_not_live_default"
@@ -109,8 +90,8 @@ OFFICIAL_CANDIDATE_STAGE813_VERSION: str = (
 )
 OFFICIAL_CANDIDATE_STAGE813_STATUS: str = "official_candidate_not_live_default"
 OFFICIAL_CANDIDATE_STAGE813_CONFIG_MODULE: str = "qmt_roll_official_candidate_stage813_config"
-OFFICIAL_CANDIDATE_PRIMARY_VERSION: str = OFFICIAL_CANDIDATE_STAGE847_C9_VERSION
-OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE: str = OFFICIAL_CANDIDATE_STAGE847_C9_CONFIG_MODULE
+OFFICIAL_CANDIDATE_PRIMARY_VERSION: str = weekly19_cfg.STRATEGY_VERSION
+OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE: str = "qmt_roll_weekly19_official_config"
 OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
     OFFICIAL_CANDIDATE_STAGE847_C9_VERSION: {
         "alias": "Stage847-C9-30w-Stage819-0.5RStopRetry",
@@ -195,6 +176,15 @@ OFFICIAL_CANDIDATE_VERSIONS: dict[str, dict[str, Any]] = {
     },
 }
 
+# Legacy catalog remains readable, but has no current formal default role.
+for _legacy_candidate in OFFICIAL_CANDIDATE_VERSIONS.values():
+    _legacy_candidate["live_default"] = False
+OFFICIAL_CANDIDATE_VERSIONS[weekly19_cfg.STRATEGY_VERSION] = {
+    "alias": OFFICIAL_LIVE_ALIAS, "source_stage": "Stage014 C_R150",
+    "status": "source_candidate_pending_qualification", "live_default": True,
+    "config_module": "qmt_roll_weekly19_official_config", "dedicated_runtime_required": True,
+}
+
 OFFICIAL_LIVE_STAGE659_MODEL_TAG: str = OFFICIAL_LIVE_STAGE901_MODEL_TAG
 OFFICIAL_LIVE_STAGE659_PREFIX: str = OFFICIAL_LIVE_STAGE901_PREFIX
 OFFICIAL_LIVE_SIGNAL_PLAN_PATH: Path = (
@@ -215,40 +205,21 @@ OFFICIAL_LIVE_REPORT_PATH: Path = (
 )
 
 OFFICIAL_LIVE_EXECUTION_POLICY: dict[str, Any] = {
+    **weekly19_cfg.EXECUTION_POLICY,
     "default_profile": OFFICIAL_LIVE_VERSION,
-    "capital": OFFICIAL_LIVE_CAPITAL,
     "previous_live_default": OFFICIAL_LIVE_PREVIOUS_VERSION,
-    "legacy_stage372_live_default": LEGACY_STAGE372_LIVE_VERSION,
-    "shadow_runner": "examples/portfolio_backtesting/analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow.py",
-    "normal_signal_source": str(OFFICIAL_LIVE_SIGNAL_PLAN_PATH),
-    "position_source": str(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH),
-    "legacy_stage78_status": LEGACY_STAGE78_STATUS,
-    "must_not_fallback_to_stage78_for_live": True,
+    "shadow_runner": "examples/portfolio_backtesting/run_qmt_roll_weekly19_live.py",
     "operator_override_risk_acceptance": (
-        "Stage037 was promoted by explicit operator request despite Stage048 multi-cycle "
-        "and Stage049 Monte Carlo hard failures. It preserves the C9/15w control plane "
-        "and Stage021-Q risk rules, then uses target-contract-only rollover history, a "
-        "five-session rollover delay, and symmetric long/short range-stall or ordered-"
-        "drawdown hard entry filters. Top10+fixed-fu is also an explicit operator "
-        "override: Stage061 failed the frozen 105% slippage gate at 130.36%, and "
-        "Stage063/064 retained fixed/random multicycle hard failures. Runtime execution "
-        "remains fail-closed; these failures are preserved rather than rewritten as pass."
+        "Operator requested full Stage014 C_R150 replacement. The frozen natural "
+        "NO_PROMOTION verdict, reserve exhaustion, drawdown, model-margin and data "
+        "limitations remain preserved. This config is not activation evidence."
     ),
-    "order_discipline": "fresh_readonly -> dry_run -> explicit_operator_approval -> 1lot_smoke_or_live_submit_gate -> TCA/reconcile",
     "real_submit_default": PHASE_D_LIVE_REAL_POLICY_ENABLED_VALUE,
 }
 
 
 def build_official_live_strategy_overrides() -> dict[str, Any]:
-    overrides = stage037_ruleset_cfg.apply_stage037_ruleset(
-        stage847_c9_cfg.build_official_candidate_stage847_c9_overrides()
-    )
-    overrides["account_capital"] = OFFICIAL_LIVE_CAPITAL
-    overrides["c3_capital"] = OFFICIAL_LIVE_CAPITAL
-    overrides["enable_ai_product_pool_filter"] = True
-    overrides["ai_product_pool_eligibility_path"] = str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH)
-    overrides["ai_product_pool_strategy"] = OFFICIAL_AI_PRODUCT_POOL_STRATEGY
-    return overrides
+    return weekly19_cfg.build_weekly19_strategy_overrides()
 
 
 class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
@@ -275,7 +246,7 @@ class _LazyOfficialLiveStrategyOverrides(Mapping[str, Any]):
 
 OFFICIAL_LIVE_STRATEGY_OVERRIDES: Mapping[str, Any] = _LazyOfficialLiveStrategyOverrides()
 
-OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
+LEGACY_C9_REFERENCE_METRICS: dict[str, dict[str, float]] = {
     "stage061_top10_plus_fu_full_20180102_20260828_operator_override": {
         "end_equity": 21_870_488.80,
         "total_return_pct": 14_480.3259,
@@ -370,59 +341,22 @@ OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {
 }
 
 
+OFFICIAL_LIVE_REFERENCE_METRICS: dict[str, dict[str, float]] = {}
+
 def build_official_live_manifest() -> dict[str, Any]:
+    from qmt_roll_official_live_lightweight_context import OFFICIAL_LIVE_MATERIAL_IS_ACTIVE_WEEKLY19
     return {
-        "alias": OFFICIAL_LIVE_ALIAS,
-        "version": OFFICIAL_LIVE_VERSION,
-        "family_version": OFFICIAL_LIVE_FAMILY_VERSION,
-        "ruleset_version": OFFICIAL_LIVE_RULESET_VERSION,
-        "ai_pool_policy_version": OFFICIAL_LIVE_AI_POOL_POLICY_VERSION,
+        **weekly19_cfg.build_weekly19_policy_manifest(),
+        "alias": OFFICIAL_LIVE_ALIAS, "version": OFFICIAL_LIVE_VERSION,
+        "profile_name": OFFICIAL_LIVE_PROFILE_NAME, "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
         "material_strategy_version": OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION,
-        "previous_ruleset_version": OFFICIAL_LIVE_PREVIOUS_RULESET_VERSION,
-        "source_stage": OFFICIAL_LIVE_SOURCE_STAGE,
-        "profile_name": OFFICIAL_LIVE_PROFILE_NAME,
-        "base_profile_name": OFFICIAL_LIVE_BASE_PROFILE_NAME,
-        "previous_version": OFFICIAL_LIVE_PREVIOUS_VERSION,
-        "previous_profile_name": OFFICIAL_LIVE_PREVIOUS_PROFILE_NAME,
-        "role": OFFICIAL_LIVE_ROLE,
-        "capital": OFFICIAL_LIVE_CAPITAL,
-        "capital_label": OFFICIAL_LIVE_CAPITAL_LABEL,
-        "ai_eligibility_path": str(OFFICIAL_LIVE_AI_ELIGIBILITY_PATH),
-        "ai_eligibility_logical_path": OFFICIAL_LIVE_AI_LOGICAL_PATH,
-        "ai_pool_policy": OFFICIAL_LIVE_AI_POOL_POLICY,
         "material_release_id": OFFICIAL_LIVE_MATERIAL_RELEASE_ID,
         "material_release_commit": OFFICIAL_LIVE_MATERIAL_RELEASE_COMMIT,
         "material_manifest_sha256": OFFICIAL_LIVE_MATERIAL_MANIFEST_SHA256,
-        "summary_path": str(OFFICIAL_LIVE_SUMMARY_PATH),
-        "signal_plan_path": str(OFFICIAL_LIVE_SIGNAL_PLAN_PATH),
-        "current_positions_path": str(OFFICIAL_LIVE_CURRENT_POSITIONS_PATH),
-        "pending_orders_path": str(OFFICIAL_LIVE_PENDING_ORDERS_PATH),
-        "report_path": str(OFFICIAL_LIVE_REPORT_PATH),
+        "material_ready": OFFICIAL_LIVE_MATERIAL_IS_ACTIVE_WEEKLY19,
+        "ai_pool_policy": OFFICIAL_LIVE_AI_POOL_POLICY,
+        "strategy_overrides": dict(OFFICIAL_LIVE_STRATEGY_OVERRIDES),
         "execution_policy": OFFICIAL_LIVE_EXECUTION_POLICY,
-        "strategy_overrides": OFFICIAL_LIVE_STRATEGY_OVERRIDES,
-        "reference_metrics": OFFICIAL_LIVE_REFERENCE_METRICS,
-        "primary_official_candidate": {
-            "version": OFFICIAL_CANDIDATE_PRIMARY_VERSION,
-            "config_module": OFFICIAL_CANDIDATE_PRIMARY_CONFIG_MODULE,
-            "live_default": bool(
-                OFFICIAL_CANDIDATE_VERSIONS.get(OFFICIAL_CANDIDATE_PRIMARY_VERSION, {}).get("live_default", False)
-            ),
-        },
-        "official_candidates": OFFICIAL_CANDIDATE_VERSIONS,
-        "legacy_stage78": {
-            "version": LEGACY_STAGE78_VERSION,
-            "status": LEGACY_STAGE78_STATUS,
-        },
-        "legacy_stage372_live": {
-            "version": LEGACY_STAGE372_LIVE_VERSION,
-            "status": LEGACY_STAGE372_LIVE_STATUS,
-            "profile_name": LEGACY_STAGE372_LIVE_PROFILE_NAME,
-        },
-        "legacy_stage847_c9_30w_live": {
-            "version": LEGACY_STAGE847_C9_30W_LIVE_VERSION,
-            "status": LEGACY_STAGE847_C9_30W_LIVE_STATUS,
-            "profile_name": LEGACY_STAGE847_C9_30W_PROFILE_NAME,
-        },
     }
 
 
@@ -439,6 +373,17 @@ def _float_or_default(value: Any, default: float) -> float:
 
 
 def build_official_live_risk_snapshot(summary: dict[str, Any]) -> dict[str, Any]:
+    if OFFICIAL_LIVE_PROFILE_NAME == weekly19_cfg.PROFILE_NAME:
+        # The old research-summary risk adapter is not a live weekly19 account
+        # source. Real weekly execution uses its typed cash/broker/risk gate.
+        return {
+            "risk_level": "review", "allow_shadow_record": 1,
+            "allow_real_new_orders": 0,
+            "reasons": ["weekly19_requires_typed_live_broker_cash_and_risk_evidence"],
+            "source_snapshot_known": False,
+            "drawdown_pct_abs": None, "daily_loss_cash": None,
+            "net_pnl": None, "balance": None, "execution_adverse_cash": None,
+        }
     variant = summary.get("current_variant", {}) or {}
     deployable = int(_float_or_default(variant.get("deployable_pass"), 0.0)) == 1
     days_over_100 = int(_float_or_default(variant.get("days_over_100pct"), 0.0))

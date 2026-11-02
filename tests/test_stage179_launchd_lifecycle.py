@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import pwd
 import signal
 import subprocess
 import sys
@@ -114,7 +115,10 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
                 name,
             )
             self.assertEqual(
-                "/Users/bytedance/Desktop/person/vnpy_production_live",
+                str(
+                    Path(pwd.getpwuid(os.getuid()).pw_dir)
+                    / "Desktop/person/vnpy_production_live"
+                ),
                 payload["WorkingDirectory"],
                 name,
             )
@@ -150,8 +154,8 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             item["Hour"] * 60 + item["Minute"]
             for item in monthly_retry["StartCalendarInterval"]
         }
-        self.assertEqual({16 * 60 + 35}, precompute_minutes)
-        self.assertEqual({16 * 60 + 55}, report_minutes)
+        self.assertEqual({15 * 60 + 10}, precompute_minutes)
+        self.assertEqual({15 * 60 + 30}, report_minutes)
         self.assertEqual({18 * 60 + 20}, monthly_retry_minutes)
 
         health = payloads[
@@ -178,7 +182,9 @@ class Stage179LaunchdLifecycleTest(unittest.TestCase):
             "local.qmt-roll.official-live.15w.c9-production-live-monthly-ai-pool.plist",
             "local.qmt-roll.official-live.15w.c9-production-live-health.plist",
         )
-        expected_root = "/Users/bytedance/Desktop/person/vnpy_production_live"
+        expected_root = str(
+            Path(pwd.getpwuid(os.getuid()).pw_dir) / "Desktop/person/vnpy_production_live"
+        )
         payloads = [_plist(name) for name in names]
         self.assertEqual(7, len({payload["Label"] for payload in payloads}))
         self.assertEqual(

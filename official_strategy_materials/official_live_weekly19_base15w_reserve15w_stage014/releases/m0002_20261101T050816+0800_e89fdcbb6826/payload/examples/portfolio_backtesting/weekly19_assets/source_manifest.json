@@ -1,0 +1,1192 @@
+{
+  "external_module_sources": {
+    "vnpy_portfoliostrategy.template": {
+      "method_asts_identical": true,
+      "original_vendor_sha256": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a",
+      "sha256": "62a1e0b8a8c1d05efc6488fab7b6e00cac374b03d5b123b0da7b889dff61131a"
+    }
+  },
+  "external_sources": {
+    "qmt_backtest_runtime_guard": {
+      "sha256": "d0153d9fee1e1b91b8be553966b73c1713748e546c82a4206da612d78b1cf7eb",
+      "source_path": "examples/portfolio_backtesting/qmt_backtest_runtime_guard.py"
+    }
+  },
+  "files": {
+    "base772.py": {
+      "copy_sha256": "a6b797e0b450cd8ab652b6d47cf6c3db1a4aa43ada92b267d57d33bf63e47407",
+      "extraction": "complete_original_class_and_required_globals",
+      "methods": {
+        "QmtRollPortfolioStrategyExactAm": "83fcc79946e52680951e294c17698186ecea29bd9bccab48f90fb0aad05c9c97",
+        "QmtRollPortfolioStrategyExactAm.__init__": "1f78ab2df8ff3888a8dfa1a85ea75c091c4c65865149a3db77341ce2289a4bec"
+      },
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py",
+      "source_sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5"
+    },
+    "base804.py": {
+      "copy_sha256": "e936325aefb65e4ea9708f748cb2a2bac21e8895d691921b9ab6a13b5b690496",
+      "extraction": "complete_original_class_and_required_globals",
+      "methods": {
+        "QmtRollPortfolioStrategyLongTighterInitialStop": "2c2445ae5992c49ff5f658c32b876dcebfeffff627405c25ee988eeb8c21719f",
+        "QmtRollPortfolioStrategyLongTighterInitialStop._entry_stop_price": "d47c452ba086383aae472466a72e8562eeb483200bbd3e5382b46ac3b8aa179b"
+      },
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py",
+      "source_sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57"
+    },
+    "base827.py": {
+      "copy_sha256": "c83ce04c5c5d7ae34708ece135501b4cb3c342914be2d07b483c0142cbb0f615",
+      "extraction": "complete_original_class_and_required_globals",
+      "methods": {
+        "QmtRollPortfolioStrategyStage827C2": "7b3c3042aea3d319dede91bc58fa824f957c4a1507ecdbf0c2cc478b3b089e68",
+        "QmtRollPortfolioStrategyStage827C2.__init__": "1e7aeee532eb98c9c3695155ee82ee7d44048246ac514d3438afec43a70a521d",
+        "QmtRollPortfolioStrategyStage827C2._stage827_finalize_intraday_action": "e9fb427be306257b75266cabccb16885ef44ac06af631e8b28914a355bb63621",
+        "QmtRollPortfolioStrategyStage827C2._stage827_layer_identity": "d3c42278e775b53660cd5b77d16f8abdfdd90a4a78e9b0db698e47c781dff55a",
+        "QmtRollPortfolioStrategyStage827C2._sync_entry_risk_diagnostic": "7fb5b5955a9fcbeae11431ccb2b6a74b3935957fe7cb25b9ee98298f36e41312",
+        "QmtRollPortfolioStrategyStage827C2._sync_open_trade": "a9ab0e28731816b5fccaa7842908c99df1518c4d82a19775fd204db28c27375e",
+        "QmtRollPortfolioStrategyStage827C2.stage827_intraday_exit_after_open_trade": "cea2ba219eaf5976f0b190ba15873b1ab0e7cad53589346bfe90bd9370879a9e"
+      },
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py",
+      "source_sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2"
+    },
+    "base830.py": {
+      "copy_sha256": "bca3da8b868c4dc0692942bf87955b8faeb3974c13b5feae1eed397311294683",
+      "extraction": "complete_original_class_and_required_globals",
+      "methods": {
+        "QmtRollPortfolioStrategyStage830C2Broker10MarginCap": "cc3b973b182eba1474e5c3048cc8e8393fe4aade026c8d1b74164f21739265df",
+        "QmtRollPortfolioStrategyStage830C2Broker10MarginCap.__init__": "7595c32058ab1f45cca75a02d259c2d20abc9afbe29ec9fd74c02469008cc500",
+        "QmtRollPortfolioStrategyStage830C2Broker10MarginCap._calculate_entry_sizing": "76024323d415e8db8a701a1566b30ca7bf0e13e67fad62120b73622262933a02"
+      },
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py",
+      "source_sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647"
+    },
+    "base847.py": {
+      "copy_sha256": "81be848e2015893269119d441a1620f3d1fccc27be215e74dc4a2dd4e0bf45d7",
+      "extraction": "complete_original_class_and_required_globals",
+      "methods": {
+        "QmtRollPortfolioStrategyStage847C9StopRetry": "71038e32727cd54a43fd618272a20a85f635429080a9f4b4205e8370b4c2286d",
+        "QmtRollPortfolioStrategyStage847C9StopRetry.__init__": "6c8c0093fdbc8e437a8a79694b144e8d2e9f688662e1e7dcfcef3bed130d4125",
+        "QmtRollPortfolioStrategyStage847C9StopRetry._stage847_stop_retry_event_after_open_trade": "ea12cc5a2eb9a6b84578f306f2284f0d50accec3e8c4512b5c85558a9aab5aee",
+        "QmtRollPortfolioStrategyStage847C9StopRetry.stage827_intraday_exit_after_open_trade": "764a7478403945e9c946885622c34df4928ffb622ac6c49adf1ee3b2f3fe4afe"
+      },
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py",
+      "source_sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64"
+    },
+    "build_qmt_roll_ai_candidate_selection_pairwise_samples.py": {
+      "copy_sha256": "a3ac1cdc5b70afbda71318f1b1e4bc562c1e6440af6f86c0c7ddc50ee8f9884e",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_candidate_rank_tuple": "64694bc189c4695251b62f472aaed8956f5f0bafa90dcdd862161b00fb29578d",
+        "_delta": "b168adc993aae3fd709da8f335cf5f7a6e6507807706c397fd71ab8a5a16c14d",
+        "_safe_float": "6c3f815088781c8a88817ecfa68d0d20a78130c1fc27239503911dabddf095c4",
+        "build_pair_row": "96b9d52b5562327280ce3e620e53ac15b8178fc94b3e369b8b93abd9881445aa",
+        "build_pairwise_samples": "be09a8ba16aa83528597cf0defd682a5087588eadc82f06d4f03240d7b75ddf1",
+        "build_schema": "a303a2f6925dd3436826b80c848d2cc61b43b5be287b62b5526f38f1f62fe6b1",
+        "choose_left_right": "fffa2d72b9ed10e37d7aae537993eb36f6888e073ec725a731c8caddcede7e73",
+        "compute_pair_label": "6e04706821cd5285265366ab9eee627b5dab415a64d697c6dd594641ab20c757",
+        "filter_rerankable_pool": "dc126acf7875a97d6e8987235b9dac353171f99a5c615c39e1e3b193d176c8a4",
+        "load_samples": "cd8a9e3f96c6e999e8803fe7dbed2477311445a1ffa8e00d825e338e4ab13c5e",
+        "main": "1d2aed6359205f0687e1c4e6fb22a6e2ab2280090f04c1601d39dbfeff193414"
+      },
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py",
+      "source_sha256": "0b13e6797606a9f0206168493cb0a2c26dc924818c1a2f9a420036db8797b5d1"
+    },
+    "build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py": {
+      "copy_sha256": "50f832f02e6da13f24f8c6f379b449c2e992bc45537e9b383849a91a6e173b60",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_absolute_tail": "04ab5d6967dd7ba06c3214c997cbb72ee227f23a2fd63d2344cffbd6352b7daa",
+        "_clip01": "f91e8193b98b4b0723fef32e0bb6e17482b2c8a3397b822524c570b3c78ba203",
+        "_positive_tail": "a7a7470451b98cff75ada7b064f33c5653a59419bb5efb70ac9b85fd8812f885",
+        "build_pair_row_v2": "d2724b3396ac65aab8b320893c52fccd32f0ad3e4ba94ed226b887e0289d4970",
+        "build_pairwise_samples_v2": "d0ae55a63984feafd0602e4815b79f7eba060a08c86e3d581dfd8d6407578089",
+        "build_schema": "cac899ff406cc8181ec792b1520153b74145f123097b6c73837117903f95d4d4",
+        "main": "5a5b5b98b5588b87fd01f8e7144183209f5a882c397552fdae3623f59ff09d1b"
+      },
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py",
+      "source_sha256": "22d18f920303279756c79748e518073eba2837511be7b8b0a177ddfa0c87f868"
+    },
+    "build_qmt_roll_ai_candidate_training_samples.py": {
+      "copy_sha256": "6369f1354f10e1fa8201b09436d1fd6fc1d0e65d914bd2eb3c68f2633cc66f5b",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_match_key": "8130675b39032ad634e111b7f64a28ae643f7511a0197f4781836168da6d7544",
+        "_normalize_direction": "463456b973bd5cb704fc0718e4855f228412bdb6cef388c38fc5265a2d503289",
+        "_selection_stage_from_reason": "74997e46176af792d3999c03c86c11d76454e2acedb0fe098d973c0e3dbaf968",
+        "add_candidate_cross_section_feature_columns": "743ead0056926bf7f05b87ad0b8a908857cd1f671fc49379574f09f69b418315",
+        "add_candidate_cross_section_labels": "0ac5f1d52f1e9b1127d552381f3bfc5ec35f3ab7cd734d982d0fbc47001f6fb0",
+        "build_candidate_market_label_row": "4a3a3324577f55401a6d1d28293849e84d95ec2666b8260cd2dfb540a48ff11a",
+        "build_opened_candidate_link_map": "13c09ba870badb72b9fa6758e2c6596e13c9867ef4199eb7046f148ef47fec33",
+        "build_schema": "af76cf5221f08346f904a8d20df7f7b73a303f50a44f1353d73cb49238fbb13d",
+        "build_training_samples": "66deb0c6a62e80a0d07082bfab280716b081e33fe99f228b6a387aab19856fd5",
+        "main": "fbf60cf140d78dccfd51cf45c93053fdc31cf2f511879f64d62926baa08f8005"
+      },
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py",
+      "source_sha256": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4"
+    },
+    "build_qmt_roll_ai_position_training_samples.py": {
+      "copy_sha256": "068e2af198ccc9042ea0c823b60c05f9c62505cb07e757eab2fe286c2eb297ff",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_clip": "d61b69d0bc1e1c559c8c08ada5609c686ee5e384f64c8dfaff718c110eb36937",
+        "_contract_csv_path": "5901a8abdc57ec192511a66a4269acef4b42d51b36ec66f50a88c7d8baf1f905",
+        "_extract_product_symbol": "ea2f50438ec366bc87956e2ed1e620c24a482542cdd776ac01120fd5363003e6",
+        "_locate_entry_index": "62cbbe25b972cc1e1e8fff52019db23841afa1591dcdad70fbc05141f50a3aa7",
+        "_parse_vt_symbol": "d562fe0bdac0d9f48e9b77c623b0fd6c667c657c93dc33339995f07ef963805a",
+        "_position_direction_from_entry_trade": "bebe22de38c68d85aded5b8bb3fc3caa13e37e79e805ba1ba16654516c563de3",
+        "_rolling_zscore": "90105ac0a353080148a22e4e1dd08e8a98e6012f08702cf4e1947f253383475c",
+        "_safe_float": "04b792339afd32ac0d2c4587b2741f6cad90bcb8aa45b8a6eaf7ef7a1e6a0453",
+        "_safe_ratio": "55b1779946cb517e2f2fc87083a45906d1df5111284ad17f28c16d82d180a2b4",
+        "_series_safe_ratio": "09b590c0e4fa2ca0a88681fc01576969e5411a994807fdb6314b4c7002335c53",
+        "_true_range": "87bdd95e0a548ccbfc1c39107825321aef86bd4a3604142a7181126bb0ba4b4d",
+        "add_cross_sectional_relative_columns": "f324d7a6e3cada592800aa58845ffed4064cdc8b19609c6c55754df4d3227450",
+        "build_label_row": "3a617f5609e4f9963963387b9c9f09b346c902be2927ed0a09875324060e4ec7",
+        "build_schema": "a114478462e6866926a602e591786f929d07bb4562866c5eab28fe78caaac66b",
+        "build_training_samples": "61f7d84da160dd657923fc7a102578fae98b9c2c5c8fd2df7fb16b19f6923e59",
+        "extract_market_features": "03ec27379b007df4c54cfee554fc9925b9a7edd5b2c632d682b0311af50953a5",
+        "load_contract_bars": "874cd60de9c225bd1965c348e2e118c1798515d30ca1cc1659c52f980fb03346",
+        "main": "4e665914ea8bd26bf9a270cfa198700c48623791f206a2010ae11cd557b2ae82"
+      },
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py",
+      "source_sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a"
+    },
+    "contract_metadata.py": {
+      "copy_sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_pick_best_row": "ed85fb92c9bc8cb63faf715b7af4c2380e6df1aeaa374ddb9eed018731aa7a18",
+        "build_resolved_metadata": "266696d80c620a9f71adc36c9c08bce6b335963c6702176c4a2bec604c7c3bc6",
+        "load_contract_metadata_df": "43434413db83978f287de5374682813797e9c273d1bb32194eab65b3df4c7101"
+      },
+      "source_path": "examples/portfolio_backtesting/contract_metadata.py",
+      "source_sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70"
+    },
+    "main_contract_mapping.py": {
+      "copy_sha256": "81877c1b6bf5443617d25beb1ce82a2524b73b174a95b87141ee0a4684bb634c",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_load_product_metadata": "5e02839627a2932d9d55763490ae544666ad305f2d2d4d102c2578d0be813e81",
+        "_product_defaults": "035bde7230bd83b3d80306cc7065ee01e93ad46737455549ca469d9ad58651a6",
+        "_resolve_supported_symbols": "7ca5ad0f26106955edbbc3d79b92fda7ec5a88f99963d9be524014f591e0abbf",
+        "build_contract_metadata": "f6ddb07e8add6efbc668999c28720238d912e7309e5529158035b76f1b9ac666",
+        "build_daily_mapping": "5d2231efd1a42dd952031628671c51d755bb6f5d233a55baaa1139b49a6586be",
+        "get_preferred_mapping_path": "4e150ec7fb5ea4c1764d2dd27aa2c5fff96bd57b0b6485feca2d1935d9292286",
+        "load_mapping_df": "a861f56eba07d071b24f7fe1fc63213a4a33c688009eb56677ec179305ad01fb",
+        "load_product_universe_symbols": "1ddf53cb7b9e7eb5d2ed339fbcfcf2c283c9324411c87e3d552f9f81dd006154"
+      },
+      "source_path": "examples/portfolio_backtesting/main_contract_mapping.py",
+      "source_sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503"
+    },
+    "qmt_alignment_portfolio_strategy.py": {
+      "copy_sha256": "70370c8ea1a3fa0b27d3ee7c64331e32a62aeddb91872d171129c6307694b8ed",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "PositionLayer": "1f122a30416bc4b94b84f4951f3edeec73ff25587b3d5f1e58cedf6f76634d34",
+        "QmtAlignmentPortfolioStrategy": "11f15be794556093775f3b5caad275a360ab77ffe900747c09e1234ada669994",
+        "QmtAlignmentPortfolioStrategy.__init__": "b116b8ab586ddf33aa58a91e275db34c4b92ccefa395726807138006d6f1148e",
+        "QmtAlignmentPortfolioStrategy._append_layer": "d00652373d40c665de7cc37f9ec5c6913ad73b6258804ce871b4281be604bacd",
+        "QmtAlignmentPortfolioStrategy._apply_add_position_profit_lock": "ff5b5c0c261b770b0a46f918c9e1a9a5a056ca6400ea7e00e2e30a7783c5db0b",
+        "QmtAlignmentPortfolioStrategy._apply_atr_mid_stop": "7505ab571ebdfa6dfe3c26689bf6ca2d1057049dfaa94388a75484b2c7908836",
+        "QmtAlignmentPortfolioStrategy._apply_state_target": "79b150100d59245dab9efd6537e19a9664506819627239f22a61a61084149999",
+        "QmtAlignmentPortfolioStrategy._bar_date": "1e3a25544000b63e35a1e3d7e1d3c71129f62d9d7513f3269a8e9313412a1cda",
+        "QmtAlignmentPortfolioStrategy._build_history_df": "57a587d8adabc454c3cc350b2215067ab0fcccf2714b675cc4e847769342c99f",
+        "QmtAlignmentPortfolioStrategy._calculate_donchian_add_volume": "c9f92f60fe3f71852ced131be91cfeaf63661d26ed518807e4ea9f4678f1f50d",
+        "QmtAlignmentPortfolioStrategy._calculate_entry_volume": "a96652583acecf37125587322a12d100a25770a658c4c3ed7fcf63519afe96f0",
+        "QmtAlignmentPortfolioStrategy._calculate_macd": "4b3d3ec335f7c019407cb3e41f41f57870cd47dd21fef1c5295fba92dbcddffe",
+        "QmtAlignmentPortfolioStrategy._calculate_regular_add_volume": "b93fdf33fef694b7c90be68c33a1d7a36c8fb08fa2c64b0f7ad5f03307c37588",
+        "QmtAlignmentPortfolioStrategy._can_allocate_margin": "3a3b4c75edc79e5125e5ab7b10235b91d16740fec2b2f06d1029970752b92665",
+        "QmtAlignmentPortfolioStrategy._check_donchian_add_conditions": "9a3c8b7fb68c3ee4e2a2552ed3d63215ac599a1450f52a57c40d7384152416dd",
+        "QmtAlignmentPortfolioStrategy._check_regular_add_conditions": "8290e2a8c8b85e5a47098d99c3fc03f6bacd37dabc3f6e7ab38cb2c434ea81a5",
+        "QmtAlignmentPortfolioStrategy._close_all_layers": "efe64a5808bfe9b3071f9f5aeab1c5c990419264fa5cbc15abd032a6b7eb2085",
+        "QmtAlignmentPortfolioStrategy._close_layers": "3d0c7fc039cd3e356d5a89c0453a74b1e00cdbc8903baacd6fa03e21c064fd36",
+        "QmtAlignmentPortfolioStrategy._cluster_cap_applies": "26f69141e88ac801d002815cde54b48782b80ca149d99e4ba9ca29abadd12733",
+        "QmtAlignmentPortfolioStrategy._count_active_positions": "5c98810bafdf52dd5438d3d04a42520df284853dc79a5721f524194e8bd9cdd0",
+        "QmtAlignmentPortfolioStrategy._count_layers": "0b5c52cc606a6447278ad85fed595175c1cb4f52898a0253a2c413adaaf14d12",
+        "QmtAlignmentPortfolioStrategy._current_streak_multiplier": "82271cecc59548b7ce5bba7d3a79c6df0d3d5a36b114561815fc1ee4563d6534",
+        "QmtAlignmentPortfolioStrategy._entry_stop_price": "24aa6e5a4bd838ea528b202448fb854399d9e2477aec057a224f5ef5b044a22a",
+        "QmtAlignmentPortfolioStrategy._estimate_equity": "9e12c312815eaff63bbfd27d6dd402a6374fd5aefd53421643a6620537ddbe3f",
+        "QmtAlignmentPortfolioStrategy._estimate_margin_usage": "e797c15184dfb2c004e23fdc12a347b60467fda441bb193339bb79034b92c58b",
+        "QmtAlignmentPortfolioStrategy._estimate_margin_usage_by_cluster": "7018a63e633b45d34e21950da26aa06c7c07f306bdfee17ad01e3551ef5b79a7",
+        "QmtAlignmentPortfolioStrategy._execute_donchian_add": "4c16fa30211b8b9661c7218a95b4b23a5d882fbfda51f99689439154dfa839e3",
+        "QmtAlignmentPortfolioStrategy._execute_regular_add": "324e94a3a2de0cf7f180c214e20cc172d841c40a9d030e115053489a1c64c4c1",
+        "QmtAlignmentPortfolioStrategy._generate_signal": "9cca4ca55912ced2ff39cd12ad3bcbfaf79e8669a4efe69061a3f504decf7412",
+        "QmtAlignmentPortfolioStrategy._layer_realized_pnl": "64f87d09a1a1d8b9aaf7e8373efe982462b3a1e9ab169e902f78383cf601ee3b",
+        "QmtAlignmentPortfolioStrategy._limited_available_balance": "186bceb5ead2ea0a0cefae65db83846c14c6b3fc6db5ddbfa55bb4605095223d",
+        "QmtAlignmentPortfolioStrategy._margin_ratio_for_symbol": "71e16cb72bc898ec9f93dbbdc5acd61218013a5c62e0598223eb14cdca722e82",
+        "QmtAlignmentPortfolioStrategy._max_volume_by_cluster_margin_cap": "a64e3d5e3d58d73de06e042a7db363afc92ef7b386124db458618ef86b236363",
+        "QmtAlignmentPortfolioStrategy._open_position": "33165095b54a6bc2272216c705e639c220957fbd12b0cfa10c094188f5eb86bf",
+        "QmtAlignmentPortfolioStrategy._parse_float_list": "edafa332d03a49a742f2f2aa322ea14d661c9ef0fdc08c678983aaa34f37b1ed",
+        "QmtAlignmentPortfolioStrategy._parse_mapping": "6fe1ab5cb5ba0e573d052454305611a95c864a6c2db8404022f17e113a88eb1a",
+        "QmtAlignmentPortfolioStrategy._parse_string_mapping": "fe52c880d5cd61ba9a68a2e8864dac7b8271d58b38930dc6b5959da701dfb970",
+        "QmtAlignmentPortfolioStrategy._process_layer_stops": "b3c20b73e5e49ff71bc39c62e98effd9f258fab3572019cc15c2b7526adcd92f",
+        "QmtAlignmentPortfolioStrategy._product_vt_symbol": "d7ea6a86af0eb607bbb6506747512fadeda07ce3de5eead98ab0344f4aab8570",
+        "QmtAlignmentPortfolioStrategy._profit_lock_price": "f52a36bd9a7f6a81579fd376d0b91484aba78fdee082c1e26c8d87fe490138ac",
+        "QmtAlignmentPortfolioStrategy._reconcile_state_with_position": "2e1cbb54ca0ef4116e407e726c749404d25a5f612e8b55da313851ad7c694998",
+        "QmtAlignmentPortfolioStrategy._refresh_risk_state": "85a919741652230c26d566cb601f101673d93c5b8d2d4e004cb89cb0d5ab9346",
+        "QmtAlignmentPortfolioStrategy._resolve_base_capital": "24c3d4202b2306eb40acfe228c9eaf41472a5a49af196f9aebcb88e800e0c257",
+        "QmtAlignmentPortfolioStrategy._risk_amount_from_ratio": "a506f5849c3cb73281880fb986fd25935d9431474d877589771b5b75cf92ed4a",
+        "QmtAlignmentPortfolioStrategy._risk_cluster_for_symbol": "e07317e688e0fed56207879b9670d5add9b7d4e37d40d32bf459457008734389",
+        "QmtAlignmentPortfolioStrategy._signal_result": "e5f66c30f87f6216cf4281727773389c934678d9547ae308ef3c77a1c61dc4d3",
+        "QmtAlignmentPortfolioStrategy._simple_stop_price": "b27378eacd1865fd6563a9c19faac838c8c707af243f20afa7e1e2c67f3d9e9b",
+        "QmtAlignmentPortfolioStrategy._update_dynamic_stops": "9a5a7e18339fddeda0dd2032584ac18e709d175f39e71944901481e3d338ba44",
+        "QmtAlignmentPortfolioStrategy._update_layer_stop": "5ef0419eadbc5f357f6ad0cde5cf194b2c442bdaae35ae5ef38f6e2fc8cc981e",
+        "QmtAlignmentPortfolioStrategy._update_streak_risk_state": "69d1cb8c74e6227bc314d4f3817d34d56a88a18bf6e4e88798b39962abd6d791",
+        "QmtAlignmentPortfolioStrategy._wick_chop_filter_ok": "a230144115f45641f5488bc7b08ff0fb4c9d7f17f7351cc85ede3b784bac6901",
+        "QmtAlignmentPortfolioStrategy.calculate_price": "e9c5dfb9b856073953af46ff995b8067526273dd9029e81f155fb7dea845e6c5",
+        "QmtAlignmentPortfolioStrategy.on_bars": "d2f6c4c67e186af86840bc2638d7b66f5055c58052a3d727d828e6869e51c3b5",
+        "QmtAlignmentPortfolioStrategy.on_init": "ff69cea30ad43369309cd2ee1961318a7e8ac6b87532bebe56be1362565b75b5",
+        "QmtAlignmentPortfolioStrategy.on_start": "3c4f592f803044d4ef82e3ba7d284ee2169d8da2ff26844053471aa874dc281c",
+        "QmtAlignmentPortfolioStrategy.on_stop": "b5aedcedc055786eaee287e4016f17fc26a055d8d5df9d2119c4ad7f310997e0",
+        "QmtAlignmentPortfolioStrategy.update_trade": "ff48921d5af69f89959f0dec7d2d99972e87526e8627e8639cab4446de5a0968",
+        "SymbolState": "97a198d48f3633c62be455ca8f8904ed6b560b0000e3e6b5b2b2f837c2e1637c",
+        "SymbolState.active_volume": "f4bee6c64d62c026be4ebdb064790d727a2533e85d15bd6d0d7fa1f00fa63aef",
+        "SymbolState.avg_entry_price": "a64264ba42d00aae5378f84df0a722ea915f20a14f4c7b8cf71549c36590d627",
+        "SymbolState.base_volume": "b96aeed137c2edb6812a355eb0beb87296014ead77a1f25a9aa1fa86ba0b07da",
+        "SymbolState.reset": "5b7c1e907111373d1d5181891e300e3ae1b90a7a9a0e0c86721b103fdfef2e9b"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_alignment_portfolio_strategy.py",
+      "source_sha256": "70370c8ea1a3fa0b27d3ee7c64331e32a62aeddb91872d171129c6307694b8ed"
+    },
+    "qmt_roll_ai_candidate_selection_label_v2.py": {
+      "copy_sha256": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_clip01": "699a4dbb70d01315b32b5d84c6a6810e96b8c351d30685fb78d0b77374dbe7a4",
+        "_clip_series": "9c04c3b88a16bf5171133261efb1b14f53a79f889fa9b91cc821eb51ba6b895d",
+        "_excess_positive": "46fc23e24089556ccb05da585422b295ffd6a2ad4b48e366410ecb90f6c3367d",
+        "add_selection_quality_v2_labels": "79ba64db80d4cb2845cd5d47e9216e9f8187e37b611a8d7291559aa9bab63523"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py",
+      "source_sha256": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975"
+    },
+    "qmt_roll_ai_path_damage_runtime.py": {
+      "copy_sha256": "7469d703c05c3518397f2597f3a6a882207116d207473253f85136af49350935",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "PathDamageRuntimeModel": "3e6d3996c34e2a478eb0e1af8df9fbeb2eed3b46ae1f468b56468afcc1c7ef50",
+        "PathDamageRuntimeModel.__init__": "dddc2b77179cd73f0ac28eb2ba253aedd182311ec673ad69d4e9a70c2ae83a92",
+        "PathDamageRuntimeModel.score_candidate_pool": "1073012df8c9066364b9cfd2b98e14b9b5810b40855489c0bbfd07a1a95f7014",
+        "_safe_float": "6c3f815088781c8a88817ecfa68d0d20a78130c1fc27239503911dabddf095c4",
+        "build_path_damage_runtime_feature_row": "a198befb196f7956edac92cef4ab353dc51c8ac4c99d1848a4a7f1f70f0e1e04"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_path_damage_runtime.py",
+      "source_sha256": "441e84b463a25111f659c7c5ab71794fef68cf8e32552af9b6601dac5453d2cc"
+    },
+    "qmt_roll_ai_selection_pairwise_runtime.py": {
+      "copy_sha256": "791c7b4de3cf5d71ee7a9aab9dc0dce3090436f4d413933f5a6c59fcf2a4892a",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "SelectionPairwiseRuntimeModel": "8a17c2ebd60554e0b3c40a0693a3cff7ba0531e9faaabcd397996b44828672e2",
+        "SelectionPairwiseRuntimeModel.__init__": "be3848dfb45600913ba44a5f7d344d8033fe70bd1add2a1b1493b8840ae4a062",
+        "SelectionPairwiseRuntimeModel._apply_catastrophic_veto": "1b88f0836bbf2cd4ab67bf8acf795370328bdb0307d3b6f3e183fd3ce8682236",
+        "SelectionPairwiseRuntimeModel._predict_daily_scores": "4e001bbc66309b0103ba91f18e4b5c178aa9f5988de639430de305a759533393",
+        "SelectionPairwiseRuntimeModel.score_candidate_pool": "2eb2cac7f83d6f5453f27e3fd496e174db2ba92a04d3b976fbb0c3c59a058da4",
+        "_safe_float": "6c3f815088781c8a88817ecfa68d0d20a78130c1fc27239503911dabddf095c4",
+        "build_runtime_feature_row": "3918a85aff16b7878c41b01a652361bc0fc36ec3c304f6ba862434f1d4c09a20"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py",
+      "source_sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494"
+    },
+    "qmt_roll_intraday_execution.py": {
+      "copy_sha256": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "adverse_tick": "443778da3c3a5354212ff4ecf6cf0b29a32f35e4ce176b9933e114cf8d36926c",
+        "effective_pricetick": "f1f0a5774c6e3599dcf10949234fe9a8f006411d89b6ec230478eddfe71d7f44",
+        "entry_session": "ec431d2b597e9eaf84076d6545ce4774bf79397003df01623f36aa8be3a50496",
+        "first_stop": "168810292468ea9d39720b3aeefd715f26355b9094802921384964be35464180",
+        "local_timestamp": "ccf835a7fb683a68bbb13c53bb192c4bc4ccf7ac81293b06f023342063b883fd",
+        "pricetick_basis": "47381f6c0ec82fb1bd60ff4bcf6d6c7e8c88168c2481d834312695ec03294486",
+        "session_minutes": "e08bbb0b259a6d9ce1de16051712656c5e0911bacdbd4e9e8db59a1b576f1cf7",
+        "stop_fill": "429afcaa9a09735719631671cf8fcc055e47b101fe74707a61900bcbbacc31a6"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_intraday_execution.py",
+      "source_sha256": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272"
+    },
+    "qmt_roll_official_ai_pool_policy.py": {
+      "copy_sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_canonical_eval_date": "bf62f0ac080668623acd59526e4c5e1c138d86caf245a2f1a3ece3ccbb9a845a",
+        "_exact_integer": "9cf6c73483ab0268d8df1e4fa99383c127a991a86e2cb92a7cf32bdaa39c58a5",
+        "official_ai_pool_snapshot_blockers": "71dc029331124b682931bba66ffe523dfbea4a6f0b3d55237aab4ae0703d7ec3"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_ai_pool_policy.py",
+      "source_sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5"
+    },
+    "qmt_roll_portfolio_strategy.py": {
+      "copy_sha256": "7e84731ddd27b52430d4cab79b0742e7a7c60ba4daf094bdb1c3421afc1aca57",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "DailyEntryContext": "093120d39a1c82c635a7e79f3e41f39e00fd52d5a6593eb15bd3c16b0c16893e",
+        "PositionLayer": "3b91ccb75e2d720e3cd2e9de0f1d84e54516ad75dd9491520de0d353b4ef97c3",
+        "ProductState": "019ea03d873644f6d70d4fc1993b093c2be8b67061e283e64cefc2002ebc057f",
+        "ProductState.active_volume": "f4bee6c64d62c026be4ebdb064790d727a2533e85d15bd6d0d7fa1f00fa63aef",
+        "ProductState.avg_entry_price": "a64264ba42d00aae5378f84df0a722ea915f20a14f4c7b8cf71549c36590d627",
+        "ProductState.base_volume": "b96aeed137c2edb6812a355eb0beb87296014ead77a1f25a9aa1fa86ba0b07da",
+        "ProductState.reset": "c08d9df6f7fcde38b51f01d738497da20abae6394f9f53eb186a4a597b47d514",
+        "QmtRollPortfolioStrategy": "7d4d0fb836eaf3d1f6636ad9385b55b7e80c25f9cab7a3cd7dd6e9b7067437ad",
+        "QmtRollPortfolioStrategy.__init__": "2405031f3c79a3cf5afcd6b1cbf93325e8f84bd7b5b5acf4d4d0efae2a202ae7",
+        "QmtRollPortfolioStrategy._ai_path_damage_discount_start_timestamp": "de79eceed62b0142768048506a21a8ce93c5dd25b7a60f5fbcfc8bd3bf520f76",
+        "QmtRollPortfolioStrategy._ai_path_damage_discount_weight": "bebcc03f38719e17a1d1356e1c2facf512b5275319f74a2f7a294d0ed4766b59",
+        "QmtRollPortfolioStrategy._ai_product_pool_entry_allowed": "546a5357a8f4904e0f2789a0490ed9dd1bd7af86a211af73b96ff887d5d3eabf",
+        "QmtRollPortfolioStrategy._ai_product_pool_entry_effective_date": "0b606a7812dbbd10b9d3bab89ada3813bda022d9dcc92b14a7c06633d5786424",
+        "QmtRollPortfolioStrategy._ai_product_pool_snapshot": "c4e23aa2324c699967315c192d4f04ae5f9d04c03f912d5743692318feb27820",
+        "QmtRollPortfolioStrategy._allowed_capital": "1480ace7468d7a6b10c822a6443504b2472451eac16a826346f8e648d84e092c",
+        "QmtRollPortfolioStrategy._append_layer": "35b5b3e2c9c2adeb304980580d6fb8dd61c11e376386f5eb4d20d77ab983ade4",
+        "QmtRollPortfolioStrategy._apply_add_position_profit_lock": "d38575fb9d6fa88859f6a4ff27ee02748f00be3204efee7ef1022333c538f5db",
+        "QmtRollPortfolioStrategy._apply_ai_path_damage_risk_discount": "56cdbe7ee7ec2627ddd16f9faf3a3d057e78a61490b702516277db3f54194560",
+        "QmtRollPortfolioStrategy._apply_atr_mid_stop": "455615842ff8a1a89dbf0cc8ec1a5e72cc9fb0bf495af4f640c0225396a3d2d7",
+        "QmtRollPortfolioStrategy._apply_env_gate_to_volume": "f8175661dd16902907a973aaf143be58fc4dfa95ef71d4ca9a790eb7e986001f",
+        "QmtRollPortfolioStrategy._apply_long_signal_atr_shock_to_sizing": "3984a3ab091f32c7218ca6b8607edecd3ca4cebfa9e669d1fb0ae9a85aa8b83e",
+        "QmtRollPortfolioStrategy._apply_long_signal_range_atr_to_sizing": "984dd6a77375028fa755f43d0501138cd61e50f33fb03c473eb9c36809128536",
+        "QmtRollPortfolioStrategy._apply_risk_cluster_heat_gate_to_volume": "f864dc1bfc0f560055e8ff24342073b6da5a7a02a8a8b416e6622b3420c3dd8d",
+        "QmtRollPortfolioStrategy._apply_rollover_released_risk_snapshot": "e3adf287fbf773784ff3f2686ee947d0796192c98c2f61137f580ac46e52cb5f",
+        "QmtRollPortfolioStrategy._apply_same_direction_correlation_gate_to_sizing": "125505c2302016501b3ffc56e924cf92ec0750c55329cc3ec29a1fa92880bf2d",
+        "QmtRollPortfolioStrategy._apply_selection_pairwise_scores": "6346200e82382e968c6514f913296e0cb868d58eced8354d4f54f1ac4a35df63",
+        "QmtRollPortfolioStrategy._apply_selection_pairwise_volume_tilt": "bc702441d4d2e48f7fa8c5c78f4231fe04895a90d8e8bb8978e479ff2d32bc98",
+        "QmtRollPortfolioStrategy._apply_state_target": "66db8b645dc5219a5241b7cff4e32594b905a398208c820bdead6c44d8133ca7",
+        "QmtRollPortfolioStrategy._bar_date": "1e3a25544000b63e35a1e3d7e1d3c71129f62d9d7513f3269a8e9313412a1cda",
+        "QmtRollPortfolioStrategy._bar_from_current_or_engine": "83c77f0279a4b02364867d66b23859b39a3c469ea0abef32932ffc655bbd8228",
+        "QmtRollPortfolioStrategy._build_daily_env_gate_snapshot": "302c71a9b3acba10744c43bb4789eb7365f41ab455575d07db79f863093a76d0",
+        "QmtRollPortfolioStrategy._build_flat_entry_candidate_plan": "6e8bb1186749d373fe7709df3a0bc088d40b380486f5c2e2d4b411d5c0bb2390",
+        "QmtRollPortfolioStrategy._build_history_df": "dd373df64c5766b42687b4b1dd31f4461f68606877fb6c919331ae5b398e439d",
+        "QmtRollPortfolioStrategy._build_observed_array_manager_history": "c7368d61114067073a39e95b982a95d9a0320a996eae6afbcce6b49f8b0baeaf",
+        "QmtRollPortfolioStrategy._build_rollover_shape_history": "8df3723e3499dcef27f126b16e6faf924463a45f8d6b7092a8f49b52f2cb626e",
+        "QmtRollPortfolioStrategy._calculate_directional_boosted_add_sizing": "57bab6c0656b0e750c6c343fe5ed3ac856052e4f2325628537698245c5275b62",
+        "QmtRollPortfolioStrategy._calculate_donchian_add_volume": "965963eace01c943454f006126bf55fc9e302079eb78dd60acab8bda981e372b",
+        "QmtRollPortfolioStrategy._calculate_entry_sizing": "0d383e2d6cdc00cbc6677fe6ee48e59516463eaf8e3ca7313a5b33f85240adcf",
+        "QmtRollPortfolioStrategy._calculate_entry_volume": "8490415452d510dd3628d5fac74b34b00e6e803ab11710f4cc5fe242c119821f",
+        "QmtRollPortfolioStrategy._calculate_macd": "6a27e42d5a6e25633e1dc7f6c54d5cbbe015597a573f7656013241790c078b1b",
+        "QmtRollPortfolioStrategy._calculate_post_entry_quality_add_volume": "8a2193336344387c97e61c746525dfd8faded949dc38253a2dcb53fe575d828f",
+        "QmtRollPortfolioStrategy._calculate_regular_add_volume": "b15a6813ad7fef03b2ca973513481dd559abe502b48181b2b9689d9b08111c01",
+        "QmtRollPortfolioStrategy._can_allocate_margin": "e4c30ef2e2a11b58f6570b8b02ee70fd08e7622a23f6f85f80c511f57b5d7f9c",
+        "QmtRollPortfolioStrategy._can_open_short_signal": "b251f67f427fe87004d36bc31869426edf260305d0640c84845e0ec05ce5352e",
+        "QmtRollPortfolioStrategy._check_donchian_add_conditions": "4e26bd185bdd3bbcc9eda8178e6596cf992c70a4caed9028de96f9e4dd3a0623",
+        "QmtRollPortfolioStrategy._check_post_entry_quality_add_conditions": "19612b43d2c348bf371162ae816d2431aa5871532f872ccea4816ef95b5959f6",
+        "QmtRollPortfolioStrategy._check_regular_add_conditions": "76be46df6023a97c573c732fa0a00f5f5319b177a512ac115583cd7a6991e7cc",
+        "QmtRollPortfolioStrategy._clear_rollover_delay_state": "96921e7cb8385cab6ca5b289548d3d30b6d9e43a16c8325e47fe6e855f22ba71",
+        "QmtRollPortfolioStrategy._clip01": "94de0aa4e2f543a2653bb2951240466103d25dddb0f5fd1078f39c7a843deb01",
+        "QmtRollPortfolioStrategy._close_all_layers": "90bc86ec6269688152c730a78830a0a5927c18b97e2bbf0af813879ef0dfa18f",
+        "QmtRollPortfolioStrategy._close_all_layers_and_set_flat_target": "64d54f8058c0cefd0ab3b1e35ace60ea1ec47a46d93f35fbb1ef4886a67bedd2",
+        "QmtRollPortfolioStrategy._close_layers": "ea0d6cfb1ba35c220d7ba48a741189f0fdabf1d9c73b489dff353c9c67429692",
+        "QmtRollPortfolioStrategy._close_position_when_target_unavailable": "9e074ee3982cb6ce7dca008463d45d2faec2fac9fb5057a2d5fe3c0062d7e1eb",
+        "QmtRollPortfolioStrategy._cluster_cap_applies": "26f69141e88ac801d002815cde54b48782b80ca149d99e4ba9ca29abadd12733",
+        "QmtRollPortfolioStrategy._consume_pending_close_reason": "331de3a714a718e4f2e7580510a232f1d570c772bac9ed570da40d6b978097cb",
+        "QmtRollPortfolioStrategy._count_active_positions": "28d5610e69aa18890cbd9a07f1cf0bcd472683549ec674b4cb854d76aa544485",
+        "QmtRollPortfolioStrategy._count_layers": "ffd962d20e8ff745e102cea0b97e7cad8acdaac8dc5d24824ab69883b7dd1ee3",
+        "QmtRollPortfolioStrategy._current_min_risk_cluster_heat_gate_weight": "5713755c777e504e16156cff3cab6e31e3922e1541c4dfe98ed78bf4e61b0086",
+        "QmtRollPortfolioStrategy._current_streak_multiplier": "82271cecc59548b7ce5bba7d3a79c6df0d3d5a36b114561815fc1ee4563d6534",
+        "QmtRollPortfolioStrategy._directional_30d_risk_boost_snapshot": "3d02d9e880bcd988e0d6144d53354afe461830b8f394ac5954b7672dac861fcb",
+        "QmtRollPortfolioStrategy._directional_edge_close_position": "3b56e312affe7642d62bc0a1a3b32ca42f9162e68c1d011d2797cd5459676b22",
+        "QmtRollPortfolioStrategy._effective_capital_usage_ratio": "01b6c1fad1d3cffced914be64503367729f6a0dbdd00c2c6f125d77b8ac4d0af",
+        "QmtRollPortfolioStrategy._effective_max_concurrent_positions": "57cdbe7de25ee9620dce310aea546cf698a1c6531c91f575b832c81735c802a8",
+        "QmtRollPortfolioStrategy._entry_allowed_today": "94ba5bd0ea9a9c948a32589b0aec13ce61efe67aabd1031ed6f20b8a306db8c1",
+        "QmtRollPortfolioStrategy._entry_stop_price": "d24fd61e76ba9adbf385ac6062b127161ff7de3abd31844aa62d7929a1fac3e2",
+        "QmtRollPortfolioStrategy._entry_structure_recovery_fields": "c3a6d2321323f99e4e827cc4681ffb879204b57d2ae0960614daf822ec820c2f",
+        "QmtRollPortfolioStrategy._estimate_equity": "fb437738b16f6422d2b90e7c59fdb24ea29c02fea5074321bdc8bab59a57b670",
+        "QmtRollPortfolioStrategy._estimate_margin_usage": "56a59e58a522cdf5e03ccb4f24afcd190cc41084090c3c87561242ea46664281",
+        "QmtRollPortfolioStrategy._estimate_margin_usage_by_cluster": "b85fe19396c70faedbd432eee51d3ba26954597ed115d7c960842cfb55d9b316",
+        "QmtRollPortfolioStrategy._estimate_unrealized_pnl_by_cluster": "3122c9fadd3eb4d5d1150dfa09ad6332830aa6ccd5ab0a8a8e0a81e0f58d3893",
+        "QmtRollPortfolioStrategy._evaluate_ma5_angle_reversal_filter": "b6717bada18ede508d2eec422e4a75ed3f2872757f267f78bdece33d2c262dad",
+        "QmtRollPortfolioStrategy._execute_donchian_add": "0a94448755262c0e6167fdac7f7484c34fe58cebe59170392578345391149deb",
+        "QmtRollPortfolioStrategy._execute_post_entry_quality_add": "7d6a4501cfec8b7b27d6ca3953fe4da5e43d82c914164f1896b0ebebe9720fdc",
+        "QmtRollPortfolioStrategy._execute_regular_add": "5b1212dd3ef54ec342a257c2cbce4660584838d19768f02137f7426858cce411",
+        "QmtRollPortfolioStrategy._extract_env_gate_candidate_features": "7b7318e3ec25fa71f9199e732b088165434867e069c53e79808d9a913340f1e6",
+        "QmtRollPortfolioStrategy._failure_memory_micro_sizing_context_applies": "1c62e42d2d3b5c643c6f11fd938b063112bbcafe6fce5e1325d884fd4361dd77",
+        "QmtRollPortfolioStrategy._failure_memory_micro_sizing_context_set": "438452652e0dc07f8e4499147f1fd941df701a9b6c83816f4db9da2bba048172",
+        "QmtRollPortfolioStrategy._failure_memory_micro_sizing_fields": "da9b461fd4053c927fbdecff341ec22be5dc8a8ca4c5b9f3ae32d9f468f7f9c3",
+        "QmtRollPortfolioStrategy._find_state_by_contract": "2f5cd1acd28567c719b1f8893379ed747fa62ffde12350804f1dc550093c8ffb",
+        "QmtRollPortfolioStrategy._forced_margin_deleverage_candidates": "f18fe0ea1eeea60603b7faaeb5ed7102c2feeea7b5ab50cc6db696d61a4f26cf",
+        "QmtRollPortfolioStrategy._free_capital_after_reservations": "47cc1c881644b5c2ddf029bf5de754daa6860cd104447b027680756c169dd386",
+        "QmtRollPortfolioStrategy._generate_signal": "02662ca7a896c7baba5228048c4c81c3e8443557b68b4b5202faf4030a74310c",
+        "QmtRollPortfolioStrategy._get_ma_slope_direction": "ebcd8d7304062db8e03986c0c4225fc1c37f332044cc062a7daf4738aa0bf7e8",
+        "QmtRollPortfolioStrategy._handle_rollover": "d42ecdb59158af43c5a90476a23db33af71e8489684583a9af49c5e3587fd5cc",
+        "QmtRollPortfolioStrategy._history_return_vector": "6bbb512f8880cb75c5450e7695470a5a439dcb31372d47be372f358ca9dd90f1",
+        "QmtRollPortfolioStrategy._incremental_margin_budget_gate_adjust_volume": "9d5c2482c7e6bc82ac10e669fe6e612a3088119acf549fdb36c6f2b7b18725ea",
+        "QmtRollPortfolioStrategy._incremental_margin_budget_gate_allowed_capital": "174e5f2f19364999d2534478a0306038d382f0806f1f7cdd7deb82ec60f11213",
+        "QmtRollPortfolioStrategy._incremental_margin_budget_gate_context_applies": "297527308f133b33e1f91013c3e90caebd6d68fab27e7ea0721be72b8340e9b2",
+        "QmtRollPortfolioStrategy._incremental_margin_budget_gate_fields": "2d38cf8f5ab749339a377fe6b35d40301435e83a2885266b5c96dcd6ef21607a",
+        "QmtRollPortfolioStrategy._is_latest_ma_extreme": "efed7f2cab5f6e96255495f7fac2ef92ee0dec459c23cbfba7182a391e18dcda",
+        "QmtRollPortfolioStrategy._is_native_openable_candidate": "4ce1c48771a98dfcc0663742b55768399d3df055791562d730b79220d7d214cf",
+        "QmtRollPortfolioStrategy._is_simple_ma_trend": "78641537bed06072779e6e650eaf677edaef1c7562d030e54d1e06451e20789c",
+        "QmtRollPortfolioStrategy._layer_realized_pnl": "88d584d41b31a99d48865e563298a2492ee153a2bcf0cec01e75e7fa8afaf0d9",
+        "QmtRollPortfolioStrategy._limited_available_balance": "8c4cba758ea8f4dcf7b9df6ce24c4ea56450271aea1cc9dbc9a9d3eda1524986",
+        "QmtRollPortfolioStrategy._linear_pressure": "0c3389f58738d2378181a68be3779c5638a7d808cc979d1f3f001f4e2dfc6232",
+        "QmtRollPortfolioStrategy._load_ai_product_pool_eligibility": "01b2286d4b6e4b20d4e9a3edb86578484dc39cc57a686f19caa01d218bcced00",
+        "QmtRollPortfolioStrategy._load_ai_product_pool_eligibility.fail": "feba36a85d2b48e0377df6749a9b50d1aa457f519752bf5ce0f5af2f862451eb",
+        "QmtRollPortfolioStrategy._load_supply_demand_signals": "0553b7692afd38c56697027bb9eee94a625e3bba4277779e3476d3687d088c84",
+        "QmtRollPortfolioStrategy._long_signal_atr_shock_snapshot": "ba86e5047a695f28096beebc93c31a5d88f8e245584f67134002d4a10378acd8",
+        "QmtRollPortfolioStrategy._long_signal_range_atr_snapshot": "7c9c191de7eca731b7e935572e451c77b025800a658e8652169e58a05e047006",
+        "QmtRollPortfolioStrategy._margin_ratio_for_symbol": "572c4a5bfec96ed2a615afe807a8ad02c35dc8cf589d4f6f56ca459fc05719e4",
+        "QmtRollPortfolioStrategy._oi_price_confirm_risk_restore_context_applies": "2384ba33dd89c10e2b282a826ef8c5d7323f3015f8fea0f0a4fb6bc3c36dae30",
+        "QmtRollPortfolioStrategy._oi_price_confirm_risk_restore_context_set": "4033f4b4ffd0e0ebc736c9576461fbd936860c150a1181170fe6142bfd6d7484",
+        "QmtRollPortfolioStrategy._oi_price_confirm_risk_restore_fields": "1b37ec4fd67c6f59d4ff25dd51edb7bd96cd6c6b46f8dc8c1d7f3530c32ac57c",
+        "QmtRollPortfolioStrategy._open_interest_risk_mode": "3d59559b3dbd9fc8b84d191e52b2430699c1f16e470a0f27b2140d9c918c4a87",
+        "QmtRollPortfolioStrategy._open_position": "7ce14d07d7d80f2e3b83f9478f03e3dd88037ead3281033044743953c02c823d",
+        "QmtRollPortfolioStrategy._parse_float_list": "edafa332d03a49a742f2f2aa322ea14d661c9ef0fdc08c678983aaa34f37b1ed",
+        "QmtRollPortfolioStrategy._parse_mapping": "6fe1ab5cb5ba0e573d052454305611a95c864a6c2db8404022f17e113a88eb1a",
+        "QmtRollPortfolioStrategy._parse_string_mapping": "fe52c880d5cd61ba9a68a2e8864dac7b8271d58b38930dc6b5959da701dfb970",
+        "QmtRollPortfolioStrategy._parse_symbol_set": "5857daaba6cf23bcdc8d4a0cba4a4c14c4e6e72280eea18cddb62bce8c56458c",
+        "QmtRollPortfolioStrategy._passes_entry_filters": "47818a6ca27c8cc9a0cace3aba30d40d0d6db2edfa54caddcea8177808c7a6c4",
+        "QmtRollPortfolioStrategy._plan_flat_entry_candidates": "75434ab679ab4cb455292905414855ff770b207a6ae20d965660b7b0a21f445b",
+        "QmtRollPortfolioStrategy._portfolio_drawdown_gate_adjust_volume": "6d77ff711cedaa06813491d233be04db81eccdea867fef207b0ae4a48bbbaa86",
+        "QmtRollPortfolioStrategy._portfolio_drawdown_gate_context_applies": "f9e22c888217560b8917f33e5c00b53cefef70574dd0b47a0eaca4c85a7a22c8",
+        "QmtRollPortfolioStrategy._portfolio_drawdown_gate_context_set": "fcc52336328bb87d8deb3bfcb11818dd736139205e5450343c41c66598f3578e",
+        "QmtRollPortfolioStrategy._portfolio_drawdown_gate_weight": "792e7486527d7963ab8688b9b5e5ce1e4f78b95cd285d7b6b5c354954e958b32",
+        "QmtRollPortfolioStrategy._portfolio_drawdown_gate_weight_value": "2de00c32525543d7f14e0eae7c6d0cdf5550c223e36774da8c922cbc3070ed26",
+        "QmtRollPortfolioStrategy._portfolio_env_gate_weight": "cc5ef66b3946c22c8bbbef24df6dee2a632fb27154ab280ecc2fc3375544dad9",
+        "QmtRollPortfolioStrategy._portfolio_margin_deleverage_layer_kind_set": "a002c323a35e172d781b7edfdb85e3ee4766cda303f22ee34512bbebec0689d0",
+        "QmtRollPortfolioStrategy._portfolio_overheat_cooldown_adjust_volume": "aba32410f922cadefe14590c6e2dfa2be2097da8c028a7d9a7423a5351d0d59c",
+        "QmtRollPortfolioStrategy._portfolio_overheat_cooldown_context_applies": "d4ca5cf3a6626c6590852bf096815d52461ad81b5cca557138ef707be5f47482",
+        "QmtRollPortfolioStrategy._portfolio_overheat_cooldown_context_set": "900549e4f3bc764013a2dc07edf792baa95067b31d9a3f2a6c3a50f7345ca5d5",
+        "QmtRollPortfolioStrategy._portfolio_overheat_cooldown_fields": "3578cbdbc729112859882b425b09a413b9f40fe992ca0217370442e9699b5368",
+        "QmtRollPortfolioStrategy._portfolio_overheat_cooldown_scale_value": "abeb0300af9e89b2e2e1c7ad7800fc3ff18581241a7b135e722853702def16df",
+        "QmtRollPortfolioStrategy._portfolio_volatility_budget_adjust_volume": "cdce47c674b5d65f0a2b6cd73806f959ef0d1240d7e3614d41b382310a9167bb",
+        "QmtRollPortfolioStrategy._portfolio_volatility_budget_context_applies": "3ba81e5e161323f6032527c5f228c6b9f052acb3eb2628c6be4335c2f1652c3f",
+        "QmtRollPortfolioStrategy._portfolio_volatility_budget_context_set": "bd7a2e17b2effe09669f3d29cd1646097095ff462ea37bcd377a73edd72239f4",
+        "QmtRollPortfolioStrategy._portfolio_volatility_budget_weight": "73614b21dd8578a91875a6a179d7a6852cbab15fd35ea2c0a3e0f9be9cb525a6",
+        "QmtRollPortfolioStrategy._post_entry_quality_add_window": "c80acd402df38a7c3863967584b79e1522cd88c1f8847b5b1968213b83c444ee",
+        "QmtRollPortfolioStrategy._post_entry_quality_candle_stats": "334a328af2cbeb57241abf57366820fb42debb5150785f86ddd1b8baafea7943",
+        "QmtRollPortfolioStrategy._post_entry_quality_feature_passes": "244e41b1088a434083e809b43668af997eecaec6f9e108aaafd97c6889f36be7",
+        "QmtRollPortfolioStrategy._post_entry_quality_feature_window": "8e873cc324df9ad5940e1599e872779f057ae1bc1145ed28e92a322192c9bc46",
+        "QmtRollPortfolioStrategy._process_forced_margin_deleverage": "1fca7bf4c21eefc30f0aa43667fb0f2f06bf5f9cce0b4a66a247ad2b605d95eb",
+        "QmtRollPortfolioStrategy._process_layer_stops": "9039517736c52881689916eca9e88449590cbb319f0754f8ef95c431448ce526",
+        "QmtRollPortfolioStrategy._process_portfolio_drawdown_deleverage": "d0c9fa8c45ac29d238dce37188e48bdf7fcf91f0cd91fe71eba23858e3049edc",
+        "QmtRollPortfolioStrategy._process_portfolio_margin_deleverage": "4160797cad94251fa638922307d1455730211ca1a52c0cb0c3ad00b3f4c082dc",
+        "QmtRollPortfolioStrategy._process_portfolio_overheat_cooldown_deleverage": "61d0b6f83e8e7e6002c31aabe82477b7690010495110c0acb9f32996ab69f762",
+        "QmtRollPortfolioStrategy._process_portfolio_volatility_budget_deleverage": "db9e2f81a4ffc6a3073d59168964df1041b78567c02897ce407a2461b4dfe583",
+        "QmtRollPortfolioStrategy._process_prev2day_stop": "992ed368ce03d0db2978ec9bfa50795073733356736722308e2ebebb51a840e7",
+        "QmtRollPortfolioStrategy._process_risk_cluster_heat_deleverage": "6f1393e3f39b54814f024714fd657b95e40ad9714ba86286af4a78eb5e3591fa",
+        "QmtRollPortfolioStrategy._process_rsi_partial_exit": "4bc5ae355a43c186c1ef2a0588a26fc88308517bfc9d7c47a99e85744242bffa",
+        "QmtRollPortfolioStrategy._product_direction_failure_cooldown_context_applies": "25c05d4686c3208bcfc89bfff06d9185f52366ade4abf32bf5821ae22bd53fa0",
+        "QmtRollPortfolioStrategy._product_direction_failure_cooldown_context_set": "6b7e8ad0f0c3e9edf51f3505f97bccedd99595797ddc6bb72c2781cfc570e8eb",
+        "QmtRollPortfolioStrategy._product_direction_failure_cooldown_date": "314a9e31fa668d794d34da9bd841657411e917c2f561f05a70a7c467c52b0f6e",
+        "QmtRollPortfolioStrategy._product_direction_failure_cooldown_fields": "3cfd10b30119655800027be5f7b7f7b7392147c5bbd7b62f9dd000dc27242b81",
+        "QmtRollPortfolioStrategy._product_vt_symbol": "d7ea6a86af0eb607bbb6506747512fadeda07ce3de5eead98ab0344f4aab8570",
+        "QmtRollPortfolioStrategy._profit_giveback_stop_price": "744a712861e1cb4f13afc7d04d5da40fa306c54559bd6536538c96db1e449458",
+        "QmtRollPortfolioStrategy._profit_lock_price": "3abcdc056d6c5ca2cb172a6457eaaa6083b048997cf709d96ad0428742e5346d",
+        "QmtRollPortfolioStrategy._profit_lock_thresholds": "281dd2640411f54d338870b8c9516490eba1e23c773fdd296a21274ef495c6e3",
+        "QmtRollPortfolioStrategy._queue_pending_close_lot": "0436c569f83f02780bda4bcaa70f2dae40979077c53f6daaa05d7144ece930df",
+        "QmtRollPortfolioStrategy._queue_pending_close_reason": "d4936c680607ea9f1892369e40dc74d7c3d2ed494cbf6db14a8c6d6f73b40264",
+        "QmtRollPortfolioStrategy._reconcile_state_with_position": "09c558d3ea10e856728c50b9ddb44eb491be652606ca8dedf8d03314d3e71d8a",
+        "QmtRollPortfolioStrategy._record_entry_candidate_snapshot": "4ea752c9101f3990ffbbc163bbc1db7f976ec6dff97e3b17bc065eaffe08cc51",
+        "QmtRollPortfolioStrategy._record_entry_risk_diagnostic": "3d8db6d7aad5149fe9564f00a0108d4f330f5a43419c054c8537312dc1b34eef",
+        "QmtRollPortfolioStrategy._record_portfolio_overheat_cooldown_daily_equity": "12a9c189f4336edc8e1a4c64a180e39539d320128885fbe32daf44e544a7495e",
+        "QmtRollPortfolioStrategy._record_portfolio_overheat_cooldown_scale_snapshot": "8f1234e20854c53daa35ca405b636b17f6ea4dac198bb139f6849a7551f71129",
+        "QmtRollPortfolioStrategy._record_portfolio_volatility_budget_daily_return": "95048b098529a156c6f16078d8b19b27192f8064f61b6502566b02ff590dd37d",
+        "QmtRollPortfolioStrategy._record_portfolio_volatility_budget_scale_snapshot": "8f8a69cb41ad832184e44145b3e41a24113d9c6666e360376972075c5d010479",
+        "QmtRollPortfolioStrategy._record_product_direction_outcome": "bfa9e4aa94c7aa80e0791d7ce1c76359d9db0224cb13cf1405b2065cb8d60d24",
+        "QmtRollPortfolioStrategy._record_rollover_delay_diagnostic": "15761d2eb2da0b6cca059b11b7ba13db3ca5e3b0903d7d8ada78cdef6f224d0f",
+        "QmtRollPortfolioStrategy._record_rollover_reopen_guard_skip": "fd8ec17dfd13e041d4c5670083e05413b215ae5ac8ec08b87e4aecfa56b2dfc3",
+        "QmtRollPortfolioStrategy._record_rollover_shape_same_volume_diagnostic": "b1eb9705b963deb6a5fb6ec3f830c73a334a36bdeb07828de71dea478eba11fb",
+        "QmtRollPortfolioStrategy._record_trade_event": "418a003b01406ee2b0e63e41261d5d02139496addff3aedbcfea107a80f30fe8",
+        "QmtRollPortfolioStrategy._recovery_sleeve_fields": "196effaa0917ef325748bb7f96a969f113056c8b62d1dfdda4909ba4ca986ca3",
+        "QmtRollPortfolioStrategy._reduce_position_to_target": "599d197e305c0342d01b489209fcfa530a2eac8b7e59dee1c8c0f74d07f53c33",
+        "QmtRollPortfolioStrategy._refresh_portfolio_drawdown_state": "c7d77752fc8c811eced3b7ab5725fdae9ca41a56128adb899f778250cd1a818d",
+        "QmtRollPortfolioStrategy._refresh_portfolio_margin_deleverage_state": "ef18955e19c857cf2fbe131ffc413bc8677773bb6dd19b6b1f63373272760a27",
+        "QmtRollPortfolioStrategy._refresh_portfolio_overheat_cooldown_state": "8e48dd2b565f53374aa5abadf63f2f6685f7c70b79e9aefcf68007593845946f",
+        "QmtRollPortfolioStrategy._refresh_portfolio_volatility_budget_state": "579f1d451526d3027f4048c9c9cecf131cdf5d0dc865db116b5b52b6b3680881",
+        "QmtRollPortfolioStrategy._refresh_risk_cluster_heat_pressure_snapshot": "90e509b399ef6404df14dd16bd43261bed9549ca4164bc7552f300765f5e5f8a",
+        "QmtRollPortfolioStrategy._refresh_risk_state": "3d253e17a78789a11416efb5ab632ad616966ad6c3379512f73c19236111e0b0",
+        "QmtRollPortfolioStrategy._remaining_capital_budget": "9c7f37dcced7d948c0f8375582cba5828b6f98e115b22c193dce98a1ed1d0f08",
+        "QmtRollPortfolioStrategy._reserve_intrabar_entry": "c0363f1824a8528e633c329856ba87f2db48d923a6f706fe2e6deaa946f56fbe",
+        "QmtRollPortfolioStrategy._reserve_intrabar_margin": "def2da1dc0434a380f513e177d77d3828387bfc947df8a589fd546b8911b56ef",
+        "QmtRollPortfolioStrategy._reserved_cluster_margin": "e9c69d82fa2089ff61f13d5d5650670fc76b17a4e84880ec42062e39ce1800b4",
+        "QmtRollPortfolioStrategy._reserved_margin_in_use": "67061ecef4089b05adc0d4ef4c11c8c5930bd2db9975a44d07f5bb9f5e35918c",
+        "QmtRollPortfolioStrategy._reset_intrabar_reservations": "adf1249ce00ef2e9e7414fcb5f49ba69b6c522233bf1b5f3f0a548fc0aaafdf2",
+        "QmtRollPortfolioStrategy._resolve_actual_position": "50ad76f6c4f17ec967397c7cddc97b51543dcf3adb9d86b11e39d5d04ce65026",
+        "QmtRollPortfolioStrategy._resolve_actual_position.add_candidate": "dd475f433d9d4fec5958ddf9a1961829dc2048c5730dfc83c788e33a812e9988",
+        "QmtRollPortfolioStrategy._resolve_base_capital": "24c3d4202b2306eb40acfe228c9eaf41472a5a49af196f9aebcb88e800e0c257",
+        "QmtRollPortfolioStrategy._risk_amount_from_ratio": "5bbc914328afadd688b78f35afe1cc4aa6111e5d98be61f2c37c22a3c7251700",
+        "QmtRollPortfolioStrategy._risk_cluster_cap_fields": "95d1c14199ba183983974c26d683e500649a74ab6263571eeb53f3cce8c29899",
+        "QmtRollPortfolioStrategy._risk_cluster_for_symbol": "2ce2f232d541ea660cc73a4938ddc4956e6f1a7b0309a61e0f8ed29433ce51f8",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_deleverage_cluster_applies": "c4d3b2e056bf92dac3aab504a407d27d9b17c4bdc5dbebaf9a8120c076396fe4",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_deleverage_layer_kind_set": "dc893002f12d0c15383c4648434d43a8066eb4936b301416c6294a4836f07f27",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_gate_adjust_add_volume": "d2260d144c74ee6568ed3fb5456299898d96d1880d42127cb7dd8b6e62e21981",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_gate_cluster_applies": "c23f9d9c14ffc35e5b880e00ceadcdb08430332ae1046b48bdf502f53ffae0ea",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_gate_context_applies": "02597b02d6a17d4002246e29661a6158b30ef9d26c0725a237a7d08bcd3ba2e7",
+        "QmtRollPortfolioStrategy._risk_cluster_heat_pressure_fields": "c45dbd1e700d61e0f252babc0731b274b26b25d5bb4e8334122e76c1503e08f7",
+        "QmtRollPortfolioStrategy._risk_cluster_same_direction_multi_flags": "fd4eace69e2d2b00f0baf89f5a225565db0eaaa086712a4593c269ce99d86d0e",
+        "QmtRollPortfolioStrategy._rolling_zscore": "dcc610592711583b5cb6f89a43ef97d58efb395d6554702cabe4acc2411d143e",
+        "QmtRollPortfolioStrategy._rollover_delay_applies": "107101ffd537ae4727751a3aa3c74a9245269c2c42fa590a57dc7aedc2e974b8",
+        "QmtRollPortfolioStrategy._rollover_delay_due": "457fc096ce2cd6dc924026b3f05cdee3d4f74048496fac821eda520b2e8717bb",
+        "QmtRollPortfolioStrategy._rollover_released_risk_snapshot": "ec30fe8d8d3eda06868d57562c1ffd3cc8bb4a512449465ccd5f5b6ddf4e53fe",
+        "QmtRollPortfolioStrategy._rollover_reopen_allowed": "4a9d629fcffa4991f0b766204f9ae7c474c5aa7b0c7b11848e168b463cc12a7b",
+        "QmtRollPortfolioStrategy._rollover_reopen_drawdown_guard_fields": "6d1ef4493eda3ad16bdb754c27a4e05047d99338500e4a2008f155ce0704679e",
+        "QmtRollPortfolioStrategy._rollover_shape_continuation_snapshot": "e80a1135709485119949908384eb23d677a1e895d90d7b161bbfc4f681178f4c",
+        "QmtRollPortfolioStrategy._rollover_shape_reopen_volume": "0d27b4b43ccce804c1eb20c4a78f9bf0f6a7f1273a59fa832051c47be07394fe",
+        "QmtRollPortfolioStrategy._rollover_shape_signal_data": "9aa0bfbadb5b9491f402f110b3437bb8eaa4fd7b35e31ffbe2d07b284d062418",
+        "QmtRollPortfolioStrategy._rollover_target_readiness_snapshot": "93d19939d0056e59e60fc2a138f949b5b21fc9ef4a82d2a2063f0f7ab0ed2003",
+        "QmtRollPortfolioStrategy._safe_float_value": "d92a078ec64501d868df5105cbbe08504bff7af4080154019d6f01ae004724f8",
+        "QmtRollPortfolioStrategy._same_day_bar": "85f0ab4c5b61cda73a8b48c89ceff725c01a5a7f80f62518fd98305b6b6a77c0",
+        "QmtRollPortfolioStrategy._same_direction_correlation_gate_snapshot": "cf837f95cc236c7da2f40e6d9352872200dfea8b07c22533373b7887c45cfde2",
+        "QmtRollPortfolioStrategy._selection_pairwise_catastrophic_veto_match": "9b801012e1e75fec1ada326b763c12094f00fb09ea80e37197d0c4e63b879f1d",
+        "QmtRollPortfolioStrategy._series_safe_ratio": "45a751a5ed81a0c4d8f0c477eeffc58a7bd07d64288a9c9a82457c7994f62658",
+        "QmtRollPortfolioStrategy._should_relax_prev2day_stop_for_locked_trend": "0f5aac2f1fc9fe71da1a399a7d7b70efbc25a5aaceaeddf0bed00301df2c7533",
+        "QmtRollPortfolioStrategy._should_relax_prev2day_stop_for_post_quality": "c040df9af522e7439c7b453ea1092afbb900db2e26c1f4a2a11bb711a7eeae13",
+        "QmtRollPortfolioStrategy._signal_result": "8dd0b147a3804fbf1c21a7c57a1000fafc6c40e64f90b87460d3b2988590f73c",
+        "QmtRollPortfolioStrategy._simple_stop_price": "523f4afefcab0205a0f7b2c37eae901a0433ddd9b21b0029a3929be4d3afd9d0",
+        "QmtRollPortfolioStrategy._single_trade_capital_limit": "f22a582f5c3f90a78987002469e5fa5666ef40d4694e78fa94bfb6cc26e10106",
+        "QmtRollPortfolioStrategy._sizing_equity": "6631da67325c53ef171da70d692ec0d8e35020a8e98025373985489977870a8a",
+        "QmtRollPortfolioStrategy._sizing_equity_snapshot": "d1b03790871f46964791963c096e2a520df67fb8fb22b735a6b46a06246d94d4",
+        "QmtRollPortfolioStrategy._sizing_equity_soft_cap_release_weight": "9008c94fc1331b9a2a1836630267187f98dd566db8cd8f954fbc21aea71f5c32",
+        "QmtRollPortfolioStrategy._skip_profit_giveback_streak_update": "be9e23050028d2469018b74b856887063b17131cf6cd908a9f6aeabbd37826fc",
+        "QmtRollPortfolioStrategy._stop_execution_price": "fcd46e5018bc66d47f04f5d7e53084ef173abaff96decbb3c2b1ae3f352fce63",
+        "QmtRollPortfolioStrategy._stop_triggered": "319f9b182611e36205af4eb693417e78ec0580db115aef714507c4395699b578",
+        "QmtRollPortfolioStrategy._supply_demand_headwind_snapshot": "70903a433d5b9b167901b5a861fb3ef12f6d7d3fc413f817afec1adba86ae696",
+        "QmtRollPortfolioStrategy._sync_close_trade": "458cd11eb1ce3ed1ef76bd50c789cc3b2123e53b989689b3e884d615743873eb",
+        "QmtRollPortfolioStrategy._sync_entry_risk_diagnostic": "e0fb8c62dc0408e8ac4dddeb95c8070e6a1cecf6c45ada79650e4d2b4be6a28c",
+        "QmtRollPortfolioStrategy._sync_open_trade": "4f348c787b42d43c04eff06252e4f8ebecbd253204e8c8657d5634bc776fe628",
+        "QmtRollPortfolioStrategy._trade_cost": "e761c1657a731bf2dec0b7c272304971d07e347d9b62b3b6196ee31218139239",
+        "QmtRollPortfolioStrategy._trade_to_close_pnl": "115e78187f1c3065ffba432993f59b8212777838f04995ebd314302e4bb1b7f2",
+        "QmtRollPortfolioStrategy._update_dynamic_stops": "45923b44a88a2fa541b1239a058bd1aa3e8b26e77ed7d11ed74bf876df21b707",
+        "QmtRollPortfolioStrategy._update_layer_stop": "042d93da7069800c21b2a1a9da11b612c4fdad74f2021594511c30549cf63af8",
+        "QmtRollPortfolioStrategy._update_streak_risk_state": "60b81066ff7af6d880bdfa6841a99b8dc43c9f73fd134eadbf92dc31a2027abc",
+        "QmtRollPortfolioStrategy._volume_open_interest_risk_mode": "e67ac2eeae8869d3188973777bc33cb68bbaa1246e19c15ed81181405cea2ae8",
+        "QmtRollPortfolioStrategy._wick_chop_filter_ok": "b9e6e7187fb59eeed764fd6b52f6d46a18b942ca4f00b48eb099871df022ad9c",
+        "QmtRollPortfolioStrategy.calculate_price": "b4c17404fa7734a01d63ef4bd486312a5b69335af7c7f812d7456f07afd0ae44",
+        "QmtRollPortfolioStrategy.on_bars": "666c6b990ce8cb147d6d7eb73e8956ca802572a4449d2115235ac39e4153afbc",
+        "QmtRollPortfolioStrategy.on_init": "35b45161e64ee97d5961c4920cd842735996b4f91378bbbe1376cf3ca3476888",
+        "QmtRollPortfolioStrategy.on_start": "80bee57a35e4680cc87882d9e74cb74b51d4fd7a1c267ed4ec56bc67cfe732da",
+        "QmtRollPortfolioStrategy.on_stop": "90b55e98760b7a769cd1cda0a628d8d702ee5aac6919469533589453bc5fcc83",
+        "QmtRollPortfolioStrategy.rebalance_portfolio": "d12ceaf3306a379a4f25dc94fdd08a9d8447cad98d4b017b8e5ba11506bf1a9d",
+        "QmtRollPortfolioStrategy.update_trade": "115b2b653ba714ff64da1a336cf2a6fbb89e60deb48773398af9eef5357db22f"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py",
+      "source_sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9"
+    },
+    "qmt_universe.py": {
+      "copy_sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "ProductSpec": "ebad71e3626622a99fc0f3a83b9b7112abf1992182e633a5951085859c32d368",
+        "ProductSpec._prepared_value": "ceea6ed61615a787eed60a75e67dbc4ca9267de3782c932f5379fbbf79e2c90b",
+        "ProductSpec.resolved_margin_ratio": "a2edd02b3cd6d9dc102b0de4468ff8cbb16f3245b5508ff8d31cc94cf9870daa",
+        "ProductSpec.resolved_pricetick": "ab8f09518f81d938124d8f09f1f8a4f0f70ce361b73f80882b07f29a3d680012",
+        "ProductSpec.resolved_size": "31363e70bb8de76d77cf3b94bb88252bcc6f5e8c4d4441f92123a458af9005fe",
+        "ProductSpec.resolved_slippage": "bc879ba36d90d55d80e474224675d08268a3a7fc5ccd89579952618af9e8cb0a",
+        "ProductSpec.tq_cont_symbol": "7dc91b6bb810cb45e2cbe9297f4323945f1c32602c346ce1729168e8a1587dcc",
+        "ProductSpec.vt_symbol": "da42a0f9e1f72632b28ee148a723f53838133d8c50a397e653d7dc3aceaffc4b",
+        "_clean_float": "fb6be79e87405e35c909905400301ebeb7fe13709dfd5e39462966ed06672681",
+        "_load_prepared_product_metadata": "fe5839fdde6c4eecb57ef2cbebc85975b07da9573d219c1ad8bb6944ca8b3891"
+      },
+      "source_path": "examples/portfolio_backtesting/qmt_universe.py",
+      "source_sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f"
+    },
+    "run_qmt_alignment_backtest.py": {
+      "copy_sha256": "a4e1f06d5f47a82897ddfe1d1ec54305527614cb620f1cfec438a73fc56e0b8f",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_build_daily_position_hover_df": "105705d35392eeb66f95e1ecae7d0ba9bd1f067dca2e02565f315272d7ae02fa",
+        "_build_monthly_return_matrix": "6b0d4744c1fc3aa466d2c22be14736cda87ccf5ee4c9c9871119ed40530d68e8",
+        "_build_prev2day_stop_line": "d3ca7a247467548206a1c36d5a444767f8465b91dcdf99c9175fdd99cda46733",
+        "_build_product_pnl_curve_df": "d59b05a097d54ee486aa71380a926ee82617c474f60c2375fee80ecdcceddeb9",
+        "_build_roll_event_df": "767d4f53aa52f4555a8927fbf9aa29b4e422fe740a1decbeba18f4126aeb0873",
+        "_build_trade_link_map": "9cf42faefdcd307a630a1ec5de51eac29a96c6f95cd9ba787950d9df240ad982",
+        "_build_trade_review_indicators": "c10f5982d99ab92c66606463a85fb7dbe24aeb2d7af31a6a7a866ea693665587",
+        "_build_trade_review_indicators._series_values": "b5a577a32e7bba5f89ed8c5363871c674d9dd18801ae3f46b51a3a1784bc161b",
+        "_build_trade_review_records": "d27b1d75ebf58f03d61655578a2a8c4203d5e54c9f08395b18067284caaf4693",
+        "_create_classic_backtest_chart": "beb7d416916559c1e9cbc7144a92e20ea136c4e10b40cf6b008e3808f548533e",
+        "_create_professional_dashboard": "e9650a72aab34c3906f0da4e07f4eeda12f1223089a84e3127c48d10b824121c",
+        "_create_trade_review_html": "0bea070cfae6aa96cb695bbc2192e64de6271f038c7bd42378edcb171aada07d",
+        "_ensure_chart_columns": "9249ff4d197985b2e8e06ecaedfcf932cd9f9e208b7859293307f39726aefda7",
+        "_infer_product_symbol": "e98841e8d064dd8c23bc29260f676c31fe57d6aeb8eea76b2f2cd37955f681e4",
+        "_load_contract_product_map": "8318ff6283f5b773290b758cb7b6677ade5f636997f32d0aac5012d9e1eefce3",
+        "_load_trade_review_bars": "ae4d1b3ed96435e9a5b5e0a37cbd0b237df9d3ef8d2842031f92c581fb8b8a51",
+        "_marker_style": "16d47bc400be3c5abb28b5dc54f805a4e601fe65805214c3ec9e28dbf3ac8649",
+        "_match_entry_risk_to_trades": "0703b1ab38f2be5c2d1c24b8fe324b1622b51706826d8897a87423a7440ebb5a",
+        "_normalize_daily_df": "7b054a59ffc4733b46fb9a2305a6f64b0107c8a037245ba43f3dbe8d5e2d82d0",
+        "_normalize_trade_review_input": "bdd74a0e0a0a2f27e31d7a222297b303d50f94ba1b05ce9f97d360a58dc4b858",
+        "_parse_vt_symbol": "3e4be44fa92bc56e82da13370cc00cc6616b589b701cd9a51830ba64f71fb8ba",
+        "_position_direction_from_trade": "a0dd86521b7ae6678f5acfdcc04249ecb9e7f24a5a0c8111dbcccd851e391669",
+        "_to_builtin": "b97013e5eabb086ed7e19cb301da7160a92e20cc9a768db683476796bed5c1c1",
+        "build_entry_candidate_snapshot_schema": "dbdd16bab84e6711909d94ec47065caf8371d96c22af54d63e2c06a2382dc909",
+        "build_entry_candidate_snapshots_df": "ee14e5b734fbec794c3e17a469a15316c7448744e097c324d51c3a14b68af975",
+        "build_entry_risk_diagnostics_df": "62268eb10dd5e679933567bffa23c955eba40ed3e4d43d98b8f2d1c57b22e0fa",
+        "build_positions_df": "219991076c43d7be8d5d54bfe63374752b88a48d4da39ed88b647358f79c0b78",
+        "build_trades_df": "9f6f230b1d8590be461d9a51b0f04f470b474340927b7fc087e07446cc566c9a",
+        "main": "4b290b47d57f90a87361a69fda5b878f25da462cbb21484f2a01d3cf62c72550",
+        "save_backtest_artifacts": "111e24ad325868eb0dd9f297505a67d04d5f0009806df969acfcbbd4c1028998"
+      },
+      "source_path": "examples/portfolio_backtesting/run_qmt_alignment_backtest.py",
+      "source_sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55"
+    },
+    "stage005_short_bottom20.py": {
+      "copy_sha256": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "RangeHistory": "fd9cac81194d8898f85029faad438c005f9b649eded0a35d459768f706c178af",
+        "RangeHistory.__init__": "25e6079a65b4e131a3ec83f71d01b8756dc4a1274e6dfc9e5e38c728e6456343",
+        "RangeHistory.snapshot": "2dd9a338b1739ce15b7076bbc4f86e399d23b35f71aa7aee8d97ab324cf7ceed",
+        "range_strategy_class": "1c49080870f74894fe45736482147dea7837c0d2eb044a4822356c20e6284023",
+        "range_strategy_class.ShortBottom20RangeStrategy": "30738cccc12efaffa8728f0f96b3b731515ccf5bbc764eb9a2b031fa411005cf",
+        "range_strategy_class.ShortBottom20RangeStrategy.__init__": "d213a0a28422c5e452c4ec06f6b23bd63d8bf7d9796c6f762737fc47d5fffc9d",
+        "range_strategy_class.ShortBottom20RangeStrategy._calculate_entry_sizing": "9b1bb4ed7bea0dcf4f41f56ab626e32e1008d7942eebaced205d8d87853aa71b",
+        "range_strategy_class.ShortBottom20RangeStrategy._open_position": "944bf7340b6318851072020b1aae3ea41ddefbe220d2222fa3faa77d66af2029"
+      },
+      "source_path": "research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py",
+      "source_sha256": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9"
+    },
+    "stage008_three_ma.py": {
+      "copy_sha256": "a3880ef4441e65fc3d80cb50bb5ac165b2bf0d8abb3f40a6750c66212cc761ba",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "ThreeMaWeeklyArrayManager": "00b6a42077eb0ce6cfae07b6c4d758aa298ede1fd2bf9bc51b4cac76b80efb3a",
+        "ThreeMaWeeklyArrayManager.__init__": "4bf05012c0eafd2ebe51220dfab2a72cb103574daf0150f4a4094dc1ac60285f",
+        "ThreeMaWeeklyArrayManager.inited": "70cd13db0d9b547faa1a6cf8b04bf6eed6867dbe4f09a401e2cc902e88ada30d",
+        "_observed_history": "3a341cb783f310516bf45b0c28cf078aa26a5c57396ddd6cb368c6768eed66c2",
+        "three_ma_weekly_strategy_class": "e07df898a28380627d29882262771bbea1def549ff46dbff520ce709a7a519a0",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy": "f9a0e55a9f3caae871dc2e728122045617014e337b25659715b711570437ad76",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy.__init__": "0179ce4660f284051349cf0d6e1bd9216a83ce9970805c350ba6f5cb453874ea",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy._build_history_df": "3e2033ccb2f00d23610daa00d0cfa2b369dbe0bc5146b653ca01f28d68e44cce",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy._generate_signal": "18594046b8e4f419d9072187e9f39aa96b3f7566daf8ccb755c91e1f4e148521",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy._is_simple_ma_trend": "da82e1c0a5a4d84d250fdc846d4c9b7224f916e77826dc9944e80a1b12b80bf3",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy._rollover_shape_continuation_snapshot": "af89f24c3ec1a3731c244f253cd2931f911567180b5a808e16b7ceff99ec839a",
+        "three_ma_weekly_strategy_class.ThreeMaWeeklyIndicatorsStrategy.on_bars": "65b6d782a98f422235ee2aa472aab362aeff593c37bae809fe0d9063044f1d81"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage008_three_ma.py",
+      "source_sha256": "5f5554eb35033912658a2db6182b97418eafa5253ede88cf27caf09c47dc3061"
+    },
+    "stage012_ai_selection_off.py": {
+      "copy_sha256": "7d798119b58932b005689d0c67231940064758f3b725cceb1b18c5e78dc2e397",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "audit_ai_selection_off": "294e41bf8fa8830b6bcd979dbada4ffdf671555bb18d6c3805bb2da4a22eb6b7",
+        "disable_ai_selection": "f9f38be3ad177fad61c4697d692cebaeedaccc29a447e5fceba948300efffda6"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage012_ai_selection_off.py",
+      "source_sha256": "7d798119b58932b005689d0c67231940064758f3b725cceb1b18c5e78dc2e397"
+    },
+    "stage014_no_macd.py": {
+      "copy_sha256": "c4ebb7de9767b3a13d1ac5c62455fdc810aeb60774dd70afd23d402fbe6b4299",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "no_macd_weekly_strategy_class": "5614381e53c4df5d06399c400b04aa7f6349f9856ab5ae22cf17c92ff75e2193",
+        "no_macd_weekly_strategy_class.NoMacdThreeMaWeeklyIndicatorsStrategy": "aac27e3901d30e351f96fb94df9f070d706e05a161eb4c051028e06ede9e700f",
+        "no_macd_weekly_strategy_class.NoMacdThreeMaWeeklyIndicatorsStrategy._calculate_macd": "99347ce330fc4667eedcbf7cbe36afe4f9994fb44776e18fec3bbf2fabe91929",
+        "no_macd_weekly_strategy_class.NoMacdThreeMaWeeklyIndicatorsStrategy._generate_signal": "08526203498d88fe5c08da29b78b418e11cddd96b96b1fd0faa3aed0b65c886d",
+        "no_macd_weekly_strategy_class.NoMacdThreeMaWeeklyIndicatorsStrategy._rollover_reopen_allowed": "59bec3178c063314a3eaa5999d91d24ada1e9fc2de7ee6e78af04e7685e0fa03",
+        "no_macd_weekly_strategy_class.NoMacdThreeMaWeeklyIndicatorsStrategy._rollover_shape_continuation_snapshot": "6c4bda35874f012771d81f8654efbb0bc50dfff37e46ef1c944c9dca46fe92f2"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage014_no_macd.py",
+      "source_sha256": "693b21c396d97a03913ea77de7d250f10f16be30628ea0f922d2fe4483291dc6"
+    },
+    "stage018_short_case2.py": {
+      "copy_sha256": "26905e365e69ce73b28b5e2506b2d8419d602ba36f24600d07c7d94910cd7a32",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "short_case2_weekly_strategy_class": "335cf3eed9a218812ae19d1ad7a122b143bf1d66ed7c45a98301d15162773217",
+        "short_case2_weekly_strategy_class.ShortCase2NoMacdThreeMaWeeklyIndicatorsStrategy": "7b8231f9ed87698a9e2045fa2159715dc0fad80bf3be540df911cf519d239608",
+        "short_case2_weekly_strategy_class.ShortCase2NoMacdThreeMaWeeklyIndicatorsStrategy._can_open_short_signal": "7ada79145f1a498aa1bcca78c3fcf7010c4f22d57c6d64bc19a988b1390fdca9"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage018_short_case2.py",
+      "source_sha256": "1721650a4e3d346517573e5ddb1d3246bf588f11f2fe414cecf5ee01df701943"
+    },
+    "stage020_no_position_cap.py": {
+      "copy_sha256": "efed04cfe7b34f1465778159f8b966220e48ceea8e8b499833d2e1a779f0ae5c",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "require_only_position_cap_delta": "d70056d18d03539e3d8eb18e58e4d57f2f3df7893faa2322d5ae552370c53ff1",
+        "universe_capacity_profile": "5334ae44f1357c9e25cdbf34ecad647f47cf9fe58ece252789d4592b1d0348fd"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage020_no_position_cap.py",
+      "source_sha256": "efed04cfe7b34f1465778159f8b966220e48ceea8e8b499833d2e1a779f0ae5c"
+    },
+    "stage022_historical_safety.py": {
+      "copy_sha256": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "HistoricalEpochError": "740d2e6bc75f6ac50691f65c66a985a84a20600fe6300b4f44ea7279586b7a03",
+        "HistoricalEpochError.__init__": "6e0f4a9596cfbff5ed314061f267a02c245fe6bbf71f5ce9636e41577efe70ab",
+        "_day": "13b843b62a71c8799f2257abb4efd6cff1635a8e2892c6b85a16dbf009d6f1b7",
+        "_reject": "2d8f3c27205dcf4e3ca0821898bbb64d2096a13674797b30dd6819beb257d078",
+        "check_epoch_transition": "1b6dfff33c7f47243cae9d21fbdb138afcd2e3f1e1c7d6e04fbe495bb28904cd",
+        "clear_unowned_targets": "9151c94504e1858b33eda89765044bc9037addb530c526d48c2023a2c3eac71a",
+        "historical_engine_class": "a5d6b38f33515e657df7d0782a795e2a7c2dd1fcae65a9a2921b52f36e740207",
+        "historical_engine_class.HistoricalSafetyEngine": "a302581f2e17db5c56ec18ad75d1cc53fdb308ea15e1bf5a251690f430c41485",
+        "historical_engine_class.HistoricalSafetyEngine.cross_delayed_orders": "378b64a0183c14d6c4714fcddefe45a1c0b6c28026b73b9d350dfef6a6a2a36a",
+        "historical_strategy_class": "9588aba572c59b82c21e23e983e2af3074999c734f260162fa99f9c5a565ac0c",
+        "historical_strategy_class.HistoricalSafetyStrategy": "cbcbe8a2b0642cfab72db5e0ac58cce7deb63f1cef27d7d9bad88d336d537e6e",
+        "historical_strategy_class.HistoricalSafetyStrategy.on_bars": "b485800859eeef6d85b3ace5d341eb570e49540817d6a07be60fc8d7e1b3a596",
+        "historical_strategy_class.HistoricalSafetyStrategy.rebalance_portfolio": "65d6d557acbb3554a488d67f504471cda43a94ce5c3a2a7cb486f184a26f45e2"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage022_historical_safety.py",
+      "source_sha256": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7"
+    },
+    "stage029_week_close_exits.py": {
+      "copy_sha256": "d75fa3fc830ca48cc295e2728b2f7952ba4e24f730a1c1cb78a9d48ffb58e0c4",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_day": "5dbca93b5ef151dfc0422532314797770388c0b65e184f95178b0fa020fc0d9f",
+        "audit_week_close_exits": "661d0da9a22af2fd4d80a5731f3f0a0912e84a2f2391b950f61960402790de8e",
+        "week_close_exit_strategy_class": "1826e32908c632ce4a5ff9e78bb9c37ced03dc097246b619689caed32ea6b803",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy": "33464676c3cd93c48fee3d0a952d4f0002d4e0867056bd85273568e0de9826f5",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy.__init__": "1998b44a8f364e4dea1ec5fe3de2a972a80a4979611ff76d4cc7bad4fd1b0616",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._can_open_short_signal": "32a5c6939491de2401f1716411439587c0317974919327601f5f63273a5a5108",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._completed_week_context": "78bc4711b4fbfcf2a426e5c3f6169b1b46c42d788740985edb93602032620d61",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._entry_stop_price": "c92ef620d13b7cb0fbd1b67c16080f73bf6b611cbf7bfd7a4d565d3461794525",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._open_position": "6fcb6de1fb3ba7568310f9b69911183edaa82e9f0b20c7a319b7e1c6d48bc02a",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._process_layer_stops": "8777c09f526169d121c7e1b3f2c93f406e17b36288c1ca6af7d9733de8f55db3",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._process_prev2day_stop": "e62e6d7e54b4fa02778b841c4199664b90b3a01791b375044dba97d35f556c0a",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._reconcile_state_with_position": "f5e07b32a2b986cd9ca1fdbbe3d23bca84d948d2c3a043c2760afca5462ec0d6",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._require_week_stop_contract": "cee5bd5d6068502721b4d98ed403675ff846f796b9308b3971e6e675b596a617",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._stop_execution_price": "f2eabf1d55927aa912eab74b9abf8ab1ee3057f4c26e5a2df3b63279264968f5",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._stop_triggered": "79b56b81c900d13fdc2026a983a7027c459241d89fac03567181fb6276864f6f",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._update_dynamic_stops": "1952502b06ccbe4c34d451eaa502a6745ebc1c08d48d1b028cc2b69e447134d5",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy._week_stop_fail": "4554125f137131f3e30c4a7e9e3fdc51e5d7c7ad3979d7b51ebc8f393bd835e4",
+        "week_close_exit_strategy_class.WeekCloseExitStrategy.on_bars": "d873b2ee90bcbb80948663ded422953628e25019c3fc793b39345aa93d1cd7f0"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py",
+      "source_sha256": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452"
+    },
+    "stage029_week_close_exits_v2.py": {
+      "copy_sha256": "f6a9439ab3a506cc5740f2531f462f75177e05dec2495c9545f04a5bb232018d",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "_direction": "9423ed6027af85ba818c0f5dfd0f2dd5f3845bcac0b5ab52c05b8b1e515cdfdd",
+        "_is_open": "b01a0c97c04105f0fdc4b6593ca32bbd9050e9f680cd819b2c67e94fdf87977a",
+        "_positive_contexts": "6a51da81dc1edac1ba663550e7edecd4bfbd7478355cd2f246874cfcb8e261ae",
+        "_select_context_rows": "54eb137121af9134bfbc824a154f31acddd0b80a1b16f6677ce8267042f6d110",
+        "audit_week_close_exits": "a47c19d117789503e97be305df63cf82cdf4b36b2d1ab47b0c7620700d56bdae",
+        "week_close_exit_strategy_class": "e37f724055272ab31bab2725b65dea7b650ea3a1830904fe471778c347810bd5",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2": "0f92243d448d43f9ad502cc96dc6b8cb3d8e76eb64f5a9d9a0f59a822dc2b55d",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2.__init__": "0e5c28644b8b4031c6d3196fbae00fa12f9da85d7648bcfca16673dfef23c09e",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2._admission_ownership_snapshot": "d552fd0990743917907cc1c9d754887943e617f5065dcf72380a12d1fe946d65",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2._calculate_entry_sizing": "f6e07723b3bdde3212c0027d9d734f080a5776241942ebed540a20757ea9e2e5",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2._weekly_initial_stop_qualification": "bd39d58aea22f2e805a311983251fa346ad268eed46daf7324411edc802f598d",
+        "week_close_exit_strategy_class.WeekCloseExitStrategyV2.on_bars": "b29eeed181d63f184e45b6f937aa762e154ab7f490b9e5e09b3d0d4629ba765a"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py",
+      "source_sha256": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0"
+    },
+    "stage032_daily_addon.py": {
+      "copy_sha256": "cae5a104ca1e8f5c9faf06475b1598b4e92d6f3d97270236ff17e9ceb1064391",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "audit_allocation_inventory": "ff219f84237acf21b216eef8481fa32f16ee026d64fc626686dc4e1e1eba7f3d",
+        "audit_daily_addon": "14436e56b6d2f387cef7b57a59ceb07a8037c15ddc753fb0f441484e638e7da5",
+        "daily_addon_engine_class": "a9937775d3d9ee292964eefb7dfcb19859af4cba335a9559ae6780fc3add040b",
+        "daily_addon_engine_class.DailyAddonEngine": "6d049f0af40bb71f65f548bf944bab906c37ead5acfea6cbb2a9a53d36d6bcfa",
+        "daily_addon_engine_class.DailyAddonEngine._fill_order": "a56e7bbbab28880d238032acf1b0c874b61261fc641b371b94d84329aae408e1",
+        "daily_addon_strategy_class": "e4c2de0e5a267bd13b0471fa2343e80924232caf966da464827be735dac996b0",
+        "daily_addon_strategy_class.DailyAddonStrategy": "4484d6b1242958103c35c97f4671b76e009214adc797161a90cf2c21e5c7ae9e",
+        "daily_addon_strategy_class.DailyAddonStrategy.__init__": "7cdb768fcc4ef98ed4afa71d77146b70d623e399e1c3bcd348ca4afb0dc96e2d",
+        "daily_addon_strategy_class.DailyAddonStrategy._apply_state_target": "637b394eb6755e36bd4f48d729f32b35f922db464e3936aa896a2ea580a31bd4",
+        "daily_addon_strategy_class.DailyAddonStrategy._close_all_layers": "6cce9986ec3fd78cdaee858c80e54a604b431afc0fa30afced3effb5c118ea88",
+        "daily_addon_strategy_class.DailyAddonStrategy._close_all_layers_and_set_flat_target": "16ca66271a0c401d639cf8eef92305b27e34f40711bd56b5a71d2188d1376d10",
+        "daily_addon_strategy_class.DailyAddonStrategy._close_layers": "7c7e158124272bd96d36a5dc1f59148c4ca98e029553bb0fa8ae8795a99e637e",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_allocation": "2e2f3980c9d19c33a8303a9ecb6630f0ca470f6c9979e994b1cac274eb6f4469",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_assert_inventory": "9fbba3b4ebace9513441d76cc835b02fed3decea71be12c31147baf2d7e5a048",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_base_only": "9aef86caae757fef2cd7d0d11e514dae6e6b97e5a648a4a5d0a97cab6333d274",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_batch_adjustment": "b80a9b72c660a5eea4a502df84ddf6b323376b46d4f1ad1ce53f31bd62a093da",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_begin_open_batch": "ccf9021db338dd90383635c99109f8b92a6cdbac6a9cfc2d1803cbcb5f59d4b5",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_cancel": "83ed40bb51c29f1cacaf795f612c16e1feb590028ba4edf10579b7fdb74f445c",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_close_layer": "51d5b4ec1438373cec392d4fabc9e49b6218d94c6662d564941cca2d228f84f3",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_event": "0f6474ed8d8a1329a9e495d36701b6a12c1cd648b7f133605ff092b0fde0a0a2",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_fail": "0c881c01a09b7b09336d6c32f61ca67a8e18ebf8c1a888bcd45821f6bf73c0a8",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_new_round": "9db4f940824b3609056e89eb1ad989d91bde70bf8443bcee41244f307e9fe13d",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_record_parent_open_gap": "0f527e5b8ad0ea7728d9802baa4001b8a67c2eb9ad9c5216e8e1d350bbc06579",
+        "daily_addon_strategy_class.DailyAddonStrategy._da_restore": "81a32c266321d175a58518127bb6f4768f35eeef619a79a26953599b577b4bc4",
+        "daily_addon_strategy_class.DailyAddonStrategy._daily_addon_admission": "92664839f03d47409cbc4753c40ee73ee3415669fe9d9a8129d247cf8761a309",
+        "daily_addon_strategy_class.DailyAddonStrategy._daily_addon_after_bars": "8c86d031d345f710ab6fd60707ab0b38bd6790e15e3b990158f69f4cdfa56066",
+        "daily_addon_strategy_class.DailyAddonStrategy._daily_addon_before_fill": "b10e9fae2b513fb269e29140ff51b91f6f4b3f50cd71121555ebead96d230e63",
+        "daily_addon_strategy_class.DailyAddonStrategy._entry_stop_price": "49aed23a6630aa185f09b332ac2edb2a43a30490a2a5584f157dcd29c9491f6f",
+        "daily_addon_strategy_class.DailyAddonStrategy._handle_rollover": "c38980dc20e81536457a8355b38243a71cf84f0bc81d18adb40227ab8391e8f0",
+        "daily_addon_strategy_class.DailyAddonStrategy._open_position": "98dccd15ed1ff1adbffc2d897c1b8ce5effc55359046c0801995403dd63e7af0",
+        "daily_addon_strategy_class.DailyAddonStrategy._portfolio_margin_deleverage_layer_kind_set": "10583e0ca0cf38011bca4a23b761e710b027e74da79be01d4791b97894dc0356",
+        "daily_addon_strategy_class.DailyAddonStrategy._process_layer_stops": "18a08ea6ba8dc314016127e4b4c8dcfc53ed776d3b956453b67336ca71e59c57",
+        "daily_addon_strategy_class.DailyAddonStrategy._process_prev2day_stop": "a970427c234550bd7ac9e5b4671622a219c628325d04f7c25c2f4ae70cf4b4c2",
+        "daily_addon_strategy_class.DailyAddonStrategy._queue_pending_close_lot": "59187e9c59fe94a95d0259be0bfe64cb191324b601b6195ef0bae37a9abec19c",
+        "daily_addon_strategy_class.DailyAddonStrategy._record_trade_event": "e301feaa9214194c3c658d3d38be19e6088f60f216f9158d538201bf5d2956a1",
+        "daily_addon_strategy_class.DailyAddonStrategy._reduce_position_to_target": "b99c4f51589b6e1ead97dad60146526c170a54e9041705f93893ac3423c89ae4",
+        "daily_addon_strategy_class.DailyAddonStrategy._risk_cluster_heat_deleverage_layer_kind_set": "b908f40de9559c3a665d9a31bed6c9e287952fd4fcecfa4eca9fd14db3c7043d",
+        "daily_addon_strategy_class.DailyAddonStrategy._sync_open_trade": "53b10367eaf381211481dffdb0e88ee977916e22d63a4a315e04b8a95aa5bc82",
+        "daily_addon_strategy_class.DailyAddonStrategy._update_dynamic_stops": "f35165475075141cb4c411f5a5ee19a3a12c5b5120e13d8eaa3fb7e8960a2ed5",
+        "daily_addon_strategy_class.DailyAddonStrategy.on_bars": "84af9401b17da8f2fe68aaa9bcb99469a7ced54bada389f59f152b9184b56b13",
+        "daily_addon_strategy_class.DailyAddonStrategy.update_trade": "50883d29541542460230fc45cceeae44d05ae9adea0a42da01531a33ba5ebcff"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py",
+      "source_sha256": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974"
+    },
+    "weekly_adapter.py": {
+      "copy_sha256": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd",
+      "extraction": "module_import_relocation_only",
+      "methods": {
+        "WeeklyArrayManager": "1fd4cf3d03ddb0a066a257ee44ac965f1c60b2ba2c986baede8ef9fd7e663641",
+        "WeeklyArrayManager.__getattr__": "42e4495c29d7d6a72bf2ca34989f4eb54d8b20064b3b8895b597141fc9f6c38c",
+        "WeeklyArrayManager.__init__": "2796f020a9d9c83becf3c505e86aa5292df3ff87ad0c5dd6ad3915282af37ccd",
+        "WeeklyArrayManager.update_bar": "ec8b29d555ae3bcf0f8e7ce6137c4091dad6b8fff69ffd323ae35874637c181e",
+        "completed_weeks": "1255824a4c9b77206faf1f413d7a214737fbc5f2693fd1631f2fed842880cd98",
+        "weekly_strategy_class": "b78638d377c26f9219076dc351c390b567c5a169fc8c17c5544f325c07f4b766",
+        "weekly_strategy_class.WeeklyIndicatorsStrategy": "0fb2f7310af260253453c5adfdfaf4722fe4c22c06f3fb8e7db7c0f296a18ab7",
+        "weekly_strategy_class.WeeklyIndicatorsStrategy.__init__": "044c8181b1863dedcd5a84e7bf5b1a50abf081432f560c829449b5756f1ec34d",
+        "weekly_strategy_class.WeeklyIndicatorsStrategy._generate_signal": "c871da0cd2ca3a1be228f45c760a9ef503135b19039abb3be78cc73c68b60719",
+        "weekly_strategy_class.WeeklyIndicatorsStrategy.on_bars": "f144488b2ff0fac44160058233160d90bd7500e4607e159f8b2a91b14cdc0f7c"
+      },
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/weekly_adapter.py",
+      "source_sha256": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd"
+    }
+  },
+  "original_run_source_pins_verified": 31,
+  "original_static_import_provenance": {
+    "analyze_qmt_roll_stage324_true_combo_capital_margin": {
+      "sha256": "653cf6149fd1503b05e11ebfb58e70b4d13c786156126e7f82741198c605fc02",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage324_true_combo_capital_margin.py"
+    },
+    "analyze_qmt_roll_stage345_cross_sectional_momentum_satellite": {
+      "sha256": "2571854ef57ce960d9a0554d9e5d47e3816acfa64eba033622ab3bfdc2b98d2e",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage345_cross_sectional_momentum_satellite.py"
+    },
+    "analyze_qmt_roll_stage346_xsmom_integer_feasibility": {
+      "sha256": "e4850f9d8fba0cc15d7898c8bbae8b49dd2403d28c8a74ce5d8fe2d1f303f8d6",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage346_xsmom_integer_feasibility.py"
+    },
+    "analyze_qmt_roll_stage402_stage079_xsmom_volmanaged_true_integer": {
+      "sha256": "8d8aed508111e74ffbb8db1fe28c606797ffdd888c28d7efd4fc8714b06f32b0",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage402_stage079_xsmom_volmanaged_true_integer.py"
+    },
+    "analyze_qmt_roll_stage403_stage079_xsmom_execution_margin_audit": {
+      "sha256": "a9d16f0f9a34fa3c943d4380ea04e8bed61726a202d9917611aca436f8ab32fd",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage403_stage079_xsmom_execution_margin_audit.py"
+    },
+    "analyze_qmt_roll_stage450_minute_execution_equity_rebuild": {
+      "sha256": "cb9b77458ef6c26d36691aaa02c236f1b073b6d32baf0c4c079a4dac15c7dfe5",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage450_minute_execution_equity_rebuild.py"
+    },
+    "analyze_qmt_roll_stage451_true_path_1455_vwap_replay": {
+      "sha256": "0aeb4b2866a79ccf4a2518aa32b44f4526861d358cff0bfd1e9814550b53641e",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage451_true_path_1455_vwap_replay.py"
+    },
+    "analyze_qmt_roll_stage452_iterative_1455_proxy_backfill": {
+      "sha256": "7f9900e2921c113e360b43496c196cda9c891b7318035bd32e47c1a33241a126",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage452_iterative_1455_proxy_backfill.py"
+    },
+    "analyze_qmt_roll_stage501_asymmetric_entry_exit_execution": {
+      "sha256": "2f7b2ffdb0310f19e11292687f17a1c0163bd3c821518d7eb8cfa61818ec9995",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage501_asymmetric_entry_exit_execution.py"
+    },
+    "analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay": {
+      "sha256": "b2fab80fcbb15766350408a2cfe1cb1b810b6f2ae2f28d4ce6e839dda4df6bfd",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage502_confirmed_daily_next_real_open_replay.py"
+    },
+    "analyze_qmt_roll_stage503_next_real_open_risk_frontier": {
+      "sha256": "a63dd782c1563ce2ab242f103e6206701d229b5fac273b1fe58698ce3e030c23",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage503_next_real_open_risk_frontier.py"
+    },
+    "analyze_qmt_roll_stage504_next_real_open_fallback_backfill": {
+      "sha256": "a521862ca99fc77ffef59b126dee27ac8aed0ffb945e7c8e063903eb2e3a9a25",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage504_next_real_open_fallback_backfill.py"
+    },
+    "analyze_qmt_roll_stage506_next_real_forward_risk_signal_frontier": {
+      "sha256": "917875629945cd374b9787e8b97a5adba9f29112db4b5f764921a73a036892c0",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage506_next_real_forward_risk_signal_frontier.py"
+    },
+    "analyze_qmt_roll_stage513_stage208_exact_position_margin_audit": {
+      "sha256": "bdda0bf09ebfaddfa9cb5cd08f858336df210df1cd95b879bfd0cca0a85fd515",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage513_stage208_exact_position_margin_audit.py"
+    },
+    "analyze_qmt_roll_stage516_margin_aware_sizing_frontier": {
+      "sha256": "1433b188b07444da7d064f5e4ca547e02ad582315c53c06bbbb857ee9fa159d6",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage516_margin_aware_sizing_frontier.py"
+    },
+    "analyze_qmt_roll_stage517_portfolio_margin_deleverage_frontier": {
+      "sha256": "07884d46228b1e28a06ed3ed5420b2632e00fd5a3fd1e80903790a1aace4352f",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage517_portfolio_margin_deleverage_frontier.py"
+    },
+    "analyze_qmt_roll_stage519_product_margin_cap_frontier": {
+      "sha256": "9a97cd6df4ed23e37b210dfcbccf87b542e20c70afd339144db75cb386eff9ba",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage519_product_margin_cap_frontier.py"
+    },
+    "analyze_qmt_roll_stage650_stage526_200k_capital_reality_check": {
+      "sha256": "b5ab107a6679c8cb99ad4fce4de085cb590fd0de3792f46b2fee29419626fd10",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage650_stage526_200k_capital_reality_check.py"
+    },
+    "analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage": {
+      "sha256": "4766181a85d5105f6fa3fc340c77d73b5d694cd37b07e1017f68494fbf4ada82",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage653_stage526_200k_forced_margin_deleverage.py"
+    },
+    "analyze_qmt_roll_stage660_stage653_multiperiod_live_audit": {
+      "sha256": "bbc61418abb611edcb04e44692020499d1841af1b7ea78287d60ecd50c3716ed",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage660_stage653_multiperiod_live_audit.py"
+    },
+    "analyze_qmt_roll_stage707_recovery_all_cases_multiperiod": {
+      "sha256": "d3d76b7fbe44b38a0b95d92109b16268f22f04d48eed8d148351f972edf9049e",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage707_recovery_all_cases_multiperiod.py"
+    },
+    "analyze_qmt_roll_stage719_official_winner_trade_forensics": {
+      "sha256": "24e6f7ff58086a36fb7ce5aea15e3965051c326b67089125e6a63b3979227954",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage719_official_winner_trade_forensics.py"
+    },
+    "analyze_qmt_roll_stage745_quarter_risk_no_streak_multiperiod": {
+      "sha256": "14ea082e3c180d0cc8ea381926b22f79bcf1164caca3f84c236626b12dea0a78",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage745_quarter_risk_no_streak_multiperiod.py"
+    },
+    "analyze_qmt_roll_stage746_half_risk_no_streak_multiperiod": {
+      "sha256": "8cb379b1cb8b2cd82b577ae154fd64bfb44fdbe50d2996c9700eccdb44dd628d",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage746_half_risk_no_streak_multiperiod.py"
+    },
+    "analyze_qmt_roll_stage748_half_risk_no_streak_500k": {
+      "sha256": "ad781b018c18ff60606147d040a5fbf5bf4a93d8fd2f4ca8699083102370a560",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage748_half_risk_no_streak_500k.py"
+    },
+    "analyze_qmt_roll_stage752_theoretical_winner_kline_atlas": {
+      "sha256": "49901e9a192b4795278437d9eb770377b6fea01aa8d2976b26949d78bd2f2985",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage752_theoretical_winner_kline_atlas.py"
+    },
+    "analyze_qmt_roll_stage754_entry_oi_change_winner_loser": {
+      "sha256": "70e357d66b62af41c60ea6699e8fee8200a46f1d9e429c8babd7528b8c901b93",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage754_entry_oi_change_winner_loser.py"
+    },
+    "analyze_qmt_roll_stage757_c50_oi_confirm_risk_restore": {
+      "sha256": "aa9c9c0529cc955b9a4b83369f09affcfac3049cf69d272114abcffda7ebabaf",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage757_c50_oi_confirm_risk_restore.py"
+    },
+    "analyze_qmt_roll_stage772_am40_80_120_oi_monthly": {
+      "sha256": "5fbfe1cd84909b0c71df7a5b8f2042b9870e188709f43781bdb3a72fd806c6f5",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage772_am40_80_120_oi_monthly.py"
+    },
+    "analyze_qmt_roll_stage777_am41_oi08_monthly": {
+      "sha256": "9866109dcfcfc6d0e17b1dcfd79cb4c8e80795856d63d4c77230613a2e0acb7e",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage777_am41_oi08_monthly.py"
+    },
+    "analyze_qmt_roll_stage778_stage777_2022_drawdown_forensics": {
+      "sha256": "77d65d65343df02f9317747ef5f2f30c1f8471424ba4220b61f7f3bd3c81e2fc",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage778_stage777_2022_drawdown_forensics.py"
+    },
+    "analyze_qmt_roll_stage799_stage777_long_lower_high_block_2020": {
+      "sha256": "3fc39c49006cbee85503adea5dce9436556fab0184d2e1698c2789e20123d18f",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage799_stage777_long_lower_high_block_2020.py"
+    },
+    "analyze_qmt_roll_stage800_stage777_long_lower_high_block_yearly": {
+      "sha256": "45de71cc040bd9df089c1397071fe71a9314df7b92a665576f76aae67f267a2e",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage800_stage777_long_lower_high_block_yearly.py"
+    },
+    "analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly": {
+      "sha256": "ae33da36e944a50c9d8fdd48f7149555b30f1168c2d3b557cfd268b4f9535e57",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage804_stage777_long_tighter_initial_stop_yearly.py"
+    },
+    "analyze_qmt_roll_stage813_stage804_rsi_partial_exit_ablation_yearly": {
+      "sha256": "7aa31e325a3dcd47c17f8cd95d84d470f6ee6513b148b0d668d61134b9efbda8",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage813_stage804_rsi_partial_exit_ablation_yearly.py"
+    },
+    "analyze_qmt_roll_stage825_stage819_intraday_rule_forensics": {
+      "sha256": "400fb94ff25b54c31c4c2f8204c1ee60d1788e24ee93a6be8a37c8a4d6e3f0fa",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage825_stage819_intraday_rule_forensics.py"
+    },
+    "analyze_qmt_roll_stage826_stage819_intraday_ac_overlay": {
+      "sha256": "bde3391b28b520f832ffac60528a1ad18c7a415f4431ad45edd0dbe63bea17b2",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage826_stage819_intraday_ac_overlay.py"
+    },
+    "analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac": {
+      "sha256": "fe4df78d5621b0de0a74bec2eaa679f145f702a36e5fb73f85f50b840e636fe2",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage827_stage819_intraday_c2_engine_ac.py"
+    },
+    "analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap": {
+      "sha256": "0adf455e167b8dbfde51a4687098dba91a6788b13b7a1a81020c260d0af32647",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage830_stage827_c2_broker10_margin_cap.py"
+    },
+    "analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine": {
+      "sha256": "c9d37be2560278b20eb358a4767f05a25d579f856b9940eac1feee6a0b5a4d7d",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage840_stage830_c4_120m_failfast_engine.py"
+    },
+    "analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine": {
+      "sha256": "755187283ceb9282ee0f0e1e0b2c79c2cf7b8fb737815487e5ee8f02e09d2a64",
+      "source_path": "examples/portfolio_backtesting/analyze_qmt_roll_stage847_stage830_c4_stop_retry_engine.py"
+    },
+    "build_qmt_roll_ai_candidate_selection_pairwise_samples": {
+      "sha256": "0b13e6797606a9f0206168493cb0a2c26dc924818c1a2f9a420036db8797b5d1",
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples.py"
+    },
+    "build_qmt_roll_ai_candidate_selection_pairwise_samples_v2": {
+      "sha256": "22d18f920303279756c79748e518073eba2837511be7b8b0a177ddfa0c87f868",
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_selection_pairwise_samples_v2.py"
+    },
+    "build_qmt_roll_ai_candidate_training_samples": {
+      "sha256": "039ec6cd1f76b8eb2de275d8fcc310557e2e70005f25c98c8478e6cc42066dd4",
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_candidate_training_samples.py"
+    },
+    "build_qmt_roll_ai_position_training_samples": {
+      "sha256": "be5cd6d8bcb91292c54c8232f9d3e4d060e8dbcb8e8815e218e26f2d3d65039a",
+      "source_path": "examples/portfolio_backtesting/build_qmt_roll_ai_position_training_samples.py"
+    },
+    "contract_metadata": {
+      "sha256": "8da5618b0cf032c6fba29abcbc2816a17dc1549d820e790c90803bcdb7d72a70",
+      "source_path": "examples/portfolio_backtesting/contract_metadata.py"
+    },
+    "main_contract_mapping": {
+      "sha256": "86f4baa027e1a236616d749895e349840a3db305b7ca87a7401ff4afc47bc503",
+      "source_path": "examples/portfolio_backtesting/main_contract_mapping.py"
+    },
+    "qmt_alignment_portfolio_strategy": {
+      "sha256": "70370c8ea1a3fa0b27d3ee7c64331e32a62aeddb91872d171129c6307694b8ed",
+      "source_path": "examples/portfolio_backtesting/qmt_alignment_portfolio_strategy.py"
+    },
+    "qmt_backtest_runtime_guard": {
+      "sha256": "d0153d9fee1e1b91b8be553966b73c1713748e546c82a4206da612d78b1cf7eb",
+      "source_path": "examples/portfolio_backtesting/qmt_backtest_runtime_guard.py"
+    },
+    "qmt_boll_reversal_portfolio_strategy": {
+      "sha256": "828a7da2082837a9d493764de34d8f8e0eaac5c0d45ddd3689459f2f5fb24ac5",
+      "source_path": "examples/portfolio_backtesting/qmt_boll_reversal_portfolio_strategy.py"
+    },
+    "qmt_range_reversion_directed_portfolio_strategy": {
+      "sha256": "a28cbdb7ecaeae5318dcf6ae5aabdd8cd29e1226ab1312cae9855c246fbe309f",
+      "source_path": "examples/portfolio_backtesting/qmt_range_reversion_directed_portfolio_strategy.py"
+    },
+    "qmt_range_reversion_portfolio_strategy": {
+      "sha256": "2c4782637c7fc977a5168e6e7e4aa0b4fa772779f55bded5635d952c753f510c",
+      "source_path": "examples/portfolio_backtesting/qmt_range_reversion_portfolio_strategy.py"
+    },
+    "qmt_roll_ai_candidate_selection_label_v2": {
+      "sha256": "b544a48423f8dcbfba29802eb616817429ddb44f187a268d84475193f8428975",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_candidate_selection_label_v2.py"
+    },
+    "qmt_roll_ai_path_damage_runtime": {
+      "sha256": "441e84b463a25111f659c7c5ab71794fef68cf8e32552af9b6601dac5453d2cc",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_path_damage_runtime.py"
+    },
+    "qmt_roll_ai_selection_pairwise_runtime": {
+      "sha256": "8d1edaa8cd7b02314367abd19b764cafb33d57a1371915d5d8422e652cdef494",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_ai_selection_pairwise_runtime.py"
+    },
+    "qmt_roll_intraday_execution": {
+      "sha256": "95de37e240ed5f34e8370cf9652e958c3c44fa3f36bef1d905c3e757a8304272",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_intraday_execution.py"
+    },
+    "qmt_roll_official_ai_pool_policy": {
+      "sha256": "c68ca17f7088eac0c61f66c01fee1e2b34c973e2307cadf8a2026b9ab95f32a5",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_ai_pool_policy.py"
+    },
+    "qmt_roll_official_candidate_stage777_config": {
+      "sha256": "b7934ab7a54b033bb1b9a979f55c056571dad4c96aa95f229e51e6f6c93ae7e7",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_candidate_stage777_config.py"
+    },
+    "qmt_roll_official_candidate_stage813_config": {
+      "sha256": "25c1e9cdf3ee79c49c7772ffdac58317e83afabced36c145780d7cf0bdb5854d",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_candidate_stage813_config.py"
+    },
+    "qmt_roll_official_candidate_stage819_30w_config": {
+      "sha256": "ef3e10f57eca5fd8e7f1d5dc9e01d8b392d2799c16c4f4d17f1b530e90ab36bd",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_candidate_stage819_30w_config.py"
+    },
+    "qmt_roll_official_candidate_stage847_c9_config": {
+      "sha256": "588e97e899f2291617fd935e474133a974da4088972e50a634ad0281e6edf83c",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_candidate_stage847_c9_config.py"
+    },
+    "qmt_roll_official_live_config": {
+      "sha256": "82faa02ebf4f782d6e2e2c531eafac0f95b6f8d10c62253dcc16b8922db74ac5",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_live_config.py"
+    },
+    "qmt_roll_official_live_lightweight_context": {
+      "sha256": "79ec9cf3ca4c4421bd797a3811fa98762179f10f1a68cba4a2b9ce4b4b09b0a4",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_live_lightweight_context.py"
+    },
+    "qmt_roll_official_live_phase_d_config": {
+      "sha256": "f6574a39173e5e8185895c0ebceee1f0a8ce79f44e95463f16d066491ef0a064",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_live_phase_d_config.py"
+    },
+    "qmt_roll_official_stage021_q_ruleset_config": {
+      "sha256": "167bb5ef3bbf49bf032f2d140d23df39ea286e1662d10fa74f30e051580df18e",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_stage021_q_ruleset_config.py"
+    },
+    "qmt_roll_official_stage037_ruleset_config": {
+      "sha256": "e98ec5d0a07ae4d2e4a114e377554568fa094e14d3f67c9aaaa2bb825f0cd5a4",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_stage037_ruleset_config.py"
+    },
+    "qmt_roll_official_stage78_config": {
+      "sha256": "465b66263fe5f72988dbd4b026f8d2375118a274b8bfdd079a1eeb03e9c6ae91",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_stage78_config.py"
+    },
+    "qmt_roll_official_strategy_material_resolver": {
+      "sha256": "8dc173b93f48657f3d825d816353c350e39457cec8fcc1af8a4202878646aeff",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_official_strategy_material_resolver.py"
+    },
+    "qmt_roll_portfolio_strategy": {
+      "sha256": "6d6aa534715200c40a5743697114f73080111d609b29980d924dcb1d362792e9",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_portfolio_strategy.py"
+    },
+    "qmt_roll_strategy_material_manifest": {
+      "sha256": "6268fcdcda7adaa02b2fed13ce4ed0823e92e97080be61e4b11c08971c401646",
+      "source_path": "examples/portfolio_backtesting/qmt_roll_strategy_material_manifest.py"
+    },
+    "qmt_universe": {
+      "sha256": "8a149c49075d85d25f27146a8f3c2de3bea1971e3bd0d20a36ed9104b636997f",
+      "source_path": "examples/portfolio_backtesting/qmt_universe.py"
+    },
+    "run_qmt_alignment_backtest": {
+      "sha256": "bb456e33bcb7056c3807252131503ac72833bce0144f6332098170da889baf55",
+      "source_path": "examples/portfolio_backtesting/run_qmt_alignment_backtest.py"
+    },
+    "run_qmt_range_reversion_core4_directed_backtest": {
+      "sha256": "826c7ac4e4da22cccd0fd1a4eddc4ae46326d6fbdd440ab94604bd311b9d6693",
+      "source_path": "examples/portfolio_backtesting/run_qmt_range_reversion_core4_directed_backtest.py"
+    },
+    "run_qmt_roll_backtest": {
+      "sha256": "38a016d6da5fe3b9d93868745b5e4f64ea12f499033bd301aba60cc09c6ee5fd",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_backtest.py"
+    },
+    "run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest": {
+      "sha256": "07f2fc29747d18da8818178a5f41e9b92c3fce7504f0f8610077c6bce83368dc",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_selection_long015_volref30_corr_fu_candidate_robustness_backtest.py"
+    },
+    "run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest": {
+      "sha256": "6a1b5080e1d62772aaea2460b31f73bd0afd24e5528ece08ae82bb64de280003",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_selection_pairwise_long015_volref30_corr_crowding_formal_backtest.py"
+    },
+    "run_qmt_roll_stage298_stage78_1_risk_cluster_cap": {
+      "sha256": "19c3df9b9e12daaa31552c9bfca1e85248290bd63ce824194c2d3656a97df124",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_stage298_stage78_1_risk_cluster_cap.py"
+    },
+    "run_qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation": {
+      "sha256": "bd5f3e58b25ac00485644384a68c7693e79df85dd536be1072ccdcb1b3101fc4",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_stage310_stage78_1_drawdown_gate_engine_validation.py"
+    },
+    "run_qmt_roll_stage318_supply_demand_headwind_engine_validation": {
+      "sha256": "899d24a96d5f796742a781a3053163c19834c4abb02c88942bab4f9a463b35fc",
+      "source_path": "examples/portfolio_backtesting/run_qmt_roll_stage318_supply_demand_headwind_engine_validation.py"
+    },
+    "stage005_short_bottom20": {
+      "sha256": "18dd15baf43677974a99b365dd09463b2e4a2336ee377d29182c9ff2e4ce34a9",
+      "source_path": "research/lines/futures_weekly_short_ma_slope_gate/tools/stage005_short_bottom20.py"
+    },
+    "stage008_three_ma": {
+      "sha256": "5f5554eb35033912658a2db6182b97418eafa5253ede88cf27caf09c47dc3061",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage008_three_ma.py"
+    },
+    "stage014_no_macd": {
+      "sha256": "693b21c396d97a03913ea77de7d250f10f16be30628ea0f922d2fe4483291dc6",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage014_no_macd.py"
+    },
+    "stage018_short_case2": {
+      "sha256": "1721650a4e3d346517573e5ddb1d3246bf588f11f2fe414cecf5ee01df701943",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage018_short_case2.py"
+    },
+    "stage022_historical_safety": {
+      "sha256": "6fb1abcfac3b6bc36b270a9ec10fdd49be7500a7d1dbcc4c4c9d9d36de9498b7",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage022_historical_safety.py"
+    },
+    "stage029_week_close_exits": {
+      "sha256": "e222b65a8951af1e30052d1a5fd172ac2a89b166dbb96f2bb2319c548157b452",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits.py"
+    },
+    "stage029_week_close_exits_v2": {
+      "sha256": "7b28b2d42f1c79d172744877c274fe415aaeee85e14724c0b8fa387d68e991b0",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage029_week_close_exits_v2.py"
+    },
+    "stage032_daily_addon": {
+      "sha256": "e601f44f1412df7945497b1d360f44baa7d76ec699c698dd3bcba485f0f91974",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/stage032_daily_addon.py"
+    },
+    "weekly_adapter": {
+      "sha256": "ff1aab44517515015efe0dc743a54b555eecddcaf3024db7057693dbc7a97afd",
+      "source_path": "research/lines/futures_weekly_formal_no_half_r/tools/weekly_adapter.py"
+    }
+  },
+  "package_files": {
+    "__init__.py": "1b338e9fc95e4211fef3761d0949aaef9cb7288370acf701273b39127ba5b535"
+  },
+  "production_qualified": false,
+  "schema": "weekly19.frozen-source.v1",
+  "settings_asset_sha256": "513ef478b031ad819dd0a81baf11b76f1fee1bad8671de6526966ad68e6b71ab",
+  "source_head": "688754057ba1dc07caa9edc537ceec486f678372"
+}

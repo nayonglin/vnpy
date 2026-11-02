@@ -5,6 +5,21 @@ description: Use when users ask about official futures live trading, the current
 
 # Futures Live Execution SOP
 
+## Weekly19 正式替换兼容分支（2026-11-01）
+
+先解析实际 stable HEAD、CURRENT、生产 release-manifest、qualification、activation 和 loaded jobs。以下是新代码支持的分支，不是生产已激活的证明：仅当上述证据一致解析为 `weekly19-15w-r150k`，才使用 `official_live_weekly19_base15w_reserve15w_stage014` / `stage014_week_close_19_short_bottom20_original_risk_external_reserve_v1`。若实际仍为 C9，则后文 C9 约定继续约束它；不得用开发默认值覆盖旧生产身份。
+
+- 固定19品种，周线底仓、无加仓，空头历史同一物理合约底部20%拒开；原风险档位保留，关闭AI、多空均线斜率拦截及日内C9附加规则。
+- 初始交易权益15万元，另15万元真正留在场外，不参与权益、风险手数或保证金；新候选显式使用 `cash_verification_mode=operator_manual_v1`。用户已取消自动最终结算单解析和自动银行流水到账producer要求，出入金完整性由operator人工核验；真实权益、Available及Deposit/Withdraw仍来自当前CTP，不得由人工金额虚增。周五下午原始信号批次邮件只建议补足差额，同一原始批次不能因报价/权益或另一品种重复要求补资。
+- Stage945/947所有调用都带明确profile，路由至 `run_qmt_roll_weekly19_live.py`；Stage948仍独占原7个label作为transport所有权，不另起cron。monthly-ai-pool在此分支为明确disabled，不运行Stage935/训练/AI池。
+- 每日完成行情必须经过独立weekly19 immutable generation/真实close_oi与物理交割月校验，并写weekly19 daily receipt；不得把C9旧AI/CSV回执当新策略证据。节假日信号保留原完成日，同周周五建议是外层记录，不重跑历史on_bars。
+- 每个完成交易日由既有 `postclose-report` 任务生成风险通知，明确当日有/无风险组压力降仓及其他平仓事项，列出中文原因、原码、持仓方向、计划手数和券商回报证明的累计成交状态；旧待执行和当日实际成交更新分开。缺决策/错源不能伪报无信号，旧状态没有成交日期时不推定当日成交。日报按账户/物料/完成交易日独立去重，发送不明不自动重发；周五信号与场外补资邮件保留独立主题和发件箱。新增通知须随新不可变物料验收，不代表旧m0002或当前生产已经具备。
+- 原生回报/四查询/保护层与资金状态需同一actor、可恢复原子bundle、完整原始子单绑定。新仓必须重新核真实Available、原风险和每个native API child数量；平仓/减风险仍独立校验。未付建议不是欠款，权益恢复15万后不得强迫补旧差额。
+- 跨TradingDay不能凭Balance差、PreBalance、query-last、SettlementInfoConfirm或墙钟假定出入金清零。新人工模式由 `run_qmt_roll_weekly19_manual_cash.py` 发布独立 `operator_manual` 确认记录，再由原actor与运行状态原子消费；逐个闭日人工核对gross Deposit/Withdraw及本次真实到账，记录绑定账户、物料、request和原始快照，备用金不得重复扣减。缺少本次必要人工确认时明确pending，不能永久勾选跳过所有未来现金变化。`--weekly19-settlement-trading-day YYYYMMDD`仍仅可选归档原文，unparsed/unqualified；自动最终结算格式验证不再是本次安装前置。
+- 本机发现的稳定目录是 `/Users/mac/Desktop/person/vnpy_production_live`。这是本次操作目标定位，不是原bytedance主机资格继承；仍需新master fresh clone、新生产qualification/manifest、Stage948激活与7jobs实际回执。
+
+Stage014自然研究结论 `NO_PROMOTION`、5个起点备用金耗尽、37个起点模型保证金压力以及零手续费/非完整PIT等限制继续保留。用户授权推进替换不改写研究经济结论，也不能替代任何生产来源资格。
+
 ## Core Positioning
 
 This skill is an execution-discipline guide, not an alpha-research guide.

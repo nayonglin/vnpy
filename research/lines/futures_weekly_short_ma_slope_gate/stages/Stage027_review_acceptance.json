@@ -1,0 +1,6183 @@
+{
+  "schema": "stage027.independent.actual-R6-result-review.v1",
+  "generated_at_utc": "2026-11-02T09:09:23.240196+00:00",
+  "generated_at_cst": "2026-11-02T17:09:23.240196+08:00",
+  "review_status": "PASS_WITH_LIMITATIONS",
+  "accepted": true,
+  "accepted_scope": "engineering success and failed actual readonly evidence correctly classified only",
+  "source_commit": "4c9b645eefb509d3026246f2f16843c57341ddaa",
+  "release_id": "m0006_20261102T162146+0800_42fdb977fc28",
+  "engineering": {
+    "status": "PASS",
+    "suite_count": 96,
+    "counts": {
+      "tests": 2408,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "passed": 2408,
+    "all96_exit_zero": true,
+    "archived_versions": 288,
+    "unique_object_count": 193,
+    "observer_errors": 0,
+    "per_suite": [
+      {
+        "index": 0,
+        "counts": {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "3325fc29d0e091c755d5b07f3e4cf83dcac0275d425bb83b183642f9e10220e2",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "9fd6f97201e0597665a53432e84291d6865090d900d0b57b7993b8e828dfac65"
+      },
+      {
+        "index": 1,
+        "counts": {
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "c41bf1405729746e1c481f9e2131a0baacbb0cebed4da5bdce5a1e93353e329a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "59d471d6e703126f3894ac020b56be74a8c9d05cc3b1ddcb5ffb86bfbb5ca86f"
+      },
+      {
+        "index": 2,
+        "counts": {
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "68a0f2e6648def59dcc4b2d64ee220dbc11375abec7eaab8a9393bd0e3e2018a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "7f44bd48efa81736e7419375ada1c62cdb7538a1a88ffe7f34d86b1a7179ccfc"
+      },
+      {
+        "index": 3,
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "d5267eeb47ddebb9b7e48c5fc3e382371b5bbd3fabf64b48c27f8d965f1d7571",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "48850a01efa8240587c9239f1a6f746fab27b18de7d447002ed3bb4365f3d2ac"
+      },
+      {
+        "index": 4,
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "06b3860d53ce859fc5fa716329c02b811055e58496d9701f7c44bb37b58c7fc3",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "f72de59b92dc93799a08a9a4017af024886cc700e18fdc32218503a32b887a62"
+      },
+      {
+        "index": 5,
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "adcb0995e9ee362bb2aa9f4124b57c74052aaa4d6baab1bd9befa3047013938f",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "4bf686b3e70f1275cb11529f8da376ec23792b989fa8845a8cec263738e44609"
+      },
+      {
+        "index": 6,
+        "counts": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f8fd267f6eef1579ea1c44414455d783c95f14fb31f443bb73e4a3a5530f4ce0",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "516ba4dbc70f14028845f6f2db5a5f28119721b7bbe209d5d7b559b5dbee88a4"
+      },
+      {
+        "index": 7,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "0231801281d4ec7b7b44852e0ee09a333b770ff0c82b2479570d82136295be05",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "6508e1ca3ed62a8f12749eae79d9d32b4acb5155171980689ecd60bb2cc44052"
+      },
+      {
+        "index": 8,
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f131d43e93088ee2477051b8d7ddae52d87604911be1cb330ffded56d5c1e156",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "203c75f13ff17ceaa4c3d73b228c30bc1415eb025a50474dc9721e76575a3fe9"
+      },
+      {
+        "index": 9,
+        "counts": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ac902dc8afb2bd95a872fea594a766b08d72985d6be47b115ed96870e6e35575",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "40fcfc9d1f54d5dd3eb0d040e5ad19a24c66e833c454ccc13b1731778250e3d0"
+      },
+      {
+        "index": 10,
+        "counts": {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "9dd53fe5a1a8099c755ed1eecf8381ae793ac8831a1ac8a629ca620b21695eb0",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "bb94b33857b7295adefbc0994f94452cf83120111b53fc97f52ee37cd65af647"
+      },
+      {
+        "index": 11,
+        "counts": {
+          "tests": 35,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "013a6e87d9aca0f6a102307e86a7ab0f28a306730a70baea0a696cf380658b3a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "8125a9cf1d0f647bd944635003d3f751f4802a0560506c39cd755fb36a3b1ba5"
+      },
+      {
+        "index": 12,
+        "counts": {
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "458c3be9a27ed6e23eb42179e46d601861d97ff9b06b740266a7f27722efebc4",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b0e98e2bdc3a47b0e58973e10d61cb922c76eb82e21033df25fa8bed0b461f07"
+      },
+      {
+        "index": 13,
+        "counts": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "667048320a5324f93a43a899f05c67c206301a942fc605a1a33663fa68cd5f54",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e5d0c28588ea0dd00778530029b41c49df102b5f2c8e998850d38dae226048cf"
+      },
+      {
+        "index": 14,
+        "counts": {
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "2a6e1d0f424b193f6339902103eb169352c04df69f4fc1ff6fd0b9377e8c0136",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "675b118559eceb53f1cfcf636a6859e9cec805593f0fb019ccaaf4db03615376"
+      },
+      {
+        "index": 15,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "9139ce3f566952179949d07a56e6db8e2dcf7ae2313ebf7c1b62e92da331067d",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "5d2895ffe49846444e4ab7994dafc6b59805ef4b555754f557913bb5f2301afc"
+      },
+      {
+        "index": 16,
+        "counts": {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "7533bc5da8ff0f37f659c1400e87837fc42847a9565728960a970abaebe7867d",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "851dad996c9c1873457c6b922a4ce8f5fdac255945a868524ec72e66d3157a88"
+      },
+      {
+        "index": 17,
+        "counts": {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f736a4e6f420f4470186c095e69d776e6788c9f3ce9cefead86a4ae46586db6a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e9d31efb2494bc05474ec1ee1bc9995c3af004a01b6cdace729991457e5b7fcd"
+      },
+      {
+        "index": 18,
+        "counts": {
+          "tests": 58,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "c48b2b18e15bef79b8633994f4b4f5fc6debe986f743b6d0609f59231015ddeb",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "66c5c6fa127c73ecc82376c26114a9ba06a4e65bffed4549d1b165b22185bfe7"
+      },
+      {
+        "index": 19,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f11f783b5632d10465fc3c976b39d85da05470f5d72618d1ce2ea628f7c4ab5a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "4e1e2d5786e8d00536b31f6f5449d8eccd68843cb46da2d21ca53935095123e3"
+      },
+      {
+        "index": 20,
+        "counts": {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "932d16b1589129d80454d0e3e43cbbe985bd7874b01579f4e7fa5f4c2a9d5fb4",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "47c7dfd2f7acfc61ca2ecc506fe86f2cdde4591d68aa63a08123877d92fcbc1b"
+      },
+      {
+        "index": 21,
+        "counts": {
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "290be5dae50c58804190261b57099fcecf95973d3cbf65a140638c781151e30c",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "3a72e356c5b8ed3130ee640c0d1a642658dc053d822ef39271adcd84cd1e3040"
+      },
+      {
+        "index": 22,
+        "counts": {
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e06e482f9eacc6f7d0f6fb65dc65c9f86f6287859beac8daca6a4f29daca027e",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "1ea4e5a3b283f69db3ae98d82a047604b4da23e1c70c9f6ebd1526b40a842e17"
+      },
+      {
+        "index": 23,
+        "counts": {
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "76190090dca3194bc8c6285e8c93cd35c2bf1675ef859ea93d2da256093d4ed8",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "cdd1277602d66b8cc97094191fabf1c25e93307a085016c5bd065dbd197e22a1"
+      },
+      {
+        "index": 24,
+        "counts": {
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "bc471819107fce0456153797406854e34ec67f6a04a88cd558e735ef386087cb",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "f9794e99ff136e2e47a61534c77376361903e07dfe5f50d9625f68eb0b1b1399"
+      },
+      {
+        "index": 25,
+        "counts": {
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "600211ce5789dfb9307a71810bcd36c40e25f557ac434731a23d75784e434243",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "1bb96f0f8f061c8c0facbc1601c3954aebe83a00301239b7e30fefb5c69dc643"
+      },
+      {
+        "index": 26,
+        "counts": {
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "74ef9c46e00dc7236398748d38078c594c863d4eb8aac62156842df2f216e1e6",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c3bceadfe8af950c764e6207c19e16388f4b2dd619f46397390e96bc07346cf8"
+      },
+      {
+        "index": 27,
+        "counts": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "a8b2b31cb252ac0f8c715f9dc2850238c769e26a9f246376bd6db1e1d5e37c8a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "f4b62a43689b6a4dc511a080787811089b374ab926fb55b1e8161343f7d7e7d3"
+      },
+      {
+        "index": 28,
+        "counts": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ff17ad07b6716b04d8a5638b3e993d89ee1f72cc9dcff66a7c3ce9efabf34f51",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "7953414ad90ca6ada024cb6eb54590d7c9f12f2ffb86b559732fd089beae1fd0"
+      },
+      {
+        "index": 29,
+        "counts": {
+          "tests": 38,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f3d6bef9491fc7ef6bd9ddd2089616a6ec43121a7ae5b1fef42447a32f5483bc",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "a7df93e1a44b5a98e8a62add266a544709f81852fbb12311cd25c1257056b478"
+      },
+      {
+        "index": 30,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "a323d86e575816d2548904f26b404d0391e3bda485d9d4416c85677531751f36",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "99a084a5a8c1548a771400f3fefc4fefce3521637e4cd95894a525b0b730b07b"
+      },
+      {
+        "index": 31,
+        "counts": {
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "37c6c63e1ce02f779911d04c5fa8aba381b5498cb131a21d71b747522d31af5b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "19fb88a8cce48d097ba2da6ded1518a1590a5c3a5e88e9631cd3a2f59064b0d6"
+      },
+      {
+        "index": 32,
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "bef674900f2f2b528e2def270f3b0a5b91dac59fe8ca1ebd3663d08fef539193",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e6fe7570d0b34bd8410a799345b229270f7adc35d164c9b8d0a68b342a9f98a7"
+      },
+      {
+        "index": 33,
+        "counts": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "3c05c8a35b5353b072b1e18cd0265f644eb8bc9cb2afcb41eeb07dbd123ef2df",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "4b7da71ad77b7ff324dadb0464f0de6a047b5ac387355bf8ad2422f359b784ac"
+      },
+      {
+        "index": 34,
+        "counts": {
+          "tests": 61,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "482dc0b44ceffba4e39ada05a3bba172763ff33d7691d0263fde4592ba33b2e7",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "4507d01098095c1da6badfb3c7305610f67130d7c0dc991058a0e7f97abf6fcf"
+      },
+      {
+        "index": 35,
+        "counts": {
+          "tests": 23,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "713f07bb626ad989aec85d3a6b2ee65167b4b3e12781d50fe4d532d79ad0ff54",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "28b2ee7ea46bb6167f6ef1f7f11cff1caedc8c13de87513f2202a7ec49c71112"
+      },
+      {
+        "index": 36,
+        "counts": {
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "b599eac72af79963978738d286590491106d1f5d13c1af6c0e9e4d0b76017777",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "abda33a8d42788941dfaa9798ce9eb4aae2afad107605dc83f6a8669ab187f3e"
+      },
+      {
+        "index": 37,
+        "counts": {
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "27054df21922903e531ad697be96a36915bccb419cf11fbd6e410fcf2281b2d1",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "033b81a4c7068cea05dfa72fde6818c1103ae2e6bfbd8b7300f80e9937750df4"
+      },
+      {
+        "index": 38,
+        "counts": {
+          "tests": 51,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "a815d7e2e3d496a9885c0e96c072acb5cc9a322fd741df5c4d7b47c79b0fdf6f",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "2af05fda9fe8c2907182572c77e12c910e1ed625afa9010bd09a894aafbf7b08"
+      },
+      {
+        "index": 39,
+        "counts": {
+          "tests": 95,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "172eda9d60aac843585d94c849349e21251a80cb44e45b2960364eb246cb77be",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "509f4fb13ff31c9343f06a21a33c38b93ece633c96769d702f4d0a09fc027785"
+      },
+      {
+        "index": 40,
+        "counts": {
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ac34e668247d5f841edff5b6b411f4f48ac369911386a659ce99fbd5dbf124fa",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "fc24b8df3de59930a66836e25ea2738d1ff648f7e138a8f53443151b5ca9a3e9"
+      },
+      {
+        "index": 41,
+        "counts": {
+          "tests": 184,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "8de366721abb6d9019b4da9e167abe19a488291f2ee073cdff44468476f44f0f",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "6bd2136def77ef7a0fb26864f48d17dbeebfc61b45c4ee629060ff9062c4705f"
+      },
+      {
+        "index": 42,
+        "counts": {
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "fc359505bed12898ac5ab0ebbf1da02ef3558acd4c60f549cdfd8c7894d5f3d4",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "5fc13ae348ffa195a3e63545f1e182d225cad7b6fa06d7ee7f00d58a762d87af"
+      },
+      {
+        "index": 43,
+        "counts": {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "68881b8a30454c90ab5d548946e60f09146a7373e8ff3c62d6836f2bd0836972",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c75fb15ec2dbf909b5bb5e80cce12c6516a07eaee1f4b1b0361d6376e1da0a9c"
+      },
+      {
+        "index": 44,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e858ad1d457adfd3dc8f0423f7d27117453c0e5bc7639930890ddfbe2027e83b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "029dfd0e46d8f5f6d51172aa5975bbace2132f1688a7c2d5aebbe0601ad2fb2a"
+      },
+      {
+        "index": 45,
+        "counts": {
+          "tests": 63,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "c92c8b09262b8a2680a4a13aa95d80a9aa8a4eb49aaafdddcaac8e390370c16e",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "4694e107eaabd14ee249237992e90815872ff8ad6217f343bbb0d092354c6c02"
+      },
+      {
+        "index": 46,
+        "counts": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "158f8aa8863a635da83451ce1fcaff305c507bd5e2aa96b982861e9e6e84e87d",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "571f0dfaa0edeeb96e4bc0a10988e339fc75100062603b93fda62c923cc86fe2"
+      },
+      {
+        "index": 47,
+        "counts": {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e44876e2c4a3577714a0660e590acdb769225dffec1c2ab264760ee596d1305f",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b20e8eadc82ca2af376344d3df7c2da89db47315fcceeec34c6ac451ccdf0264"
+      },
+      {
+        "index": 48,
+        "counts": {
+          "tests": 53,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "7c62bdbd48a99ee34986fe837911f4704c7326c127b72abdca6390384b530eed",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "54757572e3e90c40f6b062ec7a585496f4c59c697f6e6cc363698ecb74c9923e"
+      },
+      {
+        "index": 49,
+        "counts": {
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "94e509705295a607b6fbbd437f24950f806e1c655182ea3808c79dfaa8fc0878",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "6a2556b45183def49fbb8c1a4a50321a2346cdf33376d46423aa745d7ade4b17"
+      },
+      {
+        "index": 50,
+        "counts": {
+          "tests": 23,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "9e6078119b1ca6c7010e2273724c18f419facd3b6dc6205790d65aa1f75d524b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "658ee5cf8e423f7dd208fc0d98f0f6433e26abab49a1c518c62df5432f76f602"
+      },
+      {
+        "index": 51,
+        "counts": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "a00a023df1b3bdfd38306ae9c3c2a28a31f164dd5da96939e12359ea1ee06bf1",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "fd00048f4075dda4d217ff0677fb18e0f5382f0921843f8dd8cba146872f19cd"
+      },
+      {
+        "index": 52,
+        "counts": {
+          "tests": 49,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "5da033c5214e90ce366aa62ff94441f893f541a4b7c947494103b402588b3ba6",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "0bea9bfe18fb3d21eef548e2e8bf8d03199e0967e02b6b9537801e2d9ba02f59"
+      },
+      {
+        "index": 53,
+        "counts": {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "606fa1408b76013051eeae8d0e4711e06522442882f5c063912fb38621a041ac",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "529c27467e6bcd6d571a5d8c987dfd16e604ba3507279dd8c2cb9a19db21d8d6"
+      },
+      {
+        "index": 54,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "b6edd20daa8380325759ab8288e3ef548728b865e460a80d00ce0256b7a6a53b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "66cb81c466124f9627a5dae8d0f8b69b9bb82ea11711ed3fb2a887e5cd63c34a"
+      },
+      {
+        "index": 55,
+        "counts": {
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "b913336f04b2c6240948d988c81b1d50696dfd2b3bb24e4afc1ed5e4d835650b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "7012cc3b21e3df88a5d54ead87e2c2de20fdaa46f4ffb22759a4f9fa0bf4559a"
+      },
+      {
+        "index": 56,
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "d5bdd8b88ed6b4e31efdb39ad1f9439219100c0a2cdc47fc2824977aede224b1",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "44ce4605acd3a056a3e4f15b5d8b1ceb0f50afeef25dafc63288be1cf4a5cc7e"
+      },
+      {
+        "index": 57,
+        "counts": {
+          "tests": 42,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f9dbd90c595d94f619dd270c33c8e29446b791a91828f26f04c3a5f6186a76dc",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c9d781072233f54f05c2b73a874b81990ec16f880204eeb42ee1c740e1fd1815"
+      },
+      {
+        "index": 58,
+        "counts": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f557d09ac01a884ccdb9348cf28dd80985ebdeba2dd7bea8abb82cf2cee4db58",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c84644f7012a48a4abbfc055725e1293e439fec983d5abe43f04f235c3b56fc0"
+      },
+      {
+        "index": 59,
+        "counts": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "c0fb38b5e73ebd1d66367c848f0a63422b396fa677c5236e438df2b599cf19ea",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "9789908dc54177cd9f0041d913fbe8821840c1bdb162ad9e6a7b60ffe3c666b1"
+      },
+      {
+        "index": 60,
+        "counts": {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ccf14ae7a044241c28c0c7069f6a79ff4f9fc555cdfcf853ad66d564299bc802",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "02812adc3abec9ce260a6545e28254c8966d8f6467332c91358cbfafe091b5c6"
+      },
+      {
+        "index": 61,
+        "counts": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ac47cbe84a17223699c377583a8dcbac164c11b2dee713456cc5190cf7672c28",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c7c1e819500a7732321febd0b880ca832804a5f59e4ca3fa510e4a7455884877"
+      },
+      {
+        "index": 62,
+        "counts": {
+          "tests": 36,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "3df308ed109126fa165fe9dbd6c5972289b53b3e66e912eeee28e2b796debeae",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "f1b3b4170cbfdfe66afa23c9f3caf6f4491927881b73ca5c369ea79d41c3083b"
+      },
+      {
+        "index": 63,
+        "counts": {
+          "tests": 21,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "7a4e56bbbd90c4105cf02253a7493d4212a19991c48351afb8473580a794a2b0",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e0910690def88e68c8bee6de3c04c2fdecd65193498fb715ea86abbdfcf328d1"
+      },
+      {
+        "index": 64,
+        "counts": {
+          "tests": 74,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "dd7220acb7697d7bc8ddcecdef226d2d4c53b27ef8acbf7a283a3af3886fa4a8",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "0790a2b49a74b4c60f27e195a5254c7befded1161e11057eb333624843abd5a9"
+      },
+      {
+        "index": 65,
+        "counts": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "d296c6f329c94644364767a9e3484836e14dd0ce3b455581cef56208dabae205",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "9ae074aa1d1b3de6cf1679aaf7287cb730e903f76bf5e95731fff2f02c4585fc"
+      },
+      {
+        "index": 66,
+        "counts": {
+          "tests": 103,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "6e37ff978337d07e365061eb4ec713af3c0e8fbbd1b2d2f4ebf8d6c5cff5b43b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c126b1e94b0b37f072e4e80bf6636346b5ad91e02ae819253cefaadeeb405ff2"
+      },
+      {
+        "index": 67,
+        "counts": {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "697d81592b5493f3782d2c187571a4b930ec5cd94eaf562eb07217018e81bb8d",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "a57ad3257a5e040e804b275a61c312915b3812faf81089afa812cdd791a76226"
+      },
+      {
+        "index": 68,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "4cbbae21e49b9576608934cce03fabe0c1ad83ac02bda42795a2d30b9c664fb0",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "0945b626ff3a3f8159224b355b2acc284b356bfce5c18cd2da8ded60f0f8e296"
+      },
+      {
+        "index": 69,
+        "counts": {
+          "tests": 51,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ec6595cd55b095c7f82b3ee90942a81f353f53810c67919ca199bbcda6f6a4cf",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e2d57ed754bbfdba8229684df841f7534c26659c49482753be771a65b42bc67d"
+      },
+      {
+        "index": 70,
+        "counts": {
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "b830bb9d19902c0a376ee3d5e3c6f0ee7bf03315d4c8b18477079e55a1a64200",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b63a631e59b33fc466dffaa8896df0b11cfadac5cb883ea8fbd536ea80a81045"
+      },
+      {
+        "index": 71,
+        "counts": {
+          "tests": 67,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "710a880bee07d4182fdaa222e0b7a729eaf0f9eb5cd93bb3b6cf6c3d71bdb08d",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c3c858271dab04b53d3123edd26ca76debfcebe535ad30f92124e1990bb6d8f6"
+      },
+      {
+        "index": 72,
+        "counts": {
+          "tests": 114,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f4e5d96c2a96bc14b0948681e6a5dc0f9328f424a0d185624e8e466500f5750b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "e17d3cb643da0dd20318eecdf642f8f43f2610fa11998fa53047d7be4bd69367"
+      },
+      {
+        "index": 73,
+        "counts": {
+          "tests": 57,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "70fbf4b0a9e753e8ced3ff93ff1de27aa5a821d2285646578444d4cbd9227d35",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "17603493415f9d284bbcccd1573d146c2d4d048a8eb7aec170978f9d506f2ab7"
+      },
+      {
+        "index": 74,
+        "counts": {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "755eb194ca7dfdfdad0423573f7851974f824824e1e8e58e9cc45fb85fdec976",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b0cb4e04deeda4e5df1e8b4b6f385371835cf5573fe9d9ea82c864fc1c681c19"
+      },
+      {
+        "index": 75,
+        "counts": {
+          "tests": 23,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "46219d63ed99d5c144abf0da7d06ed7d02888e583b79ed35b02cfa272b9ddcc5",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "2178d2fcfbffc9572c88e46ef2fbce3dbcd60a0dd351d81ee8726891ac09d0ec"
+      },
+      {
+        "index": 76,
+        "counts": {
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "4748a0f8a25b58da9f76c8e605595404e8d4a4f0c6d1c842ae64a04ad9b075c6",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b891f3ea8937acff9f35e0d1321e236bac785e3ee3f95cc991ad34a287536c0b"
+      },
+      {
+        "index": 77,
+        "counts": {
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e43d150eaca1a9970d07df33335db85583944da87acf67a9b88a2a50eb2ef737",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c42c59fd488b4d92f89edd5d5ce64ce0a3f1c625415cf7487f33a2fab918a302"
+      },
+      {
+        "index": 78,
+        "counts": {
+          "tests": 35,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "f853b501f50c2911b84294ffd60201272fdc4e57f03311db1f36ef834984b80b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "6c17c93ef47fdb15869857a4183182304937a39568066798e98553f5609e16bf"
+      },
+      {
+        "index": 79,
+        "counts": {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "2dbb7a63aca45d1c6a60363f899967e8edaec2937d9eabd80b8fef42602b8059",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "5bf74e38062dbae27c4a8e000e976c1a6e1dd12f37b39e2ee0f9b2e1a8e884d3"
+      },
+      {
+        "index": 80,
+        "counts": {
+          "tests": 50,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "8b15a78cd0ebe5bb2323635bba861e89523be01fb15168c750b964a481d3f788",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "d63512cf96ffab7c019c99234c697adfb716afdd0ba0227ad6d1aeec32989d6b"
+      },
+      {
+        "index": 81,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "26871833ac6b553f3fb04c3aee7b4aaf477f012dfd0fccc98423a786f4a2fcf6",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b2265386c2d2685ec5e946967dd6205b959cf9bf30afbb447b4e28b1acad1faf"
+      },
+      {
+        "index": 82,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "ed7b63fcf51571f0f905bc3680b725f96440e3d1a5034b6d5380466fa77a914c",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "23fea89c118dad7c7fd0bda41bb217bec163e0a0f8a354eb551991646accd18f"
+      },
+      {
+        "index": 83,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "515be4cfdf2b76e941b3f2d1eb2c709d766ebbb204b4446764e417658fad3f8b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "c987411cbee32775b74f10d94d2693d15be04856a38ba727e758e0b4421f758d"
+      },
+      {
+        "index": 84,
+        "counts": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e0dc4fcc4b75d6cf76271650c646dc70780f58d3e90ab978f002e210864186a4",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "66157848a86ae644f8c6d8dc12a8f30d0f5355e36923e526f48ca6fcf0dbc376"
+      },
+      {
+        "index": 85,
+        "counts": {
+          "tests": 40,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "2beb89466e0a934fadc4e1dfa445e9257ac7f35ca3b5a6562978f236ea00d138",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "2a62a400481267ef318a0035c4a2ad524d683b6733b4e9cc4e71897bfdd10663"
+      },
+      {
+        "index": 86,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "a3c832833ea501adc1b7821baf6638f2c89b5d901d38f9793c540c0f31490faf",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "54e2228aa53f5358165812e91533416eb5cde656a32fe5aee312a8e1b4ddb58b"
+      },
+      {
+        "index": 87,
+        "counts": {
+          "tests": 49,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "19f237d0c054a7430a3806dce38033b63a06201e7c0d9732bb4646feed461cad",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "435d9b9ebc18c57cf0ceba4b6a4a2aa54794caf085db1fcd6ca12511669cfaab"
+      },
+      {
+        "index": 88,
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "837f94a4d9157553d7f5fc02ed665b9da5332b97529adc63223c0c11c5163836",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "8ffffd0cfaba56aae2914c28569d73373090cd1abe6dcb05e0ed711a3e6b18c1"
+      },
+      {
+        "index": 89,
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "5e66bef70b0caab3988e7143396f1cd00e565152f05bcab76b29c8af6891af4e",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "383cf899a900ed04909b9380f08ac26752c14953041c04d4e6fe281ac444048b"
+      },
+      {
+        "index": 90,
+        "counts": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "2d5892866935269b1a9c94f868a75938104321f0806dc17e4c22a3f793a32beb",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "b6072b5b51c552616c0b1f6acc2b8bf07f878e7ab52ce91c4f778c7e70ab4a2d"
+      },
+      {
+        "index": 91,
+        "counts": {
+          "tests": 21,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "05caff5f4e649b178dc46dd30a16d8c0a259b1d83fe742fce3c747ba94412d8a",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "92d1ccbde686d1adc43c1ee90c88c6fba92e21f50f16fe4e860d611fd108c16d"
+      },
+      {
+        "index": 92,
+        "counts": {
+          "tests": 41,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "1fc52f7eb1b6e63239baa88967af82423fe726934a920edced06643552d9713b",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "16764c789b14c6b4f71d9fdba6dd8427c932da21e61f3c19ef61d105a9accdd3"
+      },
+      {
+        "index": 93,
+        "counts": {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "0a919a6796f48e29c2fa0c6a40d405858599af70b38a7e8d91e35d298cb06a65",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "087bafce20690aae8a4722bf52b3d514ed0ba9173b219897f9694c5dc8f398f8"
+      },
+      {
+        "index": 94,
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "e413a6470d1af82f233ef9247c68ff11f331f6533b2b2d72feb8f7ab3842e19f",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "8aff3e955005202e28b7687d6a6587cd4e1a4182996ef0a3dc1569b70f7cdcff"
+      },
+      {
+        "index": 95,
+        "counts": {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "JUnit_sha256": "725080126d9892381b4870e979fd922aa65e50b8b984ca50a3a82956ea68a786",
+        "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "output_sha256": "0a10fa78d5a856b70c617ec837e839d9675b33330c0bb5dbc684e019e0a50eb3"
+      }
+    ]
+  },
+  "actual_readonly": {
+    "status": "FAILED_CONNECTION_NOT_READY",
+    "probe_invoked": true,
+    "observed_attempt_count": 1,
+    "second_capture_observed": false,
+    "stage174_status": "readonly_logs_without_ctp_progress",
+    "stage907_status": "readonly_refresh_blocked",
+    "TD_MD_connected": false,
+    "authentication_or_login_confirmed": false,
+    "broker_trading_day_available": false,
+    "query_callbacks_received": 0,
+    "position_state": "UNKNOWN_position_query_not_available",
+    "account_cash_state": "UNKNOWN_no_account_query",
+    "confirmed_flat": false,
+    "actual_positions_not_inferred": true,
+    "mutation_attempted_and_called_counts": {
+      "send_order_api_attempted_count": 0,
+      "cancel_order_api_attempted_count": 0,
+      "send_order_api_called_count": 0,
+      "cancel_order_api_called_count": 0,
+      "native_mutation_api_attempted_count": 0,
+      "native_mutation_api_called_count": 0,
+      "order_api_attempted_count": 0,
+      "order_api_called_count": 0
+    },
+    "zero_API_evidence_complete": true
+  },
+  "qualification": {
+    "status": "FAILED_NOT_QUALIFIED",
+    "wrapper_returncode": 1,
+    "qualification_file_exists": false,
+    "failure_gate": "release_builder_production_readonly_raw_capture_invalid",
+    "production_qualified": false,
+    "source_qualified": false,
+    "can_activate": false,
+    "can_install_as_qualified": false,
+    "account_adoption_allowed": false
+  },
+  "runtime_environment": {
+    "source_R6_bound": true,
+    "formal_env_profile": "production-live",
+    "formal_env_file_selected": true,
+    "missing_required_env_count": 0,
+    "actual_Dyld_formal_images": 2,
+    "formal_framework_priority_verified": true,
+    "python_framework_and_extension_hashes_verified": true,
+    "env_identity_present": true,
+    "credential_contents_read_by_reviewer": false,
+    "credential_correctness_or_server_authentication_verified": false
+  },
+  "tcp_diagnostic": {
+    "status": "two_timeout_observations",
+    "rows": [
+      {
+        "role": "td",
+        "tcp_connected": false,
+        "error_type": "TimeoutError",
+        "errno": null,
+        "elapsed_ms": 5006
+      },
+      {
+        "role": "md",
+        "tcp_connected": false,
+        "error_type": "TimeoutError",
+        "errno": null,
+        "elapsed_ms": 5006
+      }
+    ],
+    "endpoint_details_redacted": true,
+    "inference": "Reachability was not established; this does not isolate routing/firewall/server schedule/front health or credential correctness."
+  },
+  "native_archive": {
+    "index_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/archive-index-v2.json",
+    "sha256": "86cbf056e5ef295d1d7ac9c95ee3b4b95fd92ace1298bacb034d03a1238c6f42",
+    "artifacts": 12,
+    "original_and_archived_bytes_matched": true,
+    "redaction": "No raw IDs, endpoint addresses, account balances or actual positions are included in this review."
+  },
+  "source_integrity": {
+    "HEAD_R6": true,
+    "qualification_closure690_hashes_current": true,
+    "source_producer_unchanged": true
+  },
+  "implementation_findings": [],
+  "implementation_severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "operational_blockers": [
+    "TD/MD readiness and authentication/login not observed",
+    "No completed account/position/order/trade/contracts query generation",
+    "No confirmed balance/available cash or actual position state",
+    "Required complete native captures and qualification file missing"
+  ],
+  "historical_failures": {
+    "m4": "FAILED; original Friday trace missing and cause remainsUNKNOWN",
+    "m5": "FAILED; preserved actual umask-dependent fixture failure, not reused as pass",
+    "m6_current": "Engineering passed but real readonly failed; not promoted to qualification"
+  },
+  "next_run_policy": "The authorized evening continuation must be a new exact-R6 trusted run with its own full96 suite/nonce and actual native captures. Do not upgrade this failed batch, mix old test/native artifacts or bypass gates.",
+  "evidence_files_sha256": {
+    "/private/tmp/weekly19_stage027_QR6_run_context001.json": "ffdaa64af432cecf5b1be3720f80e5770ee2147b558768bb44701c2dc3b7cefa",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/observer-result.json": "b85e633af708211c3f18d01d4298b6356292ee4d01a9cc68a3927f9c7f1d9f6d",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/archive-index-v2.json": "86cbf056e5ef295d1d7ac9c95ee3b4b95fd92ace1298bacb034d03a1238c6f42",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/review-R6.json": "5a0f23d8f944689f381f42d5494932055ac67300f73e1cf29328cc51856f25f6",
+    "/private/tmp/weekly19_stage026_review_R6_001_receipt.json": "a3f2e3db2e4ac2efe5a57f192181d366d5e0180e8e5bc22d7e1bea2b4671d43f",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_orders_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_positions_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_stage174_ctp_vnpy_readonly_probe_v1.json": "24063b9e8d104db57b8c9a9ea16e1a26c5914bb6a2dc53b8abeb19bf575bb653",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json": "61e7211e4747969889415f60fa738537f0fa0531e01c44d77b24365dcc894fa7",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_trades_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage907_official_live_readonly_refresh_gate_summary_20261102_163810_stage907_official_live_readonly_refresh_gate_v1.json": "777269597d209162e7c0c7c4a04526a75ff80fed9865c0831172d1e2ac3e0484",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_accounts_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_contracts_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_logs_stage174_ctp_vnpy_readonly_probe_v1.csv": "7327e4fa1763fcee003a1080a94614888125b9358cf0c5597d68302cd2abc4ec",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_position_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_order_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/actual-readonly-failure-archive/qmt_roll_stage174_ctp_vnpy_readonly_probe_trade_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv": "b42f2099187886def637d6aa840022266e05cb6c987a9394e708e23cd505eb46",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/formal-runtime-guard.json": "8e01f3eea93a33ea88f859c23a2f47dd442d63cbedca2230e6d8e8aa0e2126ec",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/tcp-diagnostic.json": "3ab07d25c2bdf06f443e0fe4d1c4de72d7b91ec2f8f31f843751b83ad5de53a9",
+    "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage027_m6_20261102T163009/qualification-wrapper.log": "a9aadfebf456eac7c9e9ea0144d0158138ccb0d90168d10a2b99b8af47ae5a5a",
+    "/Users/mac/.codex/worktrees/weekly19-official-20261031/fian/research/lines/futures_weekly_short_ma_slope_gate/stages/Stage027_review_evidence_attempt001.py": "a3065e16c2f6cae6cc2c86c13bd0818bfe7af63e23c541c1b5effb2d535d8873"
+  },
+  "checks": [
+    {
+      "name": "HEAD_exact_R6",
+      "passed": true
+    },
+    {
+      "name": "context_exact_R6",
+      "passed": true
+    },
+    {
+      "name": "formal_review_R6_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "full690_source_closure_unchanged",
+      "passed": true
+    },
+    {
+      "name": "failed_not_qualification",
+      "passed": true
+    },
+    {
+      "name": "observer288_zero_errors",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-00.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-00.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-00.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-00.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-00.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-00.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-00.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-00.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-00.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-01.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-01.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-01.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-01.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-01.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-01.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-01.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-01.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-01.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-02.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-02.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-02.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-02.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-02.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-02.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-02.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-02.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-02.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-03.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-03.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-03.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-03.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-03.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-03.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-03.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-03.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-03.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-04.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-04.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-04.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-04.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-04.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-04.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-04.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-04.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-04.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-05.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-05.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-05.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-05.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-05.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-05.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-05.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-05.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-05.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-06.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-06.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-06.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-06.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-06.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-06.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-06.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-06.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-06.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-07.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-07.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-07.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-07.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-07.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-07.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-07.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-07.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-07.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-08.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-08.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-08.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-08.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-08.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-08.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-08.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-08.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-08.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-09.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-09.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-09.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-09.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-09.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-09.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-09.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-09.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-09.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-10.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-10.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-10.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-10.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-10.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-10.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-10.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-10.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-10.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-11.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-11.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-11.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-11.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-11.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-11.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-11.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-11.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-11.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-12.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-12.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-12.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-12.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-12.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-12.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-12.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-12.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-12.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-13.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-13.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-13.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-13.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-13.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-13.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-13.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-13.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-13.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-14.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-14.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-14.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-14.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-14.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-14.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-14.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-14.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-14.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-15.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-15.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-15.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-15.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-15.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-15.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-15.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-15.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-15.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-16.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-16.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-16.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-16.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-16.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-16.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-16.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-16.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-16.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-17.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-17.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-17.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-17.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-17.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-17.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-17.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-17.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-17.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-18.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-18.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-18.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-18.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-18.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-18.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-18.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-18.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-18.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-19.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-19.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-19.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-19.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-19.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-19.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-19.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-19.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-19.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-20.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-20.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-20.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-20.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-20.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-20.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-20.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-20.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-20.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-21.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-21.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-21.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-21.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-21.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-21.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-21.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-21.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-21.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-22.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-22.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-22.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-22.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-22.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-22.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-22.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-22.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-22.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-23.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-23.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-23.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-23.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-23.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-23.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-23.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-23.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-23.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-24.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-24.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-24.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-24.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-24.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-24.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-24.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-24.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-24.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-25.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-25.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-25.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-25.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-25.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-25.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-25.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-25.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-25.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-26.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-26.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-26.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-26.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-26.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-26.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-26.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-26.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-26.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-27.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-27.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-27.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-27.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-27.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-27.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-27.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-27.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-27.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-28.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-28.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-28.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-28.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-28.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-28.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-28.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-28.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-28.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-29.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-29.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-29.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-29.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-29.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-29.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-29.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-29.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-29.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-30.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-30.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-30.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-30.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-30.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-30.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-30.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-30.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-30.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-31.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-31.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-31.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-31.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-31.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-31.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-31.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-31.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-31.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-32.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-32.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-32.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-32.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-32.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-32.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-32.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-32.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-32.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-33.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-33.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-33.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-33.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-33.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-33.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-33.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-33.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-33.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-34.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-34.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-34.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-34.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-34.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-34.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-34.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-34.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-34.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-35.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-35.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-35.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-35.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-35.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-35.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-35.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-35.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-35.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-36.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-36.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-36.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-36.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-36.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-36.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-36.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-36.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-36.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-37.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-37.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-37.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-37.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-37.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-37.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-37.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-37.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-37.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-38.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-38.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-38.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-38.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-38.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-38.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-38.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-38.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-38.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-39.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-39.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-39.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-39.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-39.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-39.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-39.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-39.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-39.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-40.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-40.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-40.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-40.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-40.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-40.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-40.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-40.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-40.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-41.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-41.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-41.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-41.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-41.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-41.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-41.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-41.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-41.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-42.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-42.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-42.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-42.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-42.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-42.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-42.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-42.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-42.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-43.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-43.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-43.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-43.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-43.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-43.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-43.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-43.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-43.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-44.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-44.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-44.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-44.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-44.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-44.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-44.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-44.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-44.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-45.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-45.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-45.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-45.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-45.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-45.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-45.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-45.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-45.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-46.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-46.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-46.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-46.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-46.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-46.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-46.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-46.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-46.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-47.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-47.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-47.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-47.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-47.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-47.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-47.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-47.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-47.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-48.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-48.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-48.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-48.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-48.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-48.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-48.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-48.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-48.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-49.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-49.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-49.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-49.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-49.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-49.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-49.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-49.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-49.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-50.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-50.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-50.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-50.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-50.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-50.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-50.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-50.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-50.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-51.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-51.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-51.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-51.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-51.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-51.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-51.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-51.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-51.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-52.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-52.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-52.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-52.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-52.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-52.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-52.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-52.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-52.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-53.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-53.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-53.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-53.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-53.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-53.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-53.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-53.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-53.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-54.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-54.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-54.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-54.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-54.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-54.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-54.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-54.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-54.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-55.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-55.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-55.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-55.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-55.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-55.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-55.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-55.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-55.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-56.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-56.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-56.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-56.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-56.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-56.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-56.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-56.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-56.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-57.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-57.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-57.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-57.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-57.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-57.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-57.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-57.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-57.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-58.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-58.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-58.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-58.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-58.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-58.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-58.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-58.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-58.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-59.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-59.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-59.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-59.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-59.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-59.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-59.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-59.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-59.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-60.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-60.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-60.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-60.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-60.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-60.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-60.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-60.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-60.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-61.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-61.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-61.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-61.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-61.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-61.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-61.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-61.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-61.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-62.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-62.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-62.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-62.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-62.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-62.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-62.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-62.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-62.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-63.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-63.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-63.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-63.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-63.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-63.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-63.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-63.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-63.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-64.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-64.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-64.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-64.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-64.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-64.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-64.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-64.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-64.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-65.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-65.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-65.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-65.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-65.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-65.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-65.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-65.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-65.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-66.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-66.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-66.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-66.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-66.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-66.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-66.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-66.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-66.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-67.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-67.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-67.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-67.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-67.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-67.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-67.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-67.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-67.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-68.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-68.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-68.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-68.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-68.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-68.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-68.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-68.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-68.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-69.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-69.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-69.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-69.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-69.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-69.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-69.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-69.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-69.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-70.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-70.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-70.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-70.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-70.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-70.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-70.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-70.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-70.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-71.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-71.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-71.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-71.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-71.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-71.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-71.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-71.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-71.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-72.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-72.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-72.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-72.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-72.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-72.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-72.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-72.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-72.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-73.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-73.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-73.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-73.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-73.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-73.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-73.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-73.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-73.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-74.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-74.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-74.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-74.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-74.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-74.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-74.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-74.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-74.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-75.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-75.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-75.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-75.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-75.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-75.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-75.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-75.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-75.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-76.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-76.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-76.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-76.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-76.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-76.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-76.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-76.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-76.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-77.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-77.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-77.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-77.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-77.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-77.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-77.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-77.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-77.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-78.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-78.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-78.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-78.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-78.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-78.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-78.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-78.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-78.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-79.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-79.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-79.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-79.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-79.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-79.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-79.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-79.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-79.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-80.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-80.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-80.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-80.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-80.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-80.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-80.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-80.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-80.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-81.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-81.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-81.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-81.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-81.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-81.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-81.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-81.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-81.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-82.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-82.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-82.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-82.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-82.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-82.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-82.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-82.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-82.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-83.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-83.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-83.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-83.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-83.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-83.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-83.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-83.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-83.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-84.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-84.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-84.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-84.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-84.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-84.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-84.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-84.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-84.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-85.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-85.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-85.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-85.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-85.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-85.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-85.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-85.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-85.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-86.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-86.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-86.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-86.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-86.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-86.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-86.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-86.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-86.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-87.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-87.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-87.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-87.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-87.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-87.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-87.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-87.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-87.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-88.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-88.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-88.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-88.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-88.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-88.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-88.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-88.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-88.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-89.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-89.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-89.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-89.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-89.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-89.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-89.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-89.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-89.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-90.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-90.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-90.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-90.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-90.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-90.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-90.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-90.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-90.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-91.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-91.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-91.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-91.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-91.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-91.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-91.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-91.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-91.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-92.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-92.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-92.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-92.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-92.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-92.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-92.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-92.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-92.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-93.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-93.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-93.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-93.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-93.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-93.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-93.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-93.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-93.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-94.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-94.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-94.output",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-94.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-94.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-94.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-94.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-94.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-94.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-95.xml",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-95.xml",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-95.xml",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-95.exit-status",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-95.exit-status",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-95.exit-status",
+      "passed": true
+    },
+    {
+      "name": "pytest_record_name:raw-pytest-95.output",
+      "passed": true
+    },
+    {
+      "name": "one_version_per_suite_kind:raw-pytest-95.output",
+      "passed": true
+    },
+    {
+      "name": "object_SHA_bytes_mode:raw-pytest-95.output",
+      "passed": true
+    },
+    {
+      "name": "96_exact_triples_193_unique_objects",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:0",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:0",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:0",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:1",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:1",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:1",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:2",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:2",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:2",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:3",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:3",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:3",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:4",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:4",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:4",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:5",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:5",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:5",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:6",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:6",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:6",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:7",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:7",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:7",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:8",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:8",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:8",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:9",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:9",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:9",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:10",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:10",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:10",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:11",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:11",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:11",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:12",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:12",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:12",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:13",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:13",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:13",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:14",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:14",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:14",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:15",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:15",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:15",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:16",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:16",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:16",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:17",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:17",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:17",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:18",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:18",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:18",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:19",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:19",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:19",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:20",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:20",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:20",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:21",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:21",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:21",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:22",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:22",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:22",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:23",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:23",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:23",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:24",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:24",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:24",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:25",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:25",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:25",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:26",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:26",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:26",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:27",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:27",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:27",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:28",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:28",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:28",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:29",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:29",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:29",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:30",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:30",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:30",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:31",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:31",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:31",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:32",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:32",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:32",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:33",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:33",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:33",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:34",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:34",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:34",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:35",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:35",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:35",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:36",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:36",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:36",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:37",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:37",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:37",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:38",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:38",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:38",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:39",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:39",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:39",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:40",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:40",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:40",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:41",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:41",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:41",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:42",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:42",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:42",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:43",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:43",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:43",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:44",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:44",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:44",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:45",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:45",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:45",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:46",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:46",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:46",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:47",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:47",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:47",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:48",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:48",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:48",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:49",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:49",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:49",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:50",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:50",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:50",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:51",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:51",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:51",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:52",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:52",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:52",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:53",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:53",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:53",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:54",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:54",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:54",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:55",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:55",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:55",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:56",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:56",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:56",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:57",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:57",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:57",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:58",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:58",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:58",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:59",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:59",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:59",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:60",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:60",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:60",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:61",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:61",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:61",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:62",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:62",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:62",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:63",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:63",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:63",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:64",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:64",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:64",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:65",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:65",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:65",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:66",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:66",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:66",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:67",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:67",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:67",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:68",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:68",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:68",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:69",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:69",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:69",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:70",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:70",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:70",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:71",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:71",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:71",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:72",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:72",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:72",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:73",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:73",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:73",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:74",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:74",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:74",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:75",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:75",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:75",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:76",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:76",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:76",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:77",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:77",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:77",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:78",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:78",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:78",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:79",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:79",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:79",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:80",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:80",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:80",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:81",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:81",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:81",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:82",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:82",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:82",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:83",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:83",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:83",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:84",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:84",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:84",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:85",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:85",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:85",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:86",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:86",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:86",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:87",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:87",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:87",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:88",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:88",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:88",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:89",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:89",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:89",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:90",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:90",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:90",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:91",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:91",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:91",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:92",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:92",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:92",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:93",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:93",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:93",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:94",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:94",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:94",
+      "passed": true
+    },
+    {
+      "name": "suite_exit_zero:95",
+      "passed": true
+    },
+    {
+      "name": "safe_JUnit:95",
+      "passed": true
+    },
+    {
+      "name": "suite_nonempty_clean:95",
+      "passed": true
+    },
+    {
+      "name": "trusted_engineering2408_clean",
+      "passed": true
+    },
+    {
+      "name": "native_archive12_source",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_orders_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_orders_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_positions_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_positions_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_stage174_ctp_vnpy_readonly_probe_v1.json",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_query_bundle_manifest_stage174_ctp_vnpy_readonly_probe_v1.json",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_summary_stage174_ctp_vnpy_readonly_probe_v1.json",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_trades_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_trades_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage907_official_live_readonly_refresh_gate_summary_20261102_163810_stage907_official_live_readonly_refresh_gate_v1.json",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage907_official_live_readonly_refresh_gate_summary_20261102_163810_stage907_official_live_readonly_refresh_gate_v1.json",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_accounts_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_accounts_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_contracts_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_contracts_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_logs_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_logs_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_position_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_position_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_order_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_order_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_archive_SHA_bytes_mode:qmt_roll_stage174_ctp_vnpy_readonly_probe_trade_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "archived_original_still_same:qmt_roll_stage174_ctp_vnpy_readonly_probe_trade_query_callbacks_stage174_ctp_vnpy_readonly_probe_v1.csv",
+      "passed": true
+    },
+    {
+      "name": "native_and_gate_source_R6",
+      "passed": true
+    },
+    {
+      "name": "actual_probe_attempted_without_progress",
+      "passed": true
+    },
+    {
+      "name": "no_connection_auth_login_confirmation",
+      "passed": true
+    },
+    {
+      "name": "env_fields_present_is_not_auth",
+      "passed": true
+    },
+    {
+      "name": "no_usable_query_or_day",
+      "passed": true
+    },
+    {
+      "name": "all_data_rows_unavailable",
+      "passed": true
+    },
+    {
+      "name": "unknown_positions_not_confirmed_flat",
+      "passed": true
+    },
+    {
+      "name": "8_actual_mutation_counters_strict_zero",
+      "passed": true
+    },
+    {
+      "name": "firewall_closed_and_never_orders",
+      "passed": true
+    },
+    {
+      "name": "stdout_file_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "manifest_same_failed_generation",
+      "passed": true
+    },
+    {
+      "name": "empty_artifact_is_only_unavailable_query:orders",
+      "passed": true
+    },
+    {
+      "name": "empty_artifact_is_only_unavailable_query:trades",
+      "passed": true
+    },
+    {
+      "name": "empty_artifact_is_only_unavailable_query:positions",
+      "passed": true
+    },
+    {
+      "name": "formal_env_and_framework_priority",
+      "passed": true
+    },
+    {
+      "name": "runtime_guard_source_import_only",
+      "passed": true
+    },
+    {
+      "name": "formal_search_paths_exact_order",
+      "passed": true
+    },
+    {
+      "name": "framework_binary_SHA:thostmduserapi_se",
+      "passed": true
+    },
+    {
+      "name": "framework_binary_SHA:thosttraderapi_se",
+      "passed": true
+    },
+    {
+      "name": "actual_Dyld_images_formal_not_CP_fallback",
+      "passed": true
+    },
+    {
+      "name": "actual_python_binary_SHA",
+      "passed": true
+    },
+    {
+      "name": "native_extension_SHA:vnctpmd",
+      "passed": true
+    },
+    {
+      "name": "native_extension_SHA:vnctptd",
+      "passed": true
+    },
+    {
+      "name": "env_identity_present_but_credentials_not_verified",
+      "passed": true
+    },
+    {
+      "name": "both_TCP5s_timeouts",
+      "passed": true
+    },
+    {
+      "name": "qualification_stopped_at_raw_readonly_derivation",
+      "passed": true
+    },
+    {
+      "name": "qualification_never_created",
+      "passed": true
+    },
+    {
+      "name": "review_after_observed_result",
+      "passed": true
+    }
+  ],
+  "check_count": 1213,
+  "failures": [],
+  "limitations": [
+    "Observer archives are diagnostic copies, not a substitute for a validated qualification bundle.",
+    "Zero data rows/zero query callbacks mean unavailable state, not empty actual holdings or zero funds.",
+    "Formal framework import and env presence are confirmed; broker authentication and credential validity are not.",
+    "TCP timeout supports non-readiness but is not a root-cause proof. No further connection was attempted by this reviewer.",
+    "No new financial replay or alpha evidence is asserted."
+  ],
+  "reviewer_actions": {
+    "CTP_connections": 0,
+    "TCP_connections": 0,
+    "orders": 0,
+    "cancels": 0,
+    "SMTP_sends": 0,
+    "financial_replays": 0,
+    "core_modifications": 0,
+    "Git_index_or_commit_changes": 0,
+    "credential_files_read": 0
+  },
+  "reflection": {
+    "overfitting": false,
+    "reason": "Runtime and evidence classification only; no strategy tuning or return optimization.",
+    "worth_continuing": true,
+    "reason_to_continue": "A single separately authorized later exact-source attempt can test session/connectivity readiness while preserving this failed result."
+  }
+}

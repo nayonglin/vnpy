@@ -73,6 +73,10 @@ def _forward_calendar_fixture(
 
 class Stage179ProductionAssetsTest(unittest.TestCase):
     def setUp(self) -> None:
+        historical = patch.multiple(stage901, OFFICIAL_LIVE_VERSION=C9_15W_PROFILE.official_version,
+            OFFICIAL_LIVE_CAPITAL=C9_15W_PROFILE.capital, OFFICIAL_LIVE_CAPITAL_LABEL=C9_15W_PROFILE.capital_label)
+        historical.start()
+        self.addCleanup(historical.stop)
         self.tempdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(self.tempdir.cleanup)
         root = Path(self.tempdir.name).resolve()

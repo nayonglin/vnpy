@@ -8,6 +8,9 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import csv
+import sqlite3
+from datetime import datetime as RealDatetime
 import sys
 import tempfile
 import unittest
@@ -28,9 +31,110 @@ from qmt_roll_official_ai_pool_policy import (  # noqa: E402
     OFFICIAL_AI_RANKED_PRODUCT_COUNT,
     OFFICIAL_AI_TOTAL_PRODUCT_COUNT,
 )
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
 class Stage947ProductionSupportLauncherTest(unittest.TestCase):
+    def setUp(self) -> None:
+        no_external_exec = patch.object(launcher.os, "execve", side_effect=AssertionError("test must explicitly mock the external exec boundary"))
+        no_external_exec.start()
+        self.addCleanup(no_external_exec.stop)
+        # These cases exercise the historical C9 pipeline. A weekly default
+        # must never make a legacy worker fixture call real os.execve.
+        for module in (launcher, session_launcher):
+            configured = patch.object(module, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE)
+            configured.start()
+            self.addCleanup(configured.stop)
+        class FixtureClock(RealDatetime):
+            @classmethod
+            def now(cls, tz=None):
+                stamp = cls(2026, 8, 3, 15, 10)
+                return stamp if tz is None else stamp.astimezone(tz)
+
+        # All pipeline fixtures use this declared Monday, not the machine date.
+        clock = patch.object(launcher, "datetime", FixtureClock)
+        clock.start()
+        self.addCleanup(clock.stop)
+
+    def test_pipeline_resolver_uses_today_at_1510_without_changing_sessions(self) -> None:
+        observed = []
+
+        def resolver(command, **kwargs):
+            ready = command[command.index("--data-ready-time") + 1]
+            observed.append(ready)
+            # A Monday 15:10 run is after the early cutoff, before the session cutoff.
+            target = "2026-10-19" if ready <= "15:10" else "2026-10-16"
+            return subprocess.CompletedProcess(command, 0, stdout=json.dumps({
+                "resolved_target_date": target,
+                "order_api_called_count": 0,
+                "resolver_evidence": {"trading_calendar_source": "main_contract_mapping_trading_calendar"},
+            }))
+
+        with patch.object(session_launcher.subprocess, "run", side_effect=resolver):
+            pipeline_target, _ = launcher._resolve_support_target_date({})
+            session_target, _ = session_launcher._resolve_target_date({})
+        self.assertEqual("2026-10-19", pipeline_target)
+        self.assertEqual("2026-10-16", session_target)
+        self.assertEqual(["15:10", "16:30"], observed)
+
+    def test_early_pipeline_workers_share_the_same_ready_time(self) -> None:
+        for job, option in (
+            ("postclose-precompute", "--target-date-data-ready-time"),
+            ("monthly-ai-pool", "--data-ready-time"),
+            ("postclose-report", "--ai-pool-data-ready-time"),
+        ):
+            command = launcher.build_support_command(launcher.SUPPORT_JOB_SPECS[job])
+            self.assertIn(option, command, job)
+            self.assertEqual("15:10", command[command.index(option) + 1], job)
+
+    def test_account_only_refresh_does_not_depend_on_mutating_pipeline_receipt(self) -> None:
+        # During precompute the old receipt DB hash is stale; after precompute
+        # latest.json belongs to today. Neither can authorize an account-only read.
+        for blocker in ("daily_receipt_database_changed", "daily_receipt_target_mismatch"):
+            with self.subTest(blocker=blocker):
+                spec = launcher.SUPPORT_JOB_SPECS["day-close-readonly"]
+                with (
+                    patch.object(launcher.os, "getppid", return_value=1),
+                    patch.dict(os.environ, {"XPC_SERVICE_NAME":spec.label}),
+                    patch.object(launcher, "_assert_stable_deploy_root"),
+                    patch.object(launcher, "_assert_canonical_paths"),
+                    patch.object(launcher, "_validate_release_and_receipt", return_value={}),
+                    patch.object(launcher, "_validate_code_qualification") as qualification,
+                    patch.object(launcher, "_build_support_environment", return_value={}),
+                    patch.object(launcher, "_validate_support_credentials") as credentials,
+                    patch.object(launcher, "_resolve_support_target_date", return_value=("2026-10-16",{})) as resolver,
+                    patch.object(launcher, "_validate_daily_data_readiness", side_effect=ValueError(blocker)) as readiness,
+                    patch.object(launcher.os, "execve") as execute,
+                ):
+                    launcher.launch_support_job(argparse.Namespace(job="day-close-readonly"))
+                qualification.assert_called_once()
+                credentials.assert_called_once_with(spec)
+                readiness.assert_not_called()
+                resolver.assert_not_called()
+                command = execute.call_args.args[1]
+                self.assertTrue(command[1].endswith("run_qmt_roll_stage907_official_live_readonly_refresh_gate.py"))
+                self.assertNotIn("live-real", command)
+
+    def test_health_keeps_1630_resolver_and_daily_receipt_gate(self) -> None:
+        spec = launcher.SUPPORT_JOB_SPECS["health"]
+        with (
+            patch.object(launcher.os, "getppid", return_value=1),
+            patch.dict(os.environ, {"XPC_SERVICE_NAME":spec.label}),
+            patch.object(launcher, "_assert_stable_deploy_root"),
+            patch.object(launcher, "_assert_canonical_paths"),
+            patch.object(launcher, "_validate_release_and_receipt", return_value={}),
+            patch.object(launcher, "_validate_code_qualification"),
+            patch.object(launcher, "_build_support_environment", return_value={}),
+            patch.object(launcher, "_validate_support_credentials"),
+            patch.object(launcher, "_resolve_support_target_date", return_value=("2026-10-16",{})) as resolver,
+            patch.object(launcher, "_validate_daily_data_readiness", side_effect=ValueError("bad receipt")),
+            patch.object(launcher.os, "execve") as execute,
+            self.assertRaisesRegex(launcher.ProductionSupportLaunchError, "daily_data_receipt_invalid"),
+        ):
+            launcher.launch_support_job(argparse.Namespace(job="health"))
+        resolver.assert_called_once_with({}, data_ready_time="16:30")
+        execute.assert_not_called()
+
     def _invoke_main_failure(
         self,
         *,
@@ -404,6 +508,10 @@ print("CONTRACT=" + json.dumps({
                     OFFICIAL_LIVE_AI_ELIGIBILITY_PATH=combined,
                     STAGE183_SUMMARY_PATH=stage183_summary,
                 ),
+                # This is the frozen historical C9 monthly-AI publication
+                # fixture, not an authorization for the weekly fixed pool.
+                patch.object(stage935, "resolve_configured_execution_profile", return_value=C9_15W_PROFILE),
+                patch.object(stage935, "OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION", OFFICIAL_AI_PRODUCT_POOL_STRATEGY),
                 patch.object(stage935, "_run_command", return_value=success) as run_command,
             ):
                 result = stage935._run(args)
@@ -1038,6 +1146,8 @@ print("CONTRACT=" + json.dumps({
                 "_resolve_support_target_date",
                 return_value=("2026-08-03", {"calendar": "refreshed"}),
             ),
+            patch.object(launcher, "validate_target_daily_bars", create=True,
+                         return_value={"coverage_status":"complete", "complete_product_count":19}) as coverage,
         ):
             result = launcher._run_market_data_worker(
                 target_date="2026-08-02",
@@ -1046,16 +1156,99 @@ print("CONTRACT=" + json.dumps({
             )
 
         self.assertEqual("2026-08-03", result["target_date"])
+        self.assertEqual(19, result["daily_bar_coverage"]["complete_product_count"])
+        coverage.assert_called_once_with(
+            database_path=launcher.PRODUCTION_DATABASE_PATH,
+            mapping_path=launcher.ALL_FUTURES_MAPPING_PATH,
+            target_date="2026-08-03",
+        )
         command = run.call_args.args[0]
         self.assertEqual("2026-04-04", command[command.index("--bar-start") + 1])
         self.assertEqual("2026-08-03", command[command.index("--end") + 1])
+
+    def test_market_worker_rejects_eighteen_of_nineteen_after_provider_success(self) -> None:
+        from qmt_roll_official_live_daily_bar_readiness import OFFICIAL_LIVE_DAILY_PRODUCTS
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mapping, database = root / "mapping.csv", root / "database.db"
+            with mapping.open("w", newline="") as handle, sqlite3.connect(database) as connection:
+                writer = csv.DictWriter(handle, fieldnames=["date","continuous_symbol_vt","main_contract_vt"])
+                writer.writeheader()
+                connection.execute("CREATE TABLE dbbardata(symbol TEXT,exchange TEXT,interval TEXT,datetime TEXT,open_price REAL,high_price REAL,low_price REAL,close_price REAL,volume REAL,open_interest REAL)")
+                for index, product in enumerate(OFFICIAL_LIVE_DAILY_PRODUCTS):
+                    symbol, exchange = product.split(".")
+                    symbol += "701" if exchange == "CZCE" else "2701"
+                    writer.writerow({"date":"2026-10-19", "continuous_symbol_vt":product,
+                                     "main_contract_vt":symbol+"."+exchange})
+                    # Provider exit=0/max(date)=today, but one product is stale.
+                    day = "2026-10-16" if index == 18 else "2026-10-19"
+                    connection.execute("INSERT INTO dbbardata VALUES (?,?,?,?,?,?,?,?,?,?)",
+                                       (symbol,exchange,"d",day+" 00:00:00",100,110,90,105,1000,2000))
+            with (
+                patch.object(launcher.subprocess, "run", return_value=subprocess.CompletedProcess([],0,stdout="{}")),
+                patch.object(launcher, "_resolve_support_target_date", return_value=("2026-10-19",{})),
+                patch.object(launcher, "PRODUCTION_DATABASE_PATH", database),
+                patch.object(launcher, "ALL_FUTURES_MAPPING_PATH", mapping, create=True),
+                self.assertRaisesRegex(launcher.ProductionSupportLaunchError,
+                                       "production_support_target_daily_bars_invalid") as raised,
+            ):
+                launcher._run_market_data_worker(target_date="2026-10-19",
+                    refresh_cutoff_date="2026-10-19",environment={})
+            self.assertEqual("postclose-market-data", raised.exception.boundary)
+
+    def test_market_worker_cannot_accept_complete_previous_day_as_today(self) -> None:
+        from qmt_roll_official_live_daily_bar_readiness import OFFICIAL_LIVE_DAILY_PRODUCTS
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mapping, database = root / "mapping.csv", root / "database.db"
+            with mapping.open("w", newline="") as handle, sqlite3.connect(database) as connection:
+                writer = csv.DictWriter(handle, fieldnames=["date","continuous_symbol_vt","main_contract_vt"])
+                writer.writeheader()
+                connection.execute("CREATE TABLE dbbardata(symbol TEXT,exchange TEXT,interval TEXT,datetime TEXT,open_price REAL,high_price REAL,low_price REAL,close_price REAL,volume REAL,open_interest REAL)")
+                for product in OFFICIAL_LIVE_DAILY_PRODUCTS:
+                    symbol, exchange = product.split(".")
+                    symbol += "701" if exchange == "CZCE" else "2701"
+                    writer.writerow({"date":"2026-10-16", "continuous_symbol_vt":product,
+                                     "main_contract_vt":symbol+"."+exchange})
+                    connection.execute("INSERT INTO dbbardata VALUES (?,?,?,?,?,?,?,?,?,?)",
+                                       (symbol,exchange,"d","2026-10-16 00:00:00",100,110,90,105,1000,2000))
+            with (
+                patch.object(launcher.subprocess, "run", return_value=subprocess.CompletedProcess([],0,stdout="{}")),
+                patch.object(launcher, "_resolve_support_target_date", return_value=("2026-10-16",{})),
+                patch.object(launcher, "PRODUCTION_DATABASE_PATH", database),
+                patch.object(launcher, "ALL_FUTURES_MAPPING_PATH", mapping),
+                self.assertRaisesRegex(launcher.ProductionSupportLaunchError, "market_data_target_mismatch"),
+            ):
+                launcher._run_market_data_worker(target_date="2026-10-16",
+                    refresh_cutoff_date="2026-10-19",environment={})
+
+    def test_pipeline_rejects_worker_returning_yesterdays_complete_target(self) -> None:
+        schedule_date = launcher.datetime.now().astimezone().date().isoformat()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with (
+                patch.object(launcher, "PRODUCTION_POSTCLOSE_PIPELINE_RECEIPT", root / "latest.json"),
+                patch.object(launcher, "PRODUCTION_POSTCLOSE_PIPELINE_LOCK", root / "pipeline.lock"),
+                patch.object(launcher, "_resolve_support_target_date", return_value=("2026-07-31",{})),
+                patch.object(launcher, "_run_market_data_worker", return_value={"target_date":"2026-07-31"}),
+                patch.object(launcher, "_run_monthly_ai_pool_worker", side_effect=AssertionError("must not start monthly")) as monthly,
+                patch.object(launcher, "_notify_support_failure", return_value={"notification_status":"sent"}),
+                self.assertRaisesRegex(launcher.ProductionSupportLaunchError, "market_data_target_mismatch"),
+            ):
+                launcher._run_postclose_pipeline(environment={}, manifest={"source_commit":"a"*40,"manifest_sha256":"b"*64})
+            monthly.assert_not_called()
+            receipt = json.loads((root / "latest.json").read_text())
+            self.assertEqual(schedule_date, receipt["schedule_date"])
+            self.assertEqual("failed", receipt["status"])
 
     def test_pipeline_monthly_email_policy_sends_update_success_only(self) -> None:
         import run_qmt_roll_stage935_official_live_monthly_ai_pool_update as stage935
 
         spec = launcher.SUPPORT_JOB_SPECS["monthly-ai-pool"]
         self.assertEqual(
-            ("--mode", "run", "--email-policy", "updates"),
+            ("--mode", "run", "--data-ready-time", "15:10", "--email-policy", "updates"),
             spec.arguments,
         )
         self.assertTrue(
@@ -1946,11 +2139,13 @@ print("CONTRACT=" + json.dumps({
                 launcher,
                 "_run_precompute_and_issue_daily_receipt",
             ) as legacy,
+            patch.object(launcher.os, "execve") as execute,
         ):
             launcher.launch_support_job(args)
 
         pipeline_run.assert_called_once()
         legacy.assert_not_called()
+        execute.assert_not_called()
 
     def test_watchdog_and_noop_retry_do_not_require_worker_credentials(self) -> None:
         args = argparse.Namespace(job="postclose-report")
@@ -2030,6 +2225,34 @@ print("CONTRACT=" + json.dumps({
         ):
             launcher.launch_support_job(args)
         stable.assert_not_called()
+
+
+class Weekly19ConfiguredSupportRouteTest(unittest.TestCase):
+    """Current formal defaults stay weekly while historical C9 cases remain."""
+    def test_weekly_default_support_commands_keep_exact_profile_and_context(self):
+        from qmt_roll_official_execution_profile import WEEKLY19_15W_R150K_PROFILE
+        self.assertIs(launcher.resolve_configured_execution_profile(), WEEKLY19_15W_R150K_PROFILE)
+        for spec in launcher.SUPPORT_JOB_SPECS.values():
+            command = launcher.build_support_command(spec)
+            self.assertTrue(command[1].endswith("run_qmt_roll_weekly19_live.py"))
+            self.assertEqual(command[command.index("--execution-profile") + 1], WEEKLY19_15W_R150K_PROFILE.profile_key)
+            self.assertIn("--context-file", command)
+
+    def test_weekly_exec_boundary_is_mocked_and_legacy_pipeline_never_called(self):
+        spec = launcher.SUPPORT_JOB_SPECS["postclose-precompute"]
+        with (patch.object(launcher.os, "getppid", return_value=1),
+              patch.dict(os.environ, {"XPC_SERVICE_NAME": spec.label}),
+              patch.object(launcher, "_assert_stable_deploy_root"), patch.object(launcher, "_assert_canonical_paths"),
+              patch.object(launcher, "_validate_release_and_receipt", return_value={}),
+              patch.object(launcher, "_validate_code_qualification"),
+              patch.object(launcher, "_build_support_environment", return_value={}),
+              patch.object(launcher, "_run_postclose_pipeline") as legacy,
+              patch.object(launcher.os, "execve") as execute):
+            launcher.launch_support_job(argparse.Namespace(job=spec.job))
+        execute.assert_called_once()
+        self.assertTrue(execute.call_args.args[1][1].endswith("run_qmt_roll_weekly19_live.py"))
+        self.assertIn("weekly19-15w-r150k", execute.call_args.args[1])
+        legacy.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -186,6 +186,8 @@ def _normalize_offset_text(value: Any) -> str:
         "close",
         "closetoday",
         "closeyesterday",
+        "close today",
+        "close yesterday",
         "平",
         "平今",
         "平昨",

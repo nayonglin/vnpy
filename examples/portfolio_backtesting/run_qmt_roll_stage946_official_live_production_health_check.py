@@ -13,7 +13,7 @@ import subprocess
 import time
 from typing import Any
 
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, resolve_configured_execution_profile
 from qmt_roll_official_live_phase_d_config import (
     KILL_SWITCH_PATH,
     PHASE_D_REAL_ENABLED_ENV,
@@ -644,10 +644,10 @@ def build_health_summary(
             manifest = load_and_validate_release_manifest(
                 PRODUCTION_RELEASE_MANIFEST,
                 repo_root=REPO_ROOT,
-                expected_official_version=C9_15W_PROFILE.official_version,
-                expected_capital=C9_15W_PROFILE.capital,
-                expected_capital_label=C9_15W_PROFILE.capital_label,
-                expected_execution_profile=C9_15W_PROFILE.profile_key,
+                expected_official_version=resolve_configured_execution_profile().official_version,
+                expected_capital=resolve_configured_execution_profile().capital,
+                expected_capital_label=resolve_configured_execution_profile().capital_label,
+                expected_execution_profile=resolve_configured_execution_profile().profile_key,
                 required_runtime_profile=ExecutionRuntimeProfile.PRODUCTION_LIVE,
                 current_commit=head,
             )
@@ -657,9 +657,9 @@ def build_health_summary(
         receipt_blockers = validate_stage179_activation_receipt(
             PRODUCTION_ACTIVATION_RECEIPT,
             manifest_sha256=str(manifest.get("manifest_sha256", "")),
-            official_version=C9_15W_PROFILE.official_version,
-            capital=C9_15W_PROFILE.capital,
-            capital_label=C9_15W_PROFILE.capital_label,
+            official_version=resolve_configured_execution_profile().official_version,
+            capital=resolve_configured_execution_profile().capital,
+            capital_label=resolve_configured_execution_profile().capital_label,
         )
         blockers.extend(receipt_blockers)
         critical_paths = {
@@ -676,10 +676,10 @@ def build_health_summary(
                 PRODUCTION_QUALIFICATION_EVIDENCE,
                 repo_root=REPO_ROOT,
                 source_commit=str(manifest.get("source_commit", "")),
-                execution_profile=C9_15W_PROFILE.profile_key,
-                official_version=C9_15W_PROFILE.official_version,
-                capital=C9_15W_PROFILE.capital,
-                capital_label=C9_15W_PROFILE.capital_label,
+                execution_profile=resolve_configured_execution_profile().profile_key,
+                official_version=resolve_configured_execution_profile().official_version,
+                capital=resolve_configured_execution_profile().capital,
+                capital_label=resolve_configured_execution_profile().capital_label,
                 critical_files=[
                     str(item.get("path", ""))
                     for item in manifest.get("critical_files", [])
@@ -708,17 +708,28 @@ def build_health_summary(
             blockers.append("production_daily_data_receipt_target_invalid")
         else:
             try:
-                daily_receipt = load_and_validate_production_daily_data_receipt(
-                    PRODUCTION_DAILY_DATA_RECEIPT,
-                    declared_data_link=PRODUCTION_DATA_LINK,
-                    expected_data_root=PRODUCTION_DATA_ROOT,
-                    source_commit=str(manifest.get("source_commit", "")),
-                    manifest_sha256=str(manifest.get("manifest_sha256", "")),
-                    target_cutoff_date=receipt_target_date,
-                    production_database_path=PRODUCTION_DATABASE_PATH,
-                    signal_input_root=PRODUCTION_SIGNAL_INPUT_ROOT,
-                    official_ai_eligibility_path=PRODUCTION_AI_ELIGIBILITY_PATH,
-                )
+                if resolve_configured_execution_profile().decision_mode == "weekly19":
+                    from qmt_roll_weekly19_daily_receipt import load_and_validate_weekly19_daily_receipt
+                    daily_receipt = load_and_validate_weekly19_daily_receipt(
+                        PRODUCTION_DAILY_DATA_RECEIPT,
+                        context_file=PRODUCTION_RUNTIME_ROOT / "weekly19/context.json",
+                        source_commit=str(manifest.get("source_commit", "")),
+                        manifest_sha256=str(manifest.get("manifest_sha256", "")),
+                        target_date=receipt_target_date,
+                        now=current,
+                    )
+                else:
+                    daily_receipt = load_and_validate_production_daily_data_receipt(
+                        PRODUCTION_DAILY_DATA_RECEIPT,
+                        declared_data_link=PRODUCTION_DATA_LINK,
+                        expected_data_root=PRODUCTION_DATA_ROOT,
+                        source_commit=str(manifest.get("source_commit", "")),
+                        manifest_sha256=str(manifest.get("manifest_sha256", "")),
+                        target_cutoff_date=receipt_target_date,
+                        production_database_path=PRODUCTION_DATABASE_PATH,
+                        signal_input_root=PRODUCTION_SIGNAL_INPUT_ROOT,
+                        official_ai_eligibility_path=PRODUCTION_AI_ELIGIBILITY_PATH,
+                    )
             except (ProductionAssetError, OSError, ValueError):
                 blockers.append("production_daily_data_receipt_invalid")
 
@@ -781,10 +792,10 @@ def build_health_summary(
         elif summary_age > max_summary_age_seconds:
             blockers.append("production_stage930_summary_stale")
         expected_identity = {
-            "execution_profile": C9_15W_PROFILE.profile_key,
-            "official_live_version": C9_15W_PROFILE.official_version,
-            "capital": C9_15W_PROFILE.capital,
-            "capital_label": C9_15W_PROFILE.capital_label,
+            "execution_profile": resolve_configured_execution_profile().profile_key,
+            "official_live_version": resolve_configured_execution_profile().official_version,
+            "capital": resolve_configured_execution_profile().capital,
+            "capital_label": resolve_configured_execution_profile().capital_label,
             "runtime_profile": ExecutionRuntimeProfile.PRODUCTION_LIVE.value,
             "mode": "live-real",
             "submit_mode": "live-real",
@@ -833,9 +844,9 @@ def build_health_summary(
             blockers.append("production_warm_executor_readiness_expired")
         if readiness.get("runtime_profile") != "production-live":
             blockers.append("production_warm_executor_profile_mismatch")
-        if readiness.get("official_version") != C9_15W_PROFILE.official_version:
+        if readiness.get("official_version") != resolve_configured_execution_profile().official_version:
             blockers.append("production_warm_executor_version_mismatch")
-        if readiness.get("capital") != C9_15W_PROFILE.capital:
+        if readiness.get("capital") != resolve_configured_execution_profile().capital:
             blockers.append("production_warm_executor_capital_mismatch")
         if not str(readiness.get("service_generation", "")).strip():
             blockers.append("production_warm_executor_service_generation_missing")
@@ -867,10 +878,10 @@ def build_health_summary(
         "model_tag": MODEL_TAG,
         "generated_at": datetime.now().astimezone().isoformat(),
         "health_status": health_status,
-        "execution_profile": C9_15W_PROFILE.profile_key,
-        "official_live_version": C9_15W_PROFILE.official_version,
-        "capital": C9_15W_PROFILE.capital,
-        "capital_label": C9_15W_PROFILE.capital_label,
+        "execution_profile": resolve_configured_execution_profile().profile_key,
+        "official_live_version": resolve_configured_execution_profile().official_version,
+        "capital": resolve_configured_execution_profile().capital,
+        "capital_label": resolve_configured_execution_profile().capital_label,
         "runtime_profile": "production-live",
         "repo_root": str(REPO_ROOT),
         "repo_head": head,

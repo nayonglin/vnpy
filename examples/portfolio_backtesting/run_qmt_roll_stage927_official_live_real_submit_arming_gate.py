@@ -771,15 +771,48 @@ def _build_report(summary: dict[str, Any], checks: pd.DataFrame) -> str:
     )
 
 
+def weekly19_arming_blockers(intent, context, *, now) -> list[str]:
+    """Validate genuine production evidence; caller qualification flags ignored.
+
+    This yields blockers, never an authorization file or a C9 scope permit.
+    The dedicated pipeline owns exact spool authorization after these checks.
+    """
+    from qmt_roll_weekly19_execution import evaluate_intent
+    from run_qmt_roll_stage945_official_live_production_session_launcher import _validate_daily_data_readiness
+    try:
+        manifest = _validate_release_and_receipt(
+            release_manifest=Path(context["release_manifest_path"]),
+            activation_receipt=Path(context["activation_receipt_path"]),
+            runtime_root=Path(context["runtime_root"]),
+        )
+        _validate_code_qualification(manifest=manifest,
+            qualification_evidence=Path(context["production_qualification_evidence_path"]))
+        _validate_daily_data_readiness(manifest=manifest,
+            target_date=context["target_cutoff_date"], resolver_payload=context["target_resolver"])
+        if manifest.get("execution_profile") != "weekly19-15w-r150k":
+            return ["weekly19_arming_manifest_profile_mismatch"]
+    except Exception as exc:
+        return ["weekly19_release_qualification_or_data_receipt_invalid:" + type(exc).__name__]
+    return list(evaluate_intent(intent, context, now=now)["blockers"])
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Official-live Phase D real-submit arming gate.")
     parser.add_argument("--target-date", required=True)
+    from qmt_roll_official_execution_profile import ExecutionStrategyMode, resolve_configured_execution_profile
+    parser.add_argument("--execution-profile", choices=[item.value for item in ExecutionStrategyMode],
+                        default=resolve_configured_execution_profile().profile_key)
     parser.add_argument("--confirm-live-real", default="")
     parser.add_argument("--release-manifest", default="")
     parser.add_argument("--activation-receipt", default="")
     parser.add_argument("--production-qualification-evidence", default="")
     parser.add_argument("--stage179-runtime-root", default="")
     args = parser.parse_args()
+    if args.execution_profile == "weekly19-15w-r150k":
+        print(json.dumps({"execution_profile": args.execution_profile,
+            "arming_status": "weekly19_requires_dedicated_authorization_pipeline",
+            "real_submit_permitted": 0, "order_api_called_count": 0}))
+        return
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     paths = _paths(args.target_date)

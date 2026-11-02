@@ -1296,6 +1296,8 @@ def _tick_stream_supervisor_public(supervisor: dict[str, Any] | None) -> dict[st
 
 def _startup_configuration_blockers(args: argparse.Namespace) -> list[str]:
     blockers: list[str] = []
+    if _execution_profile_for_args(args).decision_mode == "weekly19":
+        return ["weekly19_requires_dedicated_session_dispatch"]
     controller_mode = getattr(args, "mode", "dry-run")
     submit_mode = getattr(args, "submit_mode", "disabled")
     stage179_mode = getattr(args, "stage179_execution_mode", "legacy-once")
@@ -5328,6 +5330,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--mode", choices=["dry-run", "live-real"], default="dry-run")
     parser.add_argument("--submit-mode", choices=["disabled", "live-real"], default="disabled")
     parser.add_argument("--target-date", default="")
+    parser.add_argument("--weekly19-context-file", default="")
+    parser.add_argument("--session", choices=["day", "night"], default="")
     parser.add_argument("--duration-seconds", type=int, default=0)
     parser.add_argument("--max-cycles", type=int, default=1)
     parser.add_argument("--poll-seconds", type=int, default=30)
@@ -5411,6 +5415,10 @@ def _initialize_runtime_services(
     *,
     target_date: str,
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    if _execution_profile_for_args(args).decision_mode == "weekly19":
+        return ({"enabled": 0, "status": "weekly19_dedicated_quote_provider"},
+                {"enabled": 0, "status": "weekly19_intraday_detector_disabled"},
+                {"allowed_to_continue": 1, "preflight_status": "weekly19_ai_disabled"})
     tick_stream_supervisor = _initialize_tick_stream_supervisor(args, paths)
     detector_supervisor = _initialize_detector_supervisor(
         args,
@@ -5425,6 +5433,29 @@ def main() -> None:
     daemon_started_epoch_ns = time.time_ns()
     args = _build_parser().parse_args()
     execution_profile = _execution_profile_for_args(args)
+    if execution_profile.decision_mode == "weekly19":
+        context_path = str(args.weekly19_context_file).strip()
+        if not context_path and str(args.stage179_runtime_root).strip():
+            context_path = str(Path(args.stage179_runtime_root) / "weekly19/context.json")
+        if not context_path:
+            print(json.dumps({"execution_profile": execution_profile.profile_key,
+                "daemon_status": "weekly19_context_missing_fail_closed", "order_api_called_count": 0}))
+            return
+        command = [sys.executable, str(PROJECT_DIR / "run_qmt_roll_weekly19_live.py"),
+            "--job", "session", "--execution-profile", execution_profile.profile_key,
+            "--context-file", context_path, "--release-manifest", args.release_manifest,
+            "--activation-receipt", args.activation_receipt,
+            "--production-qualification-evidence", args.production_qualification_evidence]
+        if args.target_date:
+            command.extend(["--target-date", args.target_date])
+        if args.session:
+            command.extend(["--session", args.session])
+        if args.duration_seconds > 0:
+            command.extend(["--duration-seconds", str(args.duration_seconds)])
+        for name in getattr(args, "require_current_session_name", []):
+            command.extend(["--require-current-session-name", name])
+        os.execv(sys.executable, command)
+        return
     runtime_profile = getattr(args, "runtime_profile", "offline")
     startup_blockers = _startup_configuration_blockers(args)
     if startup_blockers:

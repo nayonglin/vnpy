@@ -27,6 +27,7 @@ class TraceStage(str, Enum):
     EVENT_HANDLER_OBSERVED = "event_handler_observed"
     JOURNAL_DURABLE = "journal_durable"
     STAGE904_DETECTED = "stage904_detected"
+    WEEKLY19_QUOTE_ADMITTED = "weekly19_quote_admitted"
     STAGE905_INTENT_READY = "stage905_intent_ready"
     SPOOL_COMMITTED = "spool_committed"
     EXECUTOR_DEQUEUED = "executor_dequeued"
@@ -43,6 +44,8 @@ _CAUSAL_EDGES: tuple[tuple[TraceStage, TraceStage], ...] = (
     (TraceStage.GATEWAY_INGRESS, TraceStage.EVENT_HANDLER_OBSERVED),
     (TraceStage.GATEWAY_INGRESS, TraceStage.JOURNAL_DURABLE),
     (TraceStage.JOURNAL_DURABLE, TraceStage.STAGE904_DETECTED),
+    (TraceStage.GATEWAY_INGRESS, TraceStage.WEEKLY19_QUOTE_ADMITTED),
+    (TraceStage.WEEKLY19_QUOTE_ADMITTED, TraceStage.STAGE905_INTENT_READY),
     (TraceStage.STAGE904_DETECTED, TraceStage.STAGE905_INTENT_READY),
     (TraceStage.STAGE905_INTENT_READY, TraceStage.SPOOL_COMMITTED),
     (TraceStage.SPOOL_COMMITTED, TraceStage.EXECUTOR_DEQUEUED),

@@ -20,7 +20,7 @@ from typing import Any
 from build_qmt_roll_stage179_release_manifest import (
     load_and_validate_production_qualification_evidence,
 )
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, resolve_configured_execution_profile
 from qmt_roll_official_live_daily_data_receipt import (
     initialize_production_database_from_sqlite_backup,
 )
@@ -1275,10 +1275,10 @@ def _validate_prepared_production_chain(
         manifest = load_and_validate_release_manifest(
             paths.release_manifest,
             repo_root=paths.stable_repo,
-            expected_official_version=C9_15W_PROFILE.official_version,
-            expected_capital=C9_15W_PROFILE.capital,
-            expected_capital_label=C9_15W_PROFILE.capital_label,
-            expected_execution_profile=C9_15W_PROFILE.profile_key,
+            expected_official_version=resolve_configured_execution_profile().official_version,
+            expected_capital=resolve_configured_execution_profile().capital,
+            expected_capital_label=resolve_configured_execution_profile().capital_label,
+            expected_execution_profile=resolve_configured_execution_profile().profile_key,
             required_runtime_profile=ExecutionRuntimeProfile.PRODUCTION_LIVE,
             current_commit=head,
         )
@@ -1286,10 +1286,10 @@ def _validate_prepared_production_chain(
             paths.qualification_evidence,
             repo_root=paths.stable_repo,
             source_commit=head,
-            execution_profile=C9_15W_PROFILE.profile_key,
-            official_version=C9_15W_PROFILE.official_version,
-            capital=C9_15W_PROFILE.capital,
-            capital_label=C9_15W_PROFILE.capital_label,
+            execution_profile=resolve_configured_execution_profile().profile_key,
+            official_version=resolve_configured_execution_profile().official_version,
+            capital=resolve_configured_execution_profile().capital,
+            capital_label=resolve_configured_execution_profile().capital_label,
             critical_files=[
                 str(item.get("path", ""))
                 for item in manifest.get("critical_files", [])
@@ -1313,9 +1313,9 @@ def _validate_prepared_production_chain(
     receipt_blockers = validate_stage179_activation_receipt(
         paths.activation_receipt,
         manifest_sha256=str(manifest.get("manifest_sha256", "")),
-        official_version=C9_15W_PROFILE.official_version,
-        capital=C9_15W_PROFILE.capital,
-        capital_label=C9_15W_PROFILE.capital_label,
+        official_version=resolve_configured_execution_profile().official_version,
+        capital=resolve_configured_execution_profile().capital,
+        capital_label=resolve_configured_execution_profile().capital_label,
     )
     if receipt_blockers:
         raise ProductionInstallError(

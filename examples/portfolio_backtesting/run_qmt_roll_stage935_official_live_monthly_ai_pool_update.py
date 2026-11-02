@@ -40,10 +40,12 @@ from qmt_roll_official_live_lightweight_context import (
     STAGE173_SUMMARY_PATH,
 )
 from qmt_roll_official_live_email_notify import send_official_live_email_notification
+from qmt_roll_official_execution_profile import resolve_configured_execution_profile
 
 
 MODEL_TAG = "stage935_official_live_monthly_ai_pool_update_v1"
 OUTPUT_PREFIX = "qmt_roll_stage935_official_live_monthly_ai_pool_update"
+WEEKLY19_DISABLED_STATUS = "disabled_for_weekly19_fixed_universe"
 DEFAULT_SOURCE_PREFIX = "qmt_roll_stage183_ai_source_floor35"
 STAGE182_MODEL_TAG = "stage182_ai_product_pool_live_inference_v1"
 STAGE182_OUTPUT_PREFIX = "qmt_roll_stage182_ai_product_pool_live_inference"
@@ -157,6 +159,10 @@ def _write_material_publication_request(
     training_label_cutoff: str,
     source_commit: str | None = None,
 ) -> Path:
+    if resolve_configured_execution_profile().decision_mode == "weekly19":
+        raise RuntimeError(WEEKLY19_DISABLED_STATUS)
+    if OFFICIAL_LIVE_MATERIAL_STRATEGY_VERSION != OFFICIAL_AI_PRODUCT_POOL_STRATEGY:
+        raise RuntimeError("stage935_historical_ai_material_identity_required")
     required = {
         "live_pool",
         "live_eligibility",
@@ -1570,6 +1576,16 @@ def main() -> None:
     parser.add_argument("--inference-timeout-seconds", type=int, default=3600)
     parser.add_argument("--disable-lock", action="store_true")
     args = parser.parse_args()
+
+    profile = resolve_configured_execution_profile()
+    if profile.decision_mode == "weekly19":
+        print(json.dumps({"model_tag": MODEL_TAG, "automation_status": WEEKLY19_DISABLED_STATUS,
+            "action": WEEKLY19_DISABLED_STATUS, "execution_profile": profile.profile_key,
+            "official_live_version": profile.official_version, "mode": str(args.mode),
+            "send_order_api_called_count": 0, "cancel_order_api_called_count": 0,
+            "order_api_called_count": 0, "real_order_enabled": False,
+            "production_qualified": False}, ensure_ascii=False, sort_keys=True))
+        raise SystemExit(0)
 
     CONTROL_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")

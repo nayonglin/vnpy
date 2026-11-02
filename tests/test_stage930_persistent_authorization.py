@@ -20,6 +20,7 @@ if str(PORTFOLIO_DIR) not in sys.path:
     sys.path.insert(0, str(PORTFOLIO_DIR))
 
 import run_qmt_roll_stage930_official_live_c9_session_daemon as stage930  # noqa: E402
+from qmt_roll_official_execution_profile import C9_15W_PROFILE
 
 
 class _Process:
@@ -125,7 +126,7 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
             "generated_at": now,
             "target_date": "2026-07-21",
             "execution_profile": "c9-15w",
-            "official_live_version": stage930.OFFICIAL_LIVE_VERSION,
+            "official_live_version": C9_15W_PROFILE.official_version,
             "capital": 150000,
             "capital_label": "15w",
             "order_api_called_count": 0,
@@ -159,7 +160,7 @@ class Stage930PersistentAuthorizationTest(unittest.TestCase):
             "generated_at": now,
             "target_date": "2026-07-21",
             "execution_profile": "c9-15w",
-            "official_live_version": stage930.OFFICIAL_LIVE_VERSION,
+            "official_live_version": C9_15W_PROFILE.official_version,
             "capital": 150000,
             "capital_label": "15w",
             "order_api_called_count": 0,

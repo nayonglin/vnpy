@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import subprocess
 from datetime import date, datetime
@@ -998,6 +999,9 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
     else:
         manual_status = "无手动策略仓差异"
 
+    snapshot_age = _to_float(stage906_summary.get("readonly_snapshot_age_seconds"), float("nan"))
+    if not math.isfinite(snapshot_age):
+        snapshot_age = None
     return {
         "target_date": target_date,
         "stage901_analysis_date": stage901_date,
@@ -1019,9 +1023,7 @@ def _build_execution_consistency_audit(wrapper: dict[str, Any], stage903: dict[s
             stage906_summary.get("account_state_alignment", stage903.get("stage906_account_state_alignment"))
         ),
         "stage906_broker_snapshot_ready": _to_int(stage906_summary.get("broker_snapshot_ready"), 0),
-        "stage906_readonly_snapshot_age_seconds": _to_float(
-            stage906_summary.get("readonly_snapshot_age_seconds"), 0.0
-        ),
+        "stage906_readonly_snapshot_age_seconds": snapshot_age,
         "stage906_max_snapshot_age_seconds": _to_int(
             stage906_summary.get("max_snapshot_age_seconds", stage903.get("stage906_max_snapshot_age_seconds")), 0
         ),
@@ -1244,6 +1246,8 @@ def _run_stage935_preflight(args: argparse.Namespace, log_path: Path) -> dict[st
         str(STAGE935_SCRIPT),
         "--mode",
         "run" if mode == "run" else "check",
+        "--data-ready-time",
+        str(getattr(args, "ai_pool_data_ready_time", "16:30")),
         "--email-policy",
         "changes" if mode == "run" else "never",
     ]
@@ -1314,7 +1318,8 @@ def _status_text(summary: dict[str, Any]) -> str:
 
 
 def _build_report(wrapper: dict[str, Any], stage903: dict[str, Any]) -> str:
-    account = wrapper.get("account_snapshot", {}) or {}
+    account_ready = _postclose_account_ready(wrapper, stage903)
+    account = (wrapper.get("account_snapshot", {}) or {}) if account_ready else {}
     stage903_outputs = stage903.get("outputs", {}) if isinstance(stage903.get("outputs"), dict) else {}
     signal_details = _signal_details_frame(wrapper, stage903)
     blocked_candidates = _blocked_candidate_details_frame(wrapper)
@@ -1331,6 +1336,8 @@ def _build_report(wrapper: dict[str, Any], stage903: dict[str, Any]) -> str:
             f"- Shadow 起点：`{OFFICIAL_LIVE_SHADOW_ANALYSIS_START_DATE}`",
             f"- AI池检查：`{ai_pool.get('automation_status', '')}`，expected `{ai_pool.get('expected_eval_date', '')}`，current `{ai_pool.get('current_eval_date', '')}`",
             f"- 总结：{_status_text(stage903)}",
+            ("- 账户对账未就绪：快照缺失、陈旧或未经验证；不能据此判断无需交易。" if not account_ready
+             else "- 账户快照：见下方记录；实际提交仍须通过独立fresh gate。"),
             "",
             "## 核心状态",
             "",
@@ -1403,7 +1410,7 @@ def _build_report(wrapper: dict[str, Any], stage903: dict[str, Any]) -> str:
             "",
             f"- balance：`{account.get('balance', '')}`",
             f"- available：`{account.get('available', '')}`",
-            f"- position rows：`{account.get('position_rows', '')}`，nonzero rows：`{account.get('nonzero_position_rows', 0)}`",
+            f"- position rows：`{account.get('position_rows', '')}`，nonzero rows：`{account.get('nonzero_position_rows', '')}`",
             "",
             "## 报告文件",
             "",
@@ -1433,12 +1440,27 @@ def _write_outputs(paths: dict[str, Path], wrapper: dict[str, Any], stage903: di
         LATEST_COMMAND_LOG_PATH.write_text(paths["command_log"].read_text(encoding="utf-8"), encoding="utf-8")
 
 
+def _postclose_account_ready(wrapper: dict[str, Any], stage903: dict[str, Any]) -> bool:
+    """Presentation only: never promote an unverified CSV to a fresh account."""
+    if wrapper.get("phase") != "post-close":
+        return True
+    audit = _execution_consistency_audit(wrapper, stage903)
+    age = _to_float(audit.get("stage906_readonly_snapshot_age_seconds"), float("nan"))
+    limit = _to_float(audit.get("stage906_max_snapshot_age_seconds"), 0.0)
+    return (
+        _to_int(audit.get("stage906_broker_snapshot_ready"), 0) == 1
+        and math.isfinite(age) and math.isfinite(limit) and limit > 0 and 0 <= age <= limit
+    )
+
+
 def _email_severity(stage903: dict[str, Any], wrapper: dict[str, Any]) -> str:
     if _to_int(stage903.get("order_api_called_count"), 0) > 0 or _to_int(wrapper.get("wrapper_exit_code"), 0) != 0:
         return "critical"
     if _to_int(stage903.get("stage260_executable_count"), 0) > 0 or _to_int(stage903.get("pending_order_count"), 0) > 0:
         return "warning"
     if "blocked" in str(stage903.get("controller_status", "")):
+        return "warning"
+    if not _postclose_account_ready(wrapper, stage903):
         return "warning"
     return "info"
 
@@ -1456,7 +1478,8 @@ def _send_report_email(
     pending = _to_int(stage903.get("pending_order_count", 0))
     ready = _to_int(stage903.get("stage905_ready_count", 0))
     order_api = _to_int(stage903.get("order_api_called_count", 0))
-    account = wrapper.get("account_snapshot") or {}
+    account_ready = _postclose_account_ready(wrapper, stage903)
+    account = (wrapper.get("account_snapshot") or {}) if account_ready else {}
     ai_pool = wrapper.get("ai_pool_preflight") or {}
     signal_details = _signal_details_frame(wrapper, stage903)
     blocked_candidates = _blocked_candidate_details_frame(wrapper)
@@ -1472,6 +1495,8 @@ def _send_report_email(
         action_text = f"没有最终可执行指令；有 {blocked_count} 个底层候选被策略过滤，原因见下方。"
     else:
         action_text = "没有需要自动执行的开仓或平仓指令。"
+    if not account_ready and order_api == 0:
+        action_text = "账户对账未就绪：快照缺失、陈旧或未经验证；理论信号见下方，不能据此判断无需交易。"
     subject = (
         f"[C9/15w 官方报告][{severity}] {wrapper['target_date']} "
         f"待处理={pending} 可提交={ready} 过滤候选={blocked_count} "
@@ -1518,7 +1543,8 @@ def _send_report_email(
             f"日期：{wrapper['target_date']}，阶段：{wrapper['phase']}",
             f"信号/待执行/可提交：{stage903.get('signal_count', '')}/{pending}/{ready}",
             f"下单API：{order_api}",
-            f"账户：资金 {account.get('balance', '')}，非零持仓 {account.get('nonzero_position_rows', 0)}",
+            (f"账户：资金 {account.get('balance', '')}，非零持仓 {account.get('nonzero_position_rows', '')}"
+             if account_ready else "账户对账未就绪：旧CSV资金与持仓不作为本次最新账户状态。"),
             f"AI池：{ai_pool.get('automation_status', '')}，应为 {ai_pool.get('expected_eval_date', '')}，当前 {ai_pool.get('current_eval_date', '')}",
             f"状态：{stage903.get('controller_status', '')}；{stage903.get('stage905_executor_status', '')}",
             "",
@@ -1537,8 +1563,9 @@ def _send_report_email(
             gate_text,
             "",
             "字段说明：策略保证金/止损/风险来自 Stage901 entry_risk；单产品保证金上限是当前实盘采用的产品级 cap，例如 rb2610 归到 rb.SHFE；这不是黑色、能化等行业集群 cap；券商实际保证金以交易软件/CTP为准；提交许可仍以 Stage260/905/927/931 为准。",
-            "16:35仓位对账：若15:08日盘收后只读快照可用，会用于提前预警broker/shadow是否一致；这不是下单许可，20:55/交易时段仍必须重新拉300秒内fresh快照和盘口。",
-            "需要你做：有下单API或可提交指令时看账户；否则不用处理。",
+            "收盘流程15:10启动；15:12日盘收后只读快照仅在完成且通过时效检查时用于broker/shadow对账。流程可能稍后发信；这不是下单许可，20:55/交易时段仍必须重新拉300秒内fresh快照和盘口。",
+            ("需要你做：账户对账未就绪，先核对只读任务与快照状态。" if not account_ready
+             else "需要你做：有下单API或可提交指令时看账户；否则不用处理。"),
         ]
     )
     return send_official_live_email_notification(
@@ -1573,10 +1600,11 @@ def main() -> None:
         "--post-close-reconcile-snapshot-age-seconds",
         type=int,
         default=POST_CLOSE_RECONCILE_MAX_SNAPSHOT_AGE_SECONDS,
-        help="16:35 post-close preview reconciliation age limit; does not relax live submit gates.",
+        help="Post-close preview reconciliation age limit; does not relax live submit gates.",
     )
     parser.add_argument("--timeout-seconds", type=int, default=1200)
     parser.add_argument("--ai-pool-preflight-mode", choices=["skip", "check", "run"], default="run")
+    parser.add_argument("--ai-pool-data-ready-time", default="16:30")
     parser.add_argument("--ai-pool-timeout-seconds", type=int, default=3600)
     parser.add_argument("--email-policy", choices=["always", "never"], default="always")
     parser.add_argument("--allow-weekend", action="store_true")

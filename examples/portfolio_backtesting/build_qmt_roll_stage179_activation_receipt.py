@@ -12,7 +12,7 @@ from build_qmt_roll_stage179_release_manifest import (
     _production_runtime_identity,
     load_and_validate_production_qualification_evidence,
 )
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, resolve_configured_execution_profile
 from qmt_roll_official_live_phase_d_config import (
     STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION,
 )
@@ -69,10 +69,10 @@ def build_stage179_activation_receipt(
     manifest = load_and_validate_release_manifest(
         release_manifest_path,
         repo_root=repo,
-        expected_official_version=C9_15W_PROFILE.official_version,
-        expected_capital=C9_15W_PROFILE.capital,
-        expected_capital_label=C9_15W_PROFILE.capital_label,
-        expected_execution_profile=C9_15W_PROFILE.profile_key,
+        expected_official_version=resolve_configured_execution_profile().official_version,
+        expected_capital=resolve_configured_execution_profile().capital,
+        expected_capital_label=resolve_configured_execution_profile().capital_label,
+        expected_execution_profile=resolve_configured_execution_profile().profile_key,
         required_runtime_profile=ExecutionRuntimeProfile.PRODUCTION_LIVE,
         current_commit=head,
     )
@@ -80,10 +80,10 @@ def build_stage179_activation_receipt(
         production_qualification_evidence,
         repo_root=repo,
         source_commit=head,
-        execution_profile=C9_15W_PROFILE.profile_key,
-        official_version=C9_15W_PROFILE.official_version,
-        capital=C9_15W_PROFILE.capital,
-        capital_label=C9_15W_PROFILE.capital_label,
+        execution_profile=resolve_configured_execution_profile().profile_key,
+        official_version=resolve_configured_execution_profile().official_version,
+        capital=resolve_configured_execution_profile().capital,
+        capital_label=resolve_configured_execution_profile().capital_label,
         critical_files=[
             str(item.get("path", ""))
             for item in manifest.get("critical_files", [])
@@ -127,9 +127,9 @@ def build_stage179_activation_receipt(
     core: dict[str, Any] = {
         "schema_version": STAGE179_ACTIVATION_RECEIPT_SCHEMA_VERSION,
         "manifest_sha256": str(manifest["manifest_sha256"]),
-        "official_version": C9_15W_PROFILE.official_version,
-        "capital": C9_15W_PROFILE.capital,
-        "capital_label": C9_15W_PROFILE.capital_label,
+        "official_version": resolve_configured_execution_profile().official_version,
+        "capital": resolve_configured_execution_profile().capital,
+        "capital_label": resolve_configured_execution_profile().capital_label,
         "policy_decision": "approved",
         "created_at_utc": created,
         "python_sha256": activation_runtime_identity["python_sha256"],
@@ -181,9 +181,9 @@ def build_stage179_activation_receipt(
     blockers = validate_stage179_activation_receipt(
         destination,
         manifest_sha256=str(manifest["manifest_sha256"]),
-        official_version=C9_15W_PROFILE.official_version,
-        capital=C9_15W_PROFILE.capital,
-        capital_label=C9_15W_PROFILE.capital_label,
+        official_version=resolve_configured_execution_profile().official_version,
+        capital=resolve_configured_execution_profile().capital,
+        capital_label=resolve_configured_execution_profile().capital_label,
         runtime_identity=activation_runtime_identity,
     )
     if blockers:

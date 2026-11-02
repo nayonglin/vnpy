@@ -1,0 +1,3 @@
+[lfs]
+	url = git@github.com:nayonglin/vnpy-official-materials.git
+	pushurl = ssh://git@github.com/nayonglin/vnpy-official-materials.git

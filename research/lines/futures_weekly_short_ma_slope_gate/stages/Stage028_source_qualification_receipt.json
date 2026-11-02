@@ -1,0 +1,28 @@
+{
+  "schema": "Stage028.source-qualified-material-activation-input.v1",
+  "recorded_at_utc": "2026-11-02T12:23:55.963714+00:00",
+  "source_commit": "42fdb977fc28ad55ddd8c6cf8d364e97e4acf967",
+  "release_commit": "4c9b645eefb509d3026246f2f16843c57341ddaa",
+  "release_id": "m0006_20261102T162146+0800_42fdb977fc28",
+  "qualification_sha256": "a69a24df37bb5b6d42f5865879751fa2b295dda6ae646115d967e2ed9ce84908",
+  "qualification_internal_evidence_sha256": "d61ebe80795a075e5a759e79315e08b07611b00dda15873d19e802ea41a90e02",
+  "independent_review_sha256": "12b47dc37552d4c673e03928ff10e0847304ce709ebe4f5dc16072982eab71a3",
+  "independent_checks": 2342,
+  "suite_count": 96,
+  "test_count": 2408,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "formal_capture_count": 2,
+  "mutation_API_all_zero": true,
+  "source_qualified": true,
+  "production_installed_at_recording": false,
+  "account_initialized_at_recording": false,
+  "private_wrapper_sha256": "9987c0ad98ba0d7a23845e78dd8ca1ac662676a2e4b567382688ff804daefe38",
+  "old_stable_backup": {
+    "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/upgrade-backups/Stage028_before_m6_20261102T201057/backup-manifest.json",
+    "sha256": "0174a98168fda93b70c1a1a188b038aba45bd9454723a24f8412cb8930dfddc7"
+  },
+  "overfitting": false,
+  "continued_value": true
+}

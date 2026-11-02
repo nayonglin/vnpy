@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -32,7 +33,7 @@ from build_qmt_roll_stage179_release_manifest import (
     serialize_production_qualification_evidence,
     trusted_runner_environment_receipt,
 )
-from qmt_roll_official_execution_profile import C9_15W_PROFILE
+from qmt_roll_official_execution_profile import C9_15W_PROFILE, resolve_configured_execution_profile
 from qmt_roll_official_live_phase_d_config import (
     PHASE_D_READONLY_REFRESH_CONFIRM_TEXT,
     READONLY_SUMMARY_PATH,
@@ -1142,10 +1143,10 @@ def _assemble_production_qualification_bundle(
             "evidence_kind": PRODUCTION_QUALIFICATION_EVIDENCE_KIND,
             "generated_at_utc": generated,
             "source_commit": source_commit,
-            "execution_profile": C9_15W_PROFILE.profile_key,
-            "official_version": C9_15W_PROFILE.official_version,
-            "capital": C9_15W_PROFILE.capital,
-            "capital_label": C9_15W_PROFILE.capital_label,
+            "execution_profile": resolve_configured_execution_profile().profile_key,
+            "official_version": resolve_configured_execution_profile().official_version,
+            "capital": resolve_configured_execution_profile().capital,
+            "capital_label": resolve_configured_execution_profile().capital_label,
             "critical_files": critical_rows,
             "tree_fingerprint": tree_fingerprint,
             "review": review_pointer,
@@ -1166,10 +1167,10 @@ def _assemble_production_qualification_bundle(
             evidence_path,
             repo_root=repo,
             source_commit=source_commit,
-            execution_profile=C9_15W_PROFILE.profile_key,
-            official_version=C9_15W_PROFILE.official_version,
-            capital=C9_15W_PROFILE.capital,
-            capital_label=C9_15W_PROFILE.capital_label,
+            execution_profile=resolve_configured_execution_profile().profile_key,
+            official_version=resolve_configured_execution_profile().official_version,
+            capital=resolve_configured_execution_profile().capital,
+            capital_label=resolve_configured_execution_profile().capital_label,
             critical_files=critical,
             manifest_created_at_utc=generated,
         )
@@ -1191,12 +1192,88 @@ def _assemble_production_qualification_bundle(
             shutil.rmtree(temporary)
 
 
+def _resolve_qualification_critical_files(
+    *,
+    repo: Path,
+    critical_files: Iterable[str | Path],
+    material_release_id: str | None = None,
+    material_release_commit: str | None = None,
+) -> tuple[str | Path, ...]:
+    """Bind a candidate without activating it, or preserve active-release checks."""
+    from qmt_roll_official_strategy_material_resolver import (
+        ActiveMaterialError,
+        active_release_critical_files,
+        material_release_critical_files,
+        verify_material_file,
+    )
+
+    requested = tuple(critical_files)
+    if material_release_id is not None or material_release_commit is not None:
+        if not material_release_id or not material_release_commit:
+            raise ReleaseManifestError(
+                "production_bundle_candidate_material_identity_incomplete"
+            )
+        from build_qmt_roll_official_strategy_material_release import (
+            MaterialReleaseError,
+            assert_exact_release_commit,
+            verify_release_tree,
+        )
+
+        try:
+            if not re.fullmatch(r"[0-9a-f]{40}", material_release_commit):
+                raise MaterialReleaseError("release_commit_invalid")
+            if _git(repo, "rev-parse", "HEAD") != material_release_commit:
+                raise MaterialReleaseError("candidate_release_not_head")
+            manifest_path = assert_exact_release_commit(
+                repo, material_release_id, material_release_commit
+            )
+            manifest = verify_release_tree(manifest_path.parent)
+            if manifest["source_commit"] != _git(
+                repo, "rev-parse", f"{material_release_commit}^"
+            ):
+                raise MaterialReleaseError("candidate_source_commit_mismatch")
+            for row in manifest["files"]:
+                if row["role"] not in {
+                    "runtime_code", "strategy_config", "operational_config"
+                }:
+                    continue
+                source_path = str(row["source_path"])
+                if source_path.startswith("promotion_source:"):
+                    continue
+                relative = Path(source_path)
+                if relative.is_absolute() or ".." in relative.parts:
+                    raise MaterialReleaseError("candidate_source_path_invalid")
+                verify_material_file(repo / relative, row)
+            material_files = material_release_critical_files(
+                repo / "official_strategy_materials", material_release_id
+            )
+        except (ActiveMaterialError, MaterialReleaseError, OSError) as exc:
+            raise ReleaseManifestError(
+                f"production_bundle_candidate_material_release_invalid:{exc}"
+            ) from exc
+        return tuple(dict.fromkeys((*requested, *material_files)))
+
+    if not (repo / "official_strategy_materials/CURRENT.json").is_file():
+        return requested
+    try:
+        material_files = active_release_critical_files(
+            repo_root=repo, require_deployable=True
+        )
+    except ActiveMaterialError as exc:
+        raise ReleaseManifestError(
+            f"production_bundle_active_material_release_invalid:{exc}"
+        ) from exc
+    return tuple(dict.fromkeys((*requested, *material_files)))
+
+
 def build_trusted_production_qualification_bundle(
     *,
     output_dir: Path | str,
     repo_root: Path | str,
     review_report: Path | str,
     confirmation: str,
+    material_release_id: str | None = None,
+    material_release_commit: str | None = None,
     critical_files: Iterable[str | Path] = DEFAULT_CRITICAL_FILES,
     generated_at_utc: str | None = None,
     runner: Any = subprocess.run,
@@ -1217,26 +1294,12 @@ def build_trusted_production_qualification_bundle(
     if _git(repo, "status", "--porcelain", "--untracked-files=all"):
         raise ReleaseManifestError("production_bundle_requires_clean_tree")
     source_commit = _git(repo, "rev-parse", "--verify", "HEAD^{commit}")
-    normalized_critical_files = tuple(critical_files)
-    material_current = repo / "official_strategy_materials/CURRENT.json"
-    if material_current.is_file():
-        from qmt_roll_official_strategy_material_resolver import (
-            ActiveMaterialError,
-            active_release_critical_files,
-        )
-
-        try:
-            material_files = active_release_critical_files(
-                repo_root=repo,
-                require_deployable=True,
-            )
-        except ActiveMaterialError as exc:
-            raise ReleaseManifestError(
-                f"production_bundle_active_material_release_invalid:{exc}"
-            ) from exc
-        normalized_critical_files = tuple(
-            dict.fromkeys((*normalized_critical_files, *material_files))
-        )
+    normalized_critical_files = _resolve_qualification_critical_files(
+        repo=repo,
+        critical_files=critical_files,
+        material_release_id=material_release_id,
+        material_release_commit=material_release_commit,
+    )
     runtime_identity = _production_runtime_identity(repo)
     run_nonce = uuid.uuid4().hex
     started_at = _utc_now()
@@ -1313,6 +1376,8 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     parser.add_argument("--review-report", type=Path, required=True)
+    parser.add_argument("--material-release-id")
+    parser.add_argument("--material-release-commit")
     parser.add_argument(
         "--confirm-trusted-production-qualification-run",
         required=True,
@@ -1324,6 +1389,8 @@ def main() -> None:
         repo_root=args.repo_root,
         review_report=args.review_report,
         confirmation=args.confirm_trusted_production_qualification_run,
+        material_release_id=args.material_release_id,
+        material_release_commit=args.material_release_commit,
         critical_files=DEFAULT_CRITICAL_FILES,
         generated_at_utc=None,
     )
