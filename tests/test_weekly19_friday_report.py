@@ -134,6 +134,7 @@ class MailOutboxTest(unittest.TestCase):
   self.assertEqual(self.out.deliver(r,lambda _:calls.append(1))['status'],'preview_only');self.assertEqual(calls,[])
  def test_bad_parent_or_symlink_is_rejected(self):
   p=self.root/'bad';p.mkdir(mode=0o755)
+  p.chmod(0o755)  # Test the actual unsafe mode even under private umask 077.
   with self.assertRaises(ReportError):FridayMailOutbox(p)
   link=self.root/'link';link.symlink_to(self.root,target_is_directory=True)
   with self.assertRaises(ReportError):FridayMailOutbox(link)

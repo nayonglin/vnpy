@@ -65,3 +65,9 @@ Stage014 C_R150固定19品种截至10/30无新开信号（15万空仓条件）�
 m4 source d43e23ca9a501acae3665501a28ecefb6918d7b1、release 1a4f7d06c2f964f8bb3bab3b818ac5e05b7b5876已冻结且local clone388payload/298critical/LFS及mode通过。可信逐套件资格失败于三组测试，尚未进入native捕获；不activate/master/生产。两组稳定复现为隔离HOME缺生产目录导致源门错误类型，最小改expected path resolve(strict=False)，actual repo仍strict存在/身份链不变。另独立故障注入证实通知lock首次exclusive-create ENOENT缺原8次retry分支，补catch保留权限/NOFOLLOW/最后raise/未知投递不重发；不把它冒认原Friday故障原因。原Friday30轮及原序前链未复现，保留UNKNOWN与原失败，下一次旁路尽力归档原始观察，不修改可信producer或用sidecopy授予资格。
 
 4文件代码/测试最小delta，新增3回归先RED后GREEN；96套件2408/0F/0E/0skip、298锁前后/current一致，独审613绑定检查通过/剩余实现P0/P1/P2=0，原AST原型错误文本差异1F及历史原始轨迹丢失明确保存。无金融重跑/alpha/资金规则改变，未接管实账户；需新m5及真实新资格。最新离线入口Stage025_implementation_lock.json / Stage025_review_acceptance.json；m4不可变负结果不覆盖。
+
+## 2026-11-02 Stage026 m5原错误保留与m6仅夹具修复
+
+m5 R5=836e5272b78bb542b038bc605a67fd7c2f26245f可信测试2408项仅Friday坏parent断言1失败、未到native；本轮288原文件观察版本/0归档错误，已明确mkdir0755被私有umask077收紧成0700，产品正确拒宽/接受安全权限。仅测试加显式chmod0755，所有原断言不变，077/022各24项通过且独审复现；297其他critical/全部产品源码同m5。旧m4具体trace缺失仍保留，不改写。
+
+最新候选m6需新source/material及exactR6真实完整96套件+2readonly，其实际aggregate作为本版本fullCI；未通过不得安装。没有重复额外全局CI或改alpha/资金、降低umask/安全门。最新源码锁Stage026_implementation_lock.json与失败Stage026_m5_qualification_failure.json。实际账户尚未接管，master/stable/生产原状。

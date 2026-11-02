@@ -1,0 +1,50 @@
+{
+  "actual_counts": {
+    "errors": 0,
+    "failures": 1,
+    "skipped": 0,
+    "tests": 2408
+  },
+  "actual_failed_case": "MailOutboxTest.test_bad_parent_or_symlink_is_rejected",
+  "archival_errors": [],
+  "cause": "mkdir0755 under inherited umask077 creates actual0700, correctly accepted by product; negative fixture must explicitly chmod0755",
+  "failed_suite": "tests/test_weekly19_friday_report.py",
+  "m4_attribution": "original trace absent; same old fixture reproducible under077, do not claim recovered original trace",
+  "material_release_id": "m0005_20261102T155747+0800_78914be6a851",
+  "observed_raw_versions": 288,
+  "observer_result": {
+    "path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/observer-result.json",
+    "sha256": "6e90b0743a054d0fc37b9007731bea7bf472d0399c3ba4903d0a8e8f72410afd"
+  },
+  "production_qualified": false,
+  "raw_failure_refs": [
+    {
+      "bytes": 4241,
+      "object_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/observer-archive/objects/a14891df4beb12293818391eada28dc76ae5bcc28c44dd6cfbb29ccbb693573f",
+      "observed_at_utc": "2026-11-02T08:05:09.016646+00:00",
+      "original_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/.qualification-R5.trusted-runner.6wd_8osc/raw-pytest-21.xml",
+      "relative_to_staging": "raw-pytest-21.xml",
+      "sha256": "a14891df4beb12293818391eada28dc76ae5bcc28c44dd6cfbb29ccbb693573f"
+    },
+    {
+      "bytes": 2,
+      "object_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/observer-archive/objects/4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "observed_at_utc": "2026-11-02T08:05:09.017305+00:00",
+      "original_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/.qualification-R5.trusted-runner.6wd_8osc/raw-pytest-21.exit-status",
+      "relative_to_staging": "raw-pytest-21.exit-status",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "bytes": 1019,
+      "object_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/observer-archive/objects/b358af4eb3886295680bb3c308ed60e3cc6088a20ad51a319322aa53117cb9e5",
+      "observed_at_utc": "2026-11-02T08:05:09.017589+00:00",
+      "original_path": "/Users/mac/Library/Application Support/qmt-roll-stage179/weekly19-qualification-candidates/Stage026_m5_20261102T160432/.qualification-R5.trusted-runner.6wd_8osc/raw-pytest-21.output",
+      "relative_to_staging": "raw-pytest-21.output",
+      "sha256": "b358af4eb3886295680bb3c308ed60e3cc6088a20ad51a319322aa53117cb9e5"
+    }
+  ],
+  "schema": "Stage026.m5-trusted-qualification-failure.v1",
+  "source_commit": "836e5272b78bb542b038bc605a67fd7c2f26245f",
+  "status": "failed_before_native_capture",
+  "trusted_formal_readonly_invocations": 0
+}
