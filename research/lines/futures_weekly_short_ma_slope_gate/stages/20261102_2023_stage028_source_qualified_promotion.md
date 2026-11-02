@@ -1,0 +1,15 @@
+# Stage028 新真实R6源码资格通过，推进正式晋升
+
+记录时间：2026-11-02T20:23:55.964758+08:00，line_id=futures_weekly_short_ma_slope_gate。用户要求现在继续已授权的正式切换。旧一次21点heartbeat19已通过工具删除，避免并行安装。
+
+候选m6=m0006_20261102T162146+0800_42fdb977fc28，S6=42fdb977fc28ad55ddd8c6cf8d364e97e4acf967，R6=4c9b645eefb509d3026246f2f16843c57341ddaa。20:03正式env实际2Dyld映像及runtime核验、TD/MD TCP可达；canonical stable仍旧d55887e1 clean/CURRENT m8，五件套缺、Stage948所属surface verified且0标签。旧stable代码bundle 640760749 bytes实际verify成功，配置/一致SQLite/历史state1572文件均私有备份。未覆盖旧数据/证据。
+
+新可信原入口从clean exactR6 clone独立运行96套件2408通过/0失败错误跳过，并生成2次新的正式CTP完整捕获、完整qualification。8 mutation attempted/called严格int0，无未完成委托，现仓范围与用户明确授权一致；财资/账号/实际持仓明细不入Git。独立full schema validator与2342项原件检查通过，P0/P1/P2=0。自然断线重连未观察，保留限制；本批只能证明R6 source qualification，不代表生产已安装。
+
+独审Stage028_review_acceptance.json/.md，原Q SHA=a69a24df37bb5b6d42f5865879751fa2b295dda6ae646115d967e2ed9ce84908，内部evidence SHA=d61ebe80795a075e5a759e79315e08b07611b00dda15873d19e802ea41a90e02，树指纹9620db46fbf0e40f0505a66a49c2c35787b6226b353a823980bcb25dc146e545。正式wrapper只由完整实际证据派生，R6身份/nonce/cwd不改。Stage027失败不升级或拼接。
+
+当前记录之后继续受控activate A→GitHub promote master M→真正远端fresh clone实物/LFS/388顶层与mode→保留旧stable后受控切M→Stage948 prepare→canonical stable新完整Q_M→manifest/receipt/registry/新签名快照→显式现仓与真实现金原子接管→真实完成日daily receipt→Stage948 7任务及最终读回。用户人工现金验证模式及场外R150000/T0不变，不恢复已取消自动解析器，不手工发单/撤单/转资或SMTP。
+
+数据准备发现原获批mapping为91品种，reader原本过滤19，而updater严格要求全19，于fetch前拒绝。正在新私有目录投影固定19并逐项核全部原19语义不变，旧文件保持，正式代码/闸门不放宽；其接收与11/2新行情仍独立待核。私有前检曾误要求两个repo cwd相同，以及未接受原CSV方向枚举Short的大小写；已据实际原件修正外部admission，不改正式producer或validator。UTC调用统一使用原validator要求的Z格式；失败轨迹保留。
+
+本次新增/修改/删除策略参数均无；无金融复跑，收益/回撤/Sharpe/滑点/交易/胜率无新增或改写。过拟合：否，仅安装和数据范围工程；继续价值：有，真实连接与源码资格已具备，尚须完整生产闭环。历史经济NO_PROMOTION、零手续费和其他限制不改写。

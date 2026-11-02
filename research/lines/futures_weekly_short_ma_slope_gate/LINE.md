@@ -78,3 +78,8 @@ m5 R5=836e5272b78bb542b038bc605a67fd7c2f26245f可信测试2408项仅Friday坏par
 最新不可变m6=m0006_20261102T162146+0800_42fdb977fc28，S6=42fdb977fc28ad55ddd8c6cf8d364e97e4acf967，R6=4c9b645eefb509d3026246f2f16843c57341ddaa，388payload/298critical/690资格闭包、local fresh clone实际LFS和mode已独审。实际trusted96套件2408通过/0失败错误跳过；独审1213项通过。真实第一次readonly无TD/MD连接/认证登录/query回调，brokerDay空、账户持仓UNKNOWN；8 mutation API严格0。后续TD/MD TCP各5秒超时；未定位具体网络/服务器原因。qualification.json未产出，FAILED_NOT_QUALIFIED，不能安装。12原件私有原SHA保留。
 
 新生产只读核实stable仍d55887e1 clean/CURRENT旧m8，五件套缺、Stage948所属surface verified且无磁盘/loaded/unknown标签；未activate/master/stable/Stage948或实际接管。唯一安装接续stages/Stage027_installation_handoff.json，替代旧安装目标，旧证据不删。已实际创建本日21:00同聊天一次性跟进id19/ACTIVE/COUNT1，回执Stage027_evening_followup_receipt.json。新资格须clean exactR6完整新trusted run，不拼接本轮测试与别次native，不复用9:04快照；本记录提交使ROOT成为纯docs后代，既有R6 clone origin为本地，晋升务必真正GitHub。未回测/改alpha，过拟合否，真实安装接续仍有价值。
+
+
+## 2026-11-02T20:23:55.964758+08:00 Stage028 新真实R6源码资格通过
+
+原trusted96/2408全绿，两次新正式CTP查询完整、8变更API严格0；独立2342检查和full生产schema通过，现仓范围符合用户授权，原件财资只私有。Q SHA=a69a24df37bb5b6d42f5865879751fa2b295dda6ae646115d967e2ed9ce84908，独审Stage028_review_acceptance。source资格只绑定R6，m6/S6/R6不变，尚不代表master/production安装；接续原受控promotion→stable Q_M→注册来源/现仓接管→Stage948。原21点heartbeat19已取消避免重复，旧stable私有完整备份已verify。新mapping19投影及11/2行情另行准入，不改策略代码。无金融复跑/调参，过拟合否、继续有价值。
