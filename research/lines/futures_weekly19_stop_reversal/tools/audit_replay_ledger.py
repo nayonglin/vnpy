@@ -14,6 +14,7 @@ TOLERANCE = 1e-6
 def metrics(daily, cycles):
     equity = daily.total_account_equity
     returns = equity.pct_change().fillna(0)
+    trading = daily.trading_account_equity
     wins = cycles.loc[cycles.net > TOLERANCE, "net"]
     losses = -cycles.loc[cycles.net < -TOLERANCE, "net"]
     return dict(
@@ -22,6 +23,7 @@ def metrics(daily, cycles):
         reserve_end=daily.reserve_balance.iloc[-1], reserve_transferred=daily.cumulative_transfer.iloc[-1],
         return_pct=(equity.iloc[-1] / INITIAL - 1) * 100,
         max_drawdown_pct=(equity / equity.cummax().clip(lower=INITIAL) - 1).min() * 100,
+        trading_max_drawdown_pct=(trading / trading.cummax().clip(lower=150_000) - 1).min() * 100,
         sharpe=returns.mean() / returns.std() * sqrt(252),
         slippage=daily.slippage.sum(), commission=daily.commission.sum(),
         fills=int(daily.trade_count.sum()), closed_cycles=len(cycles),
@@ -137,6 +139,9 @@ def compare(a, c):
     sleeve = cc.loc[cc.sleeve == "weekly19_stop_reversal"]
     sleeve_mtm = sum(row["net"] for row in cm if row["sleeve"] == "weekly19_stop_reversal")
     direct = sleeve.net.sum() + sleeve_mtm
+    reverse_fills = cf.loc[cf.sleeve == "weekly19_stop_reversal"]
+    reverse_wins = sleeve.loc[sleeve.net > TOLERANCE, "net"]
+    reverse_losses = -sleeve.loc[sleeve.net < -TOLERANCE, "net"]
     delta = cr["net_pnl"] - ar["net_pnl"]
     annual = pd.DataFrame({"A": ad.net_pnl, "C": cd.net_pnl})
     annual = annual.groupby(annual.index.str[:4]).sum()
@@ -144,6 +149,10 @@ def compare(a, c):
     return dict(A=ar, C=cr, portfolio_delta=delta, direct_reversal_net=direct,
                 other_path_delta=delta-direct, reversal_closed_pnl=sleeve.net.sum(),
                 reversal_terminal_mtm=sleeve_mtm, reversal_closed_cycles=len(sleeve),
+                reversal_fills=len(reverse_fills), reversal_lot_sides=int(reverse_fills.volume.sum()),
+                reversal_win_rate_pct=100 * len(reverse_wins) / len(sleeve) if len(sleeve) else None,
+                reversal_profit_factor=reverse_wins.sum() / reverse_losses.sum() if len(reverse_losses) else None,
+                reversal_payoff=reverse_wins.mean() / reverse_losses.mean() if len(reverse_wins) and len(reverse_losses) else None,
                 reversal_slippage=sleeve.slippage.sum() + sum(
                     row["slippage"] for row in cm if row["sleeve"] == "weekly19_stop_reversal"
                 ), reversal_outcomes=dict(Counter(decisions.status))), annual
@@ -159,6 +168,11 @@ def main():
     args.output.mkdir(parents=True)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2, default=lambda x: x.item()) + "\n")
     annual.to_csv(args.output / "annual.csv")
+    curves = {
+        name: pd.read_csv(root / "daily.csv", index_col="date").total_account_equity
+        for name, root in (("A", args.a), ("C", args.c))
+    }
+    pd.DataFrame(curves).to_csv(args.output / "equity.csv")
     print((args.output / "summary.json").read_text(), end="")
 
 
