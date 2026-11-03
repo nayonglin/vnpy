@@ -1,6 +1,7 @@
 """Bounded next-trading-day-open execution for the research reversal."""
 from copy import copy
 from datetime import date, datetime, time
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from vnpy.trader.constant import Direction, Offset
@@ -32,6 +33,32 @@ def open_equity(balance, starting_positions, prior_marks, marks, fills, sizes):
         equity += side * fill["volume"] * (marks[fill["symbol"]] - fill["price"]) * sizes[fill["symbol"]]
         equity -= fill["commission"] + fill["slippage"]
     return equity
+
+
+class ClosedPositionPnL:
+    """Cash PnL of one physical contract's actual flat-to-flat cycle."""
+
+    def __init__(self):
+        self.open_cycles = {}
+
+    def apply(self, fill, size, position):
+        symbol = fill["symbol"]
+        previous, net = self.open_cycles.get(symbol, (0, Decimal(0)))
+        volume = int(fill["volume"])
+        change = volume if fill["side"] == "long" else -volume
+        if (
+            volume <= 0 or previous + change != position
+            or (fill["offset"] == "close" and (previous * change >= 0 or volume > abs(previous)))
+            or (fill["offset"] == "open" and previous * change < 0)
+        ):
+            raise ValueError(f"reversal loss gate inventory mismatch: {symbol}")
+        net -= change * Decimal(str(fill["price"])) * size
+        net -= Decimal(str(fill["commission"])) + Decimal(str(fill["slippage"]))
+        if position:
+            self.open_cycles[symbol] = (position, net)
+            return None
+        del self.open_cycles[symbol]
+        return net
 
 
 def bind_stop_order(orders, symbol, signal_day, original_side, live_volume, target):
@@ -191,7 +218,7 @@ def reversal_strategy(base):
     return ReversalStrategy
 
 
-def reversal_engine(base):
+def reversal_engine(base, *, loss_only=False):
     class ReversalEngine(base):
         def __init__(self, *args):
             super().__init__(*args)
@@ -199,6 +226,7 @@ def reversal_engine(base):
             self.bound_close_orders = {}
             self.pending_reverse = {}
             self.signal_bindings = []
+            self.position_pnl = ClosedPositionPnL() if loss_only else None
             self.reversal_decisions = []
 
         def new_bars(self, dt):
@@ -228,6 +256,9 @@ def reversal_engine(base):
             before = strategy.get_pos(symbol)
             trade = super().fill_at_open(order, bar)
             row = self.fills[-1]
+            original_net = None
+            if self.position_pnl is not None:
+                original_net = self.position_pnl.apply(row, self.sizes[symbol], strategy.get_pos(symbol))
             row["sleeve"] = self.open_sleeve.get(symbol, "native")
             if order.offset == Offset.OPEN:
                 row["sleeve"] = TAG if reverse_owned else "native"
@@ -241,10 +272,14 @@ def reversal_engine(base):
                     raise ValueError("bound weekly stop did not fully close its position")
                 row["bound_stop_reason"] = signal.reason
                 row["bound_stop_position_id"] = signal.position_id
+                if loss_only:
+                    if original_net is None:
+                        raise ValueError("missing completed position PnL for bound stop")
+                    row["original_position_net"] = str(original_net)
                 day = self.datetime.date()
                 self.pending_reverse[signal.position_id] = (
                     product, mode, signal, CloseFill(signal.position_id, event_time(day), day, 0),
-                    row["trade_id"],
+                    row["trade_id"], original_net,
                 )
             return trade
 
@@ -273,7 +308,7 @@ def reversal_engine(base):
                 marks[symbol] = marked
             prices = {symbol: mark.close_price for symbol, mark in marks.items()}
 
-            for key, (product, mode, signal, close, close_trade_id) in eligible:
+            for key, (product, mode, signal, close, close_trade_id, original_net) in eligible:
                 del self.pending_reverse[key]
                 symbol = signal.symbol
                 real = self.history_data.get((self.datetime, symbol))
@@ -281,6 +316,11 @@ def reversal_engine(base):
                            signal_day=str(signal.signal_week.day), close_trade_id=close_trade_id,
                            close_day=str(close.trading_day), decision_day=str(day))
                 self.reversal_decisions.append(row)
+                if loss_only:
+                    row["original_position_net"] = str(original_net)
+                    if original_net >= 0:
+                        row["status"] = "original_position_nonloss"
+                        continue
                 state = strategy.states[product]
                 if day.isocalendar()[:2] != signal.scheduled_close_day.isocalendar()[:2]:
                     row["status"] = "execution_week_expired"

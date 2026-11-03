@@ -35,3 +35,24 @@ def test_bind_only_the_current_unique_full_flat_close_order():
     assert bind_stop_order([stale, partial, wrong_side, current], "x", date, "short", 4, 0) == "current"
     assert bind_stop_order([current], "x", date, "short", 4, -2) is None
     assert bind_stop_order([current, order("duplicate", date, 4)], "x", date, "short", 4, 0) is None
+
+
+def test_loss_gate_uses_whole_flat_cycle_with_fills_costs_and_partial_closes():
+    from reversal_replay import ClosedPositionPnL
+
+    ledger = ClosedPositionPnL()
+
+    def fill(side, offset, price, volume, position, slippage=0):
+        return ledger.apply(
+            dict(symbol="x", side=side, offset=offset, price=price, volume=volume,
+                 slippage=slippage, commission=0),
+            size=10, position=position,
+        )
+
+    assert fill("long", "open", 100, 3, 3, 2) is None
+    assert fill("short", "close", 120, 1, 2, 3) is None
+    assert fill("short", "close", 95, 2, 0, 5) == 90
+    assert fill("short", "open", 100, 1, -1, 2) is None
+    assert fill("long", "close", 100, 1, 0, 2) == -4
+    assert fill("long", "open", 100, 1, 1) is None
+    assert fill("short", "close", 100, 1, 0) == 0

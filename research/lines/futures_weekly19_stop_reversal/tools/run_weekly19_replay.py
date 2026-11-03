@@ -135,7 +135,7 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--reserve-wrapper", type=Path, required=True)
     parser.add_argument("--end", required=True)
-    parser.add_argument("--arm", choices=("A", "C"), required=True)
+    parser.add_argument("--arm", choices=("A", "C", "D"), required=True)
     args = parser.parse_args()
     if Path.cwd() != ROOT:
         raise ValueError("run from isolated checkout root")
@@ -163,13 +163,14 @@ def main():
         if receipt["date_end"] != args.end or not receipt["data_ready_for_bounded_replay"]:
             raise ValueError("data cutoff/authority mismatch")
         files += [data / name for name in ("receipt.json", "forward_calendar.csv", "source_manifest.json")]
-    if args.arm == "C" and not (data / "forward_calendar.csv").is_file():
+    if args.arm in {"C", "D"} and not (data / "forward_calendar.csv").is_file():
         raise ValueError("candidate needs admitted replay calendar")
     write_json(out / "inputs.json", {
         "identity": asdict(identity), "arm": args.arm, "start": START, "end": args.end,
         "inputs_sha256": {str(path): digest(path) for path in [*files, *source_hashes]},
         "execution": "declared daily open model",
-        "reverse_execution": "next trading day open after flat, within same execution week" if args.arm == "C" else None,
+        "reverse_execution": "next trading day open after flat, within same execution week" if args.arm in {"C", "D"} else None,
+        "original_position_loss_only": args.arm == "D",
         "python": sys.version, "study_git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
     })
     import vnpy.trader.database as database
@@ -205,9 +206,9 @@ def main():
         reserve_strategy_class(range_strategy_class(base, history, True), history, True, START), START,
     )
     engine_class = DailyOpenReplay
-    if args.arm == "C":
+    if args.arm in {"C", "D"}:
         from reversal_replay import reversal_engine, reversal_strategy
-        engine_class = reversal_engine(engine_class)
+        engine_class = reversal_engine(engine_class, loss_only=args.arm == "D")
         strategy_class = reversal_strategy(strategy_class)
     engine = engine_class(execution_calendar, epoch_lookup)
     engine.set_parameters(
@@ -256,7 +257,7 @@ def main():
         name: metadata[name] for name in ("sizes", "rates", "slippages", "priceticks", "margin_ratios")
     })
     write_json(out / "terminal_inventory.json", terminal_inventory)
-    if args.arm == "C":
+    if args.arm in {"C", "D"}:
         pd.DataFrame(engine.reversal_decisions).to_csv(out / "reversal_decisions.csv", index=False)
         pd.DataFrame(engine.signal_bindings).to_csv(out / "signal_bindings.csv", index=False)
     print(f"{args.arm}: {len(result)} days, {len(engine.fills)} fills", flush=True)
