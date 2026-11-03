@@ -34,6 +34,19 @@ def open_equity(balance, starting_positions, prior_marks, marks, fills, sizes):
     return equity
 
 
+def bind_stop_order(orders, symbol, signal_day, original_side, live_volume, target):
+    if target != 0 or live_volume <= 0:
+        return None
+    close_side = Direction.SHORT if original_side == "long" else Direction.LONG
+    matches = [
+        order.vt_orderid for order in orders
+        if order.vt_symbol == symbol and str(order.datetime.date()) == signal_day
+        and order.offset == Offset.CLOSE and order.direction == close_side
+        and order.volume == live_volume
+    ]
+    return matches[0] if len(matches) == 1 else None
+
+
 def _week(row):
     return WeeklyBar(date.fromisoformat(str(row["week_end"])), row["high"], row["low"], row["close"])
 
@@ -77,7 +90,7 @@ def reversal_strategy(base):
                     epoch = engine.epoch_lookup[(symbol, signal_day)]
                     position_id = f"{symbol}:{state.entry_date}:{signal_day}"
                     engine.stop_signals[(symbol, signal_day)] = (
-                        state.product_vt_symbol, state.risk_mode,
+                        state.product_vt_symbol, state.risk_mode, int(state.active_volume()),
                         StopSignal(
                             position_id, symbol, epoch, state.direction, exit_reason,
                             WeeklyBar(date.fromisoformat(signal_day), weekly.high_price, weekly.low_price, weekly.close_price),
@@ -183,29 +196,56 @@ def reversal_engine(base):
         def __init__(self, *args):
             super().__init__(*args)
             self.stop_signals = {}
+            self.bound_close_orders = {}
             self.pending_reverse = {}
+            self.signal_bindings = []
             self.reversal_decisions = []
+
+        def new_bars(self, dt):
+            super().new_bars(dt)
+            day = str(dt.date())
+            for (symbol, signal_day), (product, mode, signaled_volume, signal) in list(self.stop_signals.items()):
+                if signal_day != day:
+                    raise ValueError("unbound stop signal date mismatch")
+                del self.stop_signals[(symbol, signal_day)]
+                live_volume = abs(self.strategy.get_pos(symbol))
+                order_id = bind_stop_order(
+                    self.active_limit_orders.values(), symbol, day, signal.direction,
+                    live_volume, self.strategy.get_target(symbol),
+                ) if signaled_volume == live_volume else None
+                self.signal_bindings.append(dict(
+                    position_id=signal.position_id, symbol=symbol, day=day, reason=signal.reason,
+                    signaled_volume=signaled_volume, live_volume=live_volume, close_order_id=order_id,
+                ))
+                if order_id:
+                    self.bound_close_orders[order_id] = (product, mode, signal)
 
         def fill_at_open(self, order, bar):
             symbol = order.vt_symbol
-            state = self.strategy._find_state_by_contract(symbol)
+            strategy = self.strategy
+            state = strategy._find_state_by_contract(symbol)
             reverse_owned = _owned(state) or self.open_sleeve.get(symbol) == TAG
+            before = strategy.get_pos(symbol)
             trade = super().fill_at_open(order, bar)
+            row = self.fills[-1]
+            row["sleeve"] = self.open_sleeve.get(symbol, "native")
             if order.offset == Offset.OPEN:
-                self.open_sleeve[symbol] = TAG if reverse_owned else "native"
-            self.fills[-1]["sleeve"] = self.open_sleeve.get(symbol, "native")
-            if order.offset == Offset.CLOSE and not self.strategy.get_pos(symbol):
+                row["sleeve"] = TAG if reverse_owned else "native"
+                self.open_sleeve[symbol] = row["sleeve"]
+            if order.offset == Offset.CLOSE and not strategy.get_pos(symbol):
                 self.open_sleeve.pop(symbol, None)
-                item = self.stop_signals.pop((symbol, str(order.datetime.date())), None)
-                if item:
-                    product, mode, signal = item
-                    if self.fills[-1]["reason"] != signal.reason:
-                        raise ValueError("stop signal/fill reason mismatch")
-                    day = self.datetime.date()
-                    self.pending_reverse[signal.position_id] = (
-                        product, mode, signal, CloseFill(signal.position_id, event_time(day), day, 0),
-                        self.fills[-1]["trade_id"],
-                    )
+            item = self.bound_close_orders.pop(order.vt_orderid, None)
+            if item:
+                product, mode, signal = item
+                if order.offset != Offset.CLOSE or abs(before) != trade.volume or strategy.get_pos(symbol):
+                    raise ValueError("bound weekly stop did not fully close its position")
+                row["bound_stop_reason"] = signal.reason
+                row["bound_stop_position_id"] = signal.position_id
+                day = self.datetime.date()
+                self.pending_reverse[signal.position_id] = (
+                    product, mode, signal, CloseFill(signal.position_id, event_time(day), day, 0),
+                    row["trade_id"],
+                )
             return trade
 
         def cross_limit_order(self):

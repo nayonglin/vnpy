@@ -119,7 +119,7 @@ class DailyOpenReplay(BacktestingEngine):
         strategy.update_trade(trade)
         self.trades[trade.vt_tradeid] = trade
         self.fills.append(dict(
-            trade_id=trade.vt_tradeid, date=str(trade.trading_date), symbol=trade.vt_symbol,
+            trade_id=trade.vt_tradeid, order_id=order.vt_orderid, date=str(trade.trading_date), symbol=trade.vt_symbol,
             side=trade.direction.name.lower(), offset=trade.offset.name.lower(),
             price=trade.price, volume=trade.volume, signal_day=str(order.datetime.date()),
             reason=strategy.trade_reason_by_trade_id.get(trade.vt_tradeid, ""),
@@ -258,6 +258,7 @@ def main():
     write_json(out / "terminal_inventory.json", terminal_inventory)
     if args.arm == "C":
         pd.DataFrame(engine.reversal_decisions).to_csv(out / "reversal_decisions.csv", index=False)
+        pd.DataFrame(engine.signal_bindings).to_csv(out / "signal_bindings.csv", index=False)
     print(f"{args.arm}: {len(result)} days, {len(engine.fills)} fills", flush=True)
 
 
