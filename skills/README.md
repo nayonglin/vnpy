@@ -21,7 +21,7 @@
 | futures-multicycle-validation | 多周期稳健性验证 | 原仓库 |
 | futures-multicycle-backtest-report | 多周期报告兼容入口 | 原仓库 |
 | futures-official-shadow | 绑定生产 receipt 的正式影子盘查询 | 交接包外部 Skill |
-| futures-recap-html | 冻结回测的逐笔、多周期 K 线 HTML 复盘 | 本机已恢复的研究参考目录 |
+| futures-recap-html | 冻结回测的逐笔、多周期 K 线 HTML 复盘，开平仓标记按各周期所属 K 线对齐 | 本机已恢复的研究参考目录 |
 | pdf | PDF 生成、读取和版面校验 | 交接包外部 Skill，可选 |
 | playwright | 浏览器页面验证 | 交接包外部 Skill，可选 |
 | tushare-data | 股票、基金及宏观数据研究 | 交接包外部 Skill，可选，不是期货运行依赖 |
@@ -32,6 +32,7 @@
 - 实盘、启动和正式影子盘 Skill 中的原机生产路径不是当前 clone 的生产授权。正式查询仍需完整且匹配的 release、qualification、activation、daily receipt 和目标日数据证据。
 - 影子盘 exporter 保留原脚本。仓库版说明显式传入生产 checkout、私有状态和私有审计输出目录，不能使用旧路径默认值作为本机配置。
 - HTML 复盘使用已有 canonical renderer。Stage050 Top30 分钟增强工具未在当前 checkout 或交接源码中找到；对应可选流程未恢复，不能声称其已可运行。输入结果和行情本来也不随普通 clone 自动恢复。
+- HTML 默认在各面板把开平仓线和成交标记对齐到所属 K 线中心，实际成交日期与价格不变；同 K 开平合并标注，缺少精确成交分钟时保持日级披露。生成后需验收各周期的定位和同步缩放，完整规则见 `futures-recap-html/references/recap-contract.md`。
 - PDF 需要相应 Python 库和 Poppler；Playwright 需要 Node/npm/npx 及浏览器运行时；Tushare 需要 Python 包、本地 Token 和相应接口权限。本次只迁移 Skill，不触发下载、登录或网络查询。
 - 如果另有同名用户/插件 Skill，Codex 不会合并内容；本仓库工作优先使用这里的明确文件路径，并遵循宿主提供的工具限制。
 

@@ -9,15 +9,17 @@ description: Use when a user asks to generate a futures backtest recap HTML, 复
 
 Generate the recap from one identity-closed frozen backtest through the repository's canonical renderer. Reuse the renderer; never copy its HTML or plotting implementation into a new generator.
 
+The default is **candle-aligned entry/exit markers in each selected period**: daily events stay on their trading-day candle; weekly, monthly, and 10/30-day events sit at the center of the candle containing the execution date. Preserve actual fill dates and prices in the trade details and hover text. See the reference's **Event Placement Default** for panel geometry and acceptance checks.
+
 **REQUIRED REFERENCE:** Read [references/recap-contract.md](references/recap-contract.md) before selecting data or running a command.
 
 ## Workflow
 
 1. Resolve one source bundle in this order: user-specified version/path, artifacts produced in the current task, then one uniquely identifiable completed run in the active research line. A stage number or modification time alone is not identity evidence.
 2. Verify the bundle's trades, equity/daily series, summary, interval, parameters, source commit or run id, and hashes when supplied. Stop on ambiguity rather than mixing runs.
-3. Use `.py311/bin/python` and the command matrix in the reference. The canonical renderer is `research/lines/futures_trend_winner_trade_forensics/tools/stage038_c9_15w_big_winner_multiscale_html.py`.
+3. Use `.py311/bin/python` and the command matrix in the reference. The canonical renderer is `research/lines/futures_trend_winner_trade_forensics/tools/stage038_c9_15w_big_winner_multiscale_html.py`. Verify that this checkout's generated output implements the candle-aligned default; an older renderer using global daily-coordinate lines needs the display fix before delivery.
 4. If the source is not registered, add a narrow frozen-source adapter to the canonical renderer with tests. Keep the chart contract unchanged and write to a new versioned output directory.
-5. Validate the generated manifest, summary, trade counts, frozen metrics, JavaScript, browser rendering, and linked zoom before returning the absolute clickable `index.html` path.
+5. Validate the generated manifest, summary, trade counts, frozen metrics, JavaScript, browser rendering, per-period event-to-candle alignment, and linked zoom before returning the absolute clickable `index.html` path. Skill text or a helper's presence alone does not prove the generated page complies.
 
 ## Authority Boundaries
 

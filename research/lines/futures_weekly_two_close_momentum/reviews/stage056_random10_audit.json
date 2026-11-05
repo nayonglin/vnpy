@@ -1,0 +1,295 @@
+{
+  "schema": "stage056_independent_random10_audit_v1",
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "audited_at": "2026-11-05T12:57:44+08:00",
+  "audit_method": "Replay all 96 subsets plus the S21 control using the Stage055 independent integer-cent state machine.",
+  "audit_script_sha256": "636abd3bf9843504197ab8229332f5b15728f0e4498a730bb57ff1ddceea9e9b",
+  "independent_state_machine_sha256": "1ad6aa10de09ee00e95a7a9833e828964e39f973c863498636759fab0e3e6a4d",
+  "result_manifest_sha256": "e963a9f3c3574930e81e7fd107aeff4baf8ffbcac030e843ecbe6fe0eee51da3",
+  "frozen_group_design_sha256": "5a305423f1c2f9d5a8612210956d2a408551ed6203aca5bf218566d53e5f3202",
+  "checked_manifests": {
+    "stage056_random10_touch_halfyear_20261104": 1460,
+    "stage055_s21_all_touch_halfyear_20261104": 362
+  },
+  "input_hashes": 42,
+  "windows": {
+    "fixed_attempted": 96,
+    "completed_verified": 96,
+    "unknown": 0
+  },
+  "additional_control_replays": 1,
+  "control_ledger_rows": {
+    "days": 2875,
+    "fills": 4542,
+    "cycles": 2011,
+    "opening_snapshots": 5615,
+    "signals": 2025,
+    "one_price_exits": 0,
+    "nonpositive_days": 0,
+    "entries": 2011,
+    "stops": 0,
+    "rolls": 266,
+    "guard_exits": 29
+  },
+  "sampling": {
+    "covered_products": [
+      "AP.CZCE",
+      "CF.CZCE",
+      "FG.CZCE",
+      "MA.CZCE",
+      "OI.CZCE",
+      "SA.CZCE",
+      "SH.CZCE",
+      "SM.CZCE",
+      "au.SHFE",
+      "fu.SHFE",
+      "jm.DCE",
+      "lc.GFEX",
+      "lh.DCE",
+      "p.DCE",
+      "rb.SHFE",
+      "ru.SHFE",
+      "si.GFEX",
+      "sp.SHFE",
+      "ss.SHFE"
+    ],
+    "uncovered_products": [
+      "cu.SHFE",
+      "hc.SHFE"
+    ],
+    "common_to_all_groups": [
+      "p.DCE",
+      "ru.SHFE",
+      "ss.SHFE"
+    ],
+    "pairwise_overlap": {
+      "G1-G2": 7,
+      "G1-G3": 6,
+      "G1-G4": 5,
+      "G2-G3": 4,
+      "G2-G4": 5,
+      "G3-G4": 6
+    },
+    "product_group_counts": {
+      "FG.CZCE": 2,
+      "MA.CZCE": 1,
+      "OI.CZCE": 2,
+      "SA.CZCE": 3,
+      "fu.SHFE": 3,
+      "lc.GFEX": 3,
+      "p.DCE": 4,
+      "ru.SHFE": 4,
+      "sp.SHFE": 2,
+      "ss.SHFE": 4,
+      "AP.CZCE": 2,
+      "lh.DCE": 1,
+      "rb.SHFE": 1,
+      "CF.CZCE": 2,
+      "SH.CZCE": 1,
+      "au.SHFE": 2,
+      "si.GFEX": 1,
+      "SM.CZCE": 1,
+      "jm.DCE": 1
+    }
+  },
+  "positive_main_products_on_20150105": {
+    "G1": [
+      "FG.CZCE",
+      "MA.CZCE",
+      "OI.CZCE",
+      "p.DCE",
+      "ru.SHFE"
+    ],
+    "G2": [
+      "OI.CZCE",
+      "p.DCE",
+      "rb.SHFE",
+      "ru.SHFE"
+    ],
+    "G3": [
+      "CF.CZCE",
+      "FG.CZCE",
+      "au.SHFE",
+      "p.DCE",
+      "ru.SHFE"
+    ],
+    "G4": [
+      "CF.CZCE",
+      "SM.CZCE",
+      "au.SHFE",
+      "jm.DCE",
+      "p.DCE",
+      "ru.SHFE"
+    ]
+  },
+  "ledger_rows": {
+    "days": 141812,
+    "fills": 123043,
+    "cycles": 54392,
+    "opening_snapshots": 215788,
+    "signals": 55067,
+    "one_price_exits": 0,
+    "nonpositive_days": 0,
+    "entries": 54392,
+    "stops": 0,
+    "rolls": 7357,
+    "guard_exits": 804
+  },
+  "touch_exits": {
+    "touch_intraday": 49067,
+    "touch_open_gap": 4002,
+    "touch_after_one_price": 63
+  },
+  "funding": {
+    "decisions": 62100,
+    "approved": 61749,
+    "denied": 351,
+    "by_status_and_role": {
+      "filled:fixed_entry": 54392,
+      "filled:roll": 7357,
+      "margin_below_one_lot:fixed_entry": 350,
+      "margin_below_one_lot:roll": 1
+    }
+  },
+  "aggregate_rows": {
+    "window_metrics": 120,
+    "product_attribution": 1464,
+    "concentration": 120,
+    "group_summary": 5
+  },
+  "by_group": {
+    "G1": {
+      "ledger_rows": {
+        "days": 35453,
+        "fills": 31684,
+        "cycles": 14082,
+        "opening_snapshots": 54329,
+        "signals": 14153,
+        "one_price_exits": 0,
+        "nonpositive_days": 0,
+        "entries": 14082,
+        "stops": 0,
+        "rolls": 1808,
+        "guard_exits": 188
+      },
+      "funding_by_status_and_role": {
+        "filled:fixed_entry": 14082,
+        "filled:roll": 1808,
+        "margin_below_one_lot:fixed_entry": 1
+      }
+    },
+    "G2": {
+      "ledger_rows": {
+        "days": 35453,
+        "fills": 32052,
+        "cycles": 14171,
+        "opening_snapshots": 54636,
+        "signals": 14499,
+        "one_price_exits": 0,
+        "nonpositive_days": 0,
+        "entries": 14171,
+        "stops": 0,
+        "rolls": 1915,
+        "guard_exits": 145
+      },
+      "funding_by_status_and_role": {
+        "filled:fixed_entry": 14171,
+        "filled:roll": 1915,
+        "margin_below_one_lot:fixed_entry": 255,
+        "margin_below_one_lot:roll": 1
+      }
+    },
+    "G3": {
+      "ledger_rows": {
+        "days": 35453,
+        "fills": 28074,
+        "cycles": 12365,
+        "opening_snapshots": 52453,
+        "signals": 12460,
+        "one_price_exits": 0,
+        "nonpositive_days": 0,
+        "entries": 12365,
+        "stops": 0,
+        "rolls": 1732,
+        "guard_exits": 242
+      },
+      "funding_by_status_and_role": {
+        "filled:fixed_entry": 12365,
+        "filled:roll": 1732,
+        "margin_below_one_lot:fixed_entry": 16
+      }
+    },
+    "G4": {
+      "ledger_rows": {
+        "days": 35453,
+        "fills": 31233,
+        "cycles": 13774,
+        "opening_snapshots": 54370,
+        "signals": 13955,
+        "one_price_exits": 0,
+        "nonpositive_days": 0,
+        "entries": 13774,
+        "stops": 0,
+        "rolls": 1902,
+        "guard_exits": 229
+      },
+      "funding_by_status_and_role": {
+        "filled:fixed_entry": 13774,
+        "filled:roll": 1902,
+        "margin_below_one_lot:fixed_entry": 78
+      }
+    }
+  },
+  "limitations": [
+    "Four random groups overlap by 4 to 7 products. Their union covers 19 of the 21 parent products.",
+    "All groups share p, ru and ss. No group contains cu or hc.",
+    "Fixed one lot has different capital and risk exposure across products and differs from the 21-product total exposure.",
+    "Early history has fewer than ten available group products because of actual listing and admitted market coverage.",
+    "Funding rejections make portfolio state paths dependent on the chosen group.",
+    "The 24 expanding windows overlap and four groups are insufficient for independent-sample confidence intervals.",
+    "Daily OHLC stop execution, zero commissions and first non-one-price daily exit proxies remain bounded assumptions.",
+    "The frozen parent universe and strategy were selected with historical knowledge."
+  ],
+  "full_history_parent_projection": {
+    "G1": {
+      "fills": 2172,
+      "signals": 984,
+      "cycles": 979,
+      "gaps": 157,
+      "entry_filter": 1259,
+      "week_body_filter": 1411,
+      "four_up_blocks": 93,
+      "touch_stops": 964
+    },
+    "G2": {
+      "fills": 2169,
+      "signals": 974,
+      "cycles": 969,
+      "gaps": 159,
+      "entry_filter": 1255,
+      "week_body_filter": 1412,
+      "four_up_blocks": 97,
+      "touch_stops": 955
+    },
+    "G3": {
+      "fills": 1933,
+      "signals": 866,
+      "cycles": 861,
+      "gaps": 29,
+      "entry_filter": 1105,
+      "week_body_filter": 1273,
+      "four_up_blocks": 68,
+      "touch_stops": 842
+    },
+    "G4": {
+      "fills": 2225,
+      "signals": 1000,
+      "cycles": 991,
+      "gaps": 199,
+      "entry_filter": 1278,
+      "week_body_filter": 1484,
+      "four_up_blocks": 82,
+      "touch_stops": 971
+    }
+  }
+}

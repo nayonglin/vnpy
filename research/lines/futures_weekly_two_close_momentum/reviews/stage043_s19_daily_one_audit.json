@@ -1,0 +1,57 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "manifest_sha256": "c6211380a47d0ee0f7fad2990d74547e41944b4dc511ecabe07b5826e35c39bf",
+  "manifest_entries": 15,
+  "parent_manifest_entries": 288,
+  "pinned_inputs": 38,
+  "dates": [
+    "2026-01-05",
+    "2026-11-04"
+  ],
+  "days": 201,
+  "signals": 982,
+  "fills": 1038,
+  "opening_snapshots": 1239,
+  "cycles": 495,
+  "fill_reasons": {
+    "entry": 495,
+    "weekly_stop": 474,
+    "roll_close": 31,
+    "roll_open": 31,
+    "delivery_guard_exit": 7
+  },
+  "checked_event_rows": {
+    "entry_filter": 628,
+    "week_body_filter": 799,
+    "four_up_blocks": 33,
+    "gaps": 7
+  },
+  "pending_at_cutoff": 5,
+  "conditional_reversals_at_cutoff": 1,
+  "funding_deficit_days": 42,
+  "worst_open_snapshot": {
+    "date": "2026-02-09",
+    "fill_sequence": 13,
+    "product": "sp.SHFE",
+    "reason": "entry",
+    "equity": 107850.0,
+    "margin": 299630.2,
+    "free_equity": -191780.2,
+    "positions": 17
+  },
+  "nonpositive_equity_days": 0,
+  "weekly_comparison_book_counts": {
+    "days": 201,
+    "fills": 339,
+    "cycles": 140,
+    "opening": 540,
+    "signals": 257,
+    "nonpositive_days": 0
+  },
+  "limitations": [
+    "Full execution-day high/low and positive volume qualify a daily opening proxy in the inherited engine. No candidate in this window was blocked by the high/low or daily-volume proxy. No session-open depth or as-of intraday volume is available.",
+    "Main-contract vendor mapping is frozen but revision-free point-in-time availability is not established.",
+    "Theoretical fills continue through static margin shortfalls. No broker funding checks or forced liquidation.",
+    "Zero commissions. The legacy weekly_stop and week_body_filter labels refer to daily decisions in this run."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "stage": "Stage065",
+  "purpose": "S21 20万元固定一手全品种触价止损研究版备份",
+  "recorded_at": "2026-11-05T15:11:27.938010+08:00",
+  "manifest_sha256": "16dd76024ad3d398c2a1dc39e83908ab818e5c39346b0051da3bfd18e65607b7",
+  "independent_audit_sha256": "c8abbf308a0936c7ad1a8704f124b077a3aedf6e6a08f594b84658c1319e13f7",
+  "local_full_restore": {
+    "status": "PASS",
+    "verified_files": 10909,
+    "verified_bytes": 1743394097,
+    "verified_code_files": 290,
+    "archive_sha256": "ebcd4c6b6e8e6272e0b6024da08032c44f71e139ae5f3376057c1a00b7ac3277"
+  },
+  "current_line_tests": {
+    "command": "PYTHONPATH=/private/tmp/s21-backup-test-deps-20261105 ../.py311/bin/python -m pytest -q research/lines/futures_weekly_two_close_momentum/tools",
+    "passed": 39,
+    "subtests_passed": 22,
+    "warnings": 1,
+    "warning_note": "合成测试亏损总和为零时 profit_factor 除零警告；无测试失败。pytest 仅安装到临时目录，未更改原虚拟环境。"
+  },
+  "legacy_dependency_limits": [
+    "父级已放弃反手路线的 unittest discover 需要额外 weekly19_frozen 模块路径；不是本次 S21 回测入口。"
+  ],
+  "strategy_or_results_changed": false,
+  "remote_verified": false,
+  "remote_note": "提交推送后另存远端回读验收，不能以此本地证据声称远端已成功。"
+}

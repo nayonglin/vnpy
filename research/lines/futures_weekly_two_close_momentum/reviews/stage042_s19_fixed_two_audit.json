@@ -1,0 +1,202 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "attempted": 24,
+  "completed": 24,
+  "unknown": 0,
+  "manifest_sha256": "0309550387b50fb471d5834c5dd299944b8b75881cf97c07f8a8688e2a114bc0",
+  "manifest_entries": 314,
+  "parent_manifest_entries": {
+    "stage037_s19_fixed_one_150k_20261104": 15,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288,
+    "stage040_s19_without_gold_20261104": 301,
+    "stage041_complete_halfyear_20261104": 28
+  },
+  "pinned_inputs": 38,
+  "checked_rows": {
+    "daily": 35453,
+    "opening": 84805,
+    "fills": 49352,
+    "cycles": 18492,
+    "signals": 36027,
+    "terminal_positions": 360
+  },
+  "deficit_windows": 24,
+  "nonpositive_windows": 9,
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "deficit_days": 127,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 98678.8,
+      "minimum_equity": 96050.0
+    },
+    {
+      "start": "2015-07-01",
+      "deficit_days": 73,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 110840.8,
+      "minimum_equity": 129970.0
+    },
+    {
+      "start": "2016-01-01",
+      "deficit_days": 82,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 118930.8,
+      "minimum_equity": 123940.0
+    },
+    {
+      "start": "2016-07-01",
+      "deficit_days": 97,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 141290.8,
+      "minimum_equity": 106110.0
+    },
+    {
+      "start": "2017-01-01",
+      "deficit_days": 969,
+      "nonpositive_equity_days": 114,
+      "max_shortfall": 372470.8,
+      "minimum_equity": -125070.0
+    },
+    {
+      "start": "2017-07-01",
+      "deficit_days": 852,
+      "nonpositive_equity_days": 88,
+      "max_shortfall": 359470.8,
+      "minimum_equity": -112070.0
+    },
+    {
+      "start": "2018-01-01",
+      "deficit_days": 451,
+      "nonpositive_equity_days": 6,
+      "max_shortfall": 258050.8,
+      "minimum_equity": -10650.0
+    },
+    {
+      "start": "2018-07-01",
+      "deficit_days": 623,
+      "nonpositive_equity_days": 69,
+      "max_shortfall": 345980.8,
+      "minimum_equity": -98580.0
+    },
+    {
+      "start": "2019-01-01",
+      "deficit_days": 467,
+      "nonpositive_equity_days": 49,
+      "max_shortfall": 305560.8,
+      "minimum_equity": -58160.0
+    },
+    {
+      "start": "2019-07-01",
+      "deficit_days": 400,
+      "nonpositive_equity_days": 75,
+      "max_shortfall": 350700.8,
+      "minimum_equity": -103300.0
+    },
+    {
+      "start": "2020-01-01",
+      "deficit_days": 207,
+      "nonpositive_equity_days": 14,
+      "max_shortfall": 268090.8,
+      "minimum_equity": -20690.0
+    },
+    {
+      "start": "2020-07-01",
+      "deficit_days": 120,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 146712.0,
+      "minimum_equity": 113320.0
+    },
+    {
+      "start": "2021-01-01",
+      "deficit_days": 110,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 227864.0,
+      "minimum_equity": 126930.0
+    },
+    {
+      "start": "2021-07-01",
+      "deficit_days": 50,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 224111.4,
+      "minimum_equity": 147210.0
+    },
+    {
+      "start": "2022-01-01",
+      "deficit_days": 416,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 345167.6,
+      "minimum_equity": 29140.0
+    },
+    {
+      "start": "2022-07-01",
+      "deficit_days": 661,
+      "nonpositive_equity_days": 265,
+      "max_shortfall": 624367.6,
+      "minimum_equity": -250060.0
+    },
+    {
+      "start": "2023-01-01",
+      "deficit_days": 211,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 288577.6,
+      "minimum_equity": 75910.0
+    },
+    {
+      "start": "2023-07-01",
+      "deficit_days": 222,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 341222.8,
+      "minimum_equity": 114830.0
+    },
+    {
+      "start": "2024-01-01",
+      "deficit_days": 291,
+      "nonpositive_equity_days": 3,
+      "max_shortfall": 470531.2,
+      "minimum_equity": -15680.0
+    },
+    {
+      "start": "2024-07-01",
+      "deficit_days": 205,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 320381.4,
+      "minimum_equity": 69150.0
+    },
+    {
+      "start": "2025-01-01",
+      "deficit_days": 91,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 260350.0,
+      "minimum_equity": 148410.0
+    },
+    {
+      "start": "2025-07-01",
+      "deficit_days": 63,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 395704.8,
+      "minimum_equity": 106960.0
+    },
+    {
+      "start": "2026-01-01",
+      "deficit_days": 66,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 470405.4,
+      "minimum_equity": 27430.0
+    },
+    {
+      "start": "2026-07-01",
+      "deficit_days": 64,
+      "nonpositive_equity_days": 0,
+      "max_shortfall": 425258.4,
+      "minimum_equity": 76120.0
+    }
+  ],
+  "limitations": [
+    "Frozen static margin and positive-volume open print proxies, with zero commission",
+    "Signals and theoretical fills continue through cash shortfalls and nonpositive equity",
+    "Drawdown below -100% marks nonpositive equity, where percentage returns and Sharpe lose economic meaning",
+    "Baseline terminal JSON omits a volume field; terminal lots are derived from matched execution tape",
+    "Overlapping historical windows"
+  ]
+}

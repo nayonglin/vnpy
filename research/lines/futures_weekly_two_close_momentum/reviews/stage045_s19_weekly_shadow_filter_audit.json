@@ -1,0 +1,988 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "completed": 24,
+  "unknown": 0,
+  "manifest_entries": 338,
+  "manifest_sha256": "755fd71fb1e28f1ed3a13d4735af144b785fd1c7878c7e5f539cfb9fdb573008",
+  "parent_manifest_entries": {
+    "stage037_s19_fixed_one_150k_20261104": 15,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288,
+    "stage041_complete_halfyear_20261104": 28
+  },
+  "pinned_inputs": 38,
+  "checked_rows": {
+    "days": 35453,
+    "fills": 48810,
+    "cycles": 18262,
+    "opening_snapshots": 84263,
+    "signals": 35554,
+    "one_price_exits": 14,
+    "nonpositive_days": 82,
+    "entries": 18262,
+    "stops": 17182,
+    "rolls": 6323,
+    "guard_exits": 720
+  },
+  "gap_reasons": {
+    "weekly_history_incomplete": 1011,
+    "entry_delivery_guard": 85,
+    "held_close_stale": 3,
+    "roll_open_pair_or_history_unavailable": 48,
+    "entry_open_unavailable": 25
+  },
+  "execution_branches": {
+    "roll_pair_unavailable": 48,
+    "entry_one_price_open": 25
+  },
+  "delayed_stop_rows": [],
+  "shadow_blocks": {
+    "open_long": 294,
+    "open_short": 220,
+    "reversal_closure_verified": 58
+  },
+  "strict_equal_kept": 0,
+  "strict_equal_examples": [],
+  "synthetic_actual_hook_boundary_cases": [
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 7,
+      "blocked": true
+    },
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 6,
+      "prior_shadow": 7,
+      "blocked": false
+    },
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 6,
+      "blocked": false
+    },
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 6,
+      "prior_shadow": 6,
+      "blocked": false
+    },
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 5,
+      "prior_shadow": 7,
+      "blocked": false
+    },
+    {
+      "action": "open_long",
+      "kind": "entry",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 5,
+      "blocked": false
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 7,
+      "blocked": true
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 6,
+      "prior_shadow": 7,
+      "blocked": false
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 6,
+      "blocked": false
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 6,
+      "prior_shadow": 6,
+      "blocked": false
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 5,
+      "prior_shadow": 7,
+      "blocked": false
+    },
+    {
+      "action": "open_short",
+      "kind": "reversal",
+      "current_body": 2,
+      "prior_body": 2,
+      "current_shadow": 7,
+      "prior_shadow": 5,
+      "blocked": false
+    }
+  ],
+  "reversal_closures": [
+    {
+      "start": "2015-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2015-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2015-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2015-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2015-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2015-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2016-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2016-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2016-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2016-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2016-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2016-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2017-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2017-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2017-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2017-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2017-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2017-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2018-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2018-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2018-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2018-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2018-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2018-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2019-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2019-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2019-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2019-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2019-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2019-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2020-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2020-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2020-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2020-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2020-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2020-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2021-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2021-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2021-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2021-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2021-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2021-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2022-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2022-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2022-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2022-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2022-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2022-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2023-01-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2023-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2023-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2023-07-01",
+      "signal": "2023-11-03",
+      "product": "MA.CZCE",
+      "blocked_epoch": "CZCE.MA.202401",
+      "blocked_action": "open_long",
+      "closing_contract": "MA401.CZCE",
+      "close_date": "2023-11-06",
+      "close_price": 2447.0
+    },
+    {
+      "start": "2023-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2023-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2024-01-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2024-01-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    },
+    {
+      "start": "2024-07-01",
+      "signal": "2024-07-26",
+      "product": "au.SHFE",
+      "blocked_epoch": "SHFE.AU.202410",
+      "blocked_action": "open_short",
+      "closing_contract": "au2410.SHFE",
+      "close_date": "2024-07-29",
+      "close_price": 559.58
+    },
+    {
+      "start": "2024-07-01",
+      "signal": "2024-11-01",
+      "product": "lc.GFEX",
+      "blocked_epoch": "GFEX.LC.202501",
+      "blocked_action": "open_long",
+      "closing_contract": "lc2501.GFEX",
+      "close_date": "2024-11-04",
+      "close_price": 76350.0
+    }
+  ],
+  "windows_with_deficit": 20,
+  "windows_with_nonpositive_equity": 1,
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "deficit_days": 0,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1372450.0,
+      "blocks": 37,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2015-07-01",
+      "deficit_days": 0,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1358925.0,
+      "blocks": 36,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2016-01-01",
+      "deficit_days": 0,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1356280.0,
+      "blocks": 35,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2016-07-01",
+      "deficit_days": 0,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1344000.0,
+      "blocks": 34,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2017-01-01",
+      "deficit_days": 313,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1228410.0,
+      "blocks": 34,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2017-07-01",
+      "deficit_days": 237,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1234910.0,
+      "blocks": 34,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2018-01-01",
+      "deficit_days": 37,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1285620.0,
+      "blocks": 34,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2018-07-01",
+      "deficit_days": 146,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1242485.0,
+      "blocks": 30,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2019-01-01",
+      "deficit_days": 61,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1262695.0,
+      "blocks": 30,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2019-07-01",
+      "deficit_days": 102,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1242015.0,
+      "blocks": 27,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2020-01-01",
+      "deficit_days": 36,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1280530.0,
+      "blocks": 26,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2020-07-01",
+      "deficit_days": 1,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1261545.0,
+      "blocks": 25,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2021-01-01",
+      "deficit_days": 13,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1210435.0,
+      "blocks": 22,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2021-07-01",
+      "deficit_days": 19,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 1128155.0,
+      "blocks": 18,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2022-01-01",
+      "deficit_days": 149,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 960735.0,
+      "blocks": 16,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2022-07-01",
+      "deficit_days": 469,
+      "nonpositive_days": 82,
+      "zero_equity_close_dates": [],
+      "final_equity": 821895.0,
+      "blocks": 14,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2023-01-01",
+      "deficit_days": 69,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 989790.0,
+      "blocks": 14,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2023-07-01",
+      "deficit_days": 54,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 926920.0,
+      "blocks": 14,
+      "reversal_closures": 3,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2024-01-01",
+      "deficit_days": 139,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 822630.0,
+      "blocks": 12,
+      "reversal_closures": 2,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2024-07-01",
+      "deficit_days": 75,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 795315.0,
+      "blocks": 8,
+      "reversal_closures": 2,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2025-01-01",
+      "deficit_days": 30,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 792450.0,
+      "blocks": 5,
+      "reversal_closures": 0,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2025-07-01",
+      "deficit_days": 32,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 680690.0,
+      "blocks": 3,
+      "reversal_closures": 0,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2026-01-01",
+      "deficit_days": 54,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 448615.0,
+      "blocks": 4,
+      "reversal_closures": 0,
+      "strict_equal_kept": 0
+    },
+    {
+      "start": "2026-07-01",
+      "deficit_days": 41,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "final_equity": 327580.0,
+      "blocks": 2,
+      "reversal_closures": 0,
+      "strict_equal_kept": 0
+    }
+  ],
+  "limitations": [
+    "Overlapping half-year windows repeat signals and trades.",
+    "Positive-volume, non-one-price execution-day bars qualify entry proxies. Queue depth is not observed.",
+    "Frozen vendor main mapping is not certified as revision-free point-in-time data.",
+    "Cash shortfalls and nonpositive equity do not halt theoretical trading. Zero commission.",
+    "Sharpe is not economically interpretable after nonpositive equity."
+  ]
+}

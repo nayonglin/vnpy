@@ -1,0 +1,105 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "products": 26,
+  "added_pnl": {
+    "p.DCE": 34830.0,
+    "ss.SHFE": 14875.0,
+    "zn.SHFE": 9400.0,
+    "ni.SHFE": 8140.0,
+    "ag.SHFE": 5805.0,
+    "jd.DCE": 5000.0,
+    "TA.CZCE": 3630.0
+  },
+  "added_pnl_total": 81680.0,
+  "checked_rows": {
+    "days": 242,
+    "fills": 391,
+    "cycles": 171,
+    "closed_cycles": 158,
+    "opening_snapshots": 633,
+    "signals": 314,
+    "one_price_exits": 0,
+    "entries": 171,
+    "stops": 131,
+    "rolls": 31,
+    "guard_exits": 27,
+    "open_positions": 13,
+    "pending_signals": 8
+  },
+  "manifest_entries": {
+    "stage047_s26_2022": 15,
+    "stage046_s44_individual_2022": 574,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288
+  },
+  "manifest_sha256": "e8d963ad05f3eb5c1e48f6dc9c9eae99a5ef8d65c1b3088b59945cffb1af6f3e",
+  "pinned_inputs": 33,
+  "selection_top15": [
+    "p.DCE",
+    "CF.CZCE",
+    "lh.DCE",
+    "ss.SHFE",
+    "cu.SHFE",
+    "jm.DCE",
+    "fu.SHFE",
+    "zn.SHFE",
+    "ni.SHFE",
+    "SA.CZCE",
+    "ag.SHFE",
+    "jd.DCE",
+    "rb.SHFE",
+    "TA.CZCE",
+    "FG.CZCE"
+  ],
+  "events_matching_audited_solo_books": {
+    "s19": {
+      "fills": 278,
+      "signals": 226,
+      "entry_filter": 160,
+      "week_body_filter": 180,
+      "gaps": 2,
+      "four_up_blocks": 11
+    },
+    "s26": {
+      "fills": 391,
+      "signals": 314,
+      "entry_filter": 231,
+      "week_body_filter": 263,
+      "gaps": 9,
+      "four_up_blocks": 15,
+      "cycles": 171
+    }
+  },
+  "both_accounts_daily_reconciled": 242,
+  "opening_snapshots_reconciled": {
+    "s19": 520,
+    "s26": 633
+  },
+  "minimum_close_equity": 143010.0,
+  "pending_at_cutoff": 8,
+  "conditional_reversals_at_cutoff": 0,
+  "worst_open": {
+    "date": "2022-02-21",
+    "fill_sequence": 9,
+    "product": "ni.SHFE",
+    "reason": "entry",
+    "equity": 175920.0,
+    "margin": 276930.8,
+    "free_equity": -101010.8,
+    "positions": 15
+  },
+  "worst_close": {
+    "date": "2022-02-21",
+    "equity": 183655.0,
+    "margin": 272586.45,
+    "positions": 14,
+    "free_equity": -88931.45
+  },
+  "execution_branches": {},
+  "delayed_stop_rows": [],
+  "limitations": [
+    "Seven additions selected from 2022 profitability and evaluated on the same 2022 sample.",
+    "One shared capital allocation per arm. Theoretical fills continue through margin shortfalls.",
+    "Static margin, zero commission, and opening/closing price proxies. No queue simulation.",
+    "Inherited one missing nickel physical bar retained in admitted market coverage."
+  ]
+}

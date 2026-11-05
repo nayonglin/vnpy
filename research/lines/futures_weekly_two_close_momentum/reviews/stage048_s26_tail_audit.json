@@ -1,0 +1,215 @@
+{
+  "verdict": "PASS_TAIL_INPUT_ADMISSION",
+  "original_scope": "seven added Stage048 products",
+  "prior": "2026-11-03",
+  "target": "2026-11-04",
+  "products": [
+    "TA.CZCE",
+    "ag.SHFE",
+    "jd.DCE",
+    "ni.SHFE",
+    "p.DCE",
+    "ss.SHFE",
+    "zn.SHFE"
+  ],
+  "request_symbols": 65,
+  "download_rows": 130,
+  "added_symbols": 11,
+  "added_seam_rows": 11,
+  "added_target_rows": 11,
+  "verified_mains": {
+    "p.DCE": {
+      "2026-11-03": "p2701.DCE",
+      "2026-11-04": "p2701.DCE"
+    },
+    "ss.SHFE": {
+      "2026-11-03": "ss2612.SHFE",
+      "2026-11-04": "ss2612.SHFE"
+    },
+    "zn.SHFE": {
+      "2026-11-03": "zn2612.SHFE",
+      "2026-11-04": "zn2612.SHFE"
+    },
+    "ni.SHFE": {
+      "2026-11-03": "ni2612.SHFE",
+      "2026-11-04": "ni2612.SHFE"
+    },
+    "ag.SHFE": {
+      "2026-11-03": "ag2612.SHFE",
+      "2026-11-04": "ag2612.SHFE"
+    },
+    "jd.DCE": {
+      "2026-11-03": "jd2612.DCE",
+      "2026-11-04": "jd2612.DCE"
+    },
+    "TA.CZCE": {
+      "2026-11-03": "TA701.CZCE",
+      "2026-11-04": "TA701.CZCE"
+    }
+  },
+  "admitted": [
+    {
+      "symbol": "TA701.CZCE",
+      "epoch": "CZCE.TA.202701",
+      "expiry": "2027-01-14",
+      "multiplier": 5.0,
+      "tick": 2.0,
+      "date": "2026-11-04",
+      "open": 6430.0,
+      "high": 6474.0,
+      "low": 6296.0,
+      "close": 6306.0,
+      "volume": 1260787.0
+    },
+    {
+      "symbol": "ag2612.SHFE",
+      "epoch": "SHFE.AG.202612",
+      "expiry": "2026-12-15",
+      "multiplier": 15.0,
+      "tick": 1.0,
+      "date": "2026-11-04",
+      "open": 11800.0,
+      "high": 12463.0,
+      "low": 11644.0,
+      "close": 12420.0,
+      "volume": 660211.0
+    },
+    {
+      "symbol": "jd2611.DCE",
+      "epoch": "DCE.JD.202611",
+      "expiry": "2026-11-25",
+      "multiplier": 10.0,
+      "tick": 1.0,
+      "date": "2026-11-04",
+      "open": 3810.0,
+      "high": 3840.0,
+      "low": 3771.0,
+      "close": 3810.0,
+      "volume": 48.0
+    },
+    {
+      "symbol": "jd2612.DCE",
+      "epoch": "DCE.JD.202612",
+      "expiry": "2026-12-28",
+      "multiplier": 10.0,
+      "tick": 1.0,
+      "date": "2026-11-04",
+      "open": 3569.0,
+      "high": 3599.0,
+      "low": 3530.0,
+      "close": 3591.0,
+      "volume": 518888.0
+    },
+    {
+      "symbol": "ni2611.SHFE",
+      "epoch": "SHFE.NI.202611",
+      "expiry": "2026-11-16",
+      "multiplier": 1.0,
+      "tick": 10.0,
+      "date": "2026-11-04",
+      "open": 116640.0,
+      "high": 117140.0,
+      "low": 115720.0,
+      "close": 116710.0,
+      "volume": 2658.0
+    },
+    {
+      "symbol": "ni2612.SHFE",
+      "epoch": "SHFE.NI.202612",
+      "expiry": "2026-12-15",
+      "multiplier": 1.0,
+      "tick": 10.0,
+      "date": "2026-11-04",
+      "open": 116760.0,
+      "high": 117340.0,
+      "low": 115740.0,
+      "close": 116900.0,
+      "volume": 154081.0
+    },
+    {
+      "symbol": "p2701.DCE",
+      "epoch": "DCE.P.202701",
+      "expiry": "2027-01-14",
+      "multiplier": 10.0,
+      "tick": 1.0,
+      "date": "2026-11-04",
+      "open": 9167.0,
+      "high": 9172.0,
+      "low": 8920.0,
+      "close": 8975.0,
+      "volume": 556755.0
+    },
+    {
+      "symbol": "ss2611.SHFE",
+      "epoch": "SHFE.SS.202611",
+      "expiry": "2026-11-16",
+      "multiplier": 5.0,
+      "tick": 5.0,
+      "date": "2026-11-04",
+      "open": 13740.0,
+      "high": 13790.0,
+      "low": 13660.0,
+      "close": 13790.0,
+      "volume": 348.0
+    },
+    {
+      "symbol": "ss2612.SHFE",
+      "epoch": "SHFE.SS.202612",
+      "expiry": "2026-12-15",
+      "multiplier": 5.0,
+      "tick": 5.0,
+      "date": "2026-11-04",
+      "open": 13770.0,
+      "high": 13830.0,
+      "low": 13655.0,
+      "close": 13825.0,
+      "volume": 136936.0
+    },
+    {
+      "symbol": "zn2611.SHFE",
+      "epoch": "SHFE.ZN.202611",
+      "expiry": "2026-11-16",
+      "multiplier": 5.0,
+      "tick": 5.0,
+      "date": "2026-11-04",
+      "open": 25500.0,
+      "high": 25650.0,
+      "low": 25320.0,
+      "close": 25545.0,
+      "volume": 2175.0
+    },
+    {
+      "symbol": "zn2612.SHFE",
+      "epoch": "SHFE.ZN.202612",
+      "expiry": "2026-12-15",
+      "multiplier": 5.0,
+      "tick": 5.0,
+      "date": "2026-11-04",
+      "open": 25425.0,
+      "high": 25680.0,
+      "low": 25330.0,
+      "close": 25565.0,
+      "volume": 161545.0
+    }
+  ],
+  "expiry_metadata_differences": [
+    {
+      "symbol": "p2701.DCE",
+      "tq_expiry": "2027-01-14",
+      "rq_delisted": "2027-01-15",
+      "rq_maturity": "2027-01-15"
+    }
+  ],
+  "sha256": {
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage048_s26_tail/attempt002/request.json": "bd6eabbc166d9afab4fc7f16923b3ae9a12bd2c73849c30c846c8b7662146b06",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage048_s26_tail/attempt002/continuous_table.raw.json": "e9341334b063de8fabbe257ef5dcafe813ecf27ee8e4a858b5ffa8f85158b85f",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage048_s26_tail/attempt002/provider/raw_daily.csv": "a5c36692a5c0d7037df3cfa34794178b00d9e3ec28d915e4228993736dfc40e6",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage048_s26_tail/attempt002/provider/quotes.json": "960b48b65b36ec3701fa5a577056f8daa165156f9b4d0006676c9c137d918e49",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage024_market/approved_v1/added_bars.csv": "ae1b4163b3a68573878d4c626032e99b992f31d39fd93192df676566da493b67",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage024_market/approved_v1/added_mapping.csv": "e56051a85290df032af18a4689c01527f4b35c79b9551fcc6ed9855d06e6ccd7",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage024_market/tail_attempt002/raw_daily.csv": "a8f14b075915593417c1d91a5b90db241633e14a4068a39e379e6ebfc20f3558",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage040_data_approved/physical_epochs.csv": "bd43a24743f027deb31de40f467bdd3155e39f65d62f285c88272bcfaec303e6",
+    "/Users/mac/.codex/worktrees/weekly-no-half-r-20261022/fian/research/lines/futures_weekly_formal_no_half_r/outputs/stage040_data_approved/specification.json": "2c24a3b9cb5489821fa9d5e9a411558232bea7e623e695a8aa3f8e1f2bff0558",
+    "/Users/mac/Desktop/fian/weekly19-stop-reversal.local/research/lines/futures_weekly_two_close_momentum/outputs/stage024_market/approved_v1/added_specs.json": "333ed96e5ea33d0d54e4a7be179998dfda77463f325dcb170da59c5a48fd7ac9"
+  }
+}

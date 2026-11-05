@@ -1,0 +1,298 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "completed": 24,
+  "unknown": 0,
+  "manifest_entries": 314,
+  "manifest_sha256": "2a90c9843146119a8d0951044ecae49225cfe4ef871424e1ddf7bee11b08065e",
+  "parent_manifest_entries": {
+    "stage037_s19_fixed_one_150k_20261104": 15,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288,
+    "stage041_complete_halfyear_20261104": 28,
+    "stage043_s19_daily_one_20261104": 15
+  },
+  "stage043_byte_identical_files": 13,
+  "pinned_inputs": 38,
+  "checked_rows": {
+    "days": 35453,
+    "fills": 170110,
+    "cycles": 80409,
+    "opening_snapshots": 205563,
+    "signals": 160621,
+    "one_price_exits": 41,
+    "nonpositive_days": 14404,
+    "entries": 80409,
+    "stops": 79511,
+    "rolls": 4814,
+    "guard_exits": 562
+  },
+  "gap_reasons": {
+    "weekly_history_incomplete": 3350,
+    "held_close_stale": 5,
+    "entry_open_unavailable": 29,
+    "entry_delivery_guard": 528,
+    "exit_open_unavailable": 3
+  },
+  "execution_branches": {
+    "entry_one_price_open": 24,
+    "exit_missing_open": 3,
+    "entry_missing_open": 5
+  },
+  "delayed_stop_rows": [
+    {
+      "start": "2015-01-01",
+      "product": "fu.SHFE",
+      "symbol": "fu1702.SHFE",
+      "signal": "2016-05-30",
+      "next_session": "2016-05-31",
+      "execution": "2016-06-01",
+      "open": 2567.0
+    },
+    {
+      "start": "2015-07-01",
+      "product": "fu.SHFE",
+      "symbol": "fu1702.SHFE",
+      "signal": "2016-05-30",
+      "next_session": "2016-05-31",
+      "execution": "2016-06-01",
+      "open": 2567.0
+    },
+    {
+      "start": "2016-01-01",
+      "product": "fu.SHFE",
+      "symbol": "fu1702.SHFE",
+      "signal": "2016-05-30",
+      "next_session": "2016-05-31",
+      "execution": "2016-06-01",
+      "open": 2567.0
+    }
+  ],
+  "windows_with_deficit": 24,
+  "windows_with_nonpositive_equity": 15,
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "deficit_days": 2455,
+      "nonpositive_days": 2032,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 421815.0
+    },
+    {
+      "start": "2015-07-01",
+      "deficit_days": 2427,
+      "nonpositive_days": 1962,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 431050.0
+    },
+    {
+      "start": "2016-01-01",
+      "deficit_days": 2241,
+      "nonpositive_days": 1547,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 485340.0
+    },
+    {
+      "start": "2016-07-01",
+      "deficit_days": 1992,
+      "nonpositive_days": 1225,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 543885.0
+    },
+    {
+      "start": "2017-01-01",
+      "deficit_days": 2192,
+      "nonpositive_days": 1550,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 484525.0
+    },
+    {
+      "start": "2017-07-01",
+      "deficit_days": 1598,
+      "nonpositive_days": 808,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 598140.0
+    },
+    {
+      "start": "2018-01-01",
+      "deficit_days": 1455,
+      "nonpositive_days": 709,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 622760.0
+    },
+    {
+      "start": "2018-07-01",
+      "deficit_days": 1428,
+      "nonpositive_days": 669,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 630665.0
+    },
+    {
+      "start": "2019-01-01",
+      "deficit_days": 1053,
+      "nonpositive_days": 429,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 694910.0
+    },
+    {
+      "start": "2019-07-01",
+      "deficit_days": 964,
+      "nonpositive_days": 295,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 712375.0
+    },
+    {
+      "start": "2020-01-01",
+      "deficit_days": 977,
+      "nonpositive_days": 345,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 707250.0
+    },
+    {
+      "start": "2020-07-01",
+      "deficit_days": 1072,
+      "nonpositive_days": 620,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 643435.0
+    },
+    {
+      "start": "2021-01-01",
+      "deficit_days": 1109,
+      "nonpositive_days": 768,
+      "zero_equity_close_dates": [
+        "2025-04-11"
+      ],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 610720.0
+    },
+    {
+      "start": "2021-07-01",
+      "deficit_days": 1156,
+      "nonpositive_days": 945,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 525055.0
+    },
+    {
+      "start": "2022-01-01",
+      "deficit_days": 991,
+      "nonpositive_days": 500,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 675520.0
+    },
+    {
+      "start": "2022-07-01",
+      "deficit_days": 601,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 815525.0
+    },
+    {
+      "start": "2023-01-01",
+      "deficit_days": 404,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 865545.0
+    },
+    {
+      "start": "2023-07-01",
+      "deficit_days": 425,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 844430.0
+    },
+    {
+      "start": "2024-01-01",
+      "deficit_days": 262,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 869145.0
+    },
+    {
+      "start": "2024-07-01",
+      "deficit_days": 120,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 886530.0
+    },
+    {
+      "start": "2025-01-01",
+      "deficit_days": 68,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 861250.0
+    },
+    {
+      "start": "2025-07-01",
+      "deficit_days": 63,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 786780.0
+    },
+    {
+      "start": "2026-01-01",
+      "deficit_days": 42,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 617750.0
+    },
+    {
+      "start": "2026-07-01",
+      "deficit_days": 33,
+      "nonpositive_days": 0,
+      "zero_equity_close_dates": [],
+      "terminal_pending": 5,
+      "terminal_conditional_reversals": 1,
+      "final_equity": 337420.0
+    }
+  ],
+  "limitations": [
+    "Positive-volume, non-one-price execution-day bars qualify opening entry proxies. The opening queue is not observed, and positive-volume one-price exits use the opening print as a proxy.",
+    "Frozen main-contract mapping is not certified as revision-free point-in-time vendor data.",
+    "Cash shortfalls and nonpositive equity do not halt theoretical trading.",
+    "Percentage Sharpe is not economically interpretable after nonpositive equity; an exact-zero close can produce an infinite raw margin ratio and undefined next-session percentage return.",
+    "Overlapping start windows repeat historical events. Zero commission."
+  ]
+}

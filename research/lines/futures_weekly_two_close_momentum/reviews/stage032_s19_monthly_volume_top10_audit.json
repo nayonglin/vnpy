@@ -1,0 +1,201 @@
+{
+  "manifests": {
+    "stage031_s19_weekly_shape_replay_v1": 39,
+    "stage032_s19_monthly_volume_top10_v1": 82
+  },
+  "entries": {
+    "control": {
+      "counts": {
+        "executed_reverse": 270,
+        "executed_cross_month": 127,
+        "out_of_pool_roll_close": 13,
+        "out_of_pool_roll_open": 13,
+        "out_of_pool_weekly_stop": 57,
+        "executed_only_new_month": 14,
+        "out_of_pool_delivery_guard_exit": 3,
+        "blocked_entry": 942,
+        "blocked_reversal": 17,
+        "blocked_only_new_month": 9
+      },
+      "examples": {
+        "out_of_pool_roll_close": [
+          "2017-04-05",
+          "jm.DCE"
+        ],
+        "out_of_pool_roll_open": [
+          "2017-04-05",
+          "jm.DCE"
+        ],
+        "out_of_pool_weekly_stop": [
+          "2017-04-17",
+          "jm.DCE"
+        ],
+        "only_new_month": [
+          "2018-08-31",
+          "2018-09-03",
+          "fu.SHFE"
+        ],
+        "out_of_pool_delivery_guard_exit": [
+          "2020-06-22",
+          "cu.SHFE"
+        ],
+        "blocked_only_new_month": [
+          "2018-04-27",
+          "2018-05-02",
+          "SM.CZCE"
+        ]
+      }
+    },
+    "expansion": {
+      "counts": {
+        "executed_cross_month": 14,
+        "out_of_pool_weekly_stop": 5,
+        "executed_reverse": 3,
+        "out_of_pool_roll_close": 1,
+        "out_of_pool_roll_open": 1,
+        "blocked_entry": 71
+      },
+      "examples": {
+        "out_of_pool_weekly_stop": [
+          "2019-11-11",
+          "sp.SHFE"
+        ],
+        "out_of_pool_roll_close": [
+          "2026-06-03",
+          "lh.DCE"
+        ],
+        "out_of_pool_roll_open": [
+          "2026-06-03",
+          "lh.DCE"
+        ]
+      }
+    },
+    "expansion_break3": {
+      "counts": {
+        "executed_cross_month": 12,
+        "out_of_pool_weekly_stop": 4,
+        "executed_reverse": 3,
+        "out_of_pool_roll_close": 1,
+        "out_of_pool_roll_open": 1,
+        "blocked_entry": 64
+      },
+      "examples": {
+        "out_of_pool_weekly_stop": [
+          "2020-02-03",
+          "FG.CZCE"
+        ],
+        "out_of_pool_roll_close": [
+          "2026-06-03",
+          "lh.DCE"
+        ],
+        "out_of_pool_roll_open": [
+          "2026-06-03",
+          "lh.DCE"
+        ]
+      }
+    }
+  },
+  "finance": {
+    "full_pool/control": {
+      "days": 2874,
+      "cycles": 1315,
+      "equity": 1661655.0,
+      "net_pnl": 1361655.0,
+      "max_dd_pct": -37.74199890317974,
+      "sharpe": 0.7754459106397465,
+      "closed_cycles": 1300,
+      "wins": 470,
+      "losses": 829,
+      "fills": 3499,
+      "open_positions": 15,
+      "peak_margin_ratio_pct": 43.18767822080139
+    },
+    "monthly_top10/control": {
+      "days": 2874,
+      "cycles": 900,
+      "equity": 548500.0,
+      "net_pnl": 248500.0,
+      "max_dd_pct": -45.28531046120444,
+      "sharpe": 0.3495556374709005,
+      "closed_cycles": 891,
+      "wins": 311,
+      "losses": 580,
+      "fills": 2357,
+      "open_positions": 9,
+      "peak_margin_ratio_pct": 38.115551835576944
+    },
+    "full_pool/expansion": {
+      "days": 2874,
+      "cycles": 148,
+      "equity": 707710.0,
+      "net_pnl": 407710.0,
+      "max_dd_pct": -32.38411399455173,
+      "sharpe": 0.549709470940834,
+      "closed_cycles": 148,
+      "wins": 54,
+      "losses": 94,
+      "fills": 416,
+      "open_positions": 0,
+      "peak_margin_ratio_pct": 26.669994128009396
+    },
+    "monthly_top10/expansion": {
+      "days": 2874,
+      "cycles": 81,
+      "equity": 233995.0,
+      "net_pnl": -66005.0,
+      "max_dd_pct": -22.1158966848622,
+      "sharpe": -0.22281315675982052,
+      "closed_cycles": 81,
+      "wins": 26,
+      "losses": 55,
+      "fills": 224,
+      "open_positions": 0,
+      "peak_margin_ratio_pct": 19.046864887501428
+    },
+    "full_pool/expansion_break3": {
+      "days": 2874,
+      "cycles": 128,
+      "equity": 749510.0,
+      "net_pnl": 449510.0,
+      "max_dd_pct": -31.01583378225644,
+      "sharpe": 0.6066454855265591,
+      "closed_cycles": 128,
+      "wins": 51,
+      "losses": 77,
+      "fills": 366,
+      "open_positions": 0,
+      "peak_margin_ratio_pct": 25.036503950511424
+    },
+    "monthly_top10/expansion_break3": {
+      "days": 2874,
+      "cycles": 67,
+      "equity": 254695.0,
+      "net_pnl": -45305.0,
+      "max_dd_pct": -16.47016381614548,
+      "sharpe": -0.15590242084752406,
+      "closed_cycles": 67,
+      "wins": 24,
+      "losses": 43,
+      "fills": 186,
+      "open_positions": 0,
+      "peak_margin_ratio_pct": 18.021829184827638
+    }
+  },
+  "ranking": {
+    "daily_rows": 44093,
+    "rank_rows": 2717,
+    "months": 143,
+    "selected_per_month": 10,
+    "status": {
+      "admitted": 43496,
+      "raw_confirmed_zero": 573,
+      "exchange_market_closed": 11,
+      "expired_mapping_bounded": 7,
+      "legacy_double_sided": 6
+    },
+    "fu_may_upper": 4,
+    "fu_cutoff": 2032485
+  },
+  "input_pins": 35,
+  "verdict": "PASS_WITH_LIMITATIONS"
+}

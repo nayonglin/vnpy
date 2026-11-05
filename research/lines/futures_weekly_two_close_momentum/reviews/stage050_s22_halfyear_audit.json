@@ -1,0 +1,1388 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "attempted": 24,
+  "completed": 24,
+  "unknown": 0,
+  "manifest_sha256": "24a1b662eef7570a450ecf10d9462eb40b30df700b9e58fa0a5e5121bdf91545",
+  "manifest_entries": {
+    "stage050_s22_halfyear_20261104": 314,
+    "stage049_s26_halfyear_20261104": 314,
+    "stage048_s26_full_20261104": 16,
+    "stage046_s44_individual_2022": 574,
+    "stage047_s26_2022": 15,
+    "stage041_complete_halfyear_20261104": 28,
+    "stage037_s19_fixed_one_150k_20261104": 15,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288
+  },
+  "pinned_inputs": 42,
+  "addition_ranking_2022": [
+    [
+      "p.DCE",
+      34830.0
+    ],
+    [
+      "ss.SHFE",
+      14875.0
+    ],
+    [
+      "zn.SHFE",
+      9400.0
+    ],
+    [
+      "ni.SHFE",
+      8140.0
+    ],
+    [
+      "ag.SHFE",
+      5805.0
+    ],
+    [
+      "jd.DCE",
+      5000.0
+    ],
+    [
+      "TA.CZCE",
+      3630.0
+    ]
+  ],
+  "products": [
+    "AP.CZCE",
+    "CF.CZCE",
+    "FG.CZCE",
+    "MA.CZCE",
+    "OI.CZCE",
+    "SA.CZCE",
+    "SH.CZCE",
+    "SM.CZCE",
+    "au.SHFE",
+    "cu.SHFE",
+    "fu.SHFE",
+    "hc.SHFE",
+    "jm.DCE",
+    "lc.GFEX",
+    "lh.DCE",
+    "p.DCE",
+    "rb.SHFE",
+    "ru.SHFE",
+    "si.GFEX",
+    "sp.SHFE",
+    "ss.SHFE",
+    "zn.SHFE"
+  ],
+  "additions": [
+    "p.DCE",
+    "ss.SHFE",
+    "zn.SHFE"
+  ],
+  "checked_s22_rows": {
+    "days": 35453,
+    "fills": 60162,
+    "cycles": 22093,
+    "opening_snapshots": 95615,
+    "signals": 42694,
+    "one_price_exits": 14,
+    "nonpositive_days": 105,
+    "entries": 22093,
+    "stops": 20428,
+    "rolls": 8180,
+    "guard_exits": 1281
+  },
+  "unchanged_original_s19_events": {
+    "fills": 49352,
+    "signals": 36027,
+    "gaps": 1186,
+    "cycles": 18492,
+    "entry_filter": 23210,
+    "week_body_filter": 25787,
+    "four_up_blocks": 944,
+    "terminal_positions": 360
+  },
+  "unchanged_s22_projection_from_s26": {
+    "fills": 60162,
+    "signals": 42694,
+    "gaps": 1287,
+    "cycles": 22093,
+    "entry_filter": 27643,
+    "week_body_filter": 30681,
+    "four_up_blocks": 1050,
+    "terminal_positions": 384
+  },
+  "windows_with_deficit": {
+    "s19": 19,
+    "s22": 21,
+    "s26": 24
+  },
+  "windows_with_nonpositive_equity": {
+    "s19": 1,
+    "s22": 1,
+    "s26": 2
+  },
+  "higher_final_equity_s22": {
+    "s19": 18,
+    "s26": 22
+  },
+  "better_drawdown_s22": {
+    "s19": 13,
+    "s26": 15
+  },
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "first_session": "2015-01-05",
+      "s22_equity": 1503450.0,
+      "s22_net_pnl": 1353450.0,
+      "s22_drawdown_pct": -55.52840230259586,
+      "s22_deficit_days": 0,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2015-04-27",
+        "fill_sequence": 9,
+        "product": "p.DCE",
+        "reason": "entry",
+        "equity": 122685.0,
+        "margin": 119451.9,
+        "free_equity": 3233.1,
+        "positions": 12
+      },
+      "added_net_pnl": {
+        "p.DCE": 31070.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -52275.0
+      },
+      "s19_equity": 1483830.0,
+      "s19_drawdown_pct": -54.73192983509145,
+      "s19_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2015-04-27",
+        "fill_sequence": 7,
+        "product": "hc.SHFE",
+        "reason": "entry",
+        "equity": 125335.0,
+        "margin": 99674.4,
+        "free_equity": 25660.6,
+        "positions": 10
+      },
+      "s26_equity": 1405655.0,
+      "s26_drawdown_pct": -53.924057327198696,
+      "s26_deficit_days": 31,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2015-04-27",
+        "fill_sequence": 10,
+        "product": "p.DCE",
+        "reason": "entry",
+        "equity": 114575.0,
+        "margin": 145984.65,
+        "free_equity": -31409.65,
+        "positions": 15
+      }
+    },
+    {
+      "start": "2015-07-01",
+      "first_session": "2015-07-01",
+      "s22_equity": 1492985.0,
+      "s22_net_pnl": 1342985.0,
+      "s22_drawdown_pct": -57.15243910959574,
+      "s22_deficit_days": 0,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 153585.0,
+        "margin": 153102.15,
+        "free_equity": 482.85,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 33930.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -58975.0
+      },
+      "s19_equity": 1477205.0,
+      "s19_drawdown_pct": -55.84218745215714,
+      "s19_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 148360.0,
+        "margin": 128780.4,
+        "free_equity": 19579.6,
+        "positions": 12
+      },
+      "s26_equity": 1388640.0,
+      "s26_drawdown_pct": -56.46449683662592,
+      "s26_deficit_days": 12,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 155710.0,
+        "margin": 181234.65,
+        "free_equity": -25524.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2016-01-01",
+      "first_session": "2016-01-04",
+      "s22_equity": 1502335.0,
+      "s22_net_pnl": 1352335.0,
+      "s22_drawdown_pct": -55.69702994566475,
+      "s22_deficit_days": 0,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 162935.0,
+        "margin": 153102.15,
+        "free_equity": 9832.85,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 35050.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -46700.0
+      },
+      "s19_equity": 1473160.0,
+      "s19_drawdown_pct": -56.54249794602304,
+      "s19_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 144315.0,
+        "margin": 128780.4,
+        "free_equity": 15534.6,
+        "positions": 12
+      },
+      "s26_equity": 1393120.0,
+      "s26_drawdown_pct": -55.7726756826977,
+      "s26_deficit_days": 8,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 160190.0,
+        "margin": 181234.65,
+        "free_equity": -21044.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2016-07-01",
+      "first_session": "2016-07-01",
+      "s22_equity": 1484305.0,
+      "s22_net_pnl": 1334305.0,
+      "s22_drawdown_pct": -58.57333123290418,
+      "s22_deficit_days": 2,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 144905.0,
+        "margin": 153102.15,
+        "free_equity": -8197.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 38950.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -57450.0
+      },
+      "s19_equity": 1461980.0,
+      "s19_drawdown_pct": -58.572736177797765,
+      "s19_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 133135.0,
+        "margin": 128780.4,
+        "free_equity": 4354.6,
+        "positions": 12
+      },
+      "s26_equity": 1384395.0,
+      "s26_drawdown_pct": -57.13605289700774,
+      "s26_deficit_days": 14,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 151465.0,
+        "margin": 181234.65,
+        "free_equity": -29769.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2017-01-01",
+      "first_session": "2017-01-03",
+      "s22_equity": 1356800.0,
+      "s22_net_pnl": 1206800.0,
+      "s22_drawdown_pct": -91.19574435278699,
+      "s22_deficit_days": 496,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 17400.0,
+        "margin": 153102.15,
+        "free_equity": -135702.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 35310.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -65725.0
+      },
+      "s19_equity": 1346390.0,
+      "s19_drawdown_pct": -92.75538615413728,
+      "s19_deficit_days": 299,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 17545.0,
+        "margin": 128780.4,
+        "free_equity": -111235.4,
+        "positions": 12
+      },
+      "s26_equity": 1261070.0,
+      "s26_drawdown_pct": -86.28049485489652,
+      "s26_deficit_days": 659,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 28140.0,
+        "margin": 181234.65,
+        "free_equity": -153094.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2017-07-01",
+      "first_session": "2017-07-03",
+      "s22_equity": 1368755.0,
+      "s22_net_pnl": 1218755.0,
+      "s22_drawdown_pct": -85.73355569725805,
+      "s22_deficit_days": 377,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 29355.0,
+        "margin": 153102.15,
+        "free_equity": -123747.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 39290.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -64250.0
+      },
+      "s19_equity": 1352890.0,
+      "s19_drawdown_pct": -89.46058311045203,
+      "s19_deficit_days": 231,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 24045.0,
+        "margin": 128780.4,
+        "free_equity": -104735.4,
+        "positions": 12
+      },
+      "s26_equity": 1267630.0,
+      "s26_drawdown_pct": -83.54418879324051,
+      "s26_deficit_days": 554,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 34700.0,
+        "margin": 181234.65,
+        "free_equity": -146534.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2018-01-01",
+      "first_session": "2018-01-02",
+      "s22_equity": 1414125.0,
+      "s22_net_pnl": 1264125.0,
+      "s22_drawdown_pct": -65.63906131019684,
+      "s22_deficit_days": 59,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 74725.0,
+        "margin": 153102.15,
+        "free_equity": -78377.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 35850.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -66150.0
+      },
+      "s19_equity": 1403600.0,
+      "s19_drawdown_pct": -66.51094405843155,
+      "s19_deficit_days": 37,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 74755.0,
+        "margin": 128780.4,
+        "free_equity": -54025.4,
+        "positions": 12
+      },
+      "s26_equity": 1319080.0,
+      "s26_drawdown_pct": -61.89534529966535,
+      "s26_deficit_days": 147,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 86150.0,
+        "margin": 181234.65,
+        "free_equity": -95084.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2018-07-01",
+      "first_session": "2018-07-02",
+      "s22_equity": 1366010.0,
+      "s22_net_pnl": 1216010.0,
+      "s22_drawdown_pct": -84.37444385121908,
+      "s22_deficit_days": 342,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 26610.0,
+        "margin": 153102.15,
+        "free_equity": -126492.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 36950.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -71400.0
+      },
+      "s19_equity": 1359635.0,
+      "s19_drawdown_pct": -84.0334372003835,
+      "s19_deficit_days": 150,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 30790.0,
+        "margin": 128780.4,
+        "free_equity": -97990.4,
+        "positions": 12
+      },
+      "s26_equity": 1267015.0,
+      "s26_drawdown_pct": -79.99719140570146,
+      "s26_deficit_days": 444,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 34085.0,
+        "margin": 181234.65,
+        "free_equity": -147149.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2019-01-01",
+      "first_session": "2019-01-02",
+      "s22_equity": 1393050.0,
+      "s22_net_pnl": 1243050.0,
+      "s22_drawdown_pct": -68.20158455948055,
+      "s22_deficit_days": 168,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 53650.0,
+        "margin": 153102.15,
+        "free_equity": -99452.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 35830.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -63450.0
+      },
+      "s19_equity": 1379845.0,
+      "s19_drawdown_pct": -73.6458743461387,
+      "s19_deficit_days": 62,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 51000.0,
+        "margin": 128780.4,
+        "free_equity": -77780.4,
+        "positions": 12
+      },
+      "s26_equity": 1292540.0,
+      "s26_drawdown_pct": -67.6568617077558,
+      "s26_deficit_days": 268,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 59610.0,
+        "margin": 181234.65,
+        "free_equity": -121624.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2019-07-01",
+      "first_session": "2019-07-01",
+      "s22_equity": 1381840.0,
+      "s22_net_pnl": 1231840.0,
+      "s22_drawdown_pct": -74.31946897265696,
+      "s22_deficit_days": 144,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 42440.0,
+        "margin": 153102.15,
+        "free_equity": -110662.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 31490.0,
+        "ss.SHFE": 40825.0,
+        "zn.SHFE": -47750.0
+      },
+      "s19_equity": 1357275.0,
+      "s19_drawdown_pct": -85.1540530627216,
+      "s19_deficit_days": 120,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 28430.0,
+        "margin": 128780.4,
+        "free_equity": -100350.4,
+        "positions": 12
+      },
+      "s26_equity": 1284600.0,
+      "s26_drawdown_pct": -70.62348133421692,
+      "s26_deficit_days": 193,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 51670.0,
+        "margin": 181234.65,
+        "free_equity": -129564.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2020-01-01",
+      "first_session": "2020-01-02",
+      "s22_equity": 1417525.0,
+      "s22_net_pnl": 1267525.0,
+      "s22_drawdown_pct": -50.285750774240924,
+      "s22_deficit_days": 41,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 78125.0,
+        "margin": 153102.15,
+        "free_equity": -74977.15,
+        "positions": 14
+      },
+      "added_net_pnl": {
+        "p.DCE": 24670.0,
+        "ss.SHFE": 37825.0,
+        "zn.SHFE": -43550.0
+      },
+      "s19_equity": 1398580.0,
+      "s19_drawdown_pct": -59.05231614433761,
+      "s19_deficit_days": 36,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-05-28",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 69735.0,
+        "margin": 128780.4,
+        "free_equity": -59045.4,
+        "positions": 12
+      },
+      "s26_equity": 1302835.0,
+      "s26_drawdown_pct": -55.9699192504469,
+      "s26_deficit_days": 88,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2020-05-18",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 69905.0,
+        "margin": 181234.65,
+        "free_equity": -111329.65,
+        "positions": 17
+      }
+    },
+    {
+      "start": "2020-07-01",
+      "first_session": "2020-07-01",
+      "s22_equity": 1385385.0,
+      "s22_net_pnl": 1235385.0,
+      "s22_drawdown_pct": -41.32148612744457,
+      "s22_deficit_days": 1,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2020-09-28",
+        "fill_sequence": 1,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 161485.0,
+        "margin": 163129.75,
+        "free_equity": -1644.75,
+        "positions": 15
+      },
+      "added_net_pnl": {
+        "p.DCE": 15410.0,
+        "ss.SHFE": 33475.0,
+        "zn.SHFE": -41175.0
+      },
+      "s19_equity": 1377675.0,
+      "s19_drawdown_pct": -41.845893804278134,
+      "s19_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2020-09-28",
+        "fill_sequence": 1,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 145135.0,
+        "margin": 143491.0,
+        "free_equity": 1644.0,
+        "positions": 13
+      },
+      "s26_equity": 1267510.0,
+      "s26_drawdown_pct": -50.2741888713471,
+      "s26_deficit_days": 45,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2021-04-30",
+        "equity": 202255.0,
+        "margin": 272780.15,
+        "positions": 19,
+        "free_equity": -70525.15,
+        "reason": "close_mark"
+      }
+    },
+    {
+      "start": "2021-01-01",
+      "first_session": "2021-01-04",
+      "s22_equity": 1316595.0,
+      "s22_net_pnl": 1166595.0,
+      "s22_drawdown_pct": -45.19002415705488,
+      "s22_deficit_days": 28,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2021-04-26",
+        "fill_sequence": 4,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 193430.0,
+        "margin": 246682.0,
+        "free_equity": -53252.0,
+        "positions": 16
+      },
+      "added_net_pnl": {
+        "p.DCE": 8550.0,
+        "ss.SHFE": 37600.0,
+        "zn.SHFE": -49700.0
+      },
+      "s19_equity": 1320145.0,
+      "s19_drawdown_pct": -45.67475149105368,
+      "s19_deficit_days": 12,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2021-04-26",
+        "fill_sequence": 4,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 196425.0,
+        "margin": 235357.0,
+        "free_equity": -38932.0,
+        "positions": 15
+      },
+      "s26_equity": 1209100.0,
+      "s26_drawdown_pct": -58.51569160813609,
+      "s26_deficit_days": 131,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2021-04-30",
+        "equity": 143845.0,
+        "margin": 272780.15,
+        "positions": 19,
+        "free_equity": -128935.15,
+        "reason": "close_mark"
+      }
+    },
+    {
+      "start": "2021-07-01",
+      "first_session": "2021-07-01",
+      "s22_equity": 1248885.0,
+      "s22_net_pnl": 1098885.0,
+      "s22_drawdown_pct": -49.777008237578045,
+      "s22_deficit_days": 25,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2021-07-26",
+        "fill_sequence": 6,
+        "product": "sp.SHFE",
+        "reason": "entry",
+        "equity": 167675.0,
+        "margin": 230533.15,
+        "free_equity": -62858.15,
+        "positions": 18
+      },
+      "added_net_pnl": {
+        "p.DCE": 11850.0,
+        "ss.SHFE": 32475.0,
+        "zn.SHFE": -35075.0
+      },
+      "s19_equity": 1239635.0,
+      "s19_drawdown_pct": -52.38216839340435,
+      "s19_deficit_days": 20,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2021-08-16",
+        "fill_sequence": 10,
+        "product": "sp.SHFE",
+        "reason": "entry",
+        "equity": 174750.0,
+        "margin": 211805.7,
+        "free_equity": -37055.7,
+        "positions": 13
+      },
+      "s26_equity": 1197840.0,
+      "s26_drawdown_pct": -55.2335912666105,
+      "s26_deficit_days": 35,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2021-07-26",
+        "fill_sequence": 5,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 173155.0,
+        "margin": 274831.9,
+        "free_equity": -101676.9,
+        "positions": 22
+      }
+    },
+    {
+      "start": "2022-01-01",
+      "first_session": "2022-01-04",
+      "s22_equity": 1044700.0,
+      "s22_net_pnl": 894700.0,
+      "s22_drawdown_pct": -71.73457483581058,
+      "s22_deficit_days": 125,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2023-03-20",
+        "fill_sequence": 11,
+        "product": "zn.SHFE",
+        "reason": "entry",
+        "equity": 137225.0,
+        "margin": 234048.7,
+        "free_equity": -96823.7,
+        "positions": 18
+      },
+      "added_net_pnl": {
+        "p.DCE": -5030.0,
+        "ss.SHFE": 2950.0,
+        "zn.SHFE": -22375.0
+      },
+      "s19_equity": 1069155.0,
+      "s19_drawdown_pct": -76.02181279119019,
+      "s19_deficit_days": 156,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2023-03-23",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 95945.0,
+        "margin": 193528.8,
+        "free_equity": -97583.8,
+        "positions": 15
+      },
+      "s26_equity": 982880.0,
+      "s26_drawdown_pct": -79.40036027234146,
+      "s26_deficit_days": 454,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 146970.0,
+        "margin": 336541.4,
+        "free_equity": -189571.4,
+        "positions": 24
+      }
+    },
+    {
+      "start": "2022-07-01",
+      "first_session": "2022-07-01",
+      "s22_equity": 842110.0,
+      "s22_net_pnl": 692110.0,
+      "s22_drawdown_pct": -128.09844539295923,
+      "s22_deficit_days": 688,
+      "s22_nonpositive_days": 105,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2023-03-20",
+        "fill_sequence": 11,
+        "product": "zn.SHFE",
+        "reason": "entry",
+        "equity": -65365.0,
+        "margin": 234048.7,
+        "free_equity": -299413.7,
+        "positions": 18
+      },
+      "added_net_pnl": {
+        "p.DCE": -41770.0,
+        "ss.SHFE": -9125.0,
+        "zn.SHFE": -36550.0
+      },
+      "s19_equity": 929555.0,
+      "s19_drawdown_pct": -121.01697821985935,
+      "s19_deficit_days": 493,
+      "s19_nonpositive_days": 82,
+      "s19_worst_funding": {
+        "date": "2023-03-23",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": -43655.0,
+        "margin": 193528.8,
+        "free_equity": -237183.8,
+        "positions": 15
+      },
+      "s26_equity": 786085.0,
+      "s26_drawdown_pct": -133.00987637267767,
+      "s26_deficit_days": 781,
+      "s26_nonpositive_days": 238,
+      "s26_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": -49825.0,
+        "margin": 336541.4,
+        "free_equity": -386366.4,
+        "positions": 24
+      }
+    },
+    {
+      "start": "2023-01-01",
+      "first_session": "2023-01-03",
+      "s22_equity": 1013440.0,
+      "s22_net_pnl": 863440.0,
+      "s22_drawdown_pct": -43.27244498661301,
+      "s22_deficit_days": 179,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2023-03-20",
+        "fill_sequence": 11,
+        "product": "zn.SHFE",
+        "reason": "entry",
+        "equity": 105965.0,
+        "margin": 234048.7,
+        "free_equity": -128083.7,
+        "positions": 18
+      },
+      "added_net_pnl": {
+        "p.DCE": -40310.0,
+        "ss.SHFE": -11925.0,
+        "zn.SHFE": -31775.0
+      },
+      "s19_equity": 1097450.0,
+      "s19_drawdown_pct": -35.043511672343605,
+      "s19_deficit_days": 69,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2023-03-23",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 124240.0,
+        "margin": 193528.8,
+        "free_equity": -69288.8,
+        "positions": 15
+      },
+      "s26_equity": 952465.0,
+      "s26_drawdown_pct": -56.217336178371525,
+      "s26_deficit_days": 475,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 116555.0,
+        "margin": 336541.4,
+        "free_equity": -219986.4,
+        "positions": 24
+      }
+    },
+    {
+      "start": "2023-07-01",
+      "first_session": "2023-07-03",
+      "s22_equity": 976795.0,
+      "s22_net_pnl": 826795.0,
+      "s22_drawdown_pct": -48.95683969027817,
+      "s22_deficit_days": 206,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 142660.0,
+        "margin": 286704.65,
+        "free_equity": -144044.65,
+        "positions": 20
+      },
+      "added_net_pnl": {
+        "p.DCE": -32210.0,
+        "ss.SHFE": -4875.0,
+        "zn.SHFE": -20700.0
+      },
+      "s19_equity": 1034580.0,
+      "s19_drawdown_pct": -40.59947901999437,
+      "s19_deficit_days": 56,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 151575.0,
+        "margin": 247186.4,
+        "free_equity": -95611.4,
+        "positions": 17
+      },
+      "s26_equity": 971900.0,
+      "s26_drawdown_pct": -51.653331445160376,
+      "s26_deficit_days": 310,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 135990.0,
+        "margin": 336541.4,
+        "free_equity": -200551.4,
+        "positions": 24
+      }
+    },
+    {
+      "start": "2024-01-01",
+      "first_session": "2024-01-02",
+      "s22_equity": 894035.0,
+      "s22_net_pnl": 744035.0,
+      "s22_drawdown_pct": -62.02757347088228,
+      "s22_deficit_days": 281,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2024-03-25",
+        "fill_sequence": 2,
+        "product": "SH.CZCE",
+        "reason": "entry",
+        "equity": 72885.0,
+        "margin": 279643.0,
+        "free_equity": -206758.0,
+        "positions": 20
+      },
+      "added_net_pnl": {
+        "p.DCE": -26270.0,
+        "ss.SHFE": -10900.0,
+        "zn.SHFE": -2625.0
+      },
+      "s19_equity": 933830.0,
+      "s19_drawdown_pct": -57.24526047725343,
+      "s19_deficit_days": 152,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2024-03-25",
+        "equity": 79015.0,
+        "margin": 239280.6,
+        "positions": 17,
+        "free_equity": -160265.6,
+        "reason": "close_mark"
+      },
+      "s26_equity": 882500.0,
+      "s26_drawdown_pct": -69.6856720447387,
+      "s26_deficit_days": 349,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2024-03-25",
+        "fill_sequence": 3,
+        "product": "jd.DCE",
+        "reason": "entry",
+        "equity": 61510.0,
+        "margin": 323693.5,
+        "free_equity": -262183.5,
+        "positions": 24
+      }
+    },
+    {
+      "start": "2024-07-01",
+      "first_session": "2024-07-01",
+      "s22_equity": 898835.0,
+      "s22_net_pnl": 748835.0,
+      "s22_drawdown_pct": -53.33875033856283,
+      "s22_deficit_days": 155,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2024-12-12",
+        "equity": 111980.0,
+        "margin": 238947.45,
+        "positions": 18,
+        "free_equity": -126967.45,
+        "reason": "close_mark"
+      },
+      "added_net_pnl": {
+        "p.DCE": -16310.0,
+        "ss.SHFE": -2625.0,
+        "zn.SHFE": 20375.0
+      },
+      "s19_equity": 897395.0,
+      "s19_drawdown_pct": -54.44624594662011,
+      "s19_deficit_days": 108,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2024-12-12",
+        "equity": 109575.0,
+        "margin": 194765.7,
+        "positions": 15,
+        "free_equity": -85190.7,
+        "reason": "close_mark"
+      },
+      "s26_equity": 879410.0,
+      "s26_drawdown_pct": -69.66437083196678,
+      "s26_deficit_days": 231,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2025-03-17",
+        "fill_sequence": 8,
+        "product": "ss.SHFE",
+        "reason": "entry",
+        "equity": 136950.0,
+        "margin": 339269.5,
+        "free_equity": -202319.5,
+        "positions": 23
+      }
+    },
+    {
+      "start": "2025-01-01",
+      "first_session": "2025-01-02",
+      "s22_equity": 911345.0,
+      "s22_net_pnl": 761345.0,
+      "s22_drawdown_pct": -44.57333180199839,
+      "s22_deficit_days": 55,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2025-03-17",
+        "fill_sequence": 6,
+        "product": "ss.SHFE",
+        "reason": "entry",
+        "equity": 189570.0,
+        "margin": 292071.25,
+        "free_equity": -102501.25,
+        "positions": 19
+      },
+      "added_net_pnl": {
+        "p.DCE": -21870.0,
+        "ss.SHFE": 2000.0,
+        "zn.SHFE": 21025.0
+      },
+      "s19_equity": 910190.0,
+      "s19_drawdown_pct": -43.50328735335825,
+      "s19_deficit_days": 36,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2025-03-17",
+        "fill_sequence": 5,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 194855.0,
+        "margin": 250030.0,
+        "free_equity": -55175.0,
+        "positions": 16
+      },
+      "s26_equity": 935585.0,
+      "s26_drawdown_pct": -50.29015544041451,
+      "s26_deficit_days": 78,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2025-03-17",
+        "fill_sequence": 8,
+        "product": "ss.SHFE",
+        "reason": "entry",
+        "equity": 193125.0,
+        "margin": 339269.5,
+        "free_equity": -146144.5,
+        "positions": 23
+      }
+    },
+    {
+      "start": "2025-07-01",
+      "first_session": "2025-07-01",
+      "s22_equity": 817265.0,
+      "s22_net_pnl": 667265.0,
+      "s22_drawdown_pct": -50.65477485316511,
+      "s22_deficit_days": 40,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2025-09-08",
+        "equity": 138485.0,
+        "margin": 283351.15,
+        "positions": 19,
+        "free_equity": -144866.15,
+        "reason": "close_mark"
+      },
+      "added_net_pnl": {
+        "p.DCE": -9270.0,
+        "ss.SHFE": 7725.0,
+        "zn.SHFE": 17000.0
+      },
+      "s19_equity": 801810.0,
+      "s19_drawdown_pct": -50.56869268117246,
+      "s19_deficit_days": 32,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2025-09-08",
+        "equity": 134155.0,
+        "margin": 257007.4,
+        "positions": 17,
+        "free_equity": -122852.4,
+        "reason": "close_mark"
+      },
+      "s26_equity": 838170.0,
+      "s26_drawdown_pct": -55.12947789022409,
+      "s26_deficit_days": 45,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2025-09-08",
+        "equity": 131755.0,
+        "margin": 313450.9,
+        "positions": 22,
+        "free_equity": -181695.9,
+        "reason": "close_mark"
+      }
+    },
+    {
+      "start": "2026-01-01",
+      "first_session": "2026-01-05",
+      "s22_equity": 557885.0,
+      "s22_net_pnl": 407885.0,
+      "s22_drawdown_pct": -76.27843592303748,
+      "s22_deficit_days": 48,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2026-02-02",
+        "equity": 87905.0,
+        "margin": 280824.95,
+        "positions": 16,
+        "free_equity": -192919.95,
+        "reason": "close_mark"
+      },
+      "added_net_pnl": {
+        "p.DCE": -11850.0,
+        "ss.SHFE": 2200.0,
+        "zn.SHFE": 13900.0
+      },
+      "s19_equity": 553635.0,
+      "s19_drawdown_pct": -75.49275542479867,
+      "s19_deficit_days": 30,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2026-02-02",
+        "equity": 88715.0,
+        "margin": 248917.7,
+        "positions": 14,
+        "free_equity": -160202.7,
+        "reason": "close_mark"
+      },
+      "s26_equity": 387005.0,
+      "s26_drawdown_pct": -99.38576165554711,
+      "s26_deficit_days": 158,
+      "s26_nonpositive_days": 1,
+      "s26_worst_funding": {
+        "date": "2026-04-27",
+        "fill_sequence": 10,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 30195.0,
+        "margin": 397923.95,
+        "free_equity": -367728.95,
+        "positions": 22
+      }
+    },
+    {
+      "start": "2026-07-01",
+      "first_session": "2026-07-01",
+      "s22_equity": 347535.0,
+      "s22_net_pnl": 197535.0,
+      "s22_drawdown_pct": -26.06333333333334,
+      "s22_deficit_days": 53,
+      "s22_nonpositive_days": 0,
+      "s22_zero_equity_close_dates": [],
+      "s22_worst_funding": {
+        "date": "2026-08-03",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 127990.0,
+        "margin": 295192.95,
+        "free_equity": -167202.95,
+        "positions": 17
+      },
+      "added_net_pnl": {
+        "p.DCE": 9940.0,
+        "ss.SHFE": 2925.0,
+        "zn.SHFE": 9200.0
+      },
+      "s19_equity": 325470.0,
+      "s19_drawdown_pct": -28.21524416817671,
+      "s19_deficit_days": 43,
+      "s19_nonpositive_days": 0,
+      "s19_worst_funding": {
+        "date": "2026-08-03",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 127815.0,
+        "margin": 265444.2,
+        "free_equity": -137629.2,
+        "positions": 15
+      },
+      "s26_equity": 334140.0,
+      "s26_drawdown_pct": -41.766666666666666,
+      "s26_deficit_days": 66,
+      "s26_nonpositive_days": 0,
+      "s26_worst_funding": {
+        "date": "2026-08-03",
+        "fill_sequence": 4,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 111770.0,
+        "margin": 337263.45,
+        "free_equity": -225493.45,
+        "positions": 20
+      }
+    }
+  ],
+  "limitations": [
+    "Selection uses retrospective 2022 results; half-year windows overlap.",
+    "One-lot theoretical fills continue through cash shortfalls and nonpositive equity.",
+    "Percentage return metrics cease to be economically interpretable after crossing zero equity.",
+    "Zero commissions, static margin and open-price proxies without a queue model."
+  ]
+}

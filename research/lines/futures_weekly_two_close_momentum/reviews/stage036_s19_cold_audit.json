@@ -1,0 +1,298 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "output_manifest_sha": "c6c7821d6f318ab91a4effdb7ac82fa8292edf5a68c150ea56a08c7b21d06ff5",
+  "hashes": {
+    "stage033_s19_annual_starts_20261104": 158,
+    "stage035_s19_half_pct_20261104": 27,
+    "stage034_s19_monte_carlo_v1": 7,
+    "stage036_s19_paired_mc_v1": 161
+  },
+  "pins": 40,
+  "starts": 11,
+  "totals": {
+    "days": 693,
+    "fills": 318,
+    "signals": 686,
+    "opening_marks": 975,
+    "sizing": 578,
+    "closed_cycles": 110,
+    "margin_deficit_days": 0
+  },
+  "results": [
+    {
+      "year": 2016,
+      "start": "2016-01-04",
+      "end": "2016-04-07",
+      "days": 63,
+      "equity": 331740.0,
+      "fills": 26,
+      "signals": 31,
+      "opening_marks": 84,
+      "sizing": 29,
+      "closed_cycles": 6,
+      "rolls": {
+        "filled": 4
+      },
+      "risks": {
+        "filled": 12,
+        "risk_below_one_lot": 13
+      },
+      "reverse": {
+        "considered": 2,
+        "executed": 1
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2017,
+      "start": "2017-01-03",
+      "end": "2017-04-10",
+      "days": 63,
+      "equity": 302265.0,
+      "fills": 30,
+      "signals": 50,
+      "opening_marks": 88,
+      "sizing": 41,
+      "closed_cycles": 11,
+      "rolls": {
+        "filled": 2
+      },
+      "risks": {
+        "risk_below_one_lot": 24,
+        "filled": 15
+      },
+      "reverse": {
+        "considered": 4,
+        "executed": 3
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2018,
+      "start": "2018-01-02",
+      "end": "2018-04-09",
+      "days": 63,
+      "equity": 291990.0,
+      "fills": 27,
+      "signals": 48,
+      "opening_marks": 89,
+      "sizing": 36,
+      "closed_cycles": 12,
+      "rolls": {},
+      "risks": {
+        "filled": 15,
+        "risk_below_one_lot": 21
+      },
+      "reverse": {
+        "considered": 2,
+        "executed": 1
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2019,
+      "start": "2019-01-02",
+      "end": "2019-04-08",
+      "days": 63,
+      "equity": 301980.0,
+      "fills": 30,
+      "signals": 44,
+      "opening_marks": 89,
+      "sizing": 39,
+      "closed_cycles": 8,
+      "rolls": {
+        "filled": 3
+      },
+      "risks": {
+        "filled": 16,
+        "risk_below_one_lot": 20
+      },
+      "reverse": {
+        "considered": 1,
+        "executed": 1
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2020,
+      "start": "2020-01-02",
+      "end": "2020-04-08",
+      "days": 63,
+      "equity": 242570.0,
+      "fills": 28,
+      "signals": 54,
+      "opening_marks": 89,
+      "sizing": 45,
+      "closed_cycles": 10,
+      "rolls": {
+        "filled": 2
+      },
+      "risks": {
+        "risk_below_one_lot": 29,
+        "filled": 14
+      },
+      "reverse": {},
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2021,
+      "start": "2021-01-04",
+      "end": "2021-04-08",
+      "days": 63,
+      "equity": 313260.0,
+      "fills": 22,
+      "signals": 67,
+      "opening_marks": 84,
+      "sizing": 60,
+      "closed_cycles": 8,
+      "rolls": {
+        "filled": 1
+      },
+      "risks": {
+        "risk_below_one_lot": 47,
+        "filled": 12
+      },
+      "reverse": {
+        "considered": 3
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2022,
+      "start": "2022-01-04",
+      "end": "2022-04-11",
+      "days": 63,
+      "equity": 307420.0,
+      "fills": 11,
+      "signals": 59,
+      "opening_marks": 73,
+      "sizing": 57,
+      "closed_cycles": 3,
+      "rolls": {
+        "filled": 1
+      },
+      "risks": {
+        "risk_below_one_lot": 50,
+        "filled": 6
+      },
+      "reverse": {},
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2023,
+      "start": "2023-01-03",
+      "end": "2023-04-07",
+      "days": 63,
+      "equity": 296675.0,
+      "fills": 22,
+      "signals": 78,
+      "opening_marks": 84,
+      "sizing": 63,
+      "closed_cycles": 9,
+      "rolls": {},
+      "risks": {
+        "risk_below_one_lot": 50,
+        "filled": 13
+      },
+      "reverse": {
+        "considered": 3,
+        "executed": 1
+      },
+      "margin_deficit_days": 0,
+      "pending": 6,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2024,
+      "start": "2024-01-02",
+      "end": "2024-04-09",
+      "days": 63,
+      "equity": 303940.0,
+      "fills": 45,
+      "signals": 81,
+      "opening_marks": 99,
+      "sizing": 76,
+      "closed_cycles": 12,
+      "rolls": {
+        "filled": 6
+      },
+      "risks": {
+        "filled": 21,
+        "risk_below_one_lot": 49
+      },
+      "reverse": {
+        "considered": 3,
+        "executed": 3
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2025,
+      "start": "2025-01-02",
+      "end": "2025-04-09",
+      "days": 63,
+      "equity": 316215.0,
+      "fills": 40,
+      "signals": 88,
+      "opening_marks": 101,
+      "sizing": 73,
+      "closed_cycles": 15,
+      "rolls": {
+        "filled": 1
+      },
+      "risks": {
+        "risk_below_one_lot": 49,
+        "filled": 23
+      },
+      "reverse": {
+        "considered": 3,
+        "executed": 1
+      },
+      "margin_deficit_days": 0,
+      "pending": 0,
+      "pending_reversals": 0
+    },
+    {
+      "year": 2026,
+      "start": "2026-01-05",
+      "end": "2026-04-10",
+      "days": 63,
+      "equity": 257665.0,
+      "fills": 37,
+      "signals": 86,
+      "opening_marks": 95,
+      "sizing": 59,
+      "closed_cycles": 16,
+      "rolls": {
+        "filled": 1
+      },
+      "risks": {
+        "risk_below_one_lot": 39,
+        "filled": 19
+      },
+      "reverse": {
+        "considered": 7,
+        "executed": 4
+      },
+      "margin_deficit_days": 0,
+      "pending": 12,
+      "pending_reversals": 0
+    }
+  ]
+}

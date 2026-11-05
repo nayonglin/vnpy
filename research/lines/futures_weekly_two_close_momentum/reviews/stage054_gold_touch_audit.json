@@ -1,0 +1,213 @@
+{
+  "schema": "stage054_independent_gold_touch_audit_v1",
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "audited_at": "2026-11-05T12:08:05+08:00",
+  "audit_method": "Independent integer-cent state machine derived from the Stage052 independent reviewer; no production runner import or invocation.",
+  "audit_script_sha256": "1a1a5f7c466afc9a8a95350ab1c795960c37ac2206e2e0a3bfdf0b9e1e01d77c",
+  "audit_reference_sha256": "6a9858e879f03a94ad1386e8ac962c02b980f3f5f9f303e2346770c4cd3b8efc",
+  "result_manifest_sha256": "2ff506be26280e4861dcda2d11b3b9f3baa6687845bf55017488e29cb7d13b20",
+  "baseline_manifest_sha256": "40fc03ceb24a07d65be55c5aefe993fcc16c6cd7ccb51c55f3ae359974520051",
+  "result_manifest_entries": 362,
+  "baseline_manifest_entries": 338,
+  "market_input_hashes": 35,
+  "strategy_input_hashes": 7,
+  "windows": {
+    "attempted": 24,
+    "verified": 24,
+    "unknown": 0
+  },
+  "ledger_rows": {
+    "days": 35453,
+    "fills": 55069,
+    "cycles": 20657,
+    "opening_snapshots": 89604,
+    "signals": 40046,
+    "one_price_exits": 14,
+    "nonpositive_days": 0,
+    "entries": 20657,
+    "stops": 18297,
+    "rolls": 7069,
+    "guard_exits": 818
+  },
+  "funding": {
+    "decisions": 28699,
+    "approved": 27726,
+    "denied": 973,
+    "by_status_and_role": {
+      "filled:fixed_entry": 14802,
+      "filled:roll": 7069,
+      "filled:reversal": 5855,
+      "margin_below_one_lot:reversal": 29,
+      "margin_below_one_lot:fixed_entry": 899,
+      "margin_below_one_lot:roll": 45
+    }
+  },
+  "gold_exits": {
+    "gold_touch_intraday": 918,
+    "gold_touch_open_gap": 196
+  },
+  "gold_branches_not_reached_in_sample": [
+    "new or rolled position already through its stop at open",
+    "incomplete prior weekly bar requiring anchor carry",
+    "missing physical daily bar for held gold",
+    "gold stop on a one-price daily bar"
+  ],
+  "comparisons": {
+    "return_better": 1,
+    "return_worse": 22,
+    "return_tied": 1,
+    "drawdown_better": 13,
+    "sharpe_better": 4
+  },
+  "limitations": [
+    "Daily OHLC proxy; exact intraday timestamp, price jumps, queue and executable fills are not established.",
+    "Opening margin threshold only; intraday margin, broker liquidation and actual commissions are not modeled.",
+    "Overlapping start windows and after-the-fact gold selection limit economic generalization."
+  ],
+  "by_window": {
+    "2015-01-01": {
+      "portfolio_pnl_delta": -248090.0,
+      "gold_pnl_delta": -248090.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 104
+    },
+    "2015-07-01": {
+      "portfolio_pnl_delta": -252440.0,
+      "gold_pnl_delta": -252440.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 99
+    },
+    "2016-01-01": {
+      "portfolio_pnl_delta": -261910.0,
+      "gold_pnl_delta": -261910.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 93
+    },
+    "2016-07-01": {
+      "portfolio_pnl_delta": -266300.0,
+      "gold_pnl_delta": -266300.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 87
+    },
+    "2017-01-01": {
+      "portfolio_pnl_delta": -175820.0,
+      "gold_pnl_delta": -220670.0,
+      "other_products_pnl_delta": 44850.0,
+      "touch_stops": 70
+    },
+    "2017-07-01": {
+      "portfolio_pnl_delta": -231510.0,
+      "gold_pnl_delta": -225760.0,
+      "other_products_pnl_delta": -5750.0,
+      "touch_stops": 67
+    },
+    "2018-01-01": {
+      "portfolio_pnl_delta": -258925.0,
+      "gold_pnl_delta": -216920.0,
+      "other_products_pnl_delta": -42005.0,
+      "touch_stops": 68
+    },
+    "2018-07-01": {
+      "portfolio_pnl_delta": -253835.0,
+      "gold_pnl_delta": -230870.0,
+      "other_products_pnl_delta": -22965.0,
+      "touch_stops": 61
+    },
+    "2019-01-01": {
+      "portfolio_pnl_delta": -156770.0,
+      "gold_pnl_delta": -191400.0,
+      "other_products_pnl_delta": 34630.0,
+      "touch_stops": 57
+    },
+    "2019-07-01": {
+      "portfolio_pnl_delta": -223155.0,
+      "gold_pnl_delta": -192730.0,
+      "other_products_pnl_delta": -30425.0,
+      "touch_stops": 55
+    },
+    "2020-01-01": {
+      "portfolio_pnl_delta": -167660.0,
+      "gold_pnl_delta": -204340.0,
+      "other_products_pnl_delta": 36680.0,
+      "touch_stops": 57
+    },
+    "2020-07-01": {
+      "portfolio_pnl_delta": -200240.0,
+      "gold_pnl_delta": -200240.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 54
+    },
+    "2021-01-01": {
+      "portfolio_pnl_delta": -206445.0,
+      "gold_pnl_delta": -207620.0,
+      "other_products_pnl_delta": 1175.0,
+      "touch_stops": 48
+    },
+    "2021-07-01": {
+      "portfolio_pnl_delta": -213080.0,
+      "gold_pnl_delta": -214780.0,
+      "other_products_pnl_delta": 1700.0,
+      "touch_stops": 45
+    },
+    "2022-01-01": {
+      "portfolio_pnl_delta": -271235.0,
+      "gold_pnl_delta": -251540.0,
+      "other_products_pnl_delta": -19695.0,
+      "touch_stops": 36
+    },
+    "2022-07-01": {
+      "portfolio_pnl_delta": -175595.0,
+      "gold_pnl_delta": -165580.0,
+      "other_products_pnl_delta": -10015.0,
+      "touch_stops": 13
+    },
+    "2023-01-01": {
+      "portfolio_pnl_delta": -263265.0,
+      "gold_pnl_delta": -258800.0,
+      "other_products_pnl_delta": -4465.0,
+      "touch_stops": 30
+    },
+    "2023-07-01": {
+      "portfolio_pnl_delta": -225365.0,
+      "gold_pnl_delta": -234720.0,
+      "other_products_pnl_delta": 9355.0,
+      "touch_stops": 27
+    },
+    "2024-01-01": {
+      "portfolio_pnl_delta": -158860.0,
+      "gold_pnl_delta": -167220.0,
+      "other_products_pnl_delta": 8360.0,
+      "touch_stops": 10
+    },
+    "2024-07-01": {
+      "portfolio_pnl_delta": -138370.0,
+      "gold_pnl_delta": -172060.0,
+      "other_products_pnl_delta": 33690.0,
+      "touch_stops": 13
+    },
+    "2025-01-01": {
+      "portfolio_pnl_delta": -166980.0,
+      "gold_pnl_delta": -162880.0,
+      "other_products_pnl_delta": -4100.0,
+      "touch_stops": 11
+    },
+    "2025-07-01": {
+      "portfolio_pnl_delta": -163940.0,
+      "gold_pnl_delta": -163940.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 8
+    },
+    "2026-01-01": {
+      "portfolio_pnl_delta": 107610.0,
+      "gold_pnl_delta": 4500.0,
+      "other_products_pnl_delta": 103110.0,
+      "touch_stops": 1
+    },
+    "2026-07-01": {
+      "portfolio_pnl_delta": 0.0,
+      "gold_pnl_delta": 0.0,
+      "other_products_pnl_delta": 0.0,
+      "touch_stops": 0
+    }
+  }
+}

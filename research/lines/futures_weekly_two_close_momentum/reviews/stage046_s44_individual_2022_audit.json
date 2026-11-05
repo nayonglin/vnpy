@@ -1,0 +1,124 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "attempted": 44,
+  "completed": 44,
+  "unknown": 0,
+  "manifest_entries": 574,
+  "manifest_sha256": "632f823b1589c51969055203dfd63d69cb0ee57477721e1562cf5a5fe09889be",
+  "pinned_market_inputs": 26,
+  "pinned_strategy_inputs": 7,
+  "checked_rows": {
+    "days": 10648,
+    "fills": 750,
+    "cycles": 322,
+    "closed_cycles": 302,
+    "opening_snapshots": 11398,
+    "signals": 594,
+    "one_price_exits": 0,
+    "entries": 322,
+    "stops": 253,
+    "rolls": 63,
+    "guard_exits": 49,
+    "open_positions": 20,
+    "pending_signals": 12
+  },
+  "shared_S19_ledger_crosscheck": {
+    "fills": 278,
+    "signals": 226,
+    "entry_filter": 160,
+    "week_body_filter": 180,
+    "gaps": 2,
+    "four_up_blocks": 11,
+    "shared_products": 19,
+    "daily": 242
+  },
+  "status_counts": {
+    "traded": 41,
+    "not_listed": 2,
+    "no_fills": 1
+  },
+  "no_trade_products": {
+    "SH.CZCE": {
+      "status": "not_listed",
+      "first_mapped": "2023-09-15",
+      "mapped_days": 0
+    },
+    "lc.GFEX": {
+      "status": "not_listed",
+      "first_mapped": "2023-07-21",
+      "mapped_days": 0
+    },
+    "si.GFEX": {
+      "status": "no_fills",
+      "first_mapped": "2022-12-22",
+      "mapped_days": 7
+    }
+  },
+  "missing_mapped_bars": [
+    {
+      "day": "2022-03-10",
+      "product": "ni.SHFE",
+      "main": "ni2204.SHFE"
+    }
+  ],
+  "gap_reasons": {
+    "entry_delivery_guard": 7,
+    "weekly_history_incomplete": 5
+  },
+  "execution_branches": {},
+  "delayed_stop_rows": [],
+  "positive": 20,
+  "negative": 21,
+  "flat": 3,
+  "funding_deficit_accounts": 0,
+  "top_five": [
+    {
+      "product": "p.DCE",
+      "net_pnl": 34830.0
+    },
+    {
+      "product": "CF.CZCE",
+      "net_pnl": 22800.0
+    },
+    {
+      "product": "lh.DCE",
+      "net_pnl": 20320.0
+    },
+    {
+      "product": "ss.SHFE",
+      "net_pnl": 14875.0
+    },
+    {
+      "product": "cu.SHFE",
+      "net_pnl": 14650.0
+    }
+  ],
+  "bottom_five": [
+    {
+      "product": "eg.DCE",
+      "net_pnl": -14820.0
+    },
+    {
+      "product": "SF.CZCE",
+      "net_pnl": -15320.0
+    },
+    {
+      "product": "AP.CZCE",
+      "net_pnl": -22560.0
+    },
+    {
+      "product": "pg.DCE",
+      "net_pnl": -22960.0
+    },
+    {
+      "product": "OI.CZCE",
+      "net_pnl": -52200.0
+    }
+  ],
+  "limitations": [
+    "44 fixed retrospective pool, with no in-sample tuning; 2022 results describe that one period.",
+    "Standalone accounts use independent capital and physical close marks. Summed values do not model a shared account.",
+    "Static margin, zero commissions, and theoretical open prints; no exchange queue simulation.",
+    "Unavailable physical bars remain gaps; no prices imputed."
+  ]
+}

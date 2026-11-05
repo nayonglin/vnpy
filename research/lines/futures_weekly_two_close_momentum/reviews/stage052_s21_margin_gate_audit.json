@@ -1,0 +1,820 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "attempted": 24,
+  "completed": 24,
+  "unknown": 0,
+  "manifest_entries": {
+    "stage052_s21_margin_gate_20261104": 338,
+    "stage051_s21_halfyear_20261104": 314
+  },
+  "manifest_sha256": "40fc03ceb24a07d65be55c5aefe993fcc16c6cd7ccb51c55f3ae359974520051",
+  "pinned_inputs": 42,
+  "checked_rows": {
+    "days": 35453,
+    "fills": 54613,
+    "cycles": 20399,
+    "opening_snapshots": 90066,
+    "signals": 40619,
+    "one_price_exits": 14,
+    "nonpositive_days": 0,
+    "entries": 20399,
+    "stops": 19090,
+    "rolls": 7096,
+    "guard_exits": 867
+  },
+  "no_rejection_exact_ledger_windows": [
+    "2015-01-01",
+    "2015-07-01",
+    "2016-01-01",
+    "2016-07-01"
+  ],
+  "checked_gate_decisions": {
+    "filled": {
+      "fixed_entry": 14434,
+      "reversal": 5965,
+      "roll": 7096
+    },
+    "margin_below_one_lot": {
+      "fixed_entry": 944,
+      "reversal": 44,
+      "roll": 65
+    }
+  },
+  "exact_funding_equalities": {},
+  "old_before_already_negative": {
+    "entry": 1120,
+    "roll_open": 325
+  },
+  "old_unaffordable_open_fills": {
+    "entry": 1379,
+    "roll_open": 408
+  },
+  "old_nonnegative_but_below_requirement": {
+    "entry": 259,
+    "roll_open": 83
+  },
+  "old_unaffordable_unique_date_product_reason_epoch_side": 870,
+  "funding_deficit_windows": {
+    "s21": 20,
+    "gated": 19
+  },
+  "gated_nonpositive_equity_windows": 0,
+  "windows": [
+    {
+      "start": "2015-01-01",
+      "s21_equity": 1555725.0,
+      "gated_equity": 1555725.0,
+      "s21_deficit_days": 0,
+      "gated_deficit_days": 0,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 118595.0,
+      "gated_worst": {
+        "date": "2015-04-27",
+        "fill_sequence": 9,
+        "product": "p.DCE",
+        "reason": "entry",
+        "equity": 121685.0,
+        "margin": 106979.4,
+        "free_equity": 14705.6,
+        "positions": 11
+      },
+      "old_already_negative": {},
+      "old_unaffordable_fills": {},
+      "denied": {
+        "fixed_entry": 0,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2015-07-01",
+      "s21_equity": 1551960.0,
+      "gated_equity": 1551960.0,
+      "s21_deficit_days": 0,
+      "gated_deficit_days": 0,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 137915.0,
+      "gated_worst": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 174210.0,
+        "margin": 140790.9,
+        "free_equity": 33419.1,
+        "positions": 13
+      },
+      "old_already_negative": {},
+      "old_unaffordable_fills": {},
+      "denied": {
+        "fixed_entry": 0,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2016-01-01",
+      "s21_equity": 1549035.0,
+      "gated_equity": 1549035.0,
+      "s21_deficit_days": 0,
+      "gated_deficit_days": 0,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 136020.0,
+      "gated_worst": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 171285.0,
+        "margin": 140790.9,
+        "free_equity": 30494.1,
+        "positions": 13
+      },
+      "old_already_negative": {},
+      "old_unaffordable_fills": {},
+      "denied": {
+        "fixed_entry": 0,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2016-07-01",
+      "s21_equity": 1541755.0,
+      "gated_equity": 1541755.0,
+      "s21_deficit_days": 0,
+      "gated_deficit_days": 0,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 143000.0,
+      "gated_worst": {
+        "date": "2020-05-18",
+        "fill_sequence": 3,
+        "product": "au.SHFE",
+        "reason": "entry",
+        "equity": 164005.0,
+        "margin": 140790.9,
+        "free_equity": 23214.1,
+        "positions": 13
+      },
+      "old_already_negative": {},
+      "old_unaffordable_fills": {},
+      "denied": {
+        "fixed_entry": 0,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2017-01-01",
+      "s21_equity": 1422525.0,
+      "gated_equity": 1369285.0,
+      "s21_deficit_days": 303,
+      "gated_deficit_days": 62,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 50955.0,
+      "gated_worst": {
+        "date": "2020-03-25",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 60940.0,
+        "margin": 97904.1,
+        "free_equity": -36964.1,
+        "positions": 11
+      },
+      "old_already_negative": {
+        "entry": 91,
+        "roll_open": 17
+      },
+      "old_unaffordable_fills": {
+        "entry": 136,
+        "roll_open": 32
+      },
+      "denied": {
+        "fixed_entry": 64,
+        "reversal": 6,
+        "roll": 3
+      }
+    },
+    {
+      "start": "2017-07-01",
+      "s21_equity": 1433005.0,
+      "gated_equity": 1413320.0,
+      "s21_deficit_days": 201,
+      "gated_deficit_days": 44,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 54920.0,
+      "gated_worst": {
+        "date": "2020-02-03",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 103005.0,
+        "margin": 122795.4,
+        "free_equity": -19790.4,
+        "positions": 12
+      },
+      "old_already_negative": {
+        "entry": 45,
+        "roll_open": 13
+      },
+      "old_unaffordable_fills": {
+        "entry": 79,
+        "roll_open": 19
+      },
+      "denied": {
+        "fixed_entry": 50,
+        "reversal": 5,
+        "roll": 2
+      }
+    },
+    {
+      "start": "2018-01-01",
+      "s21_equity": 1480275.0,
+      "gated_equity": 1440735.0,
+      "s21_deficit_days": 29,
+      "gated_deficit_days": 2,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 99875.0,
+      "gated_worst": {
+        "date": "2020-03-25",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 118310.0,
+        "margin": 121280.1,
+        "free_equity": -2970.1,
+        "positions": 12
+      },
+      "old_already_negative": {
+        "entry": 9
+      },
+      "old_unaffordable_fills": {
+        "entry": 12,
+        "roll_open": 1
+      },
+      "denied": {
+        "fixed_entry": 3,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2018-07-01",
+      "s21_equity": 1437410.0,
+      "gated_equity": 1435460.0,
+      "s21_deficit_days": 131,
+      "gated_deficit_days": 55,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 50235.0,
+      "gated_worst": {
+        "date": "2020-03-25",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 59330.0,
+        "margin": 95670.6,
+        "free_equity": -36340.6,
+        "positions": 10
+      },
+      "old_already_negative": {
+        "entry": 37,
+        "roll_open": 12
+      },
+      "old_unaffordable_fills": {
+        "entry": 55,
+        "roll_open": 16
+      },
+      "denied": {
+        "fixed_entry": 50,
+        "reversal": 5,
+        "roll": 2
+      }
+    },
+    {
+      "start": "2019-01-01",
+      "s21_equity": 1456500.0,
+      "gated_equity": 1356005.0,
+      "s21_deficit_days": 51,
+      "gated_deficit_days": 34,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 62720.0,
+      "gated_worst": {
+        "date": "2020-08-12",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 108010.0,
+        "margin": 139756.4,
+        "free_equity": -31746.4,
+        "positions": 14
+      },
+      "old_already_negative": {
+        "entry": 17,
+        "roll_open": 2
+      },
+      "old_unaffordable_fills": {
+        "entry": 24,
+        "roll_open": 4
+      },
+      "denied": {
+        "fixed_entry": 36,
+        "reversal": 3,
+        "roll": 8
+      }
+    },
+    {
+      "start": "2019-07-01",
+      "s21_equity": 1429590.0,
+      "gated_equity": 1368420.0,
+      "s21_deficit_days": 121,
+      "gated_deficit_days": 36,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 50145.0,
+      "gated_worst": {
+        "date": "2020-03-25",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 59240.0,
+        "margin": 95670.6,
+        "free_equity": -36430.6,
+        "positions": 10
+      },
+      "old_already_negative": {
+        "entry": 34,
+        "roll_open": 6
+      },
+      "old_unaffordable_fills": {
+        "entry": 50,
+        "roll_open": 9
+      },
+      "denied": {
+        "fixed_entry": 42,
+        "reversal": 3,
+        "roll": 2
+      }
+    },
+    {
+      "start": "2020-01-01",
+      "s21_equity": 1461075.0,
+      "gated_equity": 1394775.0,
+      "s21_deficit_days": 36,
+      "gated_deficit_days": 27,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 63705.0,
+      "gated_worst": {
+        "date": "2020-03-25",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 73160.0,
+        "margin": 97904.1,
+        "free_equity": -24744.1,
+        "positions": 11
+      },
+      "old_already_negative": {
+        "roll_open": 2,
+        "entry": 14
+      },
+      "old_unaffordable_fills": {
+        "entry": 17,
+        "roll_open": 2
+      },
+      "denied": {
+        "fixed_entry": 23,
+        "reversal": 3,
+        "roll": 3
+      }
+    },
+    {
+      "start": "2020-07-01",
+      "s21_equity": 1426560.0,
+      "gated_equity": 1430920.0,
+      "s21_deficit_days": 1,
+      "gated_deficit_days": 0,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 144145.0,
+      "gated_worst": {
+        "date": "2021-04-26",
+        "fill_sequence": 4,
+        "product": "lh.DCE",
+        "reason": "entry",
+        "equity": 261255.0,
+        "margin": 246682.0,
+        "free_equity": 14573.0,
+        "positions": 16
+      },
+      "old_already_negative": {},
+      "old_unaffordable_fills": {
+        "entry": 1
+      },
+      "denied": {
+        "fixed_entry": 1,
+        "reversal": 0,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2021-01-01",
+      "s21_equity": 1366295.0,
+      "gated_equity": 1332520.0,
+      "s21_deficit_days": 22,
+      "gated_deficit_days": 4,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 122000.0,
+      "gated_worst": {
+        "date": "2021-05-24",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 123960.0,
+        "margin": 141080.2,
+        "free_equity": -17120.2,
+        "positions": 12
+      },
+      "old_already_negative": {
+        "entry": 7,
+        "roll_open": 3
+      },
+      "old_unaffordable_fills": {
+        "entry": 14,
+        "roll_open": 4
+      },
+      "denied": {
+        "fixed_entry": 11,
+        "reversal": 1,
+        "roll": 0
+      }
+    },
+    {
+      "start": "2021-07-01",
+      "s21_equity": 1283960.0,
+      "gated_equity": 1138775.0,
+      "s21_deficit_days": 20,
+      "gated_deficit_days": 20,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 136605.0,
+      "gated_worst": {
+        "date": "2021-11-24",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 220410.0,
+        "margin": 241434.35,
+        "free_equity": -21024.35,
+        "positions": 17
+      },
+      "old_already_negative": {
+        "entry": 7,
+        "roll_open": 4
+      },
+      "old_unaffordable_fills": {
+        "entry": 10,
+        "roll_open": 8
+      },
+      "denied": {
+        "fixed_entry": 18,
+        "reversal": 0,
+        "roll": 4
+      }
+    },
+    {
+      "start": "2022-01-01",
+      "s21_equity": 1067075.0,
+      "gated_equity": 1049845.0,
+      "s21_deficit_days": 91,
+      "gated_deficit_days": 16,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 137860.0,
+      "gated_worst": {
+        "date": "2023-09-05",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 215485.0,
+        "margin": 229211.15,
+        "free_equity": -13726.15,
+        "positions": 18
+      },
+      "old_already_negative": {
+        "entry": 41,
+        "roll_open": 9
+      },
+      "old_unaffordable_fills": {
+        "entry": 57,
+        "roll_open": 13
+      },
+      "denied": {
+        "fixed_entry": 14,
+        "reversal": 1,
+        "roll": 3
+      }
+    },
+    {
+      "start": "2022-07-01",
+      "s21_equity": 878660.0,
+      "gated_equity": 678980.0,
+      "s21_deficit_days": 600,
+      "gated_deficit_days": 134,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 57620.0,
+      "gated_worst": {
+        "date": "2026-02-02",
+        "equity": 214475.0,
+        "margin": 287076.5,
+        "positions": 17,
+        "free_equity": -72601.5,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 353,
+        "roll_open": 120
+      },
+      "old_unaffordable_fills": {
+        "entry": 374,
+        "roll_open": 134
+      },
+      "denied": {
+        "fixed_entry": 254,
+        "reversal": 5,
+        "roll": 13
+      }
+    },
+    {
+      "start": "2023-01-01",
+      "s21_equity": 1045215.0,
+      "gated_equity": 1039655.0,
+      "s21_deficit_days": 112,
+      "gated_deficit_days": 26,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 106135.0,
+      "gated_worst": {
+        "date": "2023-06-15",
+        "equity": 200780.0,
+        "margin": 219851.25,
+        "positions": 16,
+        "free_equity": -19071.25,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 61,
+        "roll_open": 16
+      },
+      "old_unaffordable_fills": {
+        "entry": 72,
+        "roll_open": 19
+      },
+      "denied": {
+        "fixed_entry": 22,
+        "reversal": 2,
+        "roll": 3
+      }
+    },
+    {
+      "start": "2023-07-01",
+      "s21_equity": 997495.0,
+      "gated_equity": 1001470.0,
+      "s21_deficit_days": 113,
+      "gated_deficit_days": 7,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 142865.0,
+      "gated_worst": {
+        "date": "2024-04-23",
+        "equity": 222885.0,
+        "margin": 233168.55,
+        "positions": 17,
+        "free_equity": -10283.55,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 52,
+        "roll_open": 16
+      },
+      "old_unaffordable_fills": {
+        "entry": 67,
+        "roll_open": 24
+      },
+      "denied": {
+        "fixed_entry": 19,
+        "reversal": 0,
+        "roll": 1
+      }
+    },
+    {
+      "start": "2024-01-01",
+      "s21_equity": 896660.0,
+      "gated_equity": 678685.0,
+      "s21_deficit_days": 229,
+      "gated_deficit_days": 77,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 71600.0,
+      "gated_worst": {
+        "date": "2026-02-02",
+        "equity": 214180.0,
+        "margin": 287076.5,
+        "positions": 17,
+        "free_equity": -72896.5,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 144,
+        "roll_open": 35
+      },
+      "old_unaffordable_fills": {
+        "entry": 164,
+        "roll_open": 42
+      },
+      "denied": {
+        "fixed_entry": 125,
+        "reversal": 3,
+        "roll": 9
+      }
+    },
+    {
+      "start": "2024-07-01",
+      "s21_equity": 878460.0,
+      "gated_equity": 754845.0,
+      "s21_deficit_days": 135,
+      "gated_deficit_days": 19,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 134225.0,
+      "gated_worst": {
+        "date": "2024-10-10",
+        "equity": 153745.0,
+        "margin": 163984.4,
+        "positions": 14,
+        "free_equity": -10239.4,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 81,
+        "roll_open": 25
+      },
+      "old_unaffordable_fills": {
+        "entry": 98,
+        "roll_open": 33
+      },
+      "denied": {
+        "fixed_entry": 38,
+        "reversal": 1,
+        "roll": 1
+      }
+    },
+    {
+      "start": "2025-01-01",
+      "s21_equity": 890320.0,
+      "gated_equity": 756515.0,
+      "s21_deficit_days": 49,
+      "gated_deficit_days": 6,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 149205.0,
+      "gated_worst": {
+        "date": "2025-08-04",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 198125.0,
+        "margin": 203940.45,
+        "free_equity": -5815.45,
+        "positions": 17
+      },
+      "old_already_negative": {
+        "entry": 32,
+        "roll_open": 5
+      },
+      "old_unaffordable_fills": {
+        "entry": 38,
+        "roll_open": 7
+      },
+      "denied": {
+        "fixed_entry": 13,
+        "reversal": 0,
+        "roll": 1
+      }
+    },
+    {
+      "start": "2025-07-01",
+      "s21_equity": 800265.0,
+      "gated_equity": 665735.0,
+      "s21_deficit_days": 38,
+      "gated_deficit_days": 9,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 143410.0,
+      "gated_worst": {
+        "date": "2026-02-02",
+        "equity": 201230.0,
+        "margin": 287076.5,
+        "positions": 17,
+        "free_equity": -85846.5,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 21,
+        "roll_open": 9
+      },
+      "old_unaffordable_fills": {
+        "entry": 26,
+        "roll_open": 9
+      },
+      "denied": {
+        "fixed_entry": 12,
+        "reversal": 1,
+        "roll": 2
+      }
+    },
+    {
+      "start": "2026-01-01",
+      "s21_equity": 543985.0,
+      "gated_equity": 52685.0,
+      "s21_deficit_days": 47,
+      "gated_deficit_days": 60,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 17460.0,
+      "gated_worst": {
+        "date": "2026-02-02",
+        "equity": 92415.0,
+        "margin": 229741.7,
+        "positions": 13,
+        "free_equity": -137326.7,
+        "reason": "close_mark"
+      },
+      "old_already_negative": {
+        "entry": 29,
+        "roll_open": 17
+      },
+      "old_unaffordable_fills": {
+        "entry": 36,
+        "roll_open": 18
+      },
+      "denied": {
+        "fixed_entry": 116,
+        "reversal": 4,
+        "roll": 8
+      }
+    },
+    {
+      "start": "2026-07-01",
+      "s21_equity": 338335.0,
+      "gated_equity": 219055.0,
+      "s21_deficit_days": 50,
+      "gated_deficit_days": 14,
+      "gated_nonpositive_days": 0,
+      "gated_zero_equity_close_dates": [],
+      "gated_minimum_equity": 100675.0,
+      "gated_worst": {
+        "date": "2026-07-20",
+        "fill_sequence": 0,
+        "product": "",
+        "reason": "before_fills",
+        "equity": 122745.0,
+        "margin": 134486.65,
+        "free_equity": -11741.65,
+        "positions": 8
+      },
+      "old_already_negative": {
+        "entry": 45,
+        "roll_open": 14
+      },
+      "old_unaffordable_fills": {
+        "entry": 49,
+        "roll_open": 14
+      },
+      "denied": {
+        "fixed_entry": 33,
+        "reversal": 1,
+        "roll": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Gate applies at each ordinary entry, conditional reversal entry and roll open; exits remain allowed.",
+    "Static margin and daily opening prices, with last available close when an existing position lacks an opening price.",
+    "Funding deficits can arise on existing holdings after price changes; no forced liquidation is modeled.",
+    "Zero commissions and opening prints without a queue model.",
+    "Overlapping windows reuse historical events."
+  ]
+}

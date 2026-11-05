@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "stage": "Stage065",
+  "line_id": "futures_weekly_two_close_momentum",
+  "reviewer": "independent_agent_s21_backup_review",
+  "reviewed_at": "2026-11-05T15:08:21.596479+08:00",
+  "verdict": "PASS_RESEARCH_BACKUP_INTEGRITY",
+  "blockers": [],
+  "scope": "当前 Stage060/S21_20w 冻结研究资料、全研究线输出与源码、父 stop_reversal 输出、35 项市场输入、两项父证据及 Stage061/063/064 复盘的本地备份完整性、安全恢复设计与敏感信息风险。不是策略经济性重审、生产资格或远端推送验收。",
+  "snapshot_manifest": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/manifest.json",
+  "snapshot_manifest_sha256": "16dd76024ad3d398c2a1dc39e83908ab818e5c39346b0051da3bfd18e65607b7",
+  "source_file_integrity": {
+    "status": "PASS",
+    "verified_files": 10909,
+    "verified_bytes": 1743394097,
+    "source_hash_or_size_mismatches": 0,
+    "source_symlinks": 0
+  },
+  "code_integrity": {
+    "status": "PASS",
+    "verified_code_files": 290,
+    "hash_or_size_mismatches": 0,
+    "new_audit_intentionally_outside_frozen_code_manifest": true
+  },
+  "archive_integrity": {
+    "status": "PASS",
+    "parts": 8,
+    "verified_part_hashes": 8,
+    "maximum_part_bytes": 47185920,
+    "allowed_maximum_part_bytes": 47185920,
+    "part_size_violations": 0,
+    "archive_bytes": 368303330,
+    "archive_sha256": "ebcd4c6b6e8e6272e0b6024da08032c44f71e139ae5f3376057c1a00b7ac3277",
+    "verified_archive_members": 10909,
+    "verified_member_bytes": 1743394097,
+    "missing_members": 0,
+    "duplicate_or_unplanned_members": 0,
+    "non_regular_members": 0,
+    "member_hash_or_size_mismatches": 0,
+    "verification_method": "独立拼接输入流并逐一读取 tar/gzip 每个成员，计算原始内容 SHA256，与 manifest 比对；不调用打包器或策略入口。"
+  },
+  "dependency_coverage": {
+    "status": "PASS",
+    "scoped_output_files": 10898,
+    "missing_scoped_outputs": 0,
+    "current_market_pins": 35,
+    "current_source_pins": 7,
+    "required_parent_proofs": 2,
+    "missing_current_dependencies": 0,
+    "parent_proofs": [
+      "research/lines/futures_weekly19_stop_reversal/outputs/stage003_D_20261103_attempt01/inputs.json",
+      "research/lines/futures_weekly19_stop_reversal/outputs/stage003_independent_review.json"
+    ],
+    "git_history_dependency": "共享 renderer 顶层导入官方配置；正常完整 Git clone 保留仓库已有 CURRENT、release manifest 与 release commit。BACKUP.md 已说明，不能仅凭研究目录 ZIP 或缺历史对象的浅克隆复现入口。",
+    "absolute_path_boundary": "冻结 inputs/receipt 和 ARCHIVE 常量含旧绝对路径。restore_s21_backup.py 输出 recovery-path-map.json，不改写证据，不自动建立别名。跨机器复跑需恢复旧路径或另行核验迁移适配。"
+  },
+  "restore_tool_review": {
+    "status": "PASS",
+    "source_sha256": "292484be5d767c2bc1e263c71358a1fb2e472ecc9e50eb90a98ab709adc1d129",
+    "packer_sha256": "2b8293e3ba998408f818afb7ce2260f37216071a84ff2ddb89a7a3d64ece126e",
+    "test_sha256": "80f9a90f5eb727e66c59566c0e48601d0fd695c7c4fc6c1de02fa22834a952e7",
+    "independently_run_tests": 3,
+    "passed_tests": 3,
+    "tests": [
+      "分卷恢复内容和路径映射、拒绝覆盖已有目录",
+      "分卷损坏在解压前拒绝",
+      "路径穿越拒绝"
+    ],
+    "safety_observations": [
+      "仅向用户提供的不存在目标目录写入；逐分卷与合并归档先验哈希。",
+      "归档成员必须是 manifest 中唯一普通文件，显式拒绝绝对路径、父路径及非规范相对路径，逐成员哈希匹配。",
+      "手工逐文件复制，不使用 tar.extractall；不执行归档内容、不联机、不读取账号或环境配置。",
+      "失败可能留下没有成功回执的部分目标目录；工具不会把它标记为 PASS，也不会覆盖该目录重试。"
+    ]
+  },
+  "credential_risk_review": {
+    "status": "NO_HIGH_CONFIDENCE_FINDINGS",
+    "initial_review_candidate_files": 10755,
+    "initial_review_text_files": 10712,
+    "expanded_parent_output_candidate_files": 433,
+    "expanded_parent_output_text_files": 432,
+    "high_confidence_findings": 0,
+    "sensitive_filenames": 0,
+    "patterns": [
+      "私钥头",
+      "GitHub/AWS token 格式",
+      "含口令 URL",
+      "非占位 password/api key/token 等字面量赋值"
+    ],
+    "binary_market_database": {
+      "path": "research/lines/futures_weekly19_stop_reversal/outputs/stage002_data/data_approved/daily.sqlite",
+      "verification": "以 mode=ro&immutable=1 只读检查 schema；仅行情 bar/tick 数据与 overview 表，无账户或凭证表。未读取行情库之外的任何数据库。",
+      "tables": [
+        "dbbardata",
+        "dbbaroverview",
+        "dbtickdata",
+        "dbtickoverview"
+      ]
+    },
+    "limitation": "模式扫描与行情库 schema 审查不等于对任意未知编码秘密的数学证明；没有发现需要排除的真实凭证。"
+  },
+  "findings": [],
+  "actions": {
+    "strategy_replayed": false,
+    "strategy_modified": false,
+    "market_downloaded": false,
+    "account_or_environment_credentials_read": false,
+    "production_runtime_read": false,
+    "pushed_to_remote": false,
+    "existing_frozen_files_modified": false,
+    "new_file_only": "research/lines/futures_weekly_two_close_momentum/reviews/stage065_backup_audit.json"
+  },
+  "conclusion": "当前本地备份按内容、依赖和逐成员哈希完整通过，可继续授权的研究分支提交与远端回读验收。远端存在性、远端分卷内容与远端恢复须由后续实际证据确认；本证书不冒充远端完成证明。",
+  "resolved_findings": [
+    {
+      "severity": "LOW",
+      "file": "research/lines/futures_weekly_two_close_momentum/BACKUP.md",
+      "description": "此前“小于 45 MiB”文案已更正为“不超过 45 MiB”；BACKUP.md 大小和 SHA256 与更新后的 manifest code_files 一致。",
+      "status": "RESOLVED"
+    }
+  ],
+  "followup_verification": {
+    "documentation_and_code_manifest": "PASS",
+    "all_8_parts_rehashed": "PASS",
+    "archive_sha256_identity_unchanged": true,
+    "other_frozen_files_modified_by_reviewer": false
+  }
+}

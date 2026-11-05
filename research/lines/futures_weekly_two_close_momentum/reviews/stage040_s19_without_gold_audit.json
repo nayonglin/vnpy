@@ -1,0 +1,204 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "windows": 23,
+  "unknown": 0,
+  "manifest_entries": {
+    "stage037_s19_fixed_one_150k_20261104": 15,
+    "stage038_s19_fixed_one_150k_halfyear_20261104": 288,
+    "stage040_s19_without_gold_20261104": 301
+  },
+  "manifest_sha256": "411e7c894aaa138441616610cd7074765d8b6140c8996a6b78adad49821b1bb8",
+  "pinned_inputs": 38,
+  "checked_rows": {
+    "s19_days": 32697,
+    "s19_fills": 45951,
+    "s19_cycles": 17213,
+    "s19_opening": 78648,
+    "s19_signals": 33515,
+    "s19_nonpositive_days": 82,
+    "no_gold_days": 32697,
+    "no_gold_fills": 43478,
+    "no_gold_cycles": 16252,
+    "no_gold_opening": 76175,
+    "no_gold_signals": 31730,
+    "no_gold_nonpositive_days": 96
+  },
+  "unchanged_non_gold_rows": {
+    "fills": 43478,
+    "cycles": 16252,
+    "signals": 31730,
+    "gaps": 1001,
+    "entry_filter": 20370,
+    "week_body_filter": 22407,
+    "four_up_blocks": 837
+  },
+  "windows_funding": [
+    {
+      "start": "2015-01-01",
+      "s19_deficit_days": 0,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2016-01-01",
+      "s19_deficit_days": 0,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2016-07-01",
+      "s19_deficit_days": 0,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2017-01-01",
+      "s19_deficit_days": 299,
+      "no_gold_deficit_days": 68,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2017-07-01",
+      "s19_deficit_days": 231,
+      "no_gold_deficit_days": 106,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2018-01-01",
+      "s19_deficit_days": 37,
+      "no_gold_deficit_days": 17,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2018-07-01",
+      "s19_deficit_days": 150,
+      "no_gold_deficit_days": 144,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2019-01-01",
+      "s19_deficit_days": 62,
+      "no_gold_deficit_days": 54,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2019-07-01",
+      "s19_deficit_days": 120,
+      "no_gold_deficit_days": 32,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2020-01-01",
+      "s19_deficit_days": 36,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2020-07-01",
+      "s19_deficit_days": 0,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2021-01-01",
+      "s19_deficit_days": 12,
+      "no_gold_deficit_days": 5,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2021-07-01",
+      "s19_deficit_days": 20,
+      "no_gold_deficit_days": 0,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2022-01-01",
+      "s19_deficit_days": 156,
+      "no_gold_deficit_days": 43,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2022-07-01",
+      "s19_deficit_days": 493,
+      "no_gold_deficit_days": 376,
+      "s19_nonpositive_days": 82,
+      "no_gold_nonpositive_days": 59
+    },
+    {
+      "start": "2023-01-01",
+      "s19_deficit_days": 69,
+      "no_gold_deficit_days": 21,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2023-07-01",
+      "s19_deficit_days": 56,
+      "no_gold_deficit_days": 19,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2024-01-01",
+      "s19_deficit_days": 152,
+      "no_gold_deficit_days": 101,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2024-07-01",
+      "s19_deficit_days": 108,
+      "no_gold_deficit_days": 16,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2025-01-01",
+      "s19_deficit_days": 36,
+      "no_gold_deficit_days": 25,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2025-07-01",
+      "s19_deficit_days": 32,
+      "no_gold_deficit_days": 61,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    },
+    {
+      "start": "2026-01-01",
+      "s19_deficit_days": 30,
+      "no_gold_deficit_days": 171,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 37
+    },
+    {
+      "start": "2026-07-01",
+      "s19_deficit_days": 43,
+      "no_gold_deficit_days": 37,
+      "s19_nonpositive_days": 0,
+      "no_gold_nonpositive_days": 0
+    }
+  ],
+  "limitations": [
+    "Overlapping historical windows and retrospective exclusion of gold",
+    "Static margin and simulated opening prints with zero commission",
+    "Theoretical fills continue after shortages and nonpositive equity",
+    "Sharpe is mechanically reproducible but not economically interpretable after crossing zero"
+  ]
+}

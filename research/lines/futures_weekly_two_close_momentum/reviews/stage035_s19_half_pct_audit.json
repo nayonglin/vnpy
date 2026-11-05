@@ -1,0 +1,150 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "output_manifest_sha": "b1225ec06ebd2fe1b3f58b9fc352ab7a2dfd9e3826beacca535b020d065747c1",
+  "hashes": {
+    "stage033": 158,
+    "stage035": 27
+  },
+  "pins": 40,
+  "opening_rows": 4607,
+  "sizing_rows": 2231,
+  "sizing_outcomes": {
+    "filled": 822,
+    "risk_below_one_lot": 1138,
+    "at_or_through_stop": 9,
+    "margin_capped": 1
+  },
+  "roll_outcomes": {
+    "filled": 261
+  },
+  "reversals": {
+    "considered": 229,
+    "executed": 164
+  },
+  "pre_sizing_rejections": {
+    "entry_delivery_guard": 10,
+    "entry_open_unavailable": 2
+  },
+  "candidate_summary": {
+    "start": "2015-01-05",
+    "end": "2026-11-04",
+    "days": 2875,
+    "initial": 300000,
+    "equity": 808265.0,
+    "net_pnl": 508265.0,
+    "return_pct": 169.42166666666665,
+    "max_dd_pct": -34.03650426449353,
+    "sharpe": 0.6096550271312356,
+    "fills": 2157,
+    "one_price_exits": 0,
+    "rolls": 261,
+    "closed_cycles": 812,
+    "wins": 277,
+    "losses": 534,
+    "win_rate_pct": 34.11330049261084,
+    "payoff": 2.3102261531893373,
+    "profit_factor": 1.1983757386394127,
+    "slippage": 79390.0,
+    "commission": 0.0,
+    "net_pnl_double_slippage_same_path": 428875.0,
+    "peak_margin": 600567.4,
+    "peak_margin_ratio_pct": 92.79229381763902,
+    "days_margin_above_equity": 0,
+    "open_positions": 11,
+    "pending_signals": 0,
+    "long_pnl": 30255.0,
+    "short_pnl": 478010.0,
+    "terminal_open_net_pnl": 175575.0,
+    "gaps": {
+      "weekly_history_incomplete": 195,
+      "entry_delivery_guard": 10,
+      "held_close_stale": 1,
+      "entry_open_unavailable": 2,
+      "roll_open_pair_or_history_unavailable": 1
+    }
+  },
+  "fixed_summary": {
+    "start": "2015-01-05",
+    "end": "2026-11-04",
+    "days": 2875,
+    "initial": 300000,
+    "equity": 1633830.0,
+    "net_pnl": 1333830.0,
+    "return_pct": 444.61,
+    "max_dd_pct": -37.74199890317974,
+    "sharpe": 0.7686399854128552,
+    "fills": 3499,
+    "one_price_exits": 1,
+    "rolls": 442,
+    "closed_cycles": 1300,
+    "wins": 470,
+    "losses": 829,
+    "win_rate_pct": 36.15384615384615,
+    "payoff": 2.5379186238016063,
+    "profit_factor": 1.4388682185606212,
+    "slippage": 90390.0,
+    "commission": 0.0,
+    "net_pnl_double_slippage_same_path": 1243440.0,
+    "peak_margin": 311920.0,
+    "peak_margin_ratio_pct": 43.18767822080139,
+    "days_margin_above_equity": 0,
+    "open_positions": 15,
+    "pending_signals": 0,
+    "long_pnl": 666700.0,
+    "short_pnl": 667130.0,
+    "terminal_open_net_pnl": 182005.0,
+    "gaps": {
+      "weekly_history_incomplete": 193,
+      "entry_delivery_guard": 8,
+      "held_close_stale": 1,
+      "roll_open_pair_or_history_unavailable": 4,
+      "entry_open_unavailable": 2
+    }
+  },
+  "max_candidate_nominal_initial_risk_pct": 0.49980921568224246,
+  "peak_candidate_trade_lots": 21,
+  "peak_candidate_daily_lots": 78,
+  "peak_candidate_daily_products": 16,
+  "peak_fixed_daily_products": 18,
+  "min_opening_free": {
+    "date": "2024-06-11",
+    "after_product": "au.SHFE",
+    "free_cash": 50805.4,
+    "margin": 627774.6,
+    "equity": 678580.0
+  },
+  "min_candidate_daily_free": {
+    "date": "2024-06-11",
+    "margin": 596765.8,
+    "equity": 643120.0
+  },
+  "peak_candidate_open_margin_ratio_pct": 92.51298299389903,
+  "margin_capped_orders": [
+    {
+      "date": "2024-06-11",
+      "product": "au.SHFE",
+      "contract": "au2408.SHFE",
+      "epoch": "SHFE.AU.202408",
+      "kind": "entry",
+      "signal_day": "2024-06-07",
+      "side": 1,
+      "price": 548.84,
+      "stop": 548.82,
+      "equity": 678780.0,
+      "margin": 78934.6,
+      "free_cash": 599845.4,
+      "risk_budget": 2999.227,
+      "risk_per_lot": 20.0,
+      "margin_per_lot": 54884.0,
+      "entry_cost_per_lot": 20.0,
+      "requested_lots": 149,
+      "affordable_lots": 10,
+      "executed_lots": 10,
+      "status": "margin_capped"
+    }
+  ],
+  "terminal_day_delta": {
+    "fixed_one": -27825.0,
+    "cash_risk_0_5pct": -9225.0
+  }
+}

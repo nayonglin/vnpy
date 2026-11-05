@@ -15,11 +15,11 @@ import subprocess
 import sys
 import time
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
 from plotly.offline import get_plotlyjs
-from tqsdk import BacktestFinished, TqApi, TqAuth, TqBacktest, TqSim
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -27,16 +27,11 @@ EXAMPLES_DIR = REPO_ROOT / "examples" / "portfolio_backtesting"
 if str(EXAMPLES_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLES_DIR))
 
-import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513  # noqa: E402
-import analyze_qmt_roll_stage719_official_winner_trade_forensics as s719  # noqa: E402
-import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901  # noqa: E402
 from qmt_roll_official_live_config import (  # noqa: E402
     OFFICIAL_LIVE_ALIAS,
     OFFICIAL_LIVE_CAPITAL,
     OFFICIAL_LIVE_VERSION,
 )
-from vnpy.trader.setting import SETTINGS  # noqa: E402
-from vnpy.trader.utility import ZoneInfo  # noqa: E402
 
 
 LINE_ID = "futures_trend_winner_trade_forensics"
@@ -274,6 +269,8 @@ def _closed_lots_from_trade_ledger(
     allow_residual_open: bool = False,
     source_prefix: str = "stage037c",
 ) -> pd.DataFrame:
+    import analyze_qmt_roll_stage719_official_winner_trade_forensics as s719
+
     """Reconstruct completed lots from a frozen trade ledger using strict FIFO."""
     normalized_sizes = {str(key).lower(): float(value) for key, value in sizes.items()}
     queues: dict[tuple[str, str], deque[dict[str, Any]]] = {}
@@ -375,6 +372,10 @@ def _latest_completed_date() -> pd.Timestamp:
 
 
 def _run_current_c9(end: pd.Timestamp) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, pd.DataFrame], Any]:
+    import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513
+    import analyze_qmt_roll_stage719_official_winner_trade_forensics as s719
+    import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901
+
     metadata = s513._metadata()
     combined, frames, spec = s901._run_live_c9(metadata, START, end)
     closed = s719._build_closed_lots(
@@ -561,7 +562,11 @@ def _all_trade_episodes(closed: pd.DataFrame) -> pd.DataFrame:
 
 
 def _contract_daily(vt_symbol: str) -> pd.DataFrame:
-    bars = pd.DataFrame() if PREFER_DATABASE_DAILY else s719._read_contract_bars(vt_symbol).copy()
+    bars = pd.DataFrame()
+    if not PREFER_DATABASE_DAILY:
+        import analyze_qmt_roll_stage719_official_winner_trade_forensics as s719
+
+        bars = s719._read_contract_bars(vt_symbol).copy()
     if bars.empty:
         symbol, exchange = vt_symbol.split(".", 1)
         with sqlite3.connect(ACTIVE_DATABASE_PATH) as connection:
@@ -619,6 +624,8 @@ def _main_mapping() -> pd.DataFrame:
 
 
 def _product_calendar(mapping: pd.DataFrame, vt_symbol: str) -> list[pd.Timestamp]:
+    import analyze_qmt_roll_stage719_official_winner_trade_forensics as s719
+
     exchange = str(vt_symbol).split(".", 1)[1]
     product = s719._infer_product(vt_symbol)
     values = mapping[
@@ -636,7 +643,9 @@ def _context_daily(
     *,
     allow_daily_download: bool = True,
     allow_noncritical_daily_gaps: bool = False,
+    recover_local_minutes: bool = True,
     data_end: pd.Timestamp | None = None,
+    held_contract_by_day: dict[pd.Timestamp, str] | None = None,
 ) -> tuple[pd.DataFrame, list[pd.Timestamp]]:
     product_value = str(row.product)
     if "." in product_value:
@@ -743,7 +752,12 @@ def _context_daily(
             or item.date in weekly_display_dates
             or monthly_display
         )
-        source = str(row.vt_symbol) if item.date in exact_by_date.index else str(item.main_contract_vt)
+        if held_contract_by_day is None:
+            source = str(row.vt_symbol) if item.date in exact_by_date.index else str(item.main_contract_vt)
+            context_fallback = source != str(row.vt_symbol)
+        else:
+            source = held_contract_by_day.get(item.date, str(item.main_contract_vt))
+            context_fallback = item.date not in held_contract_by_day
         try:
             source_bars = bars(source)
         except RuntimeError:
@@ -752,7 +766,7 @@ def _context_daily(
             source_bars = pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume"])
             bar_cache[source] = source_bars
         matched = source_bars[source_bars["date"].eq(item.date)]
-        if matched.empty and not allow_daily_download and source not in local_minute_checked:
+        if matched.empty and not allow_daily_download and recover_local_minutes and source not in local_minute_checked:
             local_minute_checked.add(source)
             recovered = _daily_from_existing_minute_files(
                 source,
@@ -790,7 +804,7 @@ def _context_daily(
             raise RuntimeError(f"Missing daily context bar for {row.open_trade_id}: {source} {item.date.date()}.")
         bar = matched.iloc[0].to_dict()
         bar["source_vt_symbol"] = source
-        bar["context_fallback"] = int(source != str(row.vt_symbol))
+        bar["context_fallback"] = int(context_fallback)
         bar["display"] = int(item.date in daily_display_dates)
         bar["weekly_display"] = int(item.date in weekly_display_dates)
         bar["monthly_display"] = int(monthly_display)
@@ -817,6 +831,9 @@ def _normalize_tq_datetime(value: Any) -> pd.Timestamp:
 
 
 def _fetch_15m(vt_symbol: str, start: pd.Timestamp, end: pd.Timestamp) -> tuple[pd.DataFrame, FetchStatus]:
+    from tqsdk import BacktestFinished, TqApi, TqAuth, TqBacktest, TqSim
+    from vnpy.trader.setting import SETTINGS
+
     username = str(SETTINGS.get("datafeed.username", ""))
     password = str(SETTINGS.get("datafeed.password", ""))
     if not username or not password:
@@ -898,6 +915,9 @@ def _fetch_15m(vt_symbol: str, start: pd.Timestamp, end: pd.Timestamp) -> tuple[
 
 
 def _fetch_daily_tq(vt_symbol: str, start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
+    from tqsdk import BacktestFinished, TqApi, TqAuth, TqBacktest, TqSim
+    from vnpy.trader.setting import SETTINGS
+
     username = str(SETTINGS.get("datafeed.username", ""))
     password = str(SETTINGS.get("datafeed.password", ""))
     if not username or not password:
@@ -1587,8 +1607,29 @@ function layoutAxis(prefix,index){return index===0?`${prefix}axis`:`${prefix}axi
 function panelDomains(count,index){const gap=count===1?0:0.024;const height=(1-gap*(count-1))/count;const top=1-index*(height+gap);const bottom=top-height;const volumeHeight=height*.19;const innerGap=height*.035;return {price:[bottom+volumeHeight+innerGap,top],volume:[bottom,bottom+volumeHeight]}}
 function visiblePeriodOptions(meta){return periodOptions.filter(option=>selectedPeriods.has(option.id)&&(option.id!=='intraday'||meta.draw_intraday===1))}
 function updatePeriodNote(meta){const noMinute=meta.draw_intraday!==1;const chip=document.querySelector('[data-chip="intraday"]');chip.classList.toggle('unavailable',noMinute);const skipped=noMinute&&selectedPeriods.has('intraday');let text;if(meta.intraday_selection){const missing=meta.missing_15m_dates.length;const warm=meta.intraday_ma40_warmup_missing_bars||0;text=`${meta.intraday_selection}；${missing?`<span class="warn">${missing}个交易日缺少或不完整15分钟数据</span>`:'15分钟窗口已覆盖'}${warm?`；${warm}根MA40预热不足，保持空值`:''}。`}else{text=skipped?'<span class="warn">当前交易无15分钟数据，已跳过15分钟K；切到已补数交易时恢复。</span>':(noMinute?'当前交易无15分钟数据。':'六个周期均有可用数据。')}document.getElementById('periodNote').innerHTML=text}
+function candleX(record,option,day,actualX){
+ const data=record[option.field];if(!data)return null;
+ // Existing minute records have day-only fill evidence; preserve its coordinate, never invent a fill minute.
+ if(option.kind==='intraday')return actualX;
+ if(typeof day!=='string')return null;
+ let index;
+ if(option.kind==='daily')index=data.date.indexOf(day);
+ else if(option.id==='monthly')index=data.label.findIndex(label=>label===day.slice(0,7));
+ else index=data.label.findIndex(label=>{const bounds=label.match(/\d{4}-\d{2}-\d{2}/g);return bounds&&bounds.length===2&&bounds[0]<=day&&day<=bounds[1]});
+ return index>=0?data.x[index]:null;
+}
 function panelTraces(record,option,panelIndex){const data=record[option.field],xaxis=axisRef('x',panelIndex),priceAxis=axisRef('y',panelIndex*2),volumeAxis=axisRef('y',panelIndex*2+1);let customdata,hovertemplate;if(option.kind==='daily'){customdata=data.date.map((v,i)=>[v,data.source[i]]);hovertemplate='%{customdata[0]} %{customdata[1]}<br>O=%{open} H=%{high}<br>L=%{low} C=%{close}<extra></extra>'}else if(option.kind==='intraday'){customdata=data.datetime.map((v,i)=>[v,data.source[i]]);hovertemplate='%{customdata[0]} %{customdata[1]}<br>O=%{open} H=%{high}<br>L=%{low} C=%{close}<extra></extra>'}else{customdata=data.label;hovertemplate='%{customdata}<br>O=%{open} H=%{high}<br>L=%{low} C=%{close}<extra></extra>'}const width=option.kind==='daily'?.72:(option.kind==='intraday'?undefined:data.width);const candle={type:'candlestick',x:data.x,open:data.open,high:data.high,low:data.low,close:data.close,name:option.name,xaxis,yaxis:priceAxis,showlegend:false,customdata,hovertemplate,increasing:{line:{color:'#d92d20'}},decreasing:{line:{color:'#039855'}}};const traces=[candle];const maColors={5:'#f59e0b',10:'#2563eb',20:'#9333ea',40:'#111827'};[5,10,20,40].forEach(period=>traces.push({type:'scatter',mode:'lines',x:data.x,y:data[`ma${period}`],name:`${option.name} MA${period}`,xaxis,yaxis:priceAxis,showlegend:option.id==='daily',legendgroup:`ma${period}`,line:{color:maColors[period],width:option.kind==='intraday'?1.2:1.4}}));const volumeCustom=option.kind==='daily'?data.date:(option.kind==='intraday'?data.datetime:data.label);traces.push({type:'bar',x:data.x,y:data.volume,width,xaxis,yaxis:volumeAxis,marker:{color:colors(data.open,data.close),opacity:.56},name:option.volumeName,showlegend:false,customdata:volumeCustom,hovertemplate:'%{customdata}<br>Vol=%{y:,.0f}<extra></extra>'});return traces}
-function render(){if(!filtered.length){Plotly.purge('chart');document.getElementById('metrics').innerHTML='<div class="warn">没有符合筛选条件的交易</div>';return}const r=filtered[active],m=r.meta,d=r.daily;tradeEl.value=String(active);updatePeriodNote(m);const visible=visiblePeriodOptions(m);const hasIntraday=m.draw_intraday===1;const missing=hasIntraday?(m.missing_15m_dates.length?`<span class="warn">${m.missing_15m_dates.length}日缺15m</span>`:'完整'):'不绘制';const contextGap=m.missing_context_dates.length?`<span class="warn">${m.missing_context_dates.length}日背景缺口</span>`:'日背景完整';const sourceParts=[];if(m.context_fallback_dates.length)sourceParts.push(`${m.context_fallback_dates.length}日主力代理`);if(m.missing_context_dates.length)sourceParts.push(`${m.missing_context_dates.length}日背景缺口`);const source=sourceParts.length?sourceParts.join('；'):'全程精确合约';const resultLabel=m.result_type==='profit'?'盈利':(m.result_type==='loss'?'亏损':'持平');const priceClass=m.price_change_pct>0?'rise':(m.price_change_pct<0?'fall':'flat');const pnlValue=`${fmt(m.realized_pnl,0)}<span class="submetric ${priceClass}">${m.price_change_label}</span>`;const rankLabel=sortEl.value.startsWith('price_')?'涨跌幅排序':(rankBasis==='realized_pnl'?'盈亏排序':'R排序');const metric=[[rankLabel,`#${active+1}`],['结果',resultLabel],['合约',m.vt_symbol],['方向',m.direction],['净利润',pnlValue],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['分钟/背景',`${missing}<br>${contextGap}`]];document.getElementById('metrics').innerHTML=metric.map(([k,v])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');const chart=document.getElementById('chart');chart.style.height=`${Math.max(720,visible.length*350+100)}px`;if(!visible.length){Plotly.purge('chart');chart.innerHTML='<div class="empty-chart">当前勾选的周期在这笔交易上没有可绘制数据，请再选择一个非分钟周期。</div>';return}let traces=[];visible.forEach((option,index)=>{traces=traces.concat(panelTraces(r,option,index))});const markerPanelIndex=visible.findIndex(option=>option.id==='daily')>=0?visible.findIndex(option=>option.id==='daily'):visible.length-1;traces.push({type:'scatter',mode:'markers',x:[m.entry_x,m.exit_x],y:[m.entry_marker_price,m.exit_marker_price],xaxis:axisRef('x',markerPanelIndex),yaxis:axisRef('y',markerPanelIndex*2),name:'同源成交价格',marker:{symbol:['triangle-up','triangle-down'],size:12,color:['#2563eb','#9333ea']}});const tickStep=Math.max(1,Math.ceil(d.date.length/18)),tickvals=d.x.filter((_,i)=>i%tickStep===0),ticktext=d.date.filter((_,i)=>i%tickStep===0);const switches=m.source_switch_x.map(x=>({type:'line',xref:'x',yref:'paper',x0:x,x1:x,y0:0,y1:1,line:{color:'#98a2b3',width:1,dash:'dash'}}));const layout={title:{text:`${resultLabel} #${active+1} ${m.vt_symbol} ${m.direction}｜${m.entry_date} → ${m.exit_date}｜R=${rfmt(m.r_multiple)}｜PnL=${fmt(m.realized_pnl,0)}｜${m.selection_basis}｜${source}`,x:.01},margin:{l:72,r:28,t:74,b:76},paper_bgcolor:'#fff',plot_bgcolor:'#fff',hovermode:'x unified',showlegend:true,legend:{orientation:'h',y:1.055,x:1,xanchor:'right'},uirevision:m.open_trade_id,shapes:[{type:'rect',xref:'x',yref:'paper',x0:m.entry_x,x1:m.exit_x,y0:0,y1:1,fillcolor:'#fef3c7',opacity:.17,line:{width:0}},{type:'line',xref:'x',yref:'paper',x0:m.entry_x,x1:m.entry_x,y0:0,y1:1,line:{color:'#2563eb',width:1.5,dash:'dot'}},{type:'line',xref:'x',yref:'paper',x0:m.exit_x,x1:m.exit_x,y0:0,y1:1,line:{color:'#9333ea',width:1.5,dash:'dot'}},...switches],annotations:[{xref:'x',yref:'paper',x:m.entry_x,y:1,text:'开仓',showarrow:false,font:{color:'#2563eb'}},{xref:'x',yref:'paper',x:m.exit_x,y:1,text:'平仓',showarrow:false,font:{color:'#9333ea'}}]};visible.forEach((option,index)=>{const domains=panelDomains(visible.length,index),xRef=axisRef('x',index),xKey=layoutAxis('x',index),priceIndex=index*2,volumeIndex=priceIndex+1,priceKey=layoutAxis('y',priceIndex),volumeKey=layoutAxis('y',volumeIndex);layout[xKey]={range:[m.chart_x_start,m.chart_x_end],tickvals,ticktext,tickangle:-35,showticklabels:index===visible.length-1,showgrid:false,rangeslider:{visible:false},anchor:axisRef('y',priceIndex),title:index===visible.length-1?`共享交易日坐标（${visible.length}个周期同步缩放）`:undefined};if(index>0)layout[xKey].matches='x';layout[priceKey]={domain:domains.price,title:option.name,showgrid:true,gridcolor:'#eef1f4',anchor:xRef};layout[volumeKey]={domain:domains.volume,title:option.volumeName.replace('成交',''),showgrid:true,gridcolor:'#f2f4f7',anchor:xRef}});Plotly.react('chart',traces,layout,{responsive:true,displaylogo:false,scrollZoom:true})}
+function render(){const note=document.getElementById('episodeNote');note.textContent=filtered[active]?.meta.episode_note||'';note.hidden=!note.textContent;if(!filtered.length){Plotly.purge('chart');document.getElementById('metrics').innerHTML='<div class="warn">没有符合筛选条件的交易</div>';return}const r=filtered[active],m=r.meta,d=r.daily;tradeEl.value=String(active);updatePeriodNote(m);const visible=visiblePeriodOptions(m);const missingEventNames=[];visible.forEach(option=>{[['entry','开仓'],['exit','平仓']].forEach(([side,label])=>{if(candleX(r,option,m[side+'_date'],m[side+'_x'])===null)missingEventNames.push(option.name+label)})});if(missingEventNames.length)document.getElementById('periodNote').innerHTML+=` <span class="warn">${missingEventNames.join('、')}缺少所属K线，未绘制对应标记。</span>`;const hasIntraday=m.draw_intraday===1;const missing=hasIntraday?(m.missing_15m_dates.length?`<span class="warn">${m.missing_15m_dates.length}日缺15m</span>`:'完整'):'不绘制';const contextGap=m.missing_context_dates.length?`<span class="warn">${m.missing_context_dates.length}日背景缺口</span>`:'日背景完整';const sourceParts=[];if(m.context_fallback_dates.length)sourceParts.push(`${m.context_fallback_dates.length}日主力代理`);if(m.missing_context_dates.length)sourceParts.push(`${m.missing_context_dates.length}日背景缺口`);const source=sourceParts.length?sourceParts.join('；'):'全程精确合约';const resultLabel=m.result_type==='profit'?'盈利':(m.result_type==='loss'?'亏损':'持平');const priceClass=m.price_change_pct>0?'rise':(m.price_change_pct<0?'fall':'flat');const pnlValue=`${fmt(m.realized_pnl,0)}<span class="submetric ${priceClass}">${m.price_change_label}</span>`;const rankLabel=sortEl.value.startsWith('price_')?'涨跌幅排序':(rankBasis==='realized_pnl'?'盈亏排序':'R排序');const metric=[[rankLabel,`#${active+1}`],['结果',resultLabel],['合约',m.vt_symbol],['方向',m.direction],['净利润',pnlValue],['R倍数',rfmt(m.r_multiple)],['平仓lot',m.lot_count],['分钟/背景',`${missing}<br>${contextGap}`]];document.getElementById('metrics').innerHTML=metric.map(([k,v])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');const chart=document.getElementById('chart');chart.style.height=`${Math.max(720,visible.length*350+100)}px`;if(!visible.length){Plotly.purge('chart');chart.innerHTML='<div class="empty-chart">当前勾选的周期在这笔交易上没有可绘制数据，请再选择一个非分钟周期。</div>';return}let traces=[];visible.forEach((option,index)=>{traces=traces.concat(panelTraces(r,option,index))});const markerPanelIndex=visible.findIndex(option=>option.id==='daily')>=0?visible.findIndex(option=>option.id==='daily'):visible.length-1;
+visible.forEach((option,index)=>traces.push({type:'scatter',mode:'markers',x:[candleX(r,option,m.entry_date,m.entry_x),candleX(r,option,m.exit_date,m.exit_x)],y:[m.entry_marker_price,m.exit_marker_price],xaxis:axisRef('x',index),yaxis:axisRef('y',index*2),name:'同源成交价格',legendgroup:'fills',showlegend:index===markerPanelIndex,text:[`开仓 ${m.entry_date}`,`平仓 ${m.exit_date}`],hovertemplate:'%{text}<br>成交价 %{y}<extra></extra>',marker:{symbol:['triangle-up','triangle-down'],size:12,color:['#2563eb','#9333ea']}}));if(m.event_markers?.length){const e=m.event_markers;traces.push({type:'scatter',mode:'markers',x:e.map(v=>candleX(r,visible[markerPanelIndex],r.daily.date[r.daily.x.indexOf(v.x)],v.x)),y:e.map(v=>v.price),xaxis:axisRef('x',markerPanelIndex),yaxis:axisRef('y',markerPanelIndex*2),text:e.map(v=>v.label),hovertemplate:'%{text}<br>%{y}<extra></extra>',name:'关联事件',marker:{symbol:e.map(v=>v.symbol),size:10,color:'#b45309'}})}const tickStep=Math.max(1,Math.ceil(d.date.length/18)),tickvals=d.x.filter((_,i)=>i%tickStep===0),ticktext=d.date.filter((_,i)=>i%tickStep===0);const switches=m.source_switch_x.map(x=>({type:'line',xref:'x',yref:'paper',x0:x,x1:x,y0:0,y1:1,line:{color:'#98a2b3',width:1,dash:'dash'}}));const layout={title:{text:`${resultLabel} #${active+1} ${m.vt_symbol} ${m.direction}｜${m.entry_date} → ${m.exit_date}｜R=${rfmt(m.r_multiple)}｜PnL=${fmt(m.realized_pnl,0)}｜${m.selection_basis}｜${source}`,x:.01},margin:{l:72,r:28,t:74,b:76},paper_bgcolor:'#fff',plot_bgcolor:'#fff',hovermode:'x unified',showlegend:true,legend:{orientation:'h',y:1.055,x:1,xanchor:'right'},uirevision:m.open_trade_id,shapes:[...switches],annotations:[]};visible.forEach((option,index)=>{const domains=panelDomains(visible.length,index),xRef=axisRef('x',index),xKey=layoutAxis('x',index),priceIndex=index*2,volumeIndex=priceIndex+1,priceKey=layoutAxis('y',priceIndex),volumeKey=layoutAxis('y',volumeIndex);layout[xKey]={range:[m.chart_x_start,m.chart_x_end],tickvals,ticktext,tickangle:-35,showticklabels:index===visible.length-1,showgrid:false,rangeslider:{visible:false},anchor:axisRef('y',priceIndex),title:index===visible.length-1?`共享交易日坐标（${visible.length}个周期同步缩放）`:undefined};if(index>0)layout[xKey].matches='x';layout[priceKey]={domain:domains.price,title:option.name,showgrid:true,gridcolor:'#eef1f4',anchor:xRef};layout[volumeKey]={domain:domains.volume,title:option.volumeName.replace('成交',''),showgrid:true,gridcolor:'#f2f4f7',anchor:xRef};
+const entryX=candleX(r,option,m.entry_date,m.entry_x),exitX=candleX(r,option,m.exit_date,m.exit_x);
+if(entryX!==null&&exitX!==null)layout.shapes.push({type:'rect',xref:xRef,yref:'paper',x0:entryX,x1:exitX,y0:domains.volume[0],y1:domains.price[1],fillcolor:'#fef3c7',opacity:.17,line:{width:0}});
+[[entryX,'开仓','#2563eb',m.entry_date],[exitX,'平仓','#9333ea',m.exit_date]].forEach(([x,label,color,day],eventIndex)=>{
+ if(x===null)return;
+ layout.shapes.push({type:'line',xref:xRef,yref:'paper',x0:x,x1:x,y0:domains.volume[0],y1:domains.price[1],line:{color,width:1.5,dash:'dot'}});
+ if(entryX===exitX&&eventIndex===0)return;
+ layout.annotations.push({xref:xRef,yref:'paper',x,y:domains.price[1],text:entryX===exitX?'开仓 / 平仓':label,hovertext:entryX===exitX?`${m.entry_date} 开仓；${m.exit_date} 平仓`:`${day} ${label}`,showarrow:false,font:{color,size:12},yanchor:'bottom'});
+});
+});Plotly.react('chart',traces,layout,{responsive:true,displaylogo:false,scrollZoom:true})}
 periodInputs.forEach(input=>input.addEventListener('change',()=>{if(input.checked){selectedPeriods.add(input.dataset.period)}else if(selectedPeriods.size===1){input.checked=true;return}else{selectedPeriods.delete(input.dataset.period)}render()}));
 resultEl.onchange=apply;sortEl.onchange=apply;yearEl.onchange=apply;productEl.onchange=apply;tradeEl.onchange=()=>{active=Number(tradeEl.value);render()};
 document.getElementById('prev').onclick=()=>{if(filtered.length){active=(active-1+filtered.length)%filtered.length;render()}};document.getElementById('next').onclick=()=>{if(filtered.length){active=(active+1)%filtered.length;render()}};apply();
@@ -1598,7 +1639,7 @@ document.getElementById('prev').onclick=()=>{if(filtered.length){active=(active-
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><script>{plotly_js}</script><style>{styles}</style></head><body><div class="page"><h1>{html.escape(title)}</h1>
-<div class="note">{html.escape(source_warning)}{' ' if source_warning else ''}{coverage_note}日K严格展示开仓前300个交易日至最终平仓后50个交易日的可用历史；30日K与10日K按产品交易日历固定、不重叠分桶；最新不足完整周期的K线仍显示，并在悬浮标签注明实际日数。月K独立展示开仓前10个月至最终平仓后10个月；所有周期的 MA5/10/20/40 均用图窗外历史预热。蓝线=开仓日，紫线=最终平仓日，淡黄色=持仓区间；灰虚线表示精确合约缺历史数据后切到当日主力上下文。</div>
+<div class="note">{html.escape(source_warning)}{' ' if source_warning else ''}{coverage_note}日K严格展示开仓前300个交易日至最终平仓后50个交易日的可用历史；30日K与10日K按产品交易日历固定、不重叠分桶；最新不足完整周期的K线仍显示，并在悬浮标签注明实际日数。月K独立展示开仓前10个月至最终平仓后10个月；所有周期的 MA5/10/20/40 均用图窗外历史预热。蓝线、紫线分别标在各面板开仓和最终平仓所属K线的中心，日K按实际交易日对齐；真实成交日期保留在上方说明和标记悬浮信息中。同一根K线内开平仓合并标注。15分钟缺精确成交时刻时保留日级定位。淡黄色=持仓区间；灰虚线表示精确合约缺历史数据后切到当日主力上下文。</div>
 <div class="toolbar"><select id="result"><option value="all">全部交易</option><option value="profit">全部盈利</option><option value="loss">全部亏损</option><option value="flat">持平交易</option><option value="profit_tail">盈利尾部</option><option value="loss_tail">亏损尾部</option></select><select id="sort"><option value="extreme">{html.escape(sort_extreme_label)}</option><option value="near">{html.escape(sort_near_label)}</option><option value="price_desc">价格涨跌百分比从大到小</option><option value="price_asc">价格涨跌百分比从小到大</option></select><select id="year"></select><select id="product"></select><select id="trade"></select><button id="prev">上一笔</button><button id="next">下一笔</button></div>
 <div class="period-picker" id="periodPicker"><span class="period-title">绘制周期（可多选）</span>
 <label class="period-chip" data-chip="day30"><input type="checkbox" data-period="day30" checked><span>30日K</span></label>
@@ -1607,12 +1648,15 @@ document.getElementById('prev').onclick=()=>{if(filtered.length){active=(active-
 <label class="period-chip" data-chip="weekly"><input type="checkbox" data-period="weekly"><span>周K</span></label>
 <label class="period-chip" data-chip="daily"><input type="checkbox" data-period="daily" checked><span>日K</span></label>
 <label class="period-chip" data-chip="intraday"><input type="checkbox" data-period="intraday"><span>15分钟K</span></label></div>
-<div id="periodNote" class="period-note"></div><div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
+<div id="periodNote" class="period-note"></div><div id="episodeNote" class="note" hidden></div><div id="metrics" class="metrics"></div><div class="panel"><div id="chart"></div></div>
 <div class="footer">数据：{html.escape(source_label)}（{html.escape(source_version)}）；{footer_scope}{html.escape(source_warning)}{' ' if source_warning else ''}本图用于对照复盘，不是交易规则。</div>
 </div><script>{script}</script></body></html>"""
 
 
 def main() -> None:
+    import analyze_qmt_roll_stage513_stage208_exact_position_margin_audit as s513
+    import analyze_qmt_roll_stage901_stage847_c9_2026_ytd_live_shadow as s901
+
     global ACTIVE_DATABASE_PATH, PREFER_DATABASE_DAILY
     parser = argparse.ArgumentParser(description="Build C9/15w historical profit/loss-tail monthly/weekly/daily/15m HTML atlas.")
     parser.add_argument(

@@ -1,0 +1,25 @@
+{
+  "browser": "Native WebKit WKWebView",
+  "verdict": "PASS",
+  "records": 167,
+  "profit_filter": 52,
+  "loss_filter": 115,
+  "default_periods": [
+    "day30",
+    "daily"
+  ],
+  "checks": [
+    "next and previous trade",
+    "copper and all-product filters",
+    "cross-year cotton period and annual contribution",
+    "weekly third panel",
+    "synchronized x-axis zoom",
+    "annual residual and rejection tables",
+    "no JavaScript errors",
+    "full screenshot visually inspected"
+  ],
+  "javascript_parser": "JavaScriptCore new Function, 2 inline blocks",
+  "browser_check_source_sha256": "03b7ce0279b482085dfe1654b6d8e3fced7f23a05cd626487346ec4e2c481bf7",
+  "screenshot_sha256": "9ad862be701e194448c7153c2208be9940830a3f0688d8c20717726c040eb6d4",
+  "screenshot": "reviews/stage061_browser.png"
+}

@@ -1,0 +1,168 @@
+{
+  "status": "PASS_WITH_DISCLOSED_MINUTE_LIMITATION",
+  "reviewer": "independent_subagent /root/recap_alignment_review",
+  "reviewed_at": "2026-11-05T14:23:28+08:00",
+  "scope": "Only the delta from /private/tmp/stage063_renderer_before.py to canonical renderer, Stage063 adapter, browser script, and frozen Stage061/Stage063 output identity; no strategy run, downloads, production, or existing-file edits.",
+  "findings": [],
+  "severity_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "renderer_delta": {
+    "outside_html_ast_unchanged": true,
+    "new_lines_trailing_whitespace_free": true,
+    "interpretation": "Per-panel entry/exit candle lookup, local shapes and fill markers, shared-axis configuration preserved, same-candle combined annotation, explicit minute day-coordinate disclosure."
+  },
+  "data_verification": {
+    "records": 167,
+    "raw_records_sha256": "a74e894273b94e9b7eb4752c7d7b9eb0fb98689d8b16f8e81a2c7e5892b95616",
+    "full_records_identical": true,
+    "copied_files": {
+      "summary.json": "6e6b2a3125cd8282f9e2139a9041f7beb3c8324995e5621b0a1a5f69d92b0409",
+      "chart_manifest.csv": "089ad065b85887b3380273fa71daf7e38f09ce001d3c7cf2eaf1e6427f72790b",
+      "scoped_fills.csv": "8cf42d26ecf3ff2911199c607ff4779020fe6de2377cbf732f564b4b6457cab4",
+      "annual_contributions.csv": "b5257731aba161eedbb820ff15e3b52caac63e56dee94344f1bbb1614b941b97"
+    },
+    "manifests": {
+      "stage061_s21_200k_touch_2022_recap_v1": {
+        "files_verified": 6,
+        "sha256": "d51586ebb2aa6f9c1cc9752f76ab5d5a4053cc97bca2a3f0519110c8f6c59e01"
+      },
+      "stage063_s21_200k_touch_2022_recap_aligned_v1": {
+        "files_verified": 7,
+        "sha256": "c4e7080e1081798d6cf9f7ee15658c1b6fefb5a34201cd86dbcec5143f8aa173"
+      }
+    },
+    "event_endpoint_mappings": 1670,
+    "event_buckets_with_daily_ohlcv_recomputed": 1336,
+    "same_candle_counts": {
+      "day30": 114,
+      "day10": 53,
+      "monthly": 103,
+      "weekly": 49,
+      "daily": 20
+    },
+    "period_bars": {
+      "day30": 9253,
+      "day10": 27434,
+      "monthly": 3576,
+      "weekly": 12740,
+      "daily": 59936,
+      "intraday": 0
+    },
+    "scalar_values": {
+      "day30": {
+        "open": 9253,
+        "high": 9253,
+        "low": 9253,
+        "close": 9253,
+        "volume": 9253,
+        "ma5": 9253,
+        "ma10": 9253,
+        "ma20": 9253,
+        "ma40": 9253
+      },
+      "day10": {
+        "open": 27434,
+        "high": 27434,
+        "low": 27434,
+        "close": 27434,
+        "volume": 27434,
+        "ma5": 27434,
+        "ma10": 27434,
+        "ma20": 27434,
+        "ma40": 27434
+      },
+      "monthly": {
+        "open": 3576,
+        "high": 3576,
+        "low": 3576,
+        "close": 3576,
+        "volume": 3576,
+        "ma5": 3576,
+        "ma10": 3576,
+        "ma20": 3576,
+        "ma40": 3576
+      },
+      "weekly": {
+        "open": 12740,
+        "high": 12740,
+        "low": 12740,
+        "close": 12740,
+        "volume": 12740,
+        "ma5": 12740,
+        "ma10": 12740,
+        "ma20": 12740,
+        "ma40": 12740
+      },
+      "daily": {
+        "open": 59936,
+        "high": 59936,
+        "low": 59936,
+        "close": 59936,
+        "volume": 59936,
+        "ma5": 59936,
+        "ma10": 59936,
+        "ma20": 59936,
+        "ma40": 59936
+      },
+      "intraday": {
+        "open": 0,
+        "high": 0,
+        "low": 0,
+        "close": 0,
+        "volume": 0,
+        "ma5": 0,
+        "ma10": 0,
+        "ma20": 0,
+        "ma40": 0
+      }
+    },
+    "linked_zoom_actual_browser": "parent agent reports WebKit PASS; not independently rerun in this audit",
+    "embedded_ledgers_identical": true,
+    "embedded_ledger_sha256": "f3afa7ebdec4375e42ac71a615729be32098d62ee3e4777379d9c308307bf345",
+    "event_markers": 353,
+    "available_intraday_records": 0,
+    "renderer_sha256": "da4c94a182cfb3bcb61714bd71fc58e7183abeb21162d711a4ba1b6acad4244e",
+    "adapter_sha256": "37518173941c6490daa439d27de592bec4c680dda345a047898b77d6489fc913",
+    "before_renderer_sha256": "7573464a24e5ee6fdd616e66ff5c3a94078a23f4eea43740a8d10dbeef0a4854",
+    "new_html_sha256": "2b761cbdf1603ee9840df1fb5e133ffe1c858c8a9387db4912c82a4f99cce5cf",
+    "new_receipt_sha256": "4532a3f84eb7ab13c479957a6f1e5b1d314be3fa826b22170419aef979f4202e"
+  },
+  "layout_verification": {
+    "status": "PASS",
+    "tested_renders": 5177,
+    "nonminute_period_combinations_per_record": 31,
+    "tested_panels": 13360,
+    "tested_endpoints": 26720,
+    "same_candle_panels": 5424,
+    "associated_event_marker_tests": 10943,
+    "empty_filter": true,
+    "empty_nonminute_data": true,
+    "unavailable_minute_only_selection": true,
+    "unknown_membership_returns_null": true,
+    "minute_day_coordinates_preserved_without_inventing_fill_minute": true,
+    "actual_browser": false,
+    "runtime": "macOS JavaScriptCore via Swift with a stub DOM and captured Plotly.react payloads"
+  },
+  "browser_evidence": {
+    "independently_rerun": false,
+    "parent_reported": "Real WebKit RED on old page and GREEN on Stage063. Includes weekly entry/exit 515.5/530.5, daily 513.5/528.5, monthly exit 531, panel reorder, markers, local panel y domains, filtering, navigation, synchronized zoom, same-day SM monthly combined annotation and 0 console errors. Parent inspected screenshot.",
+    "script_path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_browser.js",
+    "screenshot_path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_browser.png"
+  },
+  "limitations": [
+    "All 167 frozen records have draw_intraday=0 and zero 15-minute bars. Minute behavior was checked only with synthetic day-only evidence; no exact fill-minute claim is made.",
+    "JavaScriptCore layout execution does not substitute for actual Plotly rendering; the real WebKit run and screenshot were performed by the parent agent and are explicitly attributed."
+  ],
+  "overfitting_assessment": "No. This modifies only visual coordinates; all records, dates, prices, OHLCV, MA, metrics, and ledgers remain frozen and byte-identical.",
+  "continuation_value": "Yes for correcting misleading candle alignment; no new strategy or financial-evidence inference is justified.",
+  "actions": {
+    "strategy_rerun": false,
+    "market_download": false,
+    "production_access": false,
+    "existing_files_modified_by_reviewer": false
+  }
+}

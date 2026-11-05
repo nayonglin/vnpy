@@ -1,0 +1,161 @@
+{
+  "schema": "stage058_independent_nonferrous_selection_audit_v1",
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "selection_status": "SELECTED_FOR_RESEARCH",
+  "audited_at": "2026-11-05T13:10:34+08:00",
+  "audit_script_sha256": "c2d78100b0ac28bbbd6eafe75df9ce1f55e8f3857dca779a64428faf2efa6871",
+  "independent_statistic_source_sha256": "6496542a444515bbe87abc95cab99d34ac2ecd5b29aad503b56213a1229cb037",
+  "result_manifest_sha256": "6608ae55e4fdf9aadd9302077951efefbaa297f0762988eefef6024b2824dd3f",
+  "original_infeasible_manifest_sha256": "d4a73f9df16a9b9c117b9374fa4e1387a920ea6c515bef95ef50ff67d0ea1d10",
+  "checked_manifests": {
+    "stage058_diverse10_20261103": 7,
+    "stage057_diverse10_20261104": 7
+  },
+  "market_input_hashes": 26,
+  "financial_replays": 0,
+  "cutoff": "2026-11-03",
+  "matrix_products": 23,
+  "return_rows": {
+    "daily_matrix": 3119,
+    "weekly_matrix": 658,
+    "daily_evidence": 56237
+  },
+  "same_epoch_returns_on_main_switch_days": 1101,
+  "pair_statistics": 253,
+  "candidate_combinations": 360,
+  "eligible_combinations": 148,
+  "selected": [
+    "AP.CZCE",
+    "CF.CZCE",
+    "OI.CZCE",
+    "SH.CZCE",
+    "SM.CZCE",
+    "au.SHFE",
+    "fu.SHFE",
+    "lh.DCE",
+    "ni.SHFE",
+    "sp.SHFE"
+  ],
+  "selected_pairs": 45,
+  "all_selected_pairs_pass": true,
+  "maximum_pair_score": 0.401550723229165,
+  "mean_pair_score": 0.18151388132448834,
+  "data_windows": {
+    "daily_252": {
+      "first": "2025-10-21",
+      "last": "2026-11-03",
+      "observations": 252
+    },
+    "daily_756": {
+      "first": "2023-09-14",
+      "last": "2026-11-03",
+      "observations": 756
+    },
+    "weekly_156": {
+      "first": "2023-10-27",
+      "last": "2026-10-30",
+      "observations": 156
+    }
+  },
+  "historical_52_week_pairs_over_060": [
+    {
+      "left": "CF.CZCE",
+      "right": "SM.CZCE",
+      "daily_252_corr": 0.22745187728898178,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.20458454409959287,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.19328359806581608,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.1597228119051059,
+      "full_daily_n": 2866,
+      "rolling52_abs_p95": 0.5797412200480364,
+      "rolling52_abs_max": 0.6349471382932179,
+      "rolling52_n": 481,
+      "score": 0.22745187728898178,
+      "sufficient_history": true,
+      "allowed": true
+    },
+    {
+      "left": "CF.CZCE",
+      "right": "fu.SHFE",
+      "daily_252_corr": 0.058917529481668285,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.14343947508065852,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.005686154190444001,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.2637930025562552,
+      "full_daily_n": 2068,
+      "rolling52_abs_p95": 0.5893459145590711,
+      "rolling52_abs_max": 0.6189215643513275,
+      "rolling52_n": 372,
+      "score": 0.14343947508065852,
+      "sufficient_history": true,
+      "allowed": true
+    },
+    {
+      "left": "CF.CZCE",
+      "right": "ni.SHFE",
+      "daily_252_corr": 0.2987507237084595,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.2810515191033128,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.401550723229165,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.2762837516728156,
+      "full_daily_n": 2817,
+      "rolling52_abs_p95": 0.5689642716878324,
+      "rolling52_abs_max": 0.6856440544871675,
+      "rolling52_n": 490,
+      "score": 0.401550723229165,
+      "sufficient_history": true,
+      "allowed": true
+    },
+    {
+      "left": "CF.CZCE",
+      "right": "sp.SHFE",
+      "daily_252_corr": 0.3632609772604136,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.3389591827141246,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.36794407765336185,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.23496683384880535,
+      "full_daily_n": 1922,
+      "rolling52_abs_p95": 0.5628344513140476,
+      "rolling52_abs_max": 0.6122231619681672,
+      "rolling52_n": 354,
+      "score": 0.36794407765336185,
+      "sufficient_history": true,
+      "allowed": true
+    },
+    {
+      "left": "SM.CZCE",
+      "right": "ni.SHFE",
+      "daily_252_corr": 0.23792716728869173,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.2564525085937003,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.2862839763243089,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.20278263906754662,
+      "full_daily_n": 2729,
+      "rolling52_abs_p95": 0.5196421961386992,
+      "rolling52_abs_max": 0.6656901940178549,
+      "rolling52_n": 429,
+      "score": 0.2862839763243089,
+      "sufficient_history": true,
+      "allowed": true
+    }
+  ],
+  "limitations": [
+    "Aluminium and nickel were added adaptively after the original gold/copper mandatory-category infeasibility.",
+    "The 23-candidate category-constrained search is restricted to the inherited pool and the documented two alternatives.",
+    "The common cutoff is one session earlier than Stage057 because the two alternatives lack admitted November 4 data.",
+    "The author-defined categories do not span all futures sub-industries or missing grain and crude-oil markets.",
+    "The 0.60 threshold and windows are research judgments; selected historical rolling correlations have exceeded the threshold.",
+    "A current-correlation selection does not have historical point-in-time or out-of-sample qualification.",
+    "Fixed one lot has unequal risk and margin; descriptive price correlations do not establish strategy PnL or funding diversification."
+  ]
+}

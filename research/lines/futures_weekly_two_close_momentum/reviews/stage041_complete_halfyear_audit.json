@@ -1,0 +1,62 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "pairs": 24,
+  "new_pairs": 1,
+  "reused_pairs": 23,
+  "unknown_pairs": 0,
+  "current_manifest_sha256": "c71b2b77b59084f278d9a16b6eaa266d7159aebb830f5643be89aaa7493070a4",
+  "current_manifest_entries": 28,
+  "previous_manifest_entries": 301,
+  "previous_audit_sha256": "a668436d84a9a7aac00d5f74aaad1b7dc1d52f0cc83c92736ac9fdeba90d63ef",
+  "pinned_inputs": 38,
+  "unchanged_non_gold_rows": {
+    "fills": 3204,
+    "cycles": 1200,
+    "signals": 2361,
+    "gaps": 185,
+    "entry_filter": 1502,
+    "week_body_filter": 1667,
+    "four_up_blocks": 57
+  },
+  "deficit_pairs": {
+    "s19": 19,
+    "no_gold": 17
+  },
+  "new_window_counts": {
+    "s19": {
+      "days": 2756,
+      "fills": 3401,
+      "cycles": 1279,
+      "opening": 6157,
+      "signals": 2512,
+      "nonpositive_days": 0
+    },
+    "no_gold": {
+      "days": 2756,
+      "fills": 3204,
+      "cycles": 1200,
+      "opening": 5960,
+      "signals": 2361,
+      "nonpositive_days": 0
+    }
+  },
+  "new_window_signal_checks": {
+    "s19": {
+      "signals": 2512,
+      "fills": 3401,
+      "same_day_reversals": 380
+    },
+    "no_gold": {
+      "signals": 2361,
+      "fills": 3204,
+      "same_day_reversals": 366
+    }
+  },
+  "new_window_gold_net_pnl": 547230.0,
+  "limitations": [
+    "Overlapping historical windows",
+    "Static margin and zero commission",
+    "Theoretical fills continue after capital shortfalls",
+    "Previous paired Sharpe outputs in windows with nonpositive equity retain Stage040 limitations"
+  ]
+}

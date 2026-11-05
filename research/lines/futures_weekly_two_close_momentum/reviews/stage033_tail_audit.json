@@ -1,0 +1,46 @@
+{
+  "status": "PASS_WITH_LIMITATIONS",
+  "target": "2026-11-04",
+  "provider_raw_file_mtime": "2026-11-04T16:54:05.782969+08:00",
+  "daily_timestamp_labels": [
+    "2026-11-03T00:00:00+08:00",
+    "2026-11-04T00:00:00+08:00"
+  ],
+  "mains": 19,
+  "unchanged_mains": 19,
+  "changed_mains": {},
+  "distinct_physical_epochs": 27,
+  "bars": 54,
+  "prior_ohlcv_exact": 27,
+  "admitted_new_daily": 26,
+  "zero_volume_excluded": [
+    "SH611.CZCE"
+  ],
+  "held_contract_union_count": 15,
+  "held_contracts": [
+    "AP701.CZCE",
+    "CF701.CZCE",
+    "FG701.CZCE",
+    "MA701.CZCE",
+    "SH701.CZCE",
+    "au2612.SHFE",
+    "fu2701.SHFE",
+    "hc2701.SHFE",
+    "jm2701.DCE",
+    "lc2701.GFEX",
+    "lh2701.DCE",
+    "rb2701.SHFE",
+    "ru2701.SHFE",
+    "si2612.GFEX",
+    "sp2701.SHFE"
+  ],
+  "min_admitted_volume": 3,
+  "min_main_volume": 109984,
+  "week_ends": "2026-11-06",
+  "hashes": {
+    "request.json": "1040d411da1aa6fdd79e46835f96cf8c7c2f7789d89361b2bed4b1338706d256",
+    "continuous_table.raw.json": "e9341334b063de8fabbe257ef5dcafe813ecf27ee8e4a858b5ffa8f85158b85f",
+    "provider/raw_daily.csv": "fece40cbcfb7bc9650afd5c7daab1f48988d3f3b24f365528575acac257dcd9b",
+    "provider/quotes.json": "abbdaf9e7676f2de49b1a3f3cf98dadc1456a0ca1775a6723f64bbff5e7db8e3"
+  }
+}

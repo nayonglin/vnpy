@@ -79,6 +79,25 @@ When a completed run is not registered:
 - Missing exact-contract history, proxy context, truncated listing history, and incomplete post-exit history remain visible disclosures.
 - Fifteen-minute data never blocks valid non-minute charts. Show its absence honestly; do not manufacture bars.
 
+## Event Placement Default
+
+Open/close lines and fill-price markers use the **center of the execution date's containing candle in each panel**, rather than one daily x-coordinate drawn through every panel. This is a display mapping; actual execution dates, prices, volumes, trade pairing, and PnL remain unchanged.
+
+| Panel | Event x-coordinate |
+| --- | --- |
+| Daily | The exact execution trading day's candle center. |
+| Weekly | The center of the existing weekly bucket containing the execution date. |
+| Monthly | The center of the execution calendar month's candle. |
+| 10-day / 30-day | The center of the existing product-calendar bucket containing the execution date; keep the fixed non-overlapping bucket boundaries. |
+| 15-minute, exact execution time available | The center of the candle containing that timestamp, using the declared trading-day/session convention. |
+| 15-minute, only daily execution evidence available | Retain the original daily execution-day x-coordinate and explicitly label the event as day-level; do not infer an exact fill minute. If minute bars are unavailable, disclose and skip that panel. |
+
+- Give each selected panel its own entry/exit lines and fill-price markers. Bind them to that panel's x-axis and restrict lines and holding shading to its price/volume area. Draw labels per panel, not as page-wide lines using daily x-coordinates.
+- When entry and final exit belong to the same candle, keep both events at the same x and use a combined opening/closing label with both actual dates available in the details or hover. If their prices also coincide, retain both underlying fill records and use that combined label/details to distinguish them; do not move either event into a neighboring candle to separate labels.
+- Match by the period's actual membership bounds. If no containing candle exists, leave the marker absent and disclose the gap; do not snap to the nearest candle or invent bars.
+- Preserve shared x-ranges and linked zoom. The same event may have different x-coordinates in different periods because those candles have different centers; that difference is expected.
+- Reuse this behavior through the canonical renderer and source adapter. Keep old frozen pages intact; create a new versioned output when re-rendering an existing recap.
+
 ## Verification Gate
 
 Before delivery, verify observable outcomes:
@@ -89,9 +108,16 @@ Before delivery, verify observable outcomes:
 4. Every rendered entry/final-exit date and price reconciles to the source pairings.
 5. MA warmup has no avoidable leading nulls in visible bars.
 6. Embedded JavaScript parses successfully.
-7. A browser check confirms default periods, filters, next/previous navigation, and synchronized zoom.
+7. A browser check confirms default periods, filters, next/previous navigation, and synchronized zoom, plus the event-placement checks below.
 8. Missing-data and proxy disclosures match the manifest.
 9. `git diff --check` passes and unrelated dirty files remain untouched.
+
+Event-placement acceptance:
+
+- Check every rendered non-minute entry/final-exit date against its containing period candle and compare the line and fill marker x with that candle's x; verify actual source date/price fields independently.
+- In a real browser, inspect a weekday execution in weekly plus daily view: the weekly line must cross that week's candle center while the daily line remains on the actual day's candle. Also switch to monthly and 10/30-day views, single-period view, and a different panel order.
+- Confirm panel-local line extents, same-candle opening/closing labels, and no nearest-candle fallback on a missing bucket. Zooming must still synchronize all visible periods.
+- When available, verify exact minute timestamps against session-aware candle membership. With daily-only fill evidence, check the precision disclosure instead of claiming minute accuracy.
 
 Return a clickable absolute path to `index.html`, plus a concise statement of source identity and whether any rerun, download, production access, or strategy change occurred.
 
@@ -106,3 +132,5 @@ Return a clickable absolute path to `index.html`, plus a concise statement of so
 | Rerunning a strategy because the renderer lacks an adapter | Adapt the already completed frozen result instead. |
 | Downloading bars merely to make every panel look complete | Keep truthful gaps unless the user explicitly authorizes historical download. |
 | Calling a research page the current live version | Match read-only production release identity to frozen provenance first. |
+| Drawing one daily-coordinate entry/exit line through weekly or monthly panels | Map each execution to that panel's containing candle center; keep actual dates in details and hover. |
+| Moving K lines, fill dates, or neighboring markers to make the picture line up | Preserve the frozen bars and fills; change only the display mapping of event lines and markers. |

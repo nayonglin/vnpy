@@ -124,8 +124,8 @@
       "path": "SKILL.md",
       "origin": "existing-working-tree/research/lines/futures_trend_rollover_shape_same_volume/references/futures-recap-html",
       "source_sha256": "362bd130fdc07830b610e3f69385d1f5898d2d3448e7dd90da7aeab77fd7e9a2",
-      "installed_sha256": "362bd130fdc07830b610e3f69385d1f5898d2d3448e7dd90da7aeab77fd7e9a2",
-      "modified": false,
+      "installed_sha256": "f02b684a0493952be4cb79c36098ae66b5fe2bc7dd2c2400791fe69641947a05",
+      "modified": true,
       "installed_mode": "0o644"
     },
     {
@@ -133,7 +133,7 @@
       "path": "references/recap-contract.md",
       "origin": "existing-working-tree/research/lines/futures_trend_rollover_shape_same_volume/references/futures-recap-html",
       "source_sha256": "5ba99bda8725ffa134712f0a5ad8b8c92312dff0c4b3cae7ad6c53eef0f030ee",
-      "installed_sha256": "2f5daa2d83f6cac91298cb99b8f2dede9dbe8e46fc86b3e537c9d212522b7d73",
+      "installed_sha256": "2b4b50684cc3633574d4ad38fccbbe675c938381b92d0ecc22db445b1982344c",
       "modified": true,
       "installed_mode": "0o644"
     },
@@ -320,8 +320,9 @@
   "content_adaptations": {
     "futures-live-execution-sop/SKILL.md": "Replace two local-account-bearing AppID examples with a non-secret placeholder; preserve execution rules.",
     "futures-official-shadow/SKILL.md": "Explicit verified production and private audit paths; preserve production identity gates.",
-    "futures-recap-html/references/recap-contract.md": "Disclose unavailable optional Stage050 tool and condition its use on restoration.",
+    "futures-recap-html/references/recap-contract.md": "Preserve optional Stage050 restoration boundary; define per-period event placement, panel-local shapes, same-candle labels, missing-bucket and minute-precision handling, and browser acceptance.",
     "playwright/SKILL.md": "Resolve wrapper from this repository.",
-    "playwright/references/cli.md": "Resolve wrapper from this repository."
+    "playwright/references/cli.md": "Resolve wrapper from this repository.",
+    "futures-recap-html/SKILL.md": "Default each panel to execution-date containing candle centers; require generated-output alignment verification."
   }
 }

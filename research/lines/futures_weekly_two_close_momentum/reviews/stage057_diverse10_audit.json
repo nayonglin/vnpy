@@ -1,0 +1,63 @@
+{
+  "schema": "stage057_independent_diverse10_selection_audit_v1",
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "selection_status": "NO_FEASIBLE_SELECTION",
+  "audited_at": "2026-11-05T13:08:37+08:00",
+  "audit_script_sha256": "6496542a444515bbe87abc95cab99d34ac2ecd5b29aad503b56213a1229cb037",
+  "result_manifest_sha256": "d4a73f9df16a9b9c117b9374fa4e1387a920ea6c515bef95ef50ff67d0ea1d10",
+  "checked_manifests": {
+    "stage057_diverse10_20261104": 7,
+    "stage055_s21_all_touch_halfyear_20261104": 362
+  },
+  "input_hashes": 42,
+  "financial_replays": 0,
+  "independent_method": "Integer-cent physical raw market; math.log same-epoch close ratios; full-week fsum; centered fsum Pearson and independent rolling quantiles.",
+  "return_rows": {
+    "daily_matrix": 3120,
+    "weekly_matrix": 658,
+    "daily_evidence": 50323
+  },
+  "matrix_products": 21,
+  "main_switch_returns_checked": 855,
+  "pair_statistics": 210,
+  "candidate_combinations": 120,
+  "eligible_combinations": 0,
+  "selected": [],
+  "all_pairs_have_sufficient_history": true,
+  "mandatory_conflicts": [
+    {
+      "left": "au.SHFE",
+      "right": "cu.SHFE",
+      "daily_252_corr": 0.6686297075059809,
+      "daily_252_n": 252,
+      "daily_756_corr": 0.5190978580429252,
+      "daily_756_n": 756,
+      "weekly_156_corr": 0.32507328224100085,
+      "weekly_156_n": 156,
+      "full_daily_corr": 0.2501097989624558,
+      "full_daily_n": 3119,
+      "rolling52_abs_p95": 0.5533919619232223,
+      "rolling52_abs_max": 0.6124480557182639,
+      "rolling52_n": 606,
+      "score": 0.6686297075059809,
+      "sufficient_history": true,
+      "allowed": false
+    }
+  ],
+  "best_rejected_diagnostic": [
+    {
+      "products": "[\"AP.CZCE\", \"CF.CZCE\", \"OI.CZCE\", \"SH.CZCE\", \"SM.CZCE\", \"au.SHFE\", \"cu.SHFE\", \"fu.SHFE\", \"lh.DCE\", \"sp.SHFE\"]",
+      "allowed": false,
+      "max_correlation": 0.6686297075,
+      "mean_pair_score": 0.1831130022,
+      "violating_pairs": 1
+    }
+  ],
+  "limitations": [
+    "The ten categories are author-defined risk buckets within this selected 21-product pool, with heterogeneous economic drivers.",
+    "The fixed pool does not cover all futures markets or missing grain and crude-oil categories.",
+    "Threshold 0.60 and observation windows are research choices. Historical correlations can change in stress.",
+    "Current-market correlation selection has no historical point-in-time or out-of-sample qualification.",
+    "Low correlation of descriptive price returns does not constrain one-lot risk, margin, strategy PnL correlation or funding paths."
+  ]
+}

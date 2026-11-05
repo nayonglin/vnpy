@@ -1,0 +1,107 @@
+{
+  "verdict": "PASS_WITH_LIMITATIONS",
+  "manifests": {
+    "stage048_s26_full_20261104": 16,
+    "stage047_s26_2022": 15,
+    "stage037_s19_fixed_one_150k_20261104": 15
+  },
+  "manifest_sha256": "9499cb34c0b0494f0df22f1057109a59311b4341d0658aac8c13b9baf345464f",
+  "pinned_inputs": 42,
+  "tail_certificate_sha256": "c532e53540d9b92f87efb6276c60f8cbe2090ab7cc4321f749ca5ccb44a72893",
+  "checked_rows": {
+    "s19": {
+      "days": 2875,
+      "fills": 3499,
+      "cycles": 1315,
+      "opening_snapshots": 6374,
+      "signals": 2584,
+      "one_price_exits": 1,
+      "nonpositive_days": 0,
+      "entries": 1315,
+      "stops": 1259,
+      "rolls": 442,
+      "guard_exits": 41
+    },
+    "s26": {
+      "days": 2875,
+      "fills": 5260,
+      "cycles": 1945,
+      "opening_snapshots": 8135,
+      "signals": 3780,
+      "one_price_exits": 1,
+      "nonpositive_days": 0,
+      "entries": 1945,
+      "stops": 1813,
+      "rolls": 694,
+      "guard_exits": 114
+    }
+  },
+  "unchanged_original_events": {
+    "fills": 3499,
+    "signals": 2584,
+    "gaps": 208,
+    "cycles": 1315,
+    "entry_filter": 1650,
+    "week_body_filter": 1853,
+    "four_up_blocks": 62,
+    "terminal_positions": 15
+  },
+  "exact_zero_equity_close_dates": {
+    "s19": [],
+    "s26": []
+  },
+  "target_day_total_fills": 0,
+  "target_day_added_fills": 0,
+  "added_held_at_cutoff": {
+    "TA.CZCE": "CZCE.TA.202701",
+    "p.DCE": "DCE.P.202701",
+    "ag.SHFE": "SHFE.AG.202612"
+  },
+  "additions_pnl": {
+    "TA.CZCE": -18130.0,
+    "ag.SHFE": -10095.0,
+    "jd.DCE": -36460.0,
+    "ni.SHFE": -33110.0,
+    "p.DCE": 31070.0,
+    "ss.SHFE": 40825.0,
+    "zn.SHFE": -52275.0
+  },
+  "attribution_segments": {
+    "difference_before_2022": -28610.0,
+    "difference_2022": 118390.0,
+    "difference_after_2022": -167955.0
+  },
+  "annual_2022_with_inherited_positions": {
+    "s19": -19820.0,
+    "s26": 98570.0,
+    "difference": 118390.0
+  },
+  "fresh_2022": {
+    "s19": -17850.0,
+    "s26": 63830.0
+  },
+  "worst_open": {
+    "date": "2015-04-27",
+    "fill_sequence": 10,
+    "product": "p.DCE",
+    "reason": "entry",
+    "equity": 114575.0,
+    "margin": 145984.65,
+    "free_equity": -31409.649999999994,
+    "positions": 15
+  },
+  "worst_close": {
+    "date": "2015-04-29",
+    "equity": 116345.0,
+    "margin": 145350.65,
+    "positions": 14,
+    "free_equity": -29005.65
+  },
+  "limitations": [
+    "Seven additions were selected from 2022 profits, so full history is retrospective; the before/after segments are not formal out-of-sample tests.",
+    "The 2022 segment includes inherited capital and positions from earlier years.",
+    "Fixed one-lot theoretical trading continues through static margin shortfalls.",
+    "Daily opening prints do not establish order queue executability. Zero commission.",
+    "Added-contract vendor expiry metadata differs by one day for p2701.DCE; both dates are later than the cutoff and in the same delivery month."
+  ]
+}

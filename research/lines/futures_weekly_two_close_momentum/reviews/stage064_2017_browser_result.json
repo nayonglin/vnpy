@@ -1,0 +1,30 @@
+{
+  "status": "PASS_REAL_WEBKIT",
+  "records": 141,
+  "mapped_endpoints": 1410,
+  "incoming": 2,
+  "outgoing": 5,
+  "year_pnl": -102655,
+  "full_cycle_pnl": -100360,
+  "console_errors": 0,
+  "checks": [
+    "default day30+daily",
+    "profit/loss and opening-year filters",
+    "incoming and outgoing cross-year status",
+    "per-trade annual PnL",
+    "five period line and marker geometry",
+    "single-period view",
+    "panel reordering",
+    "combined same-candle labels",
+    "synchronized zoom",
+    "next/previous"
+  ],
+  "embedded_scripts_parsed": 2,
+  "related_unit_tests": 20,
+  "screenshot_cycle": 232,
+  "screenshot_contract": "ru1705.SHFE",
+  "screenshot_sha256": "ed7278482b3db6f8f350d12e96837d8cb195ef6e35653ed5210d6d3877134001",
+  "strategy_rerun": false,
+  "market_download": false,
+  "production_access": false
+}
