@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "stage": "Stage065",
+  "line_id": "futures_weekly_two_close_momentum",
+  "reviewer": "independent_agent_s21_backup_review",
+  "reviewed_at": "2026-11-05T15:29:33.344285+08:00",
+  "verdict": "PASS_REMOTE_OBJECT_IDENTITY_WITH_FULL_DOWNLOAD_LIMITATION",
+  "blockers": [],
+  "snapshot_commit": "c72d9745de09dba313c11cece604e5f0aaddb534",
+  "branch": "codex/weekly19-stop-reversal-20261103",
+  "tag": "s21-200k-touch-backup-20261105",
+  "evidence": [
+    {
+      "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage065_remote_snapshot_api.json",
+      "sha256": "ed97e0afad98810e083b3a07550912a154e545b2380c31dbe7c73ae9b6e673e5"
+    },
+    {
+      "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage065_remote_readback.json",
+      "sha256": "6a3e2f108a012daf2114389e87668b6155075639f54ffde3c116fc86da8ece48"
+    },
+    {
+      "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage065_backup_audit.json",
+      "sha256": "c8abbf308a0936c7ad1a8704f124b077a3aedf6e6a08f594b84658c1319e13f7"
+    }
+  ],
+  "snapshot_manifest_sha256": "16dd76024ad3d398c2a1dc39e83908ab818e5c39346b0051da3bfd18e65607b7",
+  "independent_checks": {
+    "cloned_remote_commit_tree_entries": 20302,
+    "compared_source_paths": 290,
+    "source_scope_matches_manifest": true,
+    "source_git_blob_id_mismatches": 0,
+    "compared_snapshot_api_paths": 9,
+    "expected_snapshot_paths": "manifest.json 加全部 8 个分卷，无缺漏或额外项",
+    "snapshot_api_git_blob_id_mismatches": 0,
+    "snapshot_api_size_mismatches": 0,
+    "cloned_tree_snapshot_object_mismatches": 0,
+    "method": "读取独立远端克隆中指定提交的 Git tree。独立从当前本地源码、manifest、各分卷内容计算 Git blob SHA1，对照克隆 tree 与已捕获 GitHub API 路径/对象 SHA/大小。该方法验证对象身份，不等同于重新下载全部物料字节。"
+  },
+  "remote_refs_evidence": {
+    "recorded_branch_sha": "c72d9745de09dba313c11cece604e5f0aaddb534",
+    "recorded_peeled_tag_sha": "c72d9745de09dba313c11cece604e5f0aaddb534",
+    "same_snapshot_commit": true,
+    "recorded_master_before_and_after": "491d13617f61cac88b94476dc36171dc81691f30",
+    "attribution": "以上 ref 为主执行者保存的 ls-remote 结果；本次审查未重新联网刷新 ref，未把证据采集时点外推为永久当前状态。"
+  },
+  "local_full_integrity": {
+    "status": "PASS",
+    "files": 10909,
+    "bytes": 1743394097,
+    "archive_sha256": "ebcd4c6b6e8e6272e0b6024da08032c44f71e139ae5f3376057c1a00b7ac3277",
+    "basis": "此前独立审查逐源文件及逐 tar/gzip 成员核对，结合本地恢复回执；本轮未重复进行大归档恢复。"
+  },
+  "remote_full_payload_restore": {
+    "status": "NOT_COMPLETED_NETWORK_LIMIT",
+    "accepted_as_explicit_limitation": true,
+    "claim_not_supported": "未证明从远端重新下载全部压缩分卷字节并完整解压恢复通过。"
+  },
+  "wording_review": {
+    "status": "PASS",
+    "existing_evidence_preserves_limitation": true,
+    "recommended_user_wording": "研究分支与备份标签已推送；远端提交及文件对象 ID、大小核对通过，本地完整恢复通过。受网络限制，未完成远端全量重新下载与恢复。",
+    "avoid_wording": [
+      "远端全量重新下载与恢复已通过",
+      "远端全部源码字节已重新下载并校验"
+    ]
+  },
+  "scope_boundaries": [
+    "审查与证明范围是研究备份和恢复，不是策略经济性、实盘部署或生产资格。",
+    "后续新增的远端回读证据不在原 c72d974 快照提交内；若要将证据也备份远端，应另行正常提交，保留原快照标签不变。"
+  ],
+  "actions": {
+    "network_requests_by_reviewer": 0,
+    "strategy_replayed": false,
+    "source_or_manifest_modified": false,
+    "credentials_or_production_runtime_read": false,
+    "pushed_to_remote": false,
+    "new_file_only": "research/lines/futures_weekly_two_close_momentum/reviews/stage065_remote_readback_audit.json"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "source_url": "https://api.github.com/repos/nayonglin/vnpy/contents/research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105?ref=c72d9745de09dba313c11cece604e5f0aaddb534",
+  "commit": "c72d9745de09dba313c11cece604e5f0aaddb534",
+  "files": [
+    {
+      "name": "manifest.json",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/manifest.json",
+      "sha": "f2ecf2e522819118df9e2242d48fb73ec9cb6126",
+      "size": 5770982,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part000",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part000",
+      "sha": "5396ded359a84bfe16004315152f02a201c27021",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part001",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part001",
+      "sha": "d8867ac96c6ab05ccced3f50daad220c5e5444f7",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part002",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part002",
+      "sha": "0cd75269dc857beb644b3ea1e132e3b1f3dae239",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part003",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part003",
+      "sha": "74838260a954091327db12d67d742dd5ce73d84d",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part004",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part004",
+      "sha": "cdd322e22660eefd29520bd3c1092e18aae69b1c",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part005",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part005",
+      "sha": "272ad864f9ee04b9478ff2aa45741fee306d80d7",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part006",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part006",
+      "sha": "65617a8974e4382f4e5dfd71f1094ee477cd216b",
+      "size": 47185920,
+      "type": "file"
+    },
+    {
+      "name": "snapshot.tar.gz.part007",
+      "path": "research/lines/futures_weekly_two_close_momentum/backups/stage065_s21_200k_20261105/snapshot.tar.gz.part007",
+      "sha": "632b774db3298744713e1eba1a4b17cbfe665cd8",
+      "size": 38001890,
+      "type": "file"
+    }
+  ]
+}

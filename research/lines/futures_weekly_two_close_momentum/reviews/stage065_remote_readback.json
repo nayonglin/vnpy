@@ -1,0 +1,1198 @@
+{
+  "stage": "Stage065",
+  "recorded_at": "2026-11-05T15:28:28.989471+08:00",
+  "snapshot_commit": "c72d9745de09dba313c11cece604e5f0aaddb534",
+  "branch": "codex/weekly19-stop-reversal-20261103",
+  "tag": "s21-200k-touch-backup-20261105",
+  "remote_branch_sha": "c72d9745de09dba313c11cece604e5f0aaddb534",
+  "remote_tag_peeled_sha": "c72d9745de09dba313c11cece604e5f0aaddb534",
+  "master_before_and_after": "491d13617f61cac88b94476dc36171dc81691f30",
+  "remote_metadata_clone": "/private/tmp/s21-remote-verify-20261105",
+  "remote_source_tree_comparison": {
+    "status": "PASS",
+    "source_files": 290,
+    "files": [
+      {
+        "path": "examples/portfolio_backtesting/qmt_roll_official_live_config.py",
+        "git_blob_sha": "54903f2951a3cc57c8f8b2d4978e13eafdf10eb5"
+      },
+      {
+        "path": "research/lines/futures_trend_winner_trade_forensics/tools/stage038_c9_15w_big_winner_multiscale_html.py",
+        "git_blob_sha": "3131f9ddadabd03cd54ef7503fb8de0eb4e6e4a1"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/LINE.md",
+        "git_blob_sha": "45a4fa0a895adf1656994adcfc94acfec0df635d"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/stages/20261103_1852_stage001_weekly_stop_reversal_design.md",
+        "git_blob_sha": "4bcadad6cf35aad5ae6efa121d26ccb48ddbff39"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/stages/20261103_1859_stage002_full_history_proxy.md",
+        "git_blob_sha": "7ddc4e2d3151d13a4a715801eb3fd073d904a153"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/stages/20261103_1908_stage003_loss_only_reversal.md",
+        "git_blob_sha": "fc21549d5d69758916c85a5c3ab5bd7025138a09"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/audit_replay_ledger.py",
+        "git_blob_sha": "56ef469933077a994fe418ab85f46d08698f4517"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/reversal_replay.py",
+        "git_blob_sha": "ecd1a8fa6454b4be773ba08f877dad216340b835"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/run_weekly19_replay.py",
+        "git_blob_sha": "6ed4306942e03e54f509c39d04419f0c7d99e152"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/stage003_reversal_recap.py",
+        "git_blob_sha": "f84ee424a73f6e565766c5d094febaa82202071d"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/test_reversal_replay.py",
+        "git_blob_sha": "4838548b022e8d9ea0c9638f42549c04d5d2abe0"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/test_stage003_reversal_recap.py",
+        "git_blob_sha": "bab93e12968fcfc928c5790090cf118d71847501"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/test_weekly_stop_reversal.py",
+        "git_blob_sha": "b04692414202f71e2a7f53474422f15bc93f82c7"
+      },
+      {
+        "path": "research/lines/futures_weekly19_stop_reversal/tools/weekly_stop_reversal.py",
+        "git_blob_sha": "108a87fe109757328dbb4ab25631ca33515fd13e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/BACKUP.md",
+        "git_blob_sha": "54fd89503f50beb32bcf0af109b185c34882678e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/LINE.md",
+        "git_blob_sha": "1ff473eeb601dc0cf943337f202105328130cda7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/inputs/stage056_random10_groups.json",
+        "git_blob_sha": "2acf34d963fe72710f429d9f36c80674453dbb30"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage032_s19_monthly_volume_top10_audit.json",
+        "git_blob_sha": "471be0cd23e4d814e2c7585cab85083fe73aa6b0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage032_s19_monthly_volume_top10_audit.py",
+        "git_blob_sha": "84a04d383815945f899aa64bf0a7f20129075753"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage033_s19_annual_starts_audit.json",
+        "git_blob_sha": "f2c754abe9dba496b8e7b099af1ec41ccb1d1169"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage033_s19_annual_starts_audit.py",
+        "git_blob_sha": "616eebf3bb0376d46f92b386163cf1b9b79a7aec"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage033_tail_audit.json",
+        "git_blob_sha": "ebb21114e6155a6c93a59f5bfa12a67ceabab10f"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage033_tail_audit.py",
+        "git_blob_sha": "638a40bc790ee3a05f0e970e219fac24517edbbe"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage034_s19_monte_carlo_audit.json",
+        "git_blob_sha": "54d9e47307da7584c8ebc866cb9d17e8649778a5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage034_s19_monte_carlo_audit.py",
+        "git_blob_sha": "636bb659e5633286d19736f75f31df927de03cd5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage035_s19_half_pct_audit.json",
+        "git_blob_sha": "d5c3fd7b8deedcc30677a0beb16d717d582f57bc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage035_s19_half_pct_audit.py",
+        "git_blob_sha": "5d604101f9ea574c18ab01daddd04f9354b0e626"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage036_s19_cold_audit.json",
+        "git_blob_sha": "578c375ef71a721ed3f9ea3db5321648d585b61e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage036_s19_cold_audit.py",
+        "git_blob_sha": "5c3f46ff397f29aac9203bf8c264c90c8d5e51cc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage036_s19_paired_mc_audit.json",
+        "git_blob_sha": "03cba961d0cc384205127b5845292f58cadbad19"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage036_s19_paired_mc_audit.py",
+        "git_blob_sha": "5945cc6f45b27af2c888880e0c58810ec01f5250"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage037_s19_fixed_one_150k_audit.json",
+        "git_blob_sha": "6b9b50c7a4df75dcc8ffb39d1189f8af256d7834"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage037_s19_fixed_one_150k_audit.py",
+        "git_blob_sha": "ebdbecafc29bc8b334049c7d324f3013f9074e32"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage038_s19_fixed_one_150k_halfyear_audit.json",
+        "git_blob_sha": "9aec425435499124fd1bc707100b5fd350e5142c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage038_s19_fixed_one_150k_halfyear_audit.py",
+        "git_blob_sha": "316e944a48a3cff6042020894aaefc2b34d6b57c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage039_s19_fixed_one_150k_mc_audit.json",
+        "git_blob_sha": "db7ecd379e8a7b7510729a2c0b3d5be3dd080d10"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage039_s19_fixed_one_150k_mc_audit.py",
+        "git_blob_sha": "63972a890e3aba023069b1acc83a5d672cb009e7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage040_s19_without_gold_audit.json",
+        "git_blob_sha": "9ae101cdfac88cc94446407db96e244cb1d28063"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage040_s19_without_gold_audit.py",
+        "git_blob_sha": "1b42f716e23de6a3bb9bacd6bab1ee7ec013932c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage041_complete_halfyear_audit.json",
+        "git_blob_sha": "b595587de86dcbed3b808ee07274503ce23c1486"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage041_complete_halfyear_audit.py",
+        "git_blob_sha": "10ad6928b2ea581da07884690e940891dc9e314f"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage042_s19_fixed_two_audit.json",
+        "git_blob_sha": "25bc8dda09f0afc3d8e0b879aff8ef5c22de5dc3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage042_s19_fixed_two_audit.py",
+        "git_blob_sha": "2e7982be1c41e759278caa08b5338bb8e89b76cd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage043_s19_daily_one_audit.json",
+        "git_blob_sha": "a56edb648649636cb6bf4ecdc4ae250432ea86d5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage043_s19_daily_one_audit.py",
+        "git_blob_sha": "575de699be1ee469d3c6c9829001e49a402fb3ab"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage044_s19_daily_halfyear_audit.json",
+        "git_blob_sha": "c9dc429206cea5e09da8e778cc19d8f73e58d89a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage044_s19_daily_halfyear_audit.py",
+        "git_blob_sha": "2e87d8d02c9ea7e9da00dd8b705628db55560f66"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage045_s19_weekly_shadow_filter_audit.json",
+        "git_blob_sha": "411a00f739dd598395f66af02dc6c1fd92bad677"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage045_s19_weekly_shadow_filter_audit.py",
+        "git_blob_sha": "dced3c4af8517027ac5b4591631a94aa1d5070b8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage046_s44_individual_2022_audit.json",
+        "git_blob_sha": "de209cbe6a1606e3a01274b29efc40a4a25cc042"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage046_s44_individual_2022_audit.py",
+        "git_blob_sha": "9d754430e8ab61a5d866f3f2511fd023a7e09351"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage047_s26_2022_audit.json",
+        "git_blob_sha": "7f91d5b937a60ba93725f5f053d311e51a2d3d9b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage047_s26_2022_audit.py",
+        "git_blob_sha": "4edb8ab76d28a51bd0b950f95e70ff6987fa4c31"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage048_s26_full_audit.json",
+        "git_blob_sha": "c303b3fe19d601e14854e6ee66508cbf7fd092e1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage048_s26_full_audit.py",
+        "git_blob_sha": "4dff074eeca04cbe719b24dd315c3f832833cc2a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage048_s26_tail_audit.json",
+        "git_blob_sha": "f4bf09e540e53ce231e991f5f47eebac8cc405a6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage048_s26_tail_audit.py",
+        "git_blob_sha": "081526abcae2ffecf5df2f7671dbec1168fb09c1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage049_s26_halfyear_audit.json",
+        "git_blob_sha": "9c4c5557f9e2b000f3c0b2f3f5db6d908f7b3cf9"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage049_s26_halfyear_audit.py",
+        "git_blob_sha": "6efb28d55c5b76771ff6bce7b02045f09fda51bc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage050_s22_halfyear_audit.json",
+        "git_blob_sha": "d7ac9e4dd37183c6a5d5d6d74e7386af3e09b4e5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage050_s22_halfyear_audit.py",
+        "git_blob_sha": "d2c2f54fd675530723331b10cfd2b160950dd088"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage051_s21_halfyear_audit.json",
+        "git_blob_sha": "85afbf7f3629ff6dba314bf573b5ac330a89ae2c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage051_s21_halfyear_audit.py",
+        "git_blob_sha": "8a44e8c7e6e63398ae052e85096ab252e3594176"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage052_s21_margin_gate_audit.json",
+        "git_blob_sha": "b4250982bb0153faedfc3eb854b118e424a30734"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage052_s21_margin_gate_audit.py",
+        "git_blob_sha": "234fafeda16e42179dd29facda015684b81b1a79"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage053_s21_silver_halfyear_audit.json",
+        "git_blob_sha": "3e162fe7fa8bc08faaec708bcc5186298bdd89e0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage053_s21_silver_halfyear_audit.py",
+        "git_blob_sha": "557990add6ff9b820dc121076553f0ef3007882a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage054_gold_touch_audit.json",
+        "git_blob_sha": "49e0077599f84e3fb18eb2145dac832caa4f1cfd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage054_gold_touch_audit.py",
+        "git_blob_sha": "47970947e3bfb39fe3dfa04581c192afac679ef0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage055_all_touch_audit.json",
+        "git_blob_sha": "91130fcff0ebc43101b9205d5037b9c82ab5aa88"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage055_all_touch_audit.py",
+        "git_blob_sha": "03f06899532efb8da86db2b6c84b0eede3a93a5a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage056_random10_audit.json",
+        "git_blob_sha": "88aa23908ad86760a303b7ce23adadd9c8ae0cde"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage056_random10_audit.py",
+        "git_blob_sha": "a9fa6edd0500969f203d6f119bcee2f360d0d6ca"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage057_diverse10_audit.json",
+        "git_blob_sha": "50283169a4c61bb5d2f2ecff828ffdc4dd3e2385"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage057_diverse10_audit.py",
+        "git_blob_sha": "4859e68fbc4da4e51899bd9f88daf4c241e02c21"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage058_diverse10_audit.json",
+        "git_blob_sha": "6c6461d5ecbd313316588a868824ebca10c70230"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage058_diverse10_audit.py",
+        "git_blob_sha": "f073ab6fce8da64392cccda6dba8b3f756f2061f"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage059_diverse10_audit.json",
+        "git_blob_sha": "0faa98f5ce3d9c94200bf12797b6934df49336dc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage059_diverse10_audit.py",
+        "git_blob_sha": "b789f7df4b97ddbe2e22edf2604dc026b2be2dd6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage060_s21_200k_audit.json",
+        "git_blob_sha": "532861b72d256100a6096f4bdecbf5dd02c8127e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage060_s21_200k_audit.py",
+        "git_blob_sha": "c10aa7ae227ccb4849ec31828b95712cd628c6e1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_2022_recap_audit.json",
+        "git_blob_sha": "354fc33fd9dc5f90139a5ca0483fdece0fadc232"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_2022_recap_audit.py",
+        "git_blob_sha": "0f174a70bb8df34667e8f0765d5b9b0c6b40c1e8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_audit_attempts/attempt001.json",
+        "git_blob_sha": "003da6bffd8411873ce08d4d9be715b084153a8b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_audit_attempts/attempt001.py",
+        "git_blob_sha": "1fde5d7c8b921e69d8d9b07d8123e4700d05159d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_browser.png",
+        "git_blob_sha": "97983b8341c0f04c1b5aa920e9f0367a3f28428d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_browser_check.json",
+        "git_blob_sha": "9889a69363a8e6ea885226c65581a6686aeba12e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage061_browser_check.swift",
+        "git_blob_sha": "a9c7f8c625de097ae2e21653f0f14b04b5881b02"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_audit.json",
+        "git_blob_sha": "8082367c3f5333ff3145bc8f4bbab36997be8e10"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_browser.js",
+        "git_blob_sha": "c23fc6a8d8c28949b4895773a9d231be57bcba25"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_browser.png",
+        "git_blob_sha": "f6653588d0ef01b1e30ae7a47e07a507745f20b0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_alignment_browser.swift",
+        "git_blob_sha": "b8fd25ccf1d2bb413f42b9aa0befeedcc0c70f5f"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage063_browser_result.json",
+        "git_blob_sha": "f539a78e1443731485164413e568522b28c05388"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage064_2017_browser.js",
+        "git_blob_sha": "029d85685efc55c6db69bf670526a4ccb5d688e0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage064_2017_browser.png",
+        "git_blob_sha": "f9ba627e4fe8f071d8161145c4b032c271e6aa5a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage064_2017_browser_result.json",
+        "git_blob_sha": "f93f9bcc5e877f8ed6f97ce02089138c56934911"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/reviews/stage064_2017_recap_audit.json",
+        "git_blob_sha": "102a01866150021a451a9408d36238c6a0c3732b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1924_stage001_weekly_two_close_momentum.md",
+        "git_blob_sha": "00e715d2c62c2e2e455c6e4d3a03dd00ad3d7723"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1925_stage002_full_history.md",
+        "git_blob_sha": "4395335f3a9504ceb516f01422105389b20177af"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1927_stage002_full_history_results.md",
+        "git_blob_sha": "21e4342de110ba94d7fb48c45875c6168d252066"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1930_stage003_weekly_ma_slope_filter.md",
+        "git_blob_sha": "fb9e9bb8f9f22a0e516eec01c7401900c87bc05a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1931_stage003_weekly_ma_slope_filter_results.md",
+        "git_blob_sha": "e6c6e7f72242254f9c75383e94ef9094f1537813"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1934_stage004_cash_risk_sizing.md",
+        "git_blob_sha": "f738cd380a6d66ac0b5fe4a9cfe50175337d1c57"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_1935_stage004_cash_risk_sizing_results.md",
+        "git_blob_sha": "9d54c84532ab99624da3fa954212f5da37468251"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2009_stage005_cash_risk_half_pct.md",
+        "git_blob_sha": "5a2f6b4132cdd5b82b3b86d74c25de281c0e52ed"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2010_stage005_cash_risk_half_pct_results.md",
+        "git_blob_sha": "15eb58100a56f212a00583da2a9b9797b5d9e8ee"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2102_stage006_weekly_body_filter.md",
+        "git_blob_sha": "a780af0cb1ea32c42f1388a0c66fb200a245f73a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2102_stage006_weekly_body_filter_results.md",
+        "git_blob_sha": "9b75a4e5354106b16db97649487ba514c51934f0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2106_stage007_weekly_body_fixed_one.md",
+        "git_blob_sha": "4aa2d31f3e6e059213b0866cbc63c3dbb6211760"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2107_stage007_weekly_body_fixed_one_results.md",
+        "git_blob_sha": "9fed4331220ef97810bf0b90524193e6bd6be958"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2109_stage008_weekly_body_cash_risk_one_pct.md",
+        "git_blob_sha": "25c7078cbd7881de59f58d047e9733cd74d5d5a0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2110_stage008_weekly_body_cash_risk_one_pct_results.md",
+        "git_blob_sha": "d30b40f72badb7e4e99c45eeaf496c6658c7d6f0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2112_stage009_weekly_body_one_pct_max_five.md",
+        "git_blob_sha": "2b2710985b1f63ef48528a6e4320edb23d5bdfd9"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2113_stage009_weekly_body_one_pct_max_five_results.md",
+        "git_blob_sha": "99664170c2fd4c2f38b0e996a0fd7eaf404414af"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2143_stage010_weekly_fixed_one_two_adds.md",
+        "git_blob_sha": "43695dd3a394470cd34b90a13d215d87df8bf952"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2144_stage010_weekly_fixed_one_two_adds_results.md",
+        "git_blob_sha": "aa410a58dfb1e3b81218b90f3b21a2f27550e160"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2145_stage011_weekly_fixed_one_three_adds.md",
+        "git_blob_sha": "43fe19407661b47c95f004af5eb1f12d702da174"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2146_stage011_weekly_fixed_one_three_adds_results.md",
+        "git_blob_sha": "01ed03173a6182a1c3f3d8502b841fc0a83b4229"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2209_stage012_weekly_fixed_one_fresh_add_sequence.md",
+        "git_blob_sha": "fe578cdea8f646555630f284a1be15d5afbf5f48"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2210_stage012_weekly_fixed_one_fresh_add_sequence_results.md",
+        "git_blob_sha": "9eac4d8562311bf8603cd1b440f380f398fde806"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2212_stage013_weekly_fixed_one_fresh_single_add.md",
+        "git_blob_sha": "96d5df6dbda288457360c4702c20c574eef997c3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261103_2213_stage013_weekly_fixed_one_fresh_single_add_results.md",
+        "git_blob_sha": "94f89dba11475221c58765518b63815ae1e7245a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0008_stage014_weekly_ma40_filter.md",
+        "git_blob_sha": "733dc79a50c700ec4b090cd1b53e87951369ce56"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0009_stage014_weekly_ma40_filter_results.md",
+        "git_blob_sha": "ff6fa530387f57f88a11719b1a04569666969048"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0016_stage015_weekly_fixed_one_without_slope.md",
+        "git_blob_sha": "0d76128682219749d0ef60ab6ede69099627cabd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0017_stage015_weekly_fixed_one_without_slope_results.md",
+        "git_blob_sha": "7f963cbcecb66ab1ec9faeca2bde7ff35ae85305"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0021_stage016_weekly_reverse_after_stop.md",
+        "git_blob_sha": "f85793cc7402c5f4b9700bbcaad8550866974be6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0023_stage016_weekly_reverse_after_stop_results.md",
+        "git_blob_sha": "e7ae40619c1f6458fe87a9b03269efd5c4270b2c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0026_stage017_weekly_reverse_restore_slope.md",
+        "git_blob_sha": "7867da4310c03202cad8f725a34f54974980bed8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0027_stage017_weekly_reverse_restore_slope_results.md",
+        "git_blob_sha": "bc7d99b8c4fe120bc1fc19ea8c07b36e8e960550"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0028_stage018_weekly_reverse_no_add.md",
+        "git_blob_sha": "7ae7ff394b235c0aa5997d959a958b1eaea089a1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0030_stage018_weekly_reverse_no_add_results.md",
+        "git_blob_sha": "6c32f65e64ae005bba49b719a8f90fe38069462a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0043_stage019_weekly_two_close_correction.md",
+        "git_blob_sha": "919bdc8ec85626c91acc3d0beadf0d21d9b5e521"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0045_stage019_weekly_two_close_results.md",
+        "git_blob_sha": "ff1fa7d17541d3f1eca98ad17946e2ecc5a0e90c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0047_stage020_two_close_common_universe.md",
+        "git_blob_sha": "9ddb51ee560b6ea8a21fd54702142d2b0bc9076b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_0047_stage020_two_close_common_universe_results.md",
+        "git_blob_sha": "a8931f0991b6e2400152e85dd507a90318c834fb"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1241_stage021_q_r_multicycle_plan.md",
+        "git_blob_sha": "f4d6b9a073bf1569e3d611a356cd0940bec567f1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1246_stage021_q_r_multicycle_results.md",
+        "git_blob_sha": "4885596fc76780b468c3682688b17bf952e37257"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1333_stage022_block_four_up.md",
+        "git_blob_sha": "3622a7d4dcf2f4a1b20e53e64f344183f6eb8cd2"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1336_stage022_block_four_up_results.md",
+        "git_blob_sha": "37080b62cd3c372d6d68eabe4886f79df56e2ce2"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1358_stage023_ma10_20_only.md",
+        "git_blob_sha": "c34e8e7f68971b3af349f7312def3c242e2aff34"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1400_stage023_ma10_20_only_results.md",
+        "git_blob_sha": "e9ec63428bdd5bb67059994c127c91bae5824c5c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1409_stage024_expand_s_to44.md",
+        "git_blob_sha": "b60ab589034ff89f8e5dead0c3f505cf3416e623"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1416_stage024_s44_attempt001_failure.md",
+        "git_blob_sha": "cfdcac5586d4b26b9a3a62b0a1da5bfe7cfd569d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1418_stage025_delivery_guard.md",
+        "git_blob_sha": "baae952c089bfd9b48f54c576f413184c1c01eb5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1421_stage025_delivery_guard_results.md",
+        "git_blob_sha": "ba7d4b0edd9d604ce2b643c6433c26a8e7d8145e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1428_stage026_s_s44_long_only.md",
+        "git_blob_sha": "457a1f4060250db1b87f792b35f756bb4896ed3d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1430_stage026_s_s44_long_only_results.md",
+        "git_blob_sha": "19c3d58585a0f385e468d95e35cddf04d5eaa27e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1509_stage027_s44_2022_loss_forensics.md",
+        "git_blob_sha": "1b843a9889d8048f2838bf6a7264e093d6253b95"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1519_stage028_s44_week_range_overlap.md",
+        "git_blob_sha": "9f16655fd9409d7a8355a4215e7c25b8c6cf3d87"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1522_stage028_s44_week_range_overlap_results.md",
+        "git_blob_sha": "89922d17cc33b099f1c1e7ecdc8b4c0acfb85d7d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1531_stage029_s44_weekly_shapes_design.md",
+        "git_blob_sha": "13799052b84a1245b6722e0f806afdb8f320a999"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1537_stage029_s44_weekly_shapes_results.md",
+        "git_blob_sha": "5e512d1ebd1f4cf2960f55ad11b4bd5c5d4afcdc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1539_stage030_s44_weekly_shape_replay_design.md",
+        "git_blob_sha": "5ca07da4a7097c43cd4b32d06f8509ddaa8b3684"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1542_stage030_s44_weekly_shape_replay_results.md",
+        "git_blob_sha": "d0189bed9deea48b27b6e848579939fc2448c4ee"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1552_stage031_s19_weekly_shape_replay_design.md",
+        "git_blob_sha": "2d6ccb000d18323d641de734471faedbf2e9eb65"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1555_stage031_s19_weekly_shape_replay_results.md",
+        "git_blob_sha": "d41c2f61f032a3d1351970d4b975ef1a78e1b108"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1604_stage032_s19_monthly_volume_top10_design.md",
+        "git_blob_sha": "343ec0715efa0be1d3f5b78b9cf94f05209fe8cd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1608_stage032_s19_monthly_volume_top10_results.md",
+        "git_blob_sha": "e6ff3645f3fc217e6ca442a68b7f70899c3b6e94"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1651_stage033_s19_annual_starts_design.md",
+        "git_blob_sha": "2edec51c7b8e8d9d99b8f6f4839e2ab5f008ffe0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1657_stage033_s19_annual_starts_results.md",
+        "git_blob_sha": "ddfa0f7c3a9c7caaced1a68df205872b15850b66"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1704_stage034_s19_monte_carlo_design.md",
+        "git_blob_sha": "35a15c2fc3552d8dae77d3878585608727e65b15"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1707_stage034_s19_monte_carlo_results.md",
+        "git_blob_sha": "9749180197d0ec799849c20821eaf51fa43e3fe0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1718_stage035_s19_half_pct_design.md",
+        "git_blob_sha": "a0bbde99927fd92d0498b152829fffe092afec1c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1721_stage035_s19_half_pct_results.md",
+        "git_blob_sha": "67b5e2683a0ae01c3f75f9c0254b462056efdc3c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1724_stage036_s19_paired_mc_design.md",
+        "git_blob_sha": "021d34a0323ba13387496a48c75b6c28d2f0040b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1727_stage036_s19_paired_mc_results.md",
+        "git_blob_sha": "436f74f6d6539cc484154e9e788ae1d8c5a21bdc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1743_stage037_s19_fixed_one_150k_design.md",
+        "git_blob_sha": "b13939c57ea33fd8b4324b946e8c9b124f576034"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1745_stage037_s19_fixed_one_150k_results.md",
+        "git_blob_sha": "2315d02305bbe498c1feb180c4f309f641070061"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1751_stage038_s19_fixed_one_150k_halfyear_design.md",
+        "git_blob_sha": "0a8d435b7a2682c057242dc28d811d5669ea3195"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1752_stage038_s19_fixed_one_150k_halfyear_results.md",
+        "git_blob_sha": "1cf80de9d71199a06d7300b61860b98418a5977f"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1759_stage039_s19_fixed_one_150k_mc_design.md",
+        "git_blob_sha": "4b3a2485b9ea57e1f2f426e8ba2f7bcbcaf762d7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1801_stage039_s19_fixed_one_150k_mc_results.md",
+        "git_blob_sha": "97a0a046954c300bd56a090d3bac6df31f8fb9f2"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1808_stage040_s19_without_gold_design.md",
+        "git_blob_sha": "ad4f31a8e6e67db68f6894dbb2b33fef957664c7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1810_stage040_s19_without_gold_results.md",
+        "git_blob_sha": "be36ea1091ce7442872489fff991d27b432c96c9"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1818_stage041_complete_halfyear_design.md",
+        "git_blob_sha": "b7fafe1c52ce07e54902cac179756a0dbbb9cb60"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1818_stage041_complete_halfyear_results.md",
+        "git_blob_sha": "5f47f75127470467bccb42ae9dd8d21e74e98415"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1925_stage042_s19_fixed_two_design.md",
+        "git_blob_sha": "f77eb5c6336ad27227e4a9dcee45c5705e80e132"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1926_stage042_s19_fixed_two_results.md",
+        "git_blob_sha": "e0a35edb23e972173fa93b498edf47cf8a2586a4"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1936_stage043_s19_daily_one_design.md",
+        "git_blob_sha": "fe4f80f42f9d393174ec9b3bd912bf18d985d6dc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1937_stage043_s19_daily_one_results.md",
+        "git_blob_sha": "552f41e12c13b79b5b3d7c2225a064132f79b016"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1942_stage044_s19_daily_halfyear_design.md",
+        "git_blob_sha": "4625969386161bad84425bb3e0aa499cb30edbd6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_1944_stage044_s19_daily_halfyear_results.md",
+        "git_blob_sha": "07d6a01fca8f7002bb11cc53d7fe190727f2ceb8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2003_stage045_s19_weekly_shadow_filter_design.md",
+        "git_blob_sha": "549085e07c5087c64852cbed597ab89ebb9396d1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2004_stage045_s19_weekly_shadow_filter_results.md",
+        "git_blob_sha": "b75c3ddda5bbfe7970dd57c7440880ecdc87d0b8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2020_stage046_s44_individual_2022_design.md",
+        "git_blob_sha": "50f5331dd3fc7a934578ecf2dbabb739f043b664"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2023_stage046_s44_individual_2022_results.md",
+        "git_blob_sha": "05d944c998bef33c4387a9a9a723ff693dcca889"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2032_stage047_s26_2022_design.md",
+        "git_blob_sha": "662572b67906e3f55891ddd1faf4a0c340a1ce13"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2033_stage047_s26_2022_results.md",
+        "git_blob_sha": "98dea26b96221136d68180216fb9f5117a6d3db3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2036_stage048_s26_full_design.md",
+        "git_blob_sha": "caf840670298a16fe9486b056c817d1b7b91b171"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2043_stage048_s26_full_results.md",
+        "git_blob_sha": "422f47b8067d80b95bbcf08afb861ef151fbd6af"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2046_stage049_s26_halfyear_design.md",
+        "git_blob_sha": "b10b88fd46132905b2e8bfb1a87bc4eb815b766c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2048_stage049_s26_halfyear_results.md",
+        "git_blob_sha": "a1c366119f6a9d4f19c15268e7b958731f0ff2ec"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2053_stage050_s22_halfyear_design.md",
+        "git_blob_sha": "46acfe65c878548f0b028b2f20564496c13334b8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2054_stage050_s22_halfyear_results.md",
+        "git_blob_sha": "1f545f174c356103ad3cc9468f1b7544224b96b5"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2057_stage051_s21_halfyear_design.md",
+        "git_blob_sha": "285dfa6b005a062a02ebcd0e67f84a98a769f9cd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2059_stage051_s21_halfyear_results.md",
+        "git_blob_sha": "feb8546b9e10d3fe79c28b562d4759bd292924ce"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2101_stage052_s21_margin_gate_design.md",
+        "git_blob_sha": "e2ad98f2f3a21daf890f12c5df1c696dfc796274"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2103_stage052_s21_margin_gate_results.md",
+        "git_blob_sha": "10db28909ca8ff29e3df32555e5d61ab3fae8d0c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2122_stage053_s21_silver_halfyear_design.md",
+        "git_blob_sha": "3f112d9f301967ae93720183ad9cd75354a7aedc"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261104_2124_stage053_s21_silver_halfyear_results.md",
+        "git_blob_sha": "e56a1f752c585ebbd885330dadd0141abe78eeff"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1202_stage054_gold_touch_design.md",
+        "git_blob_sha": "76820340cf435d4117802323111a08dae5055b94"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1205_stage054_gold_touch_results.md",
+        "git_blob_sha": "def1c8eadd872a4d142a6caacaaa8782446b285e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1237_stage055_all_touch_design.md",
+        "git_blob_sha": "750641eb3ead5a8a0b2eda5058b5e0163552fdc1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1238_stage055_all_touch_results.md",
+        "git_blob_sha": "78ba65a1ff6bc3c66215e47cea5b8205f80d6cdf"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1253_stage056_random10_design.md",
+        "git_blob_sha": "060e9c9a59a7ce3ec6848694965b8a6f6bdbbf37"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1258_stage056_random10_results.md",
+        "git_blob_sha": "2b83f12b931b683bdf6976099d5ce627cc0bdd3d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1304_stage057_diverse10_design.md",
+        "git_blob_sha": "642c4dfb0444f1bf5a4e85ff799dbf8e6cb1832b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1307_stage058_nonferrous_extension_design.md",
+        "git_blob_sha": "a77b340c587f382e51d4e4286358b78b9e9c82b4"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1310_stage057_diverse10_infeasible.md",
+        "git_blob_sha": "1b3bad8ab8c0eceedc3ed6fc753665e8a805968d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1310_stage058_diverse10_selection.md",
+        "git_blob_sha": "50032df11f2d3656230d57b7ab191a5b928acbdd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1315_stage059_diverse10_halfyear_design.md",
+        "git_blob_sha": "3dcdf50959df51e73409ae7b671e7236dc9b8297"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1318_stage059_diverse10_halfyear_results.md",
+        "git_blob_sha": "b79f31addf0e8f32e8e2ed90ad618d2e2466ca1e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1322_stage060_s21_200k_design.md",
+        "git_blob_sha": "ff8ab31232f7134292ac66f22eed9b6a6833274a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1324_stage060_s21_200k_results.md",
+        "git_blob_sha": "fec98cab7e971371a70f7d49ac085d7e0149da00"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1336_stage061_2022_recap_design.md",
+        "git_blob_sha": "930369bd3026e62aa08d7616db78419570135601"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1348_stage061_2022_recap_results.md",
+        "git_blob_sha": "9d3b7c5424472b04b47ae3f09eed39242e9664b3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1400_stage062_s21_200k_equity_curve.md",
+        "git_blob_sha": "4811e01009d0fe7e8ded454d3f62ac2f9093d695"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1420_stage063_recap_candle_alignment.md",
+        "git_blob_sha": "42884e42099ba2a3557ad51e332a9c28c98d9351"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1447_stage064_2017_recap.md",
+        "git_blob_sha": "e75b6086628a11fff2a3c23fd3da8dc8f5a1459c"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/stages/20261105_1505_stage065_git_backup.md",
+        "git_blob_sha": "a37b3576b3cbc82d7043b8a17cfd7867e391d267"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/restore_s21_backup.py",
+        "git_blob_sha": "95e384db5dd79c90b1e826b8aa60505d4ec361d2"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/run_stage021_multicycle.py",
+        "git_blob_sha": "df0635022f5297613e7d4cdad8c7349b204ebac4"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/run_weekly_portfolio.py",
+        "git_blob_sha": "4a6128ddb808f613d179449b06743771bcf8e034"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage005_trade_recap.py",
+        "git_blob_sha": "6d852d177503f4bfd1efa2d95ca70c1dff58f9c9"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage024_fetch_tail.py",
+        "git_blob_sha": "a35730e25b0b7c24379dd4ea16ace671fec43502"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage024_pool44.py",
+        "git_blob_sha": "e0d08f8439f95deb3ee0dc678a8a14605472fa36"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage025_delivery_guard.py",
+        "git_blob_sha": "ac52f7580c20219efa6947826fb9f364c4c2a9da"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage026_long_only.py",
+        "git_blob_sha": "cab5378c69c40108ef71a59b723148724f3240fb"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage027_s44_loss_contact_sheets.py",
+        "git_blob_sha": "c36bc8c9008d8a0c26864fa906c8b4805ee937b6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage027_s44_loss_forensics.py",
+        "git_blob_sha": "a180f7c2c7c98bf2749d1d229dd14521619e0151"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage027_s44_loss_report.py",
+        "git_blob_sha": "83f46b895854e09f21eeb91a640940dc2a33402e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage028_week_range_overlap.py",
+        "git_blob_sha": "c74dc62d0bec5149895d565f755a568ecb872af7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage029_s44_shape_atlas.py",
+        "git_blob_sha": "7d04de3e57d015ae2bdb55817b4404d7bdf9a2ad"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage029_s44_shape_examples.py",
+        "git_blob_sha": "4da32069c97d1bef3ebd014e96a72eefa0f3cdd1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage029_s44_weekly_shapes.py",
+        "git_blob_sha": "bf364def2f8df13c270a8252d3742fcc9fdae426"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage030_weekly_shape_replay.py",
+        "git_blob_sha": "0ba0990a6c7d1839ca2710a0e87038f5504b8c2e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage031_s19_weekly_shape_replay.py",
+        "git_blob_sha": "e467ea2957616c91c82ccea0188168aca049b2a7"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage032_s19_monthly_volume_top10.py",
+        "git_blob_sha": "b9a616eb939ff874c6b887cc77ab7403dc14fd71"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage033_s19_annual_starts.py",
+        "git_blob_sha": "9b67b0e9520fa88e7ca08274088c0be1595864af"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage033_s19_fetch_tail.py",
+        "git_blob_sha": "dae8b22730821ac8d23ed4d9b9d0df46532d8996"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage034_s19_monte_carlo.py",
+        "git_blob_sha": "658c2cee1e2054adbcfdc823cc6047daa4623138"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage034_s19_monte_carlo_chart.py",
+        "git_blob_sha": "9248a59407e2e9ac1101afb940d2f47b5ea310e2"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage035_s19_half_pct.py",
+        "git_blob_sha": "a45f222ecc005fd5b13dcf79f2bcf756a96afe38"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage036_s19_paired_mc.py",
+        "git_blob_sha": "d04bb38a586c81e1c307e4594ce0beeedbfa9243"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage037_s19_fixed_one_150k.py",
+        "git_blob_sha": "2c242a1931b15492365afb9bd73879c874d5a54a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage038_s19_fixed_one_150k_halfyear.py",
+        "git_blob_sha": "b0d7ff11d9adbeae914988b70cde3d4a7df03536"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage039_s19_fixed_one_150k_mc.py",
+        "git_blob_sha": "86b92934cd387a2e12db9b2f17c796dd16e63d59"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage040_s19_without_gold.py",
+        "git_blob_sha": "dfcfab8c01db0c03507174adc78fd1ab01576c1a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage041_complete_halfyear.py",
+        "git_blob_sha": "73adca25fe5f9da2f2d853a619fba85ea9cedfbe"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage042_s19_fixed_two.py",
+        "git_blob_sha": "e7ff5b91b7f55ef45357f984315bc70f663877bb"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage043_s19_daily_one.py",
+        "git_blob_sha": "4a5be05629534f1b9bb3ac5b13b023d9664f7188"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage044_s19_daily_halfyear.py",
+        "git_blob_sha": "1e448d0e1bc33f27a9286ba2a89563600e14d246"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage045_s19_weekly_shadow_filter.py",
+        "git_blob_sha": "e5371a6eb8c318845362c6cf3f3409c5f474e7b8"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage046_s44_individual_2022.py",
+        "git_blob_sha": "ec2563b9952cb6ff09b71073b6d92df52356d091"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage047_s26_2022.py",
+        "git_blob_sha": "3e4d770d936e404522adcea72228cb0497d8061e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage048_s26_full.py",
+        "git_blob_sha": "629f508dd8fd2b1e1ca98b989b49eb2243540d01"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage049_s26_halfyear.py",
+        "git_blob_sha": "93ef164729353fb12a9da1243b88f42223327bfa"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage050_s22_halfyear.py",
+        "git_blob_sha": "3a18fef00188cfc4af62985a18f4998567e7a45d"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage051_s21_halfyear.py",
+        "git_blob_sha": "d15f0627e53cf214e03c1c2f110d65bfaffb5980"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage052_s21_margin_gate.py",
+        "git_blob_sha": "5a03cf6fabbffc75b6d716f6425c413740f75ee6"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage053_s21_silver_halfyear.py",
+        "git_blob_sha": "31600dd942c7d045f444984d8a2600456c6e96c3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage054_s21_gold_touch_halfyear.py",
+        "git_blob_sha": "c256561b11e55874084512f0e129684d5a036f06"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage054_trade_recap.py",
+        "git_blob_sha": "7749c68d0445998429f21bc43959fdd53035f275"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage055_s21_all_touch_halfyear.py",
+        "git_blob_sha": "b100282faacbfa69fa71d683af03fe3e56198302"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage056_random10_report.py",
+        "git_blob_sha": "0861dada90cf0c1138e36d91be3592faf2c25db0"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage056_random10_touch.py",
+        "git_blob_sha": "9dfcbfef2ba7c8a97e5a0e5c113c7ffd74285df3"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage057_diverse10.py",
+        "git_blob_sha": "719eb66d02094f7adad6f0d445c3a19b9540a42e"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage058_diverse10_nonferrous.py",
+        "git_blob_sha": "021b301423a2707f81e0028e8c717b34fb0a377a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage059_diverse10_halfyear.py",
+        "git_blob_sha": "44568505c8f77cd7c673cb46c59a9922b19880cd"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage060_s21_200k_halfyear.py",
+        "git_blob_sha": "4ea0b3313c02c85f5fbf7b3ab38d555ed7240d9b"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage061_2022_recap.py",
+        "git_blob_sha": "1776b24bed4e17bd3e48a0cd9e80ec2ecd1c33ff"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage062_equity_curve.py",
+        "git_blob_sha": "3fc8eec9a9e1750d96618d76e25c60a7bf1e2cec"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage062_equity_curve.swift",
+        "git_blob_sha": "f5e3ccbb723ba32e7273c47cad5b40b5209b64be"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage063_aligned_recap.py",
+        "git_blob_sha": "bf6f11685dffb917dee445a946da2cf101d14f61"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage064_2017_recap.py",
+        "git_blob_sha": "b612fe9b8d2ec68d491858929e5c6092f912b945"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/stage065_build_backup.py",
+        "git_blob_sha": "9ab1a42767bd3e2e3bc761800b31e6b2e743ab96"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_stage005_trade_recap.py",
+        "git_blob_sha": "a339c1d72759db57b2af9d6e00f548df68a53ffb"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_stage054_trade_recap.py",
+        "git_blob_sha": "16ed652947d29f3e756add10aadc9deda4c4b963"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_stage061_2022_recap.py",
+        "git_blob_sha": "07919c7fbe95ed389e1dd19b421ffd82ef5f4f3a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_stage064_2017_recap.py",
+        "git_blob_sha": "47a664ae88ec79c51b2acff927fedaf23228fd57"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_stage065_backup_restore.py",
+        "git_blob_sha": "10b79663fe956cff60067b43c1d9dc62da1574e1"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_weekly_portfolio_reversal.py",
+        "git_blob_sha": "2e87c8c54cb95cd2085e5a30d8081fe85ad7efed"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_weekly_portfolio_sizing.py",
+        "git_blob_sha": "2bf16e920abf2c47d763a0080a1da2209469a211"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/test_weekly_two_close_momentum.py",
+        "git_blob_sha": "95c0b03f95d99e4a056bb7be108d76ae3834e96a"
+      },
+      {
+        "path": "research/lines/futures_weekly_two_close_momentum/tools/weekly_two_close_momentum.py",
+        "git_blob_sha": "694bba6c3002adfe27798214528ab37f79fb0feb"
+      },
+      {
+        "path": "skills/HANDOFF_MANIFEST.json",
+        "git_blob_sha": "cafca17dd9af5b622025859160f4b1d2a60a01e6"
+      },
+      {
+        "path": "skills/README.md",
+        "git_blob_sha": "e66b785103e9fadb1ba493e5878caf57d26df02e"
+      },
+      {
+        "path": "skills/futures-recap-html/SKILL.md",
+        "git_blob_sha": "7e0cc8653e76c3dbeca66f91a52b6a59f31aefe3"
+      },
+      {
+        "path": "skills/futures-recap-html/references/recap-contract.md",
+        "git_blob_sha": "77dfbd005d431bf429248b448535c26a4f7f64b3"
+      }
+    ]
+  },
+  "github_api_snapshot_comparison": {
+    "status": "PASS",
+    "files": 9,
+    "data_volumes": 8,
+    "git_blob_sha_and_size_mismatches": 0,
+    "evidence": "stage065_remote_snapshot_api.json"
+  },
+  "local_full_restore": {
+    "status": "PASS",
+    "files": 10909,
+    "bytes": 1743394097,
+    "archive_sha256": "ebcd4c6b6e8e6272e0b6024da08032c44f71e139ae5f3376057c1a00b7ac3277"
+  },
+  "independent_audit": "stage065_backup_audit.json",
+  "tests": "39 passed, 22 subtests passed",
+  "remote_full_payload_restore": {
+    "status": "NOT_COMPLETED_NETWORK_LIMIT",
+    "details": "SSH 独立克隆已取得远端提交与完整树元数据；完整物料回读速度过慢，直接 HTTPS 与本地 SOCKS 请求超时。本次完成远端全部源码树对象比对、GitHub API 逐卷对象 SHA/大小核验与本地完整恢复；未声称从远端重新下载全部字节并解压通过。"
+  },
+  "strategy_or_backtest_changed": false,
+  "overfit_reflection": "否，仅冻结已有代码和证据；继续价值为是，已消除研究资料仅保存在本机的单点风险。"
+}
