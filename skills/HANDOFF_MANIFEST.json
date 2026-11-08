@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "migration_date": "2026-10-15",
-  "skill_count": 11,
+  "skill_count": 12,
   "existing_skills_unchanged": [
     "freeze-official-strategy-materials",
     "futures-live-automation-startup",
@@ -307,6 +307,69 @@
       "installed_sha256": "3d1ada27bb5daacccf50a491c0ead9550621ebccde4b25acd8b6796bda1aa437",
       "modified": false,
       "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "SKILL.md",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "5f6b0c1b4e17104adc8e51d354bff3a0e59b8ef23f849a1c9824dbbb574e3fe6",
+      "installed_sha256": "18409761f4576696bfacd2645b571160d08af8a9345b1fe39bc268c92c0b9ecf",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "agents/openai.yaml",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "473801bf3873c3dd9ae3887eda30ee1590f5780f598789848de81f9f58732626",
+      "installed_sha256": "5dbbc1a5f816a626e716cac94ba9321e274104d51b2da437403eccd6c7146bb4",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "references/commodity-playbooks.md",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "e5519dbf57a63b5c87c3fb0d48c1f82e0c24a359036df9f4e5d93cd7d9fce074",
+      "installed_sha256": "e5519dbf57a63b5c87c3fb0d48c1f82e0c24a359036df9f4e5d93cd7d9fce074",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "references/evidence-contract.md",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "160085609eb4509057b3ab3ab3f1ef6c88b24a9087fd81841814059a5f82e903",
+      "installed_sha256": "06246ca2d4f64344814db54c24bf5f72cec0a8f0bbb268cc60b24359c9f58053",
+      "modified": true,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "references/free-sources.md",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "e591fce3f656e0ab8cb727706c004c361f22e69d7b7cf58e93bf9471f5eca16d",
+      "installed_sha256": "e591fce3f656e0ab8cb727706c004c361f22e69d7b7cf58e93bf9471f5eca16d",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "scripts/audit_evidence.py",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "554f2678c15215f8a2a315a2a742158603e21f10749394a1da24c2448a41a5ab",
+      "installed_sha256": "554f2678c15215f8a2a315a2a742158603e21f10749394a1da24c2448a41a5ab",
+      "modified": false,
+      "installed_mode": "0o644"
+    },
+    {
+      "skill": "futures-fundamental-bias",
+      "path": "tests/test_audit_evidence.py",
+      "origin": "original-repository-authoring/2026-11-08",
+      "source_sha256": "74c66cda6928a3915975bcabbcf993430805d8293121eab95371987893f81348",
+      "installed_sha256": "74c66cda6928a3915975bcabbcf993430805d8293121eab95371987893f81348",
+      "modified": false,
+      "installed_mode": "0o644"
     }
   ],
   "mode_adaptations": [
@@ -322,6 +385,16 @@
     "futures-official-shadow/SKILL.md": "Explicit verified production and private audit paths; preserve production identity gates.",
     "futures-recap-html/references/recap-contract.md": "Disclose unavailable optional Stage050 tool and condition its use on restoration.",
     "playwright/SKILL.md": "Resolve wrapper from this repository.",
-    "playwright/references/cli.md": "Resolve wrapper from this repository."
+    "playwright/references/cli.md": "Resolve wrapper from this repository.",
+    "futures-fundamental-bias/SKILL.md": "2026-11-08 Stage003: lead with exactly one bearish/neutral/bullish verdict, then timing/confidence and arguments; insufficient evidence maps to neutral with explicit reason.",
+    "futures-fundamental-bias/references/evidence-contract.md": "2026-11-08 Stage003: preserve insufficient-evidence audit status while mapping its user-facing verdict to neutral with a clear evidence-gap explanation.",
+    "futures-fundamental-bias/agents/openai.yaml": "2026-11-08 Stage003: default prompt requests the three-class verdict before supporting arguments."
+  },
+  "local_additions": {
+    "futures-fundamental-bias": {
+      "date": "2026-11-08",
+      "origin": "Original skill; independently authored from public-source research, no third-party skill code copied.",
+      "scope": "Free public commodity fundamentals and evidence audit; no trading or historical completeness certification."
+    }
   }
 }

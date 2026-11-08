@@ -1,0 +1,119 @@
+{
+  "commodity": "JM",
+  "as_of": "2026-11-08T15:54:00+08:00",
+  "status": "manual_synthesis_required",
+  "eligible_ids": [
+    "sxcoal_border_price",
+    "sxcoal_stop",
+    "sxcoal_supply",
+    "ind_jm_stock",
+    "ind_coke_output",
+    "steel_jm_stock",
+    "steel_coke_output"
+  ],
+  "direct_driver_count": 5,
+  "direct_axes": [
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "direct_origins": [
+    "Fenwei",
+    "Mysteel"
+  ],
+  "covered_axes": [
+    "demand",
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "missing_axes": [],
+  "historical_pit_certified": false,
+  "limitations": [
+    "Truth, original-source identity, sample scope, units, relevance and freshness choices require review.",
+    "A date filter does not prove historical first-release values or past delivery latency."
+  ],
+  "rows": [
+    {
+      "id": "sxcoal_border_price",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T15:56:44+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "sxcoal_stop",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T17:50:14+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "sxcoal_supply",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T10:04:39+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "sxcoal_mine_stock",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T11:49:00+08:00"
+    },
+    {
+      "id": "ind_jm_stock",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "ind_coke_output",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 4
+    },
+    {
+      "id": "steel_jm_stock",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "steel_coke_output",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 4
+    }
+  ]
+}

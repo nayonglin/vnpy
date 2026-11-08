@@ -1,0 +1,97 @@
+{
+  "commodity": "JM",
+  "as_of": "2026-11-08T15:54:00+08:00",
+  "status": "insufficient_current_direct_evidence",
+  "eligible_ids": [
+    "iron_a"
+  ],
+  "direct_driver_count": 0,
+  "direct_axes": [],
+  "direct_origins": [],
+  "covered_axes": [
+    "demand"
+  ],
+  "missing_axes": [
+    "supply",
+    "inventory",
+    "pricing"
+  ],
+  "historical_pit_certified": false,
+  "limitations": [
+    "Truth, original-source identity, sample scope, units, relevance and freshness choices require review.",
+    "A date filter does not prove historical first-release values or past delivery latency."
+  ],
+  "rows": [
+    {
+      "id": "old_jm_stock",
+      "eligible": false,
+      "reasons": [
+        "stale_publication",
+        "stale_observation"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2025-11-07T00:00:00+08:00",
+      "observation_age_days": 367
+    },
+    {
+      "id": "future_jm_stock",
+      "eligible": false,
+      "reasons": [
+        "published_after_cutoff"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-10T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "iron_a",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "iron_b",
+      "eligible": false,
+      "reasons": [
+        "same_origin_same_fact"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2,
+      "duplicate_of": "iron_a"
+    },
+    {
+      "id": "limit_rumor",
+      "eligible": false,
+      "reasons": [
+        "not_verified_fact",
+        "not_publicly_read",
+        "unknown_or_invalid_publication",
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "coke_proposal",
+      "eligible": false,
+      "reasons": [
+        "not_verified_fact"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    }
+  ]
+}

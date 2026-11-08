@@ -1,0 +1,156 @@
+{
+  "commodity": "FG（建筑浮法玻璃）",
+  "as_of": "2026-11-08T17:10:00+08:00",
+  "status": "manual_synthesis_required",
+  "eligible_ids": [
+    "fg_lz_supply_1105",
+    "fg_lz_inventory_1105",
+    "fg_daily_price_1105",
+    "fg_sales_1105",
+    "fg_coldrepair_ytd",
+    "fg_alt_inventory_1029",
+    "fg_nbs_realestate"
+  ],
+  "direct_driver_count": 4,
+  "direct_axes": [
+    "demand",
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "direct_origins": [
+    "光大期货_上游调查未明确",
+    "隆众资讯"
+  ],
+  "covered_axes": [
+    "demand",
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "missing_axes": [],
+  "historical_pit_certified": false,
+  "limitations": [
+    "Truth, original-source identity, sample scope, units, relevance and freshness choices require review.",
+    "A date filter does not prove historical first-release values or past delivery latency."
+  ],
+  "rows": [
+    {
+      "id": "fg_lz_supply_1105",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "fg_lz_inventory_1105",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "fg_stock_duplicate_gd",
+      "eligible": false,
+      "reasons": [
+        "same_origin_same_fact"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3,
+      "duplicate_of": "fg_lz_inventory_1105"
+    },
+    {
+      "id": "fg_daily_price_1105",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "fg_sales_1105",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "fg_coldrepair_ytd",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [],
+      "publication_available_at": "2026-11-05T16:49:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "fg_cost_model",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-05T16:49:00+08:00"
+    },
+    {
+      "id": "fg_orders_99_uncertain_period",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-02T08:45:12+08:00"
+    },
+    {
+      "id": "fg_alt_inventory_1029",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-04T00:00:00+08:00",
+      "observation_age_days": 10
+    },
+    {
+      "id": "fg_nbs_realestate",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [],
+      "publication_available_at": "2026-10-19T10:00:00+08:00",
+      "observation_age_days": 39
+    },
+    {
+      "id": "fg_lowe_snippet_only",
+      "eligible": false,
+      "reasons": [
+        "not_publicly_read"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-06T15:44:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "fg_glass_platform_paywall",
+      "eligible": false,
+      "reasons": [
+        "not_publicly_read"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-06T11:42:51+08:00",
+      "observation_age_days": 2
+    }
+  ]
+}

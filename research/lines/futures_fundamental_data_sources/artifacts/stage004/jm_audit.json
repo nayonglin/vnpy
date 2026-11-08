@@ -1,0 +1,195 @@
+{
+  "commodity": "JM",
+  "as_of": "2026-11-08T17:12:42+08:00",
+  "status": "manual_synthesis_required",
+  "eligible_ids": [
+    "JM01",
+    "JM03",
+    "JM04",
+    "JM05",
+    "JM06",
+    "JM07",
+    "JM08",
+    "JM09",
+    "JM10",
+    "JM11",
+    "JM13",
+    "JM19",
+    "JM20"
+  ],
+  "direct_driver_count": 9,
+  "direct_axes": [
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "direct_origins": [
+    "Fenwei",
+    "Mysteel",
+    "Steelhome"
+  ],
+  "covered_axes": [
+    "demand",
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "missing_axes": [],
+  "historical_pit_certified": false,
+  "limitations": [
+    "Truth, original-source identity, sample scope, units, relevance and freshness choices require review.",
+    "A date filter does not prove historical first-release values or past delivery latency."
+  ],
+  "rows": [
+    {
+      "id": "JM01",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T10:04:39+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM03",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T15:56:44+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM04",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T15:56:44+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM05",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T17:50:14+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM06",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T17:53:15+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM07",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 4
+    },
+    {
+      "id": "JM08",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM09",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM10",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM11",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM13",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM19",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [],
+      "publication_available_at": "2026-11-06T08:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM20",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM21",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00"
+    },
+    {
+      "id": "JM22",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00"
+    }
+  ]
+}

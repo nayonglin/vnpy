@@ -1,0 +1,226 @@
+{
+  "commodity": "JM",
+  "as_of": "2026-11-08T15:56:54+08:00",
+  "status": "manual_synthesis_required",
+  "eligible_ids": [
+    "JM01",
+    "JM03",
+    "JM04",
+    "JM05",
+    "JM06",
+    "JM07",
+    "JM08",
+    "JM09",
+    "JM10",
+    "JM11",
+    "JM12",
+    "JM13",
+    "JM14",
+    "JM15"
+  ],
+  "direct_driver_count": 7,
+  "direct_axes": [
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "direct_origins": [
+    "Fenwei",
+    "Mysteel"
+  ],
+  "covered_axes": [
+    "demand",
+    "inventory",
+    "pricing",
+    "supply"
+  ],
+  "missing_axes": [],
+  "historical_pit_certified": false,
+  "limitations": [
+    "Truth, original-source identity, sample scope, units, relevance and freshness choices require review.",
+    "A date filter does not prove historical first-release values or past delivery latency."
+  ],
+  "rows": [
+    {
+      "id": "JM01",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T10:04:39+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM02",
+      "eligible": false,
+      "reasons": [
+        "unknown_or_invalid_observation"
+      ],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T11:49:00+08:00"
+    },
+    {
+      "id": "JM03",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T15:56:44+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM04",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T15:56:44+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM05",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T17:50:14+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM06",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "public_excerpt_only"
+      ],
+      "publication_available_at": "2026-11-06T17:53:15+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM07",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 4
+    },
+    {
+      "id": "JM08",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM09",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM10",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM11",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM12",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM13",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM14",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [],
+      "publication_available_at": "2026-10-21T09:50:02+08:00",
+      "observation_age_days": 39
+    },
+    {
+      "id": "JM15",
+      "eligible": true,
+      "reasons": [],
+      "warnings": [],
+      "publication_available_at": "2026-10-19T10:00:00+08:00",
+      "observation_age_days": 39
+    },
+    {
+      "id": "JM16",
+      "eligible": false,
+      "reasons": [
+        "not_publicly_read"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-06T17:21:00+08:00",
+      "observation_age_days": 3
+    },
+    {
+      "id": "JM17",
+      "eligible": false,
+      "reasons": [
+        "not_verified_fact",
+        "not_publicly_read"
+      ],
+      "warnings": [],
+      "publication_available_at": "2026-11-06T17:59:00+08:00",
+      "observation_age_days": 2
+    },
+    {
+      "id": "JM18",
+      "eligible": false,
+      "reasons": [
+        "same_origin_same_fact"
+      ],
+      "warnings": [
+        "date_only_publication_conservative"
+      ],
+      "publication_available_at": "2026-11-07T00:00:00+08:00",
+      "observation_age_days": 2,
+      "duplicate_of": "JM08"
+    }
+  ]
+}

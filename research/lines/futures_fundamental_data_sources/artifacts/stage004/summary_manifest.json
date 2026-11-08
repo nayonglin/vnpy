@@ -1,0 +1,125 @@
+{
+  "recorded_at": "2026-11-08T17:21:39+08:00",
+  "skill": "futures-fundamental-bias",
+  "mode": "current_public_research",
+  "horizon": "未来1—4周",
+  "results": {
+    "JM": {
+      "verdict": "看空",
+      "confidence": "中低",
+      "as_of": "2026-11-08T17:12:42+08:00",
+      "records": 15,
+      "eligible_records": 13,
+      "direct_driver_count": 9,
+      "origin_groups": [
+        "Fenwei",
+        "Mysteel",
+        "Steelhome"
+      ],
+      "covered_axes": [
+        "demand",
+        "inventory",
+        "pricing",
+        "supply"
+      ],
+      "direct_axes": [
+        "inventory",
+        "pricing",
+        "supply"
+      ],
+      "excluded": [
+        {
+          "id": "JM21",
+          "reasons": [
+            "unknown_or_invalid_observation"
+          ]
+        },
+        {
+          "id": "JM22",
+          "reasons": [
+            "unknown_or_invalid_observation"
+          ]
+        }
+      ],
+      "limitations": "Demand quantity remains proxy; exact-date-unknown 523-mine reprint excluded as numeric anchor; deliverable-grade basis not assessed."
+    },
+    "FG": {
+      "verdict": "中性",
+      "confidence": "中低",
+      "as_of": "2026-11-08T17:10:00+08:00",
+      "records": 12,
+      "eligible_records": 7,
+      "direct_driver_count": 4,
+      "origin_groups": [
+        "光大期货_上游调查未明确",
+        "隆众资讯"
+      ],
+      "covered_axes": [
+        "demand",
+        "inventory",
+        "pricing",
+        "supply"
+      ],
+      "direct_axes": [
+        "demand",
+        "inventory",
+        "pricing",
+        "supply"
+      ],
+      "excluded": [
+        {
+          "id": "fg_stock_duplicate_gd",
+          "reasons": [
+            "same_origin_same_fact"
+          ]
+        },
+        {
+          "id": "fg_cost_model",
+          "reasons": [
+            "unknown_or_invalid_observation"
+          ]
+        },
+        {
+          "id": "fg_orders_99_uncertain_period",
+          "reasons": [
+            "unknown_or_invalid_observation"
+          ]
+        },
+        {
+          "id": "fg_lowe_snippet_only",
+          "reasons": [
+            "not_publicly_read"
+          ]
+        },
+        {
+          "id": "fg_glass_platform_paywall",
+          "reasons": [
+            "not_publicly_read"
+          ]
+        }
+      ],
+      "limitations": "Shipment ratio is not terminal consumption; Guangda underlying survey unspecified and not certified independent of Longzhong; basis and current deep-processing order series missing."
+    }
+  },
+  "scope": "Curated public visible facts; no raw publisher HTTP bodies archived; hashes cover only local files.",
+  "artifacts": [
+    {
+      "path": "jm_evidence.json",
+      "sha256": "643e136cd67689d695836bfc689d2661847f97e82838f0b24ddaa86414748a0c"
+    },
+    {
+      "path": "jm_audit.json",
+      "sha256": "ef3f3cb13f445d573963008a49f3c5b87836fd3dfa1c325c2d498e0e88fb0fa0"
+    },
+    {
+      "path": "fg_evidence.json",
+      "sha256": "0bbad8417ca5a6de5ae7f02da930e34c7ecdf92cfa42169bf3fcdcfb4484d9f1"
+    },
+    {
+      "path": "fg_audit.json",
+      "sha256": "ff75990dea0dcc5b9a3e2350934c495f2e00999b394ab1ad09feda89e885c1a3"
+    }
+  ],
+  "audit_script_sha256": "554f2678c15215f8a2a315a2a742158603e21f10749394a1da24c2448a41a5ab",
+  "skill_entry_sha256": "18409761f4576696bfacd2645b571160d08af8a9345b1fe39bc268c92c0b9ecf"
+}

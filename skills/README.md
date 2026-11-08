@@ -1,6 +1,6 @@
 # 仓库随附 Skills
 
-本目录包含原交接包的 10 个 Skill，加上已在本机研究目录找到的 `futures-recap-html`，共 11 个。
+本目录包含迁移/恢复的 11 个 Skill，以及本仓新增的 `futures-fundamental-bias`，共 12 个。
 
 ## Clone 后如何使用
 
@@ -22,6 +22,7 @@
 | futures-multicycle-backtest-report | 多周期报告兼容入口 | 原仓库 |
 | futures-official-shadow | 绑定生产 receipt 的正式影子盘查询 | 交接包外部 Skill |
 | futures-recap-html | 冻结回测的逐笔、多周期 K 线 HTML 复盘 | 本机已恢复的研究参考目录 |
+| futures-fundamental-bias | 使用免费公开数据与新闻研究商品期货基本面、多空证据和反证条件 | 本仓原创；来源调研与首次焦煤应用见 `research/lines/futures_fundamental_data_sources/` |
 | pdf | PDF 生成、读取和版面校验 | 交接包外部 Skill，可选 |
 | playwright | 浏览器页面验证 | 交接包外部 Skill，可选 |
 | tushare-data | 股票、基金及宏观数据研究 | 交接包外部 Skill，可选，不是期货运行依赖 |
@@ -32,7 +33,8 @@
 - 实盘、启动和正式影子盘 Skill 中的原机生产路径不是当前 clone 的生产授权。正式查询仍需完整且匹配的 release、qualification、activation、daily receipt 和目标日数据证据。
 - 影子盘 exporter 保留原脚本。仓库版说明显式传入生产 checkout、私有状态和私有审计输出目录，不能使用旧路径默认值作为本机配置。
 - HTML 复盘使用已有 canonical renderer。Stage050 Top30 分钟增强工具未在当前 checkout 或交接源码中找到；对应可选流程未恢复，不能声称其已可运行。输入结果和行情本来也不随普通 clone 自动恢复。
-- PDF 需要相应 Python 库和 Poppler；Playwright 需要 Node/npm/npx 及浏览器运行时；Tushare 需要 Python 包、本地 Token 和相应接口权限。本次只迁移 Skill，不触发下载、登录或网络查询。
+- PDF 需要相应 Python 库和 Poppler；Playwright 需要 Node/npm/npx 及浏览器运行时；Tushare 需要 Python 包、本地 Token 和相应接口权限。文件入库本身不触发下载、登录或网络查询；具体研究按用户请求执行。
+- 基本面 Skill 使用宿主联网搜索和 Python 3.11+ 标准库证据审计；默认只读免费公开正文/摘要，不依赖付费数据库或凭证，不承诺所有品种自2015完整历史，也不构成交易执行入口。
 - 如果另有同名用户/插件 Skill，Codex 不会合并内容；本仓库工作优先使用这里的明确文件路径，并遵循宿主提供的工具限制。
 
 ## 维护与来源校验

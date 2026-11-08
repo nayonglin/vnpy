@@ -1,0 +1,4 @@
+interface:
+  display_name: "期货基本面多空研究"
+  short_description: "用免费公开数据与新闻研究期货供需、多空证据、反证条件及信息缺口"
+  default_prompt: "使用 $futures-fundamental-bias 分析焦煤当前基本面，首行明确看空、中性或看多，再给数据截止、期限、置信度和具体论据。"

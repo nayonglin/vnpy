@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-11-08T16:01:44+08:00",
+  "skill": "futures-fundamental-bias",
+  "official_quick_validate": {
+    "status": "not_run_successfully",
+    "reason": "PyYAML missing in .py311 and system python3; no dependency installed"
+  },
+  "fallback_validation": {
+    "flat_frontmatter": "pass",
+    "quoted_ui_metadata": "pass",
+    "discovery_symlink": "pass",
+    "new_manifest_files": 7,
+    "skill_count": 12,
+    "local_link_format_issues": []
+  },
+  "evidence_scope": "Curated public facts and host-web reading notes; raw HTTP article bodies are not archived. Hashes below cover local artifacts, not publisher originals.",
+  "artifacts": [
+    {
+      "path": "jm_evidence_20261108.json",
+      "kind": "curated_evidence_bundle",
+      "sha256": "a43affc4fb144d7a686eb526a00386aaea9529ad9535cd6507aaec9f9c8c31ea"
+    },
+    {
+      "path": "jm_evidence_audit_20261108.json",
+      "kind": "evidence_audit",
+      "sha256": "900c607da997db5c6561231df31c3cdc250afd17e0f4841626ed908651ed5fc0"
+    }
+  ],
+  "audit_script_sha256": "554f2678c15215f8a2a315a2a742158603e21f10749394a1da24c2448a41a5ab"
+}
